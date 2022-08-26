@@ -1,4 +1,4 @@
-import { createUser } from "./repository.js";
+import { createUser } from "./repository";
 
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(
