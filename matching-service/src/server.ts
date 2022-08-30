@@ -81,6 +81,7 @@ export class MatchMakingServer {
     console.log(`MatchMaking Server running on port ${this.port}`);
   }
 
+  // matchmakes users within the current pool with each other
   match_make() {
     if (this.pool.size < 1) {
       return;
