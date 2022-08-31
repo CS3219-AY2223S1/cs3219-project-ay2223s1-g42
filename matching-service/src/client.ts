@@ -10,7 +10,6 @@ export class MatchMakingClient {
   }
 
   match({ ...args }) {
-    // const connection = new Socket(this.ip);
     const socket = io(this.serverIp);
 
     // runs on connection to server
@@ -20,7 +19,6 @@ export class MatchMakingClient {
           `All objects sent to matchmaking must have the same interface and have an 'id' property`
         );
       }
-
       socket.send(JSON.stringify(args));
     });
 
@@ -32,7 +30,7 @@ export class MatchMakingClient {
     // runs when message/data is received from server
     socket.on("message", (m) => {
       try {
-        this.callback(JSON.parse(m.data as string));
+        this.callback(JSON.parse(m as string));
       } catch (e) {
         console.error(e);
       }

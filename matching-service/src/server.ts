@@ -5,41 +5,37 @@ import { PoolItem, ServerOptions } from "./types";
 export class MatchMakingServer {
   io: Server;
   port: number;
-  allowed_clients: string[] | null;
-  disallowed_clients: string[] | null;
-  queue_time: number;
-  poll_interval: number;
+  allowedClients: string[] | null;
+  disallowedClients: string[] | null;
+  queueTime: number;
+  pollInterval: number;
   pool: Map<string | number, PoolItem<any>> = new Map<
     string | number,
     PoolItem<any>
   >();
-  is_match: (p1: PoolItem<any>, p2: PoolItem<any>) => boolean;
-  results_func?: ((p1: PoolItem<any>, p2: PoolItem<any>) => any) | null;
+  isMatch: (p1: PoolItem<any>, p2: PoolItem<any>) => boolean;
+  resultsCallback?: ((p1: PoolItem<any>, p2: PoolItem<any>) => any) | null;
 
   constructor(
-    _port: number,
-    _is_match: (p1: PoolItem<any>, p2: PoolItem<any>) => boolean,
-    _results_func?: ((p1: PoolItem<any>, p2: PoolItem<any>) => any) | null,
-    _options?: ServerOptions
+    port: number,
+    isMatch: (p1: PoolItem<any>, p2: PoolItem<any>) => boolean,
+    resultsCallback?: ((p1: PoolItem<any>, p2: PoolItem<any>) => any) | null,
+    options?: ServerOptions
   ) {
-    this.port = _port;
-    this.allowed_clients = _options?.allowed_clients
-      ? _options.allowed_clients
+    this.port = port;
+    this.allowedClients = options?.allowedClients
+      ? options.allowedClients
       : null;
-    this.disallowed_clients = _options?.disallowed_clients
-      ? _options.disallowed_clients
+    this.disallowedClients = options?.disallowedClients
+      ? options.disallowedClients
       : null;
-    this.queue_time = _options?.queue_time ? _options.queue_time : 20000;
-    this.poll_interval = _options?.poll_interval
-      ? _options.poll_interval
-      : 1000;
-    this.io = new Server(
-      !_options?.https_server ? _port : _options.https_server
-    );
-    this.is_match = _is_match;
-    this.results_func = _results_func ? _results_func : null;
+    this.queueTime = options?.queueTime ? options.queueTime : 20000;
+    this.pollInterval = options?.pollInterval ? options.pollInterval : 1000;
+    this.io = new Server(!options?.httpServer ? port : options.httpServer);
+    this.isMatch = isMatch;
+    this.resultsCallback = resultsCallback ? resultsCallback : null;
     this.start();
-    setInterval(() => this.match_make(), this.poll_interval);
+    setInterval(() => this.match_make(), this.pollInterval);
   }
 
   start() {
@@ -49,15 +45,12 @@ export class MatchMakingServer {
         : "";
       console.log("received connection from: " + ip);
 
-      if (
-        !ip ||
-        (this.allowed_clients && !this.allowed_clients?.includes(ip))
-      ) {
+      if (!ip || (this.allowedClients && !this.allowedClients?.includes(ip))) {
         console.log(`unauthorised IP: ${ip ? ip : "(no ip)"}`);
         socket.disconnect();
         return;
       }
-      if (this.disallowed_clients && this.disallowed_clients?.includes(ip)) {
+      if (this.disallowedClients && this.disallowedClients?.includes(ip)) {
         console.log(`unauthorised IP: ${ip}`);
         socket.disconnect();
         return;
@@ -81,18 +74,19 @@ export class MatchMakingServer {
     console.log(`MatchMaking Server running on port ${this.port}`);
   }
 
+  // matchmakes users within the current pool with each other
   match_make() {
     if (this.pool.size < 1) {
       return;
     }
     for (const [A, p1] of this.pool) {
       for (const [B, p2] of this.pool) {
-        if (p1.id !== p2.id && this.is_match(p1, p2)) {
+        if (p1.id !== p2.id && this.isMatch(p1, p2)) {
           const a = this.pool.get(A);
           const b = this.pool.get(B);
           if (a && b) {
             console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
-            if (!this.results_func) {
+            if (!this.resultsCallback) {
               const a_res = remove_socket(a);
               const b_res = remove_socket(b);
               a.socket.send(
@@ -102,7 +96,7 @@ export class MatchMakingServer {
                 JSON.stringify({ client: { ...b_res }, opponent: { ...a_res } })
               );
             } else {
-              const res = this.results_func(a, b);
+              const res = this.resultsCallback(a, b);
               a.socket.send(JSON.stringify(res));
               b.socket.send(JSON.stringify(res));
             }
@@ -113,7 +107,7 @@ export class MatchMakingServer {
           }
         } else {
           const b = this.pool.get(B);
-          if (b && Date.now() - b.time_joined > this.queue_time) {
+          if (b && Date.now() - b.time_joined > this.queueTime) {
             console.log(`${b.id} timed out of queue.`);
             b.socket.disconnect();
             this.pool.delete(B);

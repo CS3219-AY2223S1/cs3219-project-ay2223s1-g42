@@ -7,7 +7,7 @@ import { MatchMakingClient } from "./src";
 //  opponent: object this client was matched with
 //  }
 // otherwise it will be whatever the results function you passed to the server returns.
-const client_match_result_handler = (args) => {
+const clientMatchResultHandler = (args) => {
   // eg. you might call client_post_match(args); here
   console.log(`client received results:\n${JSON.stringify(args)}`);
 };
@@ -16,7 +16,7 @@ const client_match_result_handler = (args) => {
 // call client.match({PLAYER_OBJECT}) to add a player to the pool.
 const client = new MatchMakingClient(
   "ws://127.0.0.1:8001",
-  client_match_result_handler
+  clientMatchResultHandler
 );
 
 // example PLAYER_OBJECT:
@@ -25,17 +25,17 @@ const client = new MatchMakingClient(
 //  ... any other properties you want
 // }
 
-const player_1 = { id: 1, elo: 150, power: 700, name: "John" };
-client.match(player_1);
+const player1 = { id: 1, elo: 150, power: 700, name: "John" };
+client.match(player1);
 
-const player_2 = { id: 2, elo: 320, power: 900, name: "Sergio" };
-client.match(player_2);
+const player2 = { id: 2, elo: 320, power: 900, name: "Sergio" };
+client.match(player2);
 
-const player_3 = { id: 3, elo: 380, power: 300, name: "Brooklyn" };
-client.match(player_3);
+const player3 = { id: 3, elo: 380, power: 300, name: "Brooklyn" };
+client.match(player3);
 
-const player_4 = { id: 4, elo: 160, power: 450, name: "Miguel" };
-client.match(player_4);
+const player4 = { id: 4, elo: 160, power: 450, name: "Miguel" };
+client.match(player4);
 
 // let i = 5;
 // setInterval(() => {
