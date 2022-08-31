@@ -17,15 +17,15 @@ app.get("/", (req, res) => {
 const httpServer = createServer(app);
 
 // matching logic
-const is_match_func = (client_1, client_2) => {
+const isMatch = (client1, client2) => {
   // MUST RETURN BOOLEAN
-  return Math.abs(client_1.elo - client_2.elo) < 100;
+  return Math.abs(client1.elo - client2.elo) < 100;
 };
 
-const server = new MatchMakingServer(8001, is_match_func, undefined, {
-  https_server: httpServer,
-  poll_interval: 1000,
-  queue_time: 20000,
+const server = new MatchMakingServer(8001, isMatch, undefined, {
+  httpServer: httpServer,
+  pollInterval: 1000,
+  queueTime: 20000,
 });
 
 httpServer.listen(8001);
