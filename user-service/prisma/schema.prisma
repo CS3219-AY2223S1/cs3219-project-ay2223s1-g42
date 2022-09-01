@@ -14,7 +14,7 @@ model User {
   userId      Int     @id @default(autoincrement())
   email       String  @unique
   password    String?
-  authType    String  @default("Vanilla")
+  authType    String  @default("Custom")
   isVerified  Boolean @default(false)
   displayName String  @unique
 }
