@@ -1,5 +1,10 @@
-import { ormCreateUser as _createUser } from "../model/user-orm";
+//import { ormCreateUser as _createUser } from "../model/user-orm";
+import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
 
+const prisma = new PrismaClient();
+
+/*
 export async function createUser(req, res) {
   try {
     const { username, password } = req.body;
@@ -29,4 +34,8 @@ export async function createUser(req, res) {
       .status(500)
       .json({ message: "Database failure when creating new user!" });
   }
+}
+*/
+export async function createUser (req: Request, res: Response) => {
+  
 }
