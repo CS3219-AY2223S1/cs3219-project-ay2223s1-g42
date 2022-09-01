@@ -1,32 +1,60 @@
-import { ormCreateUser as _createUser } from "../model/user-orm";
+//import { ormCreateUser as _createUser } from "../model/user-orm";
+import { PrismaClient } from "@prisma/client";
+import e, { Request, Response } from "express";
 
-export async function createUser(req, res) {
-  try {
-    const { username, password } = req.body;
-    if (username && password) {
-      const resp: boolean | { err: string } = await _createUser(
-        username,
-        password
-      );
-      console.log(resp);
-      if (resp["err"]) {
-        return res
-          .status(400)
-          .json({ message: "Could not create a new user!" });
-      } else {
-        console.log(`Created new user ${username} successfully!`);
-        return res
-          .status(201)
-          .json({ message: `Created new user ${username} successfully!` });
-      }
-    } else {
-      return res
-        .status(400)
-        .json({ message: "Username and/or Password are missing!" });
-    }
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Database failure when creating new user!" });
-  }
+const prisma = new PrismaClient();
+
+enum AuthType {
+  CUSTOM = "Custom",
+}
+
+export async function createUser(req: Request, res: Response) {
+  const { email, password, displayName } = req.body;
+  const user = await prisma.user.create({
+    data: {
+      email: email,
+      password: password,
+      displayName: displayName,
+      authType: AuthType.CUSTOM,
+    },
+  });
+  res.json(user);
+}
+
+export async function findUser(req: Request, res: Response) {
+  // By unique identifier
+  const { userId } = req.params;
+  const numberUserId = parseInt(userId);
+  console.log(numberUserId);
+  const user = await prisma.user.findUnique({
+    where: {
+      userId: numberUserId,
+    },
+  });
+  res.json(user);
+}
+
+export async function updateUser(req: Request, res: Response) {
+  const { userId, displayName } = req.body;
+  const numberUserId = parseInt(userId);
+  const user = await prisma.user.update({
+    where: {
+      userId: numberUserId,
+    },
+    data: {
+      displayName,
+    },
+  });
+  res.json(user);
+}
+
+export async function deleteUser(req: Request, res: Response) {
+  const { userId } = req.body;
+  const numberUserId = parseInt(userId);
+  const user = await prisma.user.delete({
+    where: {
+      userId: numberUserId,
+    },
+  });
+  res.json(user);
 }
