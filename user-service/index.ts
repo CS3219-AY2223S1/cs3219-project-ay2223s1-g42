@@ -1,12 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import {
-  createUser,
-  updateUser,
-  deleteUser,
-  findUser,
-} from "./controller/user-controller";
+import * as UserController from "./controller/user-controller";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -15,11 +10,10 @@ app.use(cors()); // config cors so that front-end can use
 //app.options("*", cors());
 
 // Controller will contain all the User-defined Routes
-
-app.get("/:userId", findUser);
-app.post("/", createUser);
-app.put("/", updateUser);
-app.delete("/", deleteUser);
+app.get("/:userId", UserController.findUser);
+app.post("/", UserController.createUser);
+app.put("/", UserController.updateUser);
+app.delete("/", UserController.deleteUser);
 
 /*
 app.use("/api/user", router).all("*", (_, res: any) => {

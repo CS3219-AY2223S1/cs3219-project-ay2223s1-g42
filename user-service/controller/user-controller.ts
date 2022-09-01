@@ -1,6 +1,5 @@
-//import { ormCreateUser as _createUser } from "../model/user-orm";
 import { PrismaClient } from "@prisma/client";
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +24,6 @@ export async function findUser(req: Request, res: Response) {
   // By unique identifier
   const { userId } = req.params;
   const numberUserId = parseInt(userId);
-  console.log(numberUserId);
   const user = await prisma.user.findUnique({
     where: {
       userId: numberUserId,
