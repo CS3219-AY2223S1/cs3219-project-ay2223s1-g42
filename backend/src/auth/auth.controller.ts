@@ -1,17 +1,19 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from "@nestjs/common";
 
-import { AuthService } from './auth.service';
+import { AuthService } from "./auth.service";
+import { CredentialsDto } from "../../prisma/zod";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('signup')
-  signup() {
+  @Post("signup")
+  signup(@Body() credentials: CredentialsDto) {
+    console.log(credentials);
     return this.authService.signup();
   }
 
-  @Post('signin')
+  @Post("signin")
   signin() {
     return this.authService.signin();
   }
