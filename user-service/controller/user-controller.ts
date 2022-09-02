@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
+import { hashPassword, verifyPassword } from "../utils/salt_password";
+
 const prisma = new PrismaClient();
 
 enum AuthType {
@@ -12,7 +14,7 @@ export async function createUser(req: Request, res: Response) {
   const user = await prisma.user.create({
     data: {
       email: email,
-      password: password,
+      password: await hashPassword(password),
       displayName: displayName,
       authType: AuthType.CUSTOM,
     },
@@ -54,5 +56,21 @@ export async function deleteUser(req: Request, res: Response) {
       userId: numberUserId,
     },
   });
+  res.json(user);
+}
+
+export async function loginUser(req: Request, res: Response) {
+  const { email, password } = req.body;
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  const isPassword = await verifyPassword(password, user?.password);
+
+  //If is password ....
+  //else ...
+
+  console.log(isPassword);
   res.json(user);
 }

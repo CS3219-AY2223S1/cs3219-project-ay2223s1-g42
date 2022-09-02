@@ -14,7 +14,7 @@ app.get("/:userId", UserController.findUser);
 app.post("/", UserController.createUser);
 app.put("/", UserController.updateUser);
 app.delete("/", UserController.deleteUser);
-
+app.post("/login", UserController.loginUser);
 /*
 app.use("/api/user", router).all("*", (_, res: any) => {
   res.setHeader("content-type", "application/json");
