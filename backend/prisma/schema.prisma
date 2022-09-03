@@ -11,7 +11,7 @@ generator zod {
 
   relationModel            = true // (default) Create and export both plain and related models.
   // relationModel         = "default" // Do not export model without relations.
-  // relationModel         = false // Do not generate related model
+  // relationModel            = false // Do not generate related model
 
   generateDto              = true // (default) Generate DTOs for NestJS
 
@@ -20,10 +20,10 @@ generator zod {
 
   modelSuffix              = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
 
-  dtoCase                = "PascalCase" // (default) Output DTOs using pascal case (ex. UserDto, PostDto)
+  dtoCase                  = "PascalCase" // (default) Output DTOs using pascal case (ex. UserDto, PostDto)
   // dtoCase             = "camelCase" // Output DTOs using camel case (ex. userDto, postDto)
 
-  dtoSuffix              = "Dto" // (default) Suffix to apply to your prisma models when naming DTOs
+  dtoSuffix                = "Dto" // (default) Suffix to apply to your prisma models when naming DTOs
 
   // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
   useDecimalJs             = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
@@ -45,7 +45,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  username String
+  /// @z.string().min(4).max(20)
+  username String @unique
+  /// @z.string().email({ message: "Invalid email address" })
   email String @unique
   hash String
+
+  @@map("users")
 }

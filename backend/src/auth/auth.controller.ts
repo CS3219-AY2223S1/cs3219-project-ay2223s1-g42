@@ -1,7 +1,7 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
-import { CredentialsDto } from "../../prisma/zod";
+import { CredentialsDto } from "../zod";
 
 @Controller("auth")
 export class AuthController {
@@ -9,12 +9,12 @@ export class AuthController {
 
   @Post("signup")
   signup(@Body() credentials: CredentialsDto) {
-    console.log(credentials);
-    return this.authService.signup();
+    return this.authService.signup(credentials);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post("signin")
-  signin() {
-    return this.authService.signin();
+  signin(@Body() credentials: CredentialsDto) {
+    return this.authService.signin(credentials);
   }
 }
