@@ -10,7 +10,7 @@ import {
 import { User } from "@prisma/client";
 
 import { UserInfoDto } from "../zod/userInfo";
-import { GetUser, PublicRoute } from "../auth/decorator";
+import { GetUser, PublicRoute } from "../decorator";
 import { UserService } from "./user.service";
 
 @Controller("users")

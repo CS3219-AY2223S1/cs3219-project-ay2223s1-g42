@@ -6,7 +6,7 @@ import * as argon2 from "argon2";
 
 import { AUTH_ERROR } from "./constants";
 import { UserService } from "../user/user.service";
-import { SigninCredentialsDto, SignupCredentialsDto } from "src/zod";
+import { SigninCredentialsDto, SignupCredentialsDto } from "../zod";
 
 export type JwtPayload = {
   sub: number;
