@@ -25,8 +25,9 @@ export class AccessJwtStrategy extends PassportStrategy(Strategy, "jwt") {
   }
 
   async validate(payload: JwtPayload) {
-    const { sub } = payload;
-    const [err, user] = await this.users.findById(sub);
+    const [err, user] = await this.users.find({
+      id: payload.sub,
+    });
     if (err) {
       throw err;
     }
