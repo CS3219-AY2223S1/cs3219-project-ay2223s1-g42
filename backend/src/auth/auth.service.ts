@@ -2,12 +2,11 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { User } from "@prisma/client";
 import * as argon2 from "argon2";
 
-import { CredentialsDto } from "../zod";
 import { AUTH_ERROR } from "./constants";
 import { UserService } from "../user/user.service";
+import { SigninCredentialsDto, SignupCredentialsDto } from "src/zod";
 
 export type JwtPayload = {
   sub: number;
@@ -32,7 +31,7 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the new user
    */
-  async signup(credentials: CredentialsDto): Promise<Tokens> {
+  async signup(credentials: SignupCredentialsDto): Promise<Tokens> {
     const { email, username, password } = credentials;
 
     // save new user in db
@@ -61,8 +60,8 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the authenticated user
    */
-  async signin(credentials: CredentialsDto): Promise<Tokens> {
-    const { email, username, password } = credentials;
+  async signin(credentials: SigninCredentialsDto): Promise<Tokens> {
+    const { email, password } = credentials;
 
     // find user via username + email provided
     const [err, user] = await this.users.find({ email, includeHash: true });

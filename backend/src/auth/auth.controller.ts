@@ -11,7 +11,7 @@ import { User } from "@prisma/client";
 import { Response } from "express";
 
 import { AuthService, Tokens } from "./auth.service";
-import { CredentialsDto } from "../zod";
+import { SigninCredentialsDto, SignupCredentialsDto } from "../zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "./decorator";
 import { COOKIE_OPTIONS } from "./constants";
@@ -24,7 +24,7 @@ export class AuthController {
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
   async signup(
-    @Body() credentials: CredentialsDto,
+    @Body() credentials: SignupCredentialsDto,
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.signup(credentials);
@@ -36,7 +36,7 @@ export class AuthController {
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
   async signin(
-    @Body() credentials: CredentialsDto,
+    @Body() credentials: SigninCredentialsDto,
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.signin(credentials);
