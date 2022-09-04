@@ -9,8 +9,8 @@ import {
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import { UserInfoDto } from "../zod/userInfo";
-import { GetUser, PublicRoute } from "../decorator";
+import { UserInfoDto } from "../utils/zod";
+import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 
 @Controller("users")

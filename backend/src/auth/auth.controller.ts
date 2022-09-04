@@ -11,9 +11,9 @@ import { User } from "@prisma/client";
 import { Response } from "express";
 
 import { AuthService, Tokens } from "./auth.service";
-import { SigninCredentialsDto, SignupCredentialsDto } from "../zod";
+import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
-import { GetUser, PublicRoute } from "../decorator";
+import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "./constants";
 
 @Controller("auth")
