@@ -6,7 +6,7 @@ import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
+  // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
   app.use(cookieParser());
   app.enableCors({ origin: true, credentials: true });
   const port = app.get(ConfigService).get("PORT");

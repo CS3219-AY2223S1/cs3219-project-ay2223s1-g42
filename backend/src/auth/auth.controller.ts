@@ -7,13 +7,14 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { User } from "@prisma/client";
+import { Response } from "express";
 
-import { AuthService } from "./auth.service";
+import { AuthService, Tokens } from "./auth.service";
 import { CredentialsDto } from "../zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "./decorator";
-import { User } from "@prisma/client";
-import { Response } from "express";
+import { COOKIE_OPTIONS } from "./constants";
 
 @Controller("auth")
 export class AuthController {
@@ -27,8 +28,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.signup(credentials);
-    res.cookie("refresh_token", tokens.refresh_token);
-    res.cookie("access_token", tokens.access_token);
+    this.setCookies(res, tokens);
     return { message: "success" };
   }
 
@@ -40,8 +40,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.signin(credentials);
-    res.cookie("refresh_token", tokens.refresh_token);
-    res.cookie("access_token", tokens.access_token);
+    this.setCookies(res, tokens);
     return { message: "success" };
   }
 
@@ -52,8 +51,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     await this.authService.signout(user.id);
-    res.clearCookie("refresh_token");
-    res.clearCookie("access_token");
+    this.clearCookies(res);
     return { message: "success" };
   }
 
@@ -66,8 +64,17 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.refreshTokens(user.id, user.email);
-    res.cookie("refresh_token", tokens.refresh_token);
-    res.cookie("access_token", tokens.access_token);
+    this.setCookies(res, tokens);
     return { message: "success" };
+  }
+
+  setCookies(res: Response, tokens: Tokens) {
+    res.cookie("refresh_token", tokens.refresh_token, COOKIE_OPTIONS);
+    res.cookie("access_token", tokens.access_token, COOKIE_OPTIONS);
+  }
+
+  clearCookies(res: Response) {
+    res.clearCookie("refresh_token", COOKIE_OPTIONS);
+    res.clearCookie("access_token", COOKIE_OPTIONS);
   }
 }
