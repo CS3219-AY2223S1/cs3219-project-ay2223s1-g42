@@ -1,21 +1,18 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   Put,
-  UseGuards,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import { UserInfoDto } from "../zod";
-import { GetUser } from "../auth/decorator/get-user.decorator";
-import { JwtGuard } from "../auth/guard";
+import { UserInfoDto } from "../zod/userInfo";
+import { GetUser, PublicRoute } from "../auth/decorator";
 import { UserService } from "./user.service";
 
-@UseGuards(JwtGuard)
 @Controller("users")
 export class UserController {
   constructor(private userService: UserService) {}
@@ -35,14 +32,13 @@ export class UserController {
    * @param id id of user to return information for
    * @returns user object of the user with the given id
    */
+  @PublicRoute()
   @Get(":id")
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
-
     if (err) {
       throw err;
     }
-
     return user;
   }
 
@@ -60,20 +56,17 @@ export class UserController {
     @Body() userInfo: UserInfoDto
   ) {
     if (parseInt(id) === user.id) {
-      const [err, newUser] = await this.userService.update(
-        user.id,
-        userInfo.email,
-        userInfo.username
-      );
-
+      const { email, username } = userInfo;
+      const [err, newUser] = await this.userService.update(user.id, {
+        email,
+        username,
+      });
       if (err) {
         throw err;
       }
-
       return newUser;
     }
-
-    throw new ForbiddenException("Failed to update user.");
+    throw new BadRequestException("Failed to update user.");
   }
 
   /**
@@ -86,14 +79,11 @@ export class UserController {
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
-
       if (err) {
         throw err;
       }
-
       return deletedUser;
     }
-
-    throw new ForbiddenException("Failed to delete user.");
+    throw new BadRequestException("Failed to delete user.");
   }
 }

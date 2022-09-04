@@ -8,6 +8,8 @@ const EnvSchema = z.object({
       "postgresql://postgres:postgres@localhost:5434/nest?schema=public"
     ),
   JWT_SECRET: z.string(),
+  JWT_REFRESH_SECRET: z.string(),
+  COOKIE_SECRET: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {

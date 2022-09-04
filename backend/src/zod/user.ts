@@ -8,9 +8,7 @@ export const UserModel = z.object({
   username: z.string().min(4).max(20),
   email: z.string().email({ message: "Invalid email address" }),
   hash: z.string(),
+  hashRt: z.string().nullish(),
 });
 
-export const UserInfo = UserModel.pick({ username: true, email: true });
-
 export class UserDto extends createZodDto(UserModel) {}
-export class UserInfoDto extends createZodDto(UserInfo) {}

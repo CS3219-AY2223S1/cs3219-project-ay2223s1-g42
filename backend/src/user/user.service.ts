@@ -3,7 +3,7 @@ import * as radash from "radash";
 import * as argon2 from "argon2";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 
 const USER_FIELDS: Prisma.UserSelect = {
   email: true,
@@ -14,7 +14,12 @@ const USER_FIELDS: Prisma.UserSelect = {
 const USER_HASH_FIELDS: Prisma.UserSelect = {
   ...USER_FIELDS,
   hash: true,
+  hashRt: true,
 };
+
+type UpdateableUserFields = Partial<
+  Pick<User, "username" | "email" | "hashRt">
+>;
 
 @Injectable({})
 export class UserService {
@@ -82,20 +87,29 @@ export class UserService {
   }
 
   /**
-   * Updates the username/email of an existing user in the database
+   * Updates the username/email/refresh token hash of an existing user in the database
    * @param id id of user to be updated
-   * @param newEmail new email of user
-   * @param newUsername new username of user
+   * @param fields updateable fields for user object (username, email, refresh token hash)
    * @returns [`Err`, `User`]
    */
-  async update(id: number, newEmail?: string, newUsername?: string) {
+  async update(id: number, fields: UpdateableUserFields) {
     const res = await radash.try(this.prisma.user.update)({
       where: { id },
-      data: {
-        username: newUsername,
-        email: newEmail,
-      },
+      data: fields,
       select: USER_FIELDS,
+    });
+    return res;
+  }
+
+  /**
+   * Clears the refresh token hash of a given user
+   * @param id id of user to clear refresh token
+   * @returns [`Err`, `User`]
+   */
+  async clearRefreshToken(id: number) {
+    const res = await radash.try(this.prisma.user.updateMany)({
+      where: { id, hashRt: { not: null } },
+      data: { hashRt: null },
     });
     return res;
   }
@@ -128,6 +142,7 @@ export class UserService {
   async delete(id: number) {
     const res = await radash.try(this.prisma.user.delete)({
       where: { id },
+      select: USER_FIELDS,
     });
     return res;
   }

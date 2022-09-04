@@ -2,10 +2,10 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { User } from "@prisma/client";
 import * as argon2 from "argon2";
 
 import { CredentialsDto } from "../zod";
-import { PrismaService } from "../prisma/prisma.service";
 import { AUTH_ERROR } from "./constants";
 import { UserService } from "../user/user.service";
 
@@ -14,14 +14,14 @@ export type JwtPayload = {
   email: string;
 };
 
-export type AccessToken = {
+export type Tokens = {
   access_token: string;
+  refresh_token: string;
 };
 
 @Injectable({})
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
     private users: UserService
@@ -32,7 +32,7 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the new user
    */
-  async signup(credentials: CredentialsDto): Promise<AccessToken> {
+  async signup(credentials: CredentialsDto): Promise<Tokens> {
     const { email, username, password } = credentials;
 
     // save new user in db
@@ -49,8 +49,11 @@ export class AuthService {
       throw err;
     }
 
-    const token = await this.signToken(user.id, user.email);
-    return { access_token: token };
+    // generate tokens for new user
+    const tokens = await this.signTokens(user.id, user.email);
+    // update refresh token hash for new user
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 
   /**
@@ -58,7 +61,7 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the authenticated user
    */
-  async signin(credentials: CredentialsDto): Promise<AccessToken> {
+  async signin(credentials: CredentialsDto): Promise<Tokens> {
     const { email, username, password } = credentials;
 
     // find user via username + email provided
@@ -74,25 +77,65 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
     }
 
-    const token = await this.signToken(user.id, user.email);
-    return { access_token: token };
+    // if password correct, generate tokens
+    const tokens = await this.signTokens(user.id, user.email);
+    // update refresh token hash for logged in user
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
+  }
+
+  async signout(id: number) {
+    const [err, _] = await this.users.clearRefreshToken(id);
+    if (err) {
+      throw err;
+    }
+    return;
+  }
+
+  async refreshTokens(id: number, email: string): Promise<Tokens> {
+    // if password correct, generate tokens
+    const tokens = await this.signTokens(id, email);
+    // update refresh token hash for logged in user
+    await this.updateRefreshTokenHash(id, tokens.refresh_token);
+    return tokens;
   }
 
   /**
-   * Generates a JWT token for a user given the ID and email
-   * @param userId id of user
+   * Generates a JWT access + refresh tokens for a user given the ID and email
+   * @param id id of user
    * @param email email of user
-   * @returns a signed JWT token
+   * @returns signed JWT access + refresh tokens
    */
-  async signToken(userId: number, email: string): Promise<string> {
-    const secret = this.config.getOrThrow("JWT_SECRET");
+  async signTokens(id: number, email: string): Promise<Tokens> {
+    // get secrets
+    const jwtSecret = this.config.getOrThrow("JWT_SECRET");
+    const refreshSecret = this.config.getOrThrow("JWT_REFRESH_SECRET");
+    // create payload
     const payload: JwtPayload = {
-      sub: userId,
+      sub: id,
       email,
     };
-    return this.jwt.signAsync(payload, {
-      expiresIn: "15m",
-      secret,
-    });
+    // generate tokens
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwt.signAsync(payload, { expiresIn: "15m", secret: jwtSecret }),
+      this.jwt.signAsync(payload, {
+        expiresIn: "7d",
+        secret: refreshSecret,
+      }),
+    ]);
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
+  async updateRefreshTokenHash(id: number, refreshToken: string) {
+    const hashRt = await argon2.hash(refreshToken);
+    const [err, _] = await this.users.update(id, { hashRt });
+    // throw if err updating refresh token hash
+    if (err) {
+      throw err;
+    }
+    return;
   }
 }
