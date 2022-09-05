@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import { UserInfoDto } from "../utils/zod";
+import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 
@@ -53,7 +53,7 @@ export class UserController {
   async editUser(
     @GetUser() user: User,
     @Param("id") id: string,
-    @Body() userInfo: UserInfoDto
+    @Body() userInfo: EditableCredentialsDto
   ) {
     if (parseInt(id) === user.id) {
       const { email, username } = userInfo;
