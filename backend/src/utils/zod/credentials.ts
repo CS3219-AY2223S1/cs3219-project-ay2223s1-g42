@@ -7,7 +7,9 @@ export const SignupCredentials = UserModel.pick({
   email: true,
   username: true,
 }).extend({
-  password: z.string(),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
 });
 
 export const SigninCredentials = SignupCredentials.pick({
