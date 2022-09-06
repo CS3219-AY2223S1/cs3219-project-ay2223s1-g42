@@ -7,6 +7,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { QuestionModule } from "./question/question.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 
@@ -22,6 +23,7 @@ import { JwtAccessGuard } from "./auth/guard";
     UserModule,
     QuestionModule,
     AuthModule,
+    MatchModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
