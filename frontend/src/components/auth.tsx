@@ -104,7 +104,7 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io("ws://localhost:5000", { withCredentials: true });
     newSocket.on("connect", () => {
       console.log("connected to websocket server");
       setIsConnected(true);
