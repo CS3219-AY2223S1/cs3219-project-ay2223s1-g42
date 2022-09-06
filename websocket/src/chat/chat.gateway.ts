@@ -1,28 +1,58 @@
 import { UseGuards } from "@nestjs/common";
 import {
   MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { AuthUser as SupabaseAuthUser } from "@supabase/supabase-js";
 
-import { SupabaseGuard } from "src/auth/guard/supabase.guard";
-import { CurrentUser } from "src/utils/decorators/get-current-user.decorator";
+import { SupabaseGuard } from "../auth/guard/supabase.guard";
+import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
-@WebSocketGateway()
-export class ChatGateway {
+@WebSocketGateway({
+  cors: {
+    origin: "*",
+  },
+})
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  @UseGuards(SupabaseGuard)
-  @SubscribeMessage("send_message")
-  listenForMessages(
-    @CurrentUser() user: SupabaseAuthUser,
-    @MessageBody() data: string
-  ) {
-    console.log({ user });
-    this.server.sockets.emit("receive_message", data);
+  users: number = 0;
+
+  async handleConnection() {
+    // A client has connected
+    this.users++;
+    // Notify connected clients of current users
+    this.server.emit("users", this.users);
   }
+  async handleDisconnect() {
+    // A client has disconnected
+    this.users--;
+    // Notify connected clients of current users
+    this.server.emit("users", this.users);
+  }
+
+  @SubscribeMessage("chat")
+  async onChat(client: Socket, message) {
+    const msg = message.message;
+    // return { message: `echoing ${msg}` };
+    console.log(client.handshake);
+    console.log(client.handshake.headers.cookie);
+    client.broadcast.emit("chat", { message: `echoing ${msg}` });
+  }
+
+  //   @UseGuards(SupabaseGuard)
+  //   @SubscribeMessage("chat")
+  //   listenForMessages(
+  //     @CurrentUser() user: SupabaseAuthUser,
+  //     @MessageBody() data: string
+  //   ) {
+  //     console.log({ user });
+  //     this.server.sockets.emit("receive_message", data);
+  //   }
 }

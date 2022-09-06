@@ -19,6 +19,7 @@ export class SupabaseStrategy extends PassportStrategy(
   }
 
   async validate(payload: any): Promise<any> {
+    console.log({ payload });
     super.validate(payload);
   }
 
