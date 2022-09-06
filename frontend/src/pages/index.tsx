@@ -13,7 +13,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <div className="container" style={{ padding: "50px 0 100px 0" }}>
+        <div
+          className="container bg-red-500"
+          style={{ padding: "50px 0 100px 0" }}
+        >
           <Auth />
           {/* {!session ? (
             <Auth />
