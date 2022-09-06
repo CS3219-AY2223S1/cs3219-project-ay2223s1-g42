@@ -11,9 +11,9 @@ async function bootstrap() {
   // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
   const port = app.get(ConfigService).get("PORT");
   app.use(cookieParser());
-  app.use(helmet());
-  app.use(csurf());
-  app.enableCors({ origin: true, credentials: true });
+  // app.use(helmet());
+  // app.use(csurf());
+  // app.enableCors({ origin: true, credentials: true });
   await app.listen(port);
   const url = await app.getUrl();
   console.log("listening on: ", url);

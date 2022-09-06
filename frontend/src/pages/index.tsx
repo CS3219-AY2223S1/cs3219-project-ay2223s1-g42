@@ -1,7 +1,37 @@
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import Head from "next/head";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:5000");
 
 const Home: NextPage = () => {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("connected to websocket server");
+      setIsConnected(true);
+    });
+
+    socket.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    socket.on("chat", (data) => {
+      console.log({ data });
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("chat");
+    };
+  }, []);
+
+  const sendChat = () => {
+    socket.emit("chat", { message: "hello to chat from client" });
+  };
+
   return (
     <>
       <Head>
@@ -13,7 +43,6 @@ const Home: NextPage = () => {
         <h1>
           Create <span>T3</span> App
         </h1>
-
         <div>
           <h3>This stack uses:</h3>
           <ul>
@@ -33,6 +62,8 @@ const Home: NextPage = () => {
             </li>
           </ul>
         </div>
+        {/* Connected status: {isConnected ? "Connected" : "Disconnected"} */}
+        <button onClick={sendChat}>send message to socket server</button>
       </div>
     </>
   );

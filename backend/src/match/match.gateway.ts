@@ -9,9 +9,16 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
+import { JwtAccessGuard } from "../auth/guard";
+
 // import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
-@WebSocketGateway()
+@UseGuards(JwtAccessGuard)
+@WebSocketGateway({
+  cors: {
+    origin: "*",
+  },
+})
 export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -34,9 +41,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onChat(client: Socket, message) {
     const msg = message.message;
     // return { message: `echoing ${msg}` };
-    console.log(client.handshake);
-    console.log(client.handshake.headers.cookie);
-    client.broadcast.emit("chat", { message: `echoing ${msg}` });
+    console.log(client.handshake.headers);
+    client.broadcast.emit("chat", msg);
   }
 
   //   @UseGuards(SupabaseGuard)
