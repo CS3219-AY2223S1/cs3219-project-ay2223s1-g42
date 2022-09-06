@@ -1,37 +1,10 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import io from "socket.io-client";
-
-const socket = io("http://localhost:5000");
+import Auth from "../components/auth";
+import Account from "../components/account";
 
 const Home: NextPage = () => {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected to websocket server");
-      setIsConnected(true);
-    });
-
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
-    socket.on("chat", (data) => {
-      console.log({ data });
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("chat");
-    };
-  }, []);
-
-  const sendChat = () => {
-    socket.emit("chat", { message: "hello to chat from client" });
-  };
-
   return (
     <>
       <Head>
@@ -40,30 +13,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <h1>
-          Create <span>T3</span> App
-        </h1>
-        <div>
-          <h3>This stack uses:</h3>
-          <ul>
-            <li>
-              <a href="https://nextjs.org" target="_blank" rel="noreferrer">
-                Next.js
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://typescriptlang.org"
-                target="_blank"
-                rel="noreferrer"
-              >
-                TypeScript
-              </a>
-            </li>
-          </ul>
+        <div className="container" style={{ padding: "50px 0 100px 0" }}>
+          <Auth />
+          {/* {!session ? (
+            <Auth />
+          ) : (
+            <Account key={session.user.id} session={session} />
+          )} */}
         </div>
         {/* Connected status: {isConnected ? "Connected" : "Disconnected"} */}
-        <button onClick={sendChat}>send message to socket server</button>
       </div>
     </>
   );
