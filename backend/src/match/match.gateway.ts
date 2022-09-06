@@ -10,11 +10,11 @@ import {
 import { Server, Socket } from "socket.io";
 
 import { CORS_OPTIONS } from "../config/constants";
-import { JwtAccessGuard } from "../auth/guard";
+import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 
 // import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
-// @UseGuards(JwtAccessGuard)
+@UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -39,8 +39,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("chat")
   async onChat(client: Socket, message) {
     const msg = message.message;
-    // return { message: `echoing ${msg}` };
-    console.log(client.handshake);
+    // console.log(client.handshake);
     client.broadcast.emit("chat", msg);
     client.emit("chat", msg);
   }
