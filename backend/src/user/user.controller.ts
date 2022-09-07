@@ -5,7 +5,7 @@ import {
   Delete,
   Get,
   Param,
-  Put,
+  Patch,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
@@ -49,7 +49,7 @@ export class UserController {
    * @param userInfo info of user to be edited
    * @returns user object of the edited user
    */
-  @Put(":id")
+  @Patch(":id")
   async editUser(
     @GetUser() user: User,
     @Param("id") id: string,
