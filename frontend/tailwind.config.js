@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+/** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     screens: {
       xs: "512px",

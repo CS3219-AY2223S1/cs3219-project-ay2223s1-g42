@@ -1,5 +1,8 @@
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import Head from "next/head";
+import Auth from "../components/auth";
+import Account from "../components/account";
 
 const Home: NextPage = () => {
   return (
@@ -10,29 +13,18 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <h1>
-          Create <span>T3</span> App
-        </h1>
-
-        <div>
-          <h3>This stack uses:</h3>
-          <ul>
-            <li>
-              <a href="https://nextjs.org" target="_blank" rel="noreferrer">
-                Next.js
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://typescriptlang.org"
-                target="_blank"
-                rel="noreferrer"
-              >
-                TypeScript
-              </a>
-            </li>
-          </ul>
+        <div
+          className="container bg-red-500"
+          style={{ padding: "50px 0 100px 0" }}
+        >
+          <Auth />
+          {/* {!session ? (
+            <Auth />
+          ) : (
+            <Account key={session.user.id} session={session} />
+          )} */}
         </div>
+        {/* Connected status: {isConnected ? "Connected" : "Disconnected"} */}
       </div>
     </>
   );
