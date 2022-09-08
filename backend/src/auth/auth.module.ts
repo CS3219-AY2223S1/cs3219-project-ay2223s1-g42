@@ -5,10 +5,11 @@ import { UserModule } from "../user/user.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { AccessJwtStrategy, RefreshJwtStrategy } from "./strategy";
+import { RedisCacheModule } from "../cache/redisCache.module";
 import { WsAccessJwtStrategy } from "./strategy/ws.access.strategy";
 
 @Module({
-  imports: [JwtModule.register({}), UserModule],
+  imports: [JwtModule.register({}), RedisCacheModule, UserModule],
   controllers: [AuthController],
   providers: [
     AuthService,
