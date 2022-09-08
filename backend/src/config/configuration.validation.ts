@@ -10,6 +10,12 @@ const EnvSchema = z.object({
   JWT_SECRET: z.string(),
   JWT_REFRESH_SECRET: z.string(),
   COOKIE_SECRET: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.number().default(6379),
+  CACHE_TTL: z.number().default(7200),
+  SMTP_EMAIL: z.string().email(),
+  SMTP_EMAIL_PASSWORD: z.string(),
+  SMTP_NAME: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {
