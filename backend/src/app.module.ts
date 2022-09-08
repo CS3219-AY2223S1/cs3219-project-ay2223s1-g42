@@ -10,6 +10,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
+import { RedisCacheModule } from "./cache/redisCache.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { JwtAccessGuard } from "./auth/guard";
     QuestionModule,
     AuthModule,
     MatchModule,
+    RedisCacheModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

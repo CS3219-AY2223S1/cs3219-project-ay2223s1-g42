@@ -23,12 +23,8 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
-  async signup(
-    @Body() credentials: SignupCredentialsDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const tokens = await this.authService.signup(credentials);
-    this.setCookies(res, tokens);
+  async signup(@Body() credentials: SignupCredentialsDto) {
+    await this.authService.signup(credentials);
     return { message: "success" };
   }
 

@@ -1,12 +1,13 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import * as argon2 from "argon2";
+import { v4 } from "uuid";
 
 import { AUTH_ERROR } from "./constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
+import { RedisCacheService } from "../cache/redisCache.service";
 
 export type JwtPayload = {
   sub: number;
@@ -18,12 +19,21 @@ export type Tokens = {
   refresh_token: string;
 };
 
+type CacheableUserFields = {
+  email: string;
+  username: string;
+  hash: string;
+};
+
+const VERIFY_EMAIL_PREFIX = "verify-email:";
+
 @Injectable({})
 export class AuthService {
   constructor(
     private jwt: JwtService,
     private config: ConfigService,
-    private users: UserService
+    private users: UserService,
+    private cache: RedisCacheService
   ) {}
 
   /**
@@ -31,28 +41,42 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the new user
    */
-  async signup(credentials: SignupCredentialsDto): Promise<Tokens> {
+  async signup(credentials: SignupCredentialsDto) {
     const { email, username, password } = credentials;
 
-    // save new user in db
-    // const [err, user] = await this.users.find({ email, username });
-    const [err, user] = await this.users.create(email, username, password);
+    // check if user's email and username in db
+    const [, user] = await this.users.findFirstByEitherUniqueFields(
+      email,
+      username
+    );
 
-    // if user already exists, throw exception
-    if (err) {
-      if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === "P2002") {
-          throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_CREDENTIALS);
-        }
+    if (user) {
+      if (user.email == email) {
+        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
+      } else {
+        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
       }
-      throw err;
     }
 
-    // generate tokens for new user
-    const tokens = await this.signTokens(user.id, user.email);
-    // update refresh token hash for new user
-    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
-    return tokens;
+    // check if username in cache, throw username in use
+    if (this.cache.get(username)) {
+      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
+    }
+
+    if (this.cache.get(email)) {
+      throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
+    }
+
+    // user can be created
+    const emailVerificationToken = VERIFY_EMAIL_PREFIX + v4();
+    const hash = await argon2.hash(password);
+    await this.cache.set<CacheableUserFields>(emailVerificationToken, {
+      hash,
+      email,
+      username,
+    });
+
+    // send email
   }
 
   /**
