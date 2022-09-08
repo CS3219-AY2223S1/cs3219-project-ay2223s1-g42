@@ -19,11 +19,13 @@ const EnvSchema = z.object({
 });
 
 export function validate(config: Record<string, unknown>) {
-  const { PORT, ...rest } = config;
+  const { PORT, REDIS_PORT, CACHE_TTL, ...rest } = config;
   // convert PORT env variable to number before
   // parsing thru zod schema
   const parsedEnv = EnvSchema.parse({
     PORT: parseInt(PORT as string),
+    REDIS_PORT: parseInt(REDIS_PORT as string),
+    CACHE_TTL: parseInt(CACHE_TTL as string),
     ...rest,
   });
   return parsedEnv;
