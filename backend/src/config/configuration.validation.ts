@@ -16,6 +16,7 @@ const EnvSchema = z.object({
   SMTP_EMAIL: z.string().email(),
   SMTP_PASSWORD: z.string(),
   SMTP_NAME: z.string(),
+  FRONTEND_URL: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {
