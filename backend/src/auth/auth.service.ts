@@ -27,9 +27,7 @@ type CacheableUserFields = {
   hash: string;
 };
 
-const VERIFY_EMAIL_PREFIX = "verify-email:";
-const EMAIL_PREFIX = "email:";
-const USERNAME_PREFIX = "username:";
+const EMAIL_PREFIX = "cachedEmail:";
 
 @Injectable({})
 export class AuthService {
@@ -62,21 +60,13 @@ export class AuthService {
       }
     }
 
-    // check if username in cache, throw username in use
-    const isUsernameInCache = !!(await this.cache.get(
-      USERNAME_PREFIX + username
-    ));
-    if (isUsernameInCache) {
-      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
-    }
-
     const isEmailInCache = !!(await this.cache.get(EMAIL_PREFIX + email));
     if (isEmailInCache) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
     // user can be created
-    const emailVerificationToken = VERIFY_EMAIL_PREFIX + v4();
+    const emailVerificationToken = v4();
     const hash = await argon2.hash(password);
 
     // store user information in cache
@@ -86,10 +76,6 @@ export class AuthService {
       username,
     });
     await this.cache.set<string>(EMAIL_PREFIX + email, emailVerificationToken);
-    await this.cache.set<string>(
-      USERNAME_PREFIX + username,
-      emailVerificationToken
-    );
 
     // send email
     await this.mailerService
@@ -119,6 +105,12 @@ export class AuthService {
    */
   async signin(credentials: SigninCredentialsDto): Promise<Tokens> {
     const { email, password } = credentials;
+
+    // check if email is unverified
+    const isEmailInCache = !!(await this.cache.get(EMAIL_PREFIX + email));
+    if (isEmailInCache) {
+      throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
+    }
 
     // find user via username + email provided
     const [err, user] = await this.users.find({ email, includeHash: true });
@@ -162,7 +154,6 @@ export class AuthService {
 
     // clear new user in cache
     await this.cache.del(token);
-    await this.cache.del(username);
     await this.cache.del(email);
 
     // generate tokens for new user
