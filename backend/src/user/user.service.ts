@@ -1,9 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
+import { MailerService } from "@nestjs-modules/mailer";
 import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
+import { randomBytes } from "crypto";
+import { v4 } from "uuid";
 
 import { PrismaService } from "../prisma/prisma.service";
+import { AUTH_ERROR } from "../auth/constants";
+import { RedisCacheService } from "../cache/redisCache.service";
+import { hashPassword, verifyPassword } from "../../../user-service/utils/salt_password";
 
 const USER_FIELDS: Prisma.UserSelect = {
   email: true,
@@ -21,9 +27,20 @@ type UpdateableUserFields = Partial<
   Pick<User, "username" | "email" | "hashRt">
 >;
 
+type CacheableResetEmail = {
+  email: string;
+};
+
+const RESET_PASSWORD_PREFIX = "reset-password:";
+const RESET_PASSWORD_EMAIL_PREFIX = "reset-password-email:";
+
 @Injectable({})
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService,
+    private mailerService: MailerService
+  ) {}
 
   async find({
     id,
@@ -116,6 +133,36 @@ export class UserService {
   }
 
   /**
+   * Updates the username/email/refresh token hash of an existing user in the database
+   * @param id id of user to be updated
+   * @param fields updateable fields for user object (username, email, refresh token hash)
+   * @returns [`Err`, `User`]
+   */
+  async updateResetPassword(id: number, temporaryPassword: string) {
+    const res = await radash.try(this.prisma.user.update)({
+      where: { id },
+      data: { hash: await hashPassword(temporaryPassword) },
+      select: USER_FIELDS,
+    });
+    return res;
+  }
+
+  /**
+   * Updates the username/email/refresh token hash of an existing user in the database
+   * @param id id of user to be updated
+   * @param fields updateable fields for user object (username, email, refresh token hash)
+   * @returns [`Err`, `User`]
+   */
+  async updatePasswordWithHash(id: number, newPassword: string) {
+    const res = await radash.try(this.prisma.user.update)({
+      where: { id },
+      data: { hash: await hashPassword(newPassword) },
+      select: USER_FIELDS,
+    });
+    return res;
+  }
+
+  /**
    * Clears the refresh token hash of a given user
    * @param id id of user to clear refresh token
    * @returns [`Err`, `User`]
@@ -170,5 +217,90 @@ export class UserService {
       select: USER_FIELDS,
     });
     return res;
+  }
+
+  /**
+   * Sends the user a reset password email and returns the JWT token
+   * @param email the email account that requested for a password reset
+   */
+
+  async resetPassword(email: string) {
+    // find user via email provided
+    const [err, user] = await this.findByEmail(email);
+    const username = user.username;
+
+    // if user doesn't exist, do nothing. Just bring user to email sent page
+    if (err || !user) {
+      return;
+    }
+
+    // check if email in cache, print out that the reset mail has already been sent
+    const isEmailInCache = !!(await this.cache.get(
+      RESET_PASSWORD_EMAIL_PREFIX + email
+    ));
+    if (isEmailInCache) {
+      throw new ForbiddenException(AUTH_ERROR.RESET_EMAIL_ALREADY_SENT);
+    }
+
+    //Reset password
+    const resetPasswordVerificationToken = RESET_PASSWORD_PREFIX + v4();
+    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
+      email,
+    });
+
+    //Generate a random temporary password for user of length 16
+    const temporaryPassword = randomBytes(16).toString();
+
+    const [error, userToReset] = await this.updateResetPassword(
+      user.id,
+      temporaryPassword
+    );
+
+    //Send email
+    await this.mailerService
+      .sendMail({
+        to: email,
+        subject: "Email Verification for resetting of password ✔",
+        template: "resetPasswordVerification", // The `.pug` or `.hbs` extension is appended automatically.
+        context: {
+          // Data to be sent to template engine.
+          code: resetPasswordVerificationToken,
+          username: username,
+          newPassword: temporaryPassword,
+        },
+      })
+      .then((success) => {
+        console.log(success);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async verifyResetEmail(token: string, confirmationPassword: string, newPassword: string) {
+    const cachedUser = await this.cache.get<CacheableResetEmail>(token);
+    if (!cachedUser) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
+    }
+
+    const { email } = cachedUser;
+    const [err, user] = await this.findByEmail(email);
+    const userId = user.id;
+    const currentPassword = user.hash;
+
+    //Check whether password entered matches the password in the email
+    const isPasswordCorrect = await verifyPassword(currentPassword, confirmationPassword);
+
+    if (!isPasswordCorrect) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+    
+    const [error, userToReset] = await this.updatePasswordWithHash(
+      userId,
+      newPassword
+    );
+
+    // clear the email that requested for a reset in cache
+    await this.cache.del(email);
   }
 }

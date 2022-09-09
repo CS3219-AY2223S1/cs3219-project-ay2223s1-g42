@@ -4,6 +4,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Post,
   Param,
   Patch,
 } from "@nestjs/common";
@@ -85,5 +88,38 @@ export class UserController {
       return deletedUser;
     }
     throw new BadRequestException("Failed to delete user.");
+  }
+
+  /**
+   * Directs the user to the forget password site
+   * @param user user object obtained from email included in JWT token
+   */
+  @PublicRoute()
+  @Post("/forgetPassword")
+  @HttpCode(HttpStatus.CREATED)
+  async forgetPassword(@Body() email: string ) {
+    await this.userService.resetPassword(email);
+    return { message: "success" };
+  }
+
+  /**
+   * For the user to reset 
+   * @param user user object obtained from email included in JWT token
+   */
+
+  @PublicRoute()
+  @Post("/verify/:token")
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Param("token") token: string,
+    @Body() currPassword: string,
+    @Body() newPassword: string
+  ) {
+    const tokens = await this.userService.verifyResetEmail(
+      token, 
+      currPassword, 
+      newPassword
+    );
+    return { message: "success" };
   }
 }
