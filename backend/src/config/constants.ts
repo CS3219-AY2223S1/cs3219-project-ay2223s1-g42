@@ -10,7 +10,7 @@ export const CSRF_OPTIONS = {
 
 export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: true,
+  secure: false,
   sameSite: "lax",
 };
 
