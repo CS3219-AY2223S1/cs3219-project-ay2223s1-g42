@@ -13,7 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "dotenv -e .env -- node dist/main",
-    "db:dev:rm": "docker compose rm dev-db -s -f -v",
+    "db:dev:rm": "docker compose rm dev-db dev-redis -s -f -v",
     "db:dev:start": "docker compose up dev-db dev-redis -d && sleep 1 && yarn prisma:dev:deploy",
     "db:dev:restart": "yarn db:dev:rm && yarn db:dev:start",
     "prisma:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
