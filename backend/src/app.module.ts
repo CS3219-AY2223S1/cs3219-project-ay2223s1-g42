@@ -27,8 +27,8 @@ import { generateEmailFromField } from "./utils/mail";
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transport: {
-          host: "smtp-relay.sendinblue.com",
-          port: 587,
+          host: configService.get("SMTP_HOST"),
+          port: configService.get("SMTP_PORT"),
           secure: false, // upgrade later with STARTTLS
           auth: {
             user: configService.get("SMTP_EMAIL"),
