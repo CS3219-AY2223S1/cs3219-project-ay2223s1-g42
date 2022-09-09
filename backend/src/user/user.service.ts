@@ -137,6 +137,17 @@ export class UserService {
    */
   async create(email: string, username: string, password: string) {
     const hash = await argon2.hash(password);
+    return this.createWithHash(email, username, hash);
+  }
+
+  /**
+   * Creates a new user in the database with hash
+   * @param email email of user
+   * @param username username of user
+   * @param hash hash of user
+   * @returns [`Err`, `User`]
+   */
+  async createWithHash(email: string, username: string, hash: string) {
     const res = await radash.try(this.prisma.user.create)({
       data: {
         email,

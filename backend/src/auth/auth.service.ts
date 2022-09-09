@@ -9,6 +9,7 @@ import { AUTH_ERROR } from "./constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export type JwtPayload = {
   sub: number;
@@ -27,6 +28,8 @@ type CacheableUserFields = {
 };
 
 const VERIFY_EMAIL_PREFIX = "verify-email:";
+const EMAIL_PREFIX = "email:";
+const USERNAME_PREFIX = "username:";
 
 @Injectable({})
 export class AuthService {
@@ -52,11 +55,7 @@ export class AuthService {
       username
     );
 
-    console.log("testing");
-
     if (user) {
-      console.log("testing");
-      console.log(user);
       if (user.email == email) {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
       } else {
@@ -65,12 +64,14 @@ export class AuthService {
     }
 
     // check if username in cache, throw username in use
-    const isUsernameInCache = !!(await this.cache.get(username));
+    const isUsernameInCache = !!(await this.cache.get(
+      USERNAME_PREFIX + username
+    ));
     if (isUsernameInCache) {
       throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
     }
 
-    if (await this.cache.get(email)) {
+    if (await this.cache.get(EMAIL_PREFIX + email)) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
@@ -82,6 +83,9 @@ export class AuthService {
       email,
       username,
     });
+
+    await this.cache.set<string>(EMAIL_PREFIX + email, emailVerificationToken);
+    await this.cache.set<string>(USERNAME_PREFIX + username, "");
 
     // send email
     await this.mailerService
@@ -128,6 +132,39 @@ export class AuthService {
     const tokens = await this.signTokens(user.id, user.email);
     // update refresh token hash for logged in user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
+  }
+
+  async verifyEmail(token: string) {
+    const cachedUser = await this.cache.get<CacheableUserFields>(token);
+    if (!cachedUser) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
+    }
+
+    const { username, email, hash } = cachedUser;
+
+    const [err, user] = await this.users.createWithHash(email, username, hash);
+
+    // if user already exists, throw exception
+    if (err) {
+      if (err instanceof PrismaClientKnownRequestError) {
+        if (err.code === "P2002") {
+          throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_CREDENTIALS);
+        }
+      }
+      throw err;
+    }
+
+    // clear new user in cache
+    await this.cache.del(token);
+    await this.cache.del(username);
+    await this.cache.del(email);
+
+    // generate tokens for new user
+    const tokens = await this.signTokens(user.id, user.email);
+    // update refresh token hash for new user
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+
     return tokens;
   }
 

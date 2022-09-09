@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Res,
   UseGuards,
@@ -60,6 +61,18 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.refreshTokens(user.id, user.email);
+    this.setCookies(res, tokens);
+    return { message: "success" };
+  }
+
+  @PublicRoute()
+  @Post("/verify/:token")
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Param("token") token: string,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const tokens = await this.authService.verifyEmail(token);
     this.setCookies(res, tokens);
     return { message: "success" };
   }
