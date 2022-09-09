@@ -11,4 +11,12 @@ export const UserModel = z.object({
   hashRt: z.string().nullish(),
 });
 
+const PublicUserInfo = UserModel.pick({
+  id: true,
+  email: true,
+  username: true,
+});
+
+export type PublicUserInfo = z.infer<typeof PublicUserInfo>;
+
 export class UserDto extends createZodDto(UserModel) {}
