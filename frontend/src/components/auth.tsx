@@ -1,17 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import io from "socket.io-client";
-import type { Socket } from "socket.io-client";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { useAuthStore } from "../login/hooks";
-import { SignInCredentials, SignUpCredentials } from "../login/types";
+import { SignInCredentials, SignUpCredentials, User } from "../login/types";
 import { TextInput } from "./base/input";
-// import useSocket from "../hooks/useSocket";
-import useSocket from "../hooks/socket";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
 import Toast from "./base/toast";
 import { useSocketStore } from "src/hooks/useSocket";
+
+export enum QuizDifficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
 
 export default function Auth() {
   // form state
