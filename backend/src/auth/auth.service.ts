@@ -2,14 +2,14 @@ import { ForbiddenException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { MailerService } from "@nestjs-modules/mailer";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
-import { AUTH_ERROR } from "./constants";
+import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "./constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export type JwtPayload = {
   sub: number;
@@ -26,8 +26,6 @@ type CacheableUserFields = {
   username: string;
   hash: string;
 };
-
-const EMAIL_PREFIX = "cachedEmail:";
 
 @Injectable({})
 export class AuthService {
@@ -60,8 +58,8 @@ export class AuthService {
       }
     }
 
-    const isEmailInCache = !!(await this.cache.get(EMAIL_PREFIX + email));
-    if (isEmailInCache) {
+    const cachedEmail = await this.cache.get(email);
+    if (!!cachedEmail) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
@@ -75,14 +73,14 @@ export class AuthService {
       email,
       username,
     });
-    await this.cache.set<string>(EMAIL_PREFIX + email, emailVerificationToken);
+    await this.cache.set<string>(email, emailVerificationToken);
 
     // send email
     await this.mailerService
       .sendMail({
         to: email,
-        subject: "Email Verification",
-        template: "emailVerification", // The `.pug` or `.hbs` extension is appended automatically.
+        subject: VERIFY_EMAIL_OPTIONS.subject,
+        template: VERIFY_EMAIL_OPTIONS.template, // The `.pug` or `.hbs` extension is appended automatically.
         context: {
           // Data to be sent to template engine.
           token: emailVerificationToken,
@@ -107,8 +105,8 @@ export class AuthService {
     const { email, password } = credentials;
 
     // check if email is unverified
-    const isEmailInCache = !!(await this.cache.get(EMAIL_PREFIX + email));
-    if (isEmailInCache) {
+    const cachedEmail = await this.cache.get(email);
+    if (!!cachedEmail) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 

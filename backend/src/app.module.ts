@@ -13,10 +13,7 @@ import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
-
-const generateEmailDefaultFrom = (name: string, email: string): string => {
-  return '"' + name + '"' + "<" + email + ">";
-};
+import { generateEmailFromField } from "./utils/mail";
 
 @Module({
   imports: [
@@ -39,7 +36,7 @@ const generateEmailDefaultFrom = (name: string, email: string): string => {
           },
         },
         defaults: {
-          from: generateEmailDefaultFrom(
+          from: generateEmailFromField(
             configService.get("SMTP_NAME"),
             configService.get("SMTP_EMAIL")
           ),
