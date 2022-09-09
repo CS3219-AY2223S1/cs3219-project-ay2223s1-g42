@@ -70,7 +70,8 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
     }
 
-    if (await this.cache.get(EMAIL_PREFIX + email)) {
+    const isEmailInCache = !!(await this.cache.get(EMAIL_PREFIX + email));
+    if (isEmailInCache) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
@@ -85,7 +86,10 @@ export class AuthService {
       username,
     });
     await this.cache.set<string>(EMAIL_PREFIX + email, emailVerificationToken);
-    await this.cache.set<string>(USERNAME_PREFIX + username, "");
+    await this.cache.set<string>(
+      USERNAME_PREFIX + username,
+      emailVerificationToken
+    );
 
     // send email
     await this.mailerService
