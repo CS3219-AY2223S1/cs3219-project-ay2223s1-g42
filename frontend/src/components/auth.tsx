@@ -2,12 +2,28 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
+import { User } from "../../../backend/node_modules/.prisma/client";
+import { PoolUser } from "../../../backend/src/match/match.gateway";
+
 const serverUrl = "http://localhost:5000";
 const websocketUrl = "ws://localhost:5000";
+
+type PublicUserInfo = Pick<User, "email" | "username" | "id">;
+
+export enum QuizDifficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
 
 export default function Auth() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<PublicUserInfo>({
+    username: "",
+    email: "",
+    id: 0,
+  });
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -86,7 +102,7 @@ export default function Auth() {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await fetch(`${serverUrl}/users/me`, {
+        const res: PublicUserInfo = await fetch(`${serverUrl}/users/me`, {
           method: "GET",
           credentials: "include",
         }).then((res) => res.json());
@@ -96,6 +112,8 @@ export default function Auth() {
         }
 
         if (res) {
+          console.log({ res });
+          setUser(res);
           setIsLoggedIn(true);
         }
       } catch (e) {
@@ -121,6 +139,14 @@ export default function Auth() {
       console.log({ data });
     });
 
+    newSocket.on("pool", (data) => {
+      console.log({ data });
+    });
+
+    newSocket.on("message", (data) => {
+      console.log("received data from server ", { data });
+    });
+
     setSocket(newSocket);
 
     return () => {
@@ -130,8 +156,11 @@ export default function Auth() {
     };
   }, []);
 
-  const sendChat = () => {
+  const sendEmits = () => {
+    const difficulties = [QuizDifficulty.EASY, QuizDifficulty.HARD];
+    const poolUser: PoolUser = { ...user, difficulties };
     socket?.emit("chat", { message: "hello to chat from client" });
+    socket?.emit("pool", poolUser);
   };
 
   return (
@@ -193,7 +222,7 @@ export default function Auth() {
             </button>
           </div>
           {isLoggedIn && (
-            <button onClick={sendChat}>send broadcast message</button>
+            <button onClick={sendEmits}>send broadcast message</button>
           )}
         </div>
       </div>
