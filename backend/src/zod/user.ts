@@ -22,5 +22,13 @@ export class UserDto extends createZodDto(UserModel) {
 =======
 });
 
+const PublicUserInfo = UserModel.pick({
+  id: true,
+  email: true,
+  username: true,
+});
+
+export type PublicUserInfo = z.infer<typeof PublicUserInfo>;
+
 export class UserDto extends createZodDto(UserModel) {}
 >>>>>>> chore: fix rebase pull conflicts
