@@ -32,6 +32,10 @@
 $ yarn
 ```
 
+## Install pscale (for planetscale)
+
+Read the docs [here](https://planetscale.com/docs/concepts/planetscale-environment-setup)
+
 ## Running the app
 
 ```bash
