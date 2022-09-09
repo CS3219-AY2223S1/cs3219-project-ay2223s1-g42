@@ -38,9 +38,23 @@ $ yarn
 # SKIP this line if using planetscale dev-db
 $ yarn db:dev:start # when prompted for sleep time, enter 10 (use 25 if doesnt work)
 $ yarn start:dev
+```
 
-# production mode
-$ npm run start:prod
+## Updating schema
+
+```bash
+# for LOCAL DB (via docker)
+$ yarn prisma:dev:migrate
+$ yarn prisma:dev:generate
+
+# for PLANETSCALE dev db
+$ yarn db:dev:push
+```
+
+## View development database
+
+```bash
+$ yarn prisma:dev:studio
 ```
 
 ## Test
