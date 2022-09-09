@@ -9,7 +9,11 @@ export class RedisCacheService {
     return await this.cache.get<Type>(key);
   }
 
-  async set<Type>(key: string, value: Type) {
+  async set<Type>(key: string, value: Type): Promise<void> {
     await this.cache.set<Type>(key, value);
+  }
+
+  async del(key: string): Promise<void> {
+    await this.cache.del(key);
   }
 }

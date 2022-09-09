@@ -35,13 +35,13 @@ const generateEmailDefaultFrom = (name: string, email: string): string => {
           secure: false, // upgrade later with STARTTLS
           auth: {
             user: configService.get("SMTP_EMAIL"),
-            pass: configService.get("SMTP_EMAIL_PASSWORD"),
+            pass: configService.get("SMTP_PASSWORD"),
           },
         },
         defaults: {
           from: generateEmailDefaultFrom(
             configService.get("SMTP_NAME"),
-            configService.get("SMTP_USER")
+            configService.get("SMTP_EMAIL")
           ),
         },
         template: {
