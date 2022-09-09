@@ -1,7 +1,9 @@
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { Module } from "@nestjs/common";
 import { ZodValidationPipe } from "nestjs-zod";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
@@ -12,6 +14,10 @@ import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
 
+const generateEmailDefaultFrom = (name: string, email: string): string => {
+  return '"' + name + '"' + "<" + email + ">";
+};
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,6 +25,33 @@ import { RedisCacheModule } from "./cache/redisCache.module";
       load: [configuration],
       validate,
       isGlobal: true,
+    }),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: "smtp-relay.sendinblue.com",
+          port: 587,
+          secure: false, // upgrade later with STARTTLS
+          auth: {
+            user: configService.get("SMTP_EMAIL"),
+            pass: configService.get("SMTP_EMAIL_PASSWORD"),
+          },
+        },
+        defaults: {
+          from: generateEmailDefaultFrom(
+            configService.get("SMTP_NAME"),
+            configService.get("SMTP_USER")
+          ),
+        },
+        template: {
+          dir: process.cwd() + "/templates/",
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
     }),
     PrismaModule,
     UserModule,

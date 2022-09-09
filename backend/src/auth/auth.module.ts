@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
+import { MailerModule } from "@nestjs-modules/mailer";
 
 import { UserModule } from "../user/user.module";
 import { AuthController } from "./auth.controller";
@@ -9,7 +10,7 @@ import { RedisCacheModule } from "../cache/redisCache.module";
 import { WsAccessJwtStrategy } from "./strategy/ws.access.strategy";
 
 @Module({
-  imports: [JwtModule.register({}), RedisCacheModule, UserModule],
+  imports: [JwtModule.register({}), MailerModule, RedisCacheModule, UserModule],
   controllers: [AuthController],
   providers: [
     AuthService,

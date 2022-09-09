@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { MailerService } from "@nestjs-modules/mailer";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -33,7 +34,8 @@ export class AuthService {
     private jwt: JwtService,
     private config: ConfigService,
     private users: UserService,
-    private cache: RedisCacheService
+    private cache: RedisCacheService,
+    private mailerService: MailerService
   ) {}
 
   /**
@@ -50,7 +52,11 @@ export class AuthService {
       username
     );
 
+    console.log("testing");
+
     if (user) {
+      console.log("testing");
+      console.log(user);
       if (user.email == email) {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
       } else {
@@ -59,11 +65,12 @@ export class AuthService {
     }
 
     // check if username in cache, throw username in use
-    if (this.cache.get(username)) {
+    const isUsernameInCache = !!(await this.cache.get(username));
+    if (isUsernameInCache) {
       throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
     }
 
-    if (this.cache.get(email)) {
+    if (await this.cache.get(email)) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
@@ -77,6 +84,23 @@ export class AuthService {
     });
 
     // send email
+    await this.mailerService
+      .sendMail({
+        to: email,
+        subject: "Email Verification ✔",
+        template: "emailVerification", // The `.pug` or `.hbs` extension is appended automatically.
+        context: {
+          // Data to be sent to template engine.
+          code: emailVerificationToken,
+          username: username,
+        },
+      })
+      .then((success) => {
+        console.log(success);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   /**
@@ -108,7 +132,7 @@ export class AuthService {
   }
 
   async signout(id: number) {
-    const [err, _] = await this.users.clearRefreshToken(id);
+    const [err] = await this.users.clearRefreshToken(id);
     if (err) {
       throw err;
     }
@@ -154,7 +178,7 @@ export class AuthService {
 
   async updateRefreshTokenHash(id: number, refreshToken: string) {
     const hashRt = await argon2.hash(refreshToken);
-    const [err, _] = await this.users.update(id, { hashRt });
+    const [err] = await this.users.update(id, { hashRt });
     // throw if err updating refresh token hash
     if (err) {
       throw err;
