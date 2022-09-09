@@ -9,10 +9,10 @@ import * as csurf from "csurf";
 import { AppModule } from "./app.module";
 import { CORS_OPTIONS } from "./config";
 
-const HTTPS_OPTIONS = {
-  key: fs.readFileSync(path.join(__dirname, "../ssl/key.pem")),
-  cert: fs.readFileSync(path.join(__dirname, "../ssl/cert.pem")),
-};
+// const HTTPS_OPTIONS = {
+//   key: fs.readFileSync(path.join(__dirname, "../ssl/key.pem")),
+//   cert: fs.readFileSync(path.join(__dirname, "../ssl/cert.pem")),
+// };
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
