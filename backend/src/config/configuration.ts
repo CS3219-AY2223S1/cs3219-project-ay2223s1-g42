@@ -6,7 +6,7 @@ export const configuration = () => ({
   COOKIE_SECRET: process.env.COOKIE_SECRET,
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: (parseInt(process.env.REDIS_PORT, 10) as number) || 6379,
-  CACHE_TTL: (parseInt(process.env.CACHE_TTL, 10) as number) || 7200,
+  CACHE_TTL: (parseInt(process.env.CACHE_TTL, 10) as number) || 1800,
   SMTP_EMAIL: process.env.SMTP_EMAIL,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_NAME: process.env.SMTP_NAME,

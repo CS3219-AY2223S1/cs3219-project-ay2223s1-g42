@@ -12,7 +12,7 @@ const EnvSchema = z.object({
   COOKIE_SECRET: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.number().default(6379),
-  CACHE_TTL: z.number().default(7200),
+  CACHE_TTL: z.number().default(1800),
   SMTP_EMAIL: z.string().email(),
   SMTP_PASSWORD: z.string(),
   SMTP_NAME: z.string(),
