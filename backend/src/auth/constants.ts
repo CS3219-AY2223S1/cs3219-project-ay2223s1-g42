@@ -1,4 +1,5 @@
 export enum AUTH_ERROR {
+  INVALID_USER = "User does not exist",
   INVALID_CREDENTIALS = "Invalid credentials",
   UNAVAILABLE_CREDENTIALS = "Credentials already in use",
   UNAVAILABLE_EMAIL = "Email already in use",

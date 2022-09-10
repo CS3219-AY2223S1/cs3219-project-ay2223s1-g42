@@ -22,8 +22,10 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
   hashRt: true,
 };
 
+const UPDATE_ERROR = "Unable to reset password";
+
 type UpdateableUserFields = Partial<
-  Pick<User, "username" | "email" | "hashRt">
+  Pick<User, "username" | "email" | "hashRt" | "hash" >
 >;
 
 type CacheableResetEmail = {
@@ -132,38 +134,6 @@ export class UserService {
   }
 
   /**
-   * Updates the username/email/refresh token hash of an existing user in the database
-   * @param id id of user to be updated
-   * @param fields updateable fields for user object (username, email, refresh token hash)
-   * @returns [`Err`, `User`]
-   */
-  async updateResetPassword(id: number, temporaryPassword: string) {
-    const hash = await argon2.hash(temporaryPassword);
-    const res = await radash.try(this.prisma.user.update)({
-      where: { id },
-      data: { hash },
-      select: USER_FIELDS,
-    });
-    return res;
-  }
-
-  /**
-   * Updates the username/email/refresh token hash of an existing user in the database
-   * @param id id of user to be updated
-   * @param fields updateable fields for user object (username, email, refresh token hash)
-   * @returns [`Err`, `User`]
-   */
-  async updatePasswordWithHash(id: number, newPassword: string) {
-    const hash = await argon2.hash(newPassword)
-    const res = await radash.try(this.prisma.user.update)({
-      where: { id },
-      data: { hash },
-      select: USER_FIELDS,
-    });
-    return res;
-  }
-
-  /**
    * Clears the refresh token hash of a given user
    * @param id id of user to clear refresh token
    * @returns [`Err`, `User`]
@@ -224,7 +194,6 @@ export class UserService {
    * Sends the user a reset password email and returns the JWT token
    * @param email the email account that requested for a password reset
    */
-
   async resetPassword(email: string) {
     // find user via email provided
     const [err, user] = await this.findByEmail(email);
@@ -236,26 +205,35 @@ export class UserService {
     }
 
     // check if email in cache, print out that the reset mail has already been sent
-    const isEmailInCache = !!(await this.cache.get(
-      RESET_PASSWORD_EMAIL_PREFIX + email
-    ));
-    if (isEmailInCache) {
+    const cachedEmail = await this.cache.get(RESET_PASSWORD_EMAIL_PREFIX + email);
+
+    if (!!cachedEmail) {
       throw new ForbiddenException(AUTH_ERROR.RESET_EMAIL_ALREADY_SENT);
     }
 
     //Reset password
     const resetPasswordVerificationToken = RESET_PASSWORD_PREFIX + v4();
-    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
-      email,
-    });
+
+    await this.cache.set<CacheableResetEmail>(
+      resetPasswordVerificationToken, 
+      {
+        email,
+     });
 
     //Generate a random temporary password for user of length 16
     const temporaryPassword = randomUUID().slice(0,16);
 
-    const [error, userToReset] = await this.updateResetPassword(
-      user.id,
-      temporaryPassword
+    //Hashed the temporary password
+    const hashedTempPassword = await argon2.hash(temporaryPassword);
+
+    const [error, userToReset] = await this.update(
+      user.id, {hash: hashedTempPassword}
     );
+    
+    //Throw an error if we are unable to update password to the new random password
+    if (error || !userToReset) {
+      throw new ForbiddenException(UPDATE_ERROR);
+    }
 
     //Send email
     await this.mailerService
@@ -286,8 +264,14 @@ export class UserService {
 
     const { email } = cachedUser;
     const [err, user] = await this.findByEmail(email, true);
+
+    if (err) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
+    }
+
     const userId = user.id;
     const currentPassword = user.hash;
+    const hashedNewPassword = await argon2.hash(newPassword);
 
     //Check whether password entered matches the password in the email
     const isPasswordCorrect = await argon2.verify(currentPassword, confirmationPassword);
@@ -296,10 +280,14 @@ export class UserService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
     }
     
-    const [error, userToReset] = await this.updatePasswordWithHash(
+    const [error, userToReset] = await this.update(
       userId,
-      newPassword
+      {hash: hashedNewPassword}
     );
+
+    if (error || !userToReset) {
+      throw new ForbiddenException(UPDATE_ERROR);
+    }
 
     // clear the email that requested for a reset in cache
     await this.cache.del(email);

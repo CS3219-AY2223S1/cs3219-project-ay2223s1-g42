@@ -117,7 +117,7 @@ export class UserController {
     @Body() resetPasswordInfo : resetPasswordCredentialsDto 
   ) {
     const { token, currPassword, newPassword } = resetPasswordInfo;
-    const tokens = await this.userService.verifyResetEmail(
+    await this.userService.verifyResetEmail(
       token, 
       currPassword, 
       newPassword
