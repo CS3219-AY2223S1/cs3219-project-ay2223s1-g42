@@ -1,8 +1,7 @@
 import * as z from "nestjs-zod/z";
 import { createZodDto } from "nestjs-zod/dto";
 
-import { UserModel } from "./user";
-import { string } from "nestjs-zod/z";
+import { UserModel } from "../../zod";
 
 export const SignupCredentials = UserModel.pick({
   email: true,
@@ -19,14 +18,14 @@ export const SigninCredentials = SignupCredentials.pick({
 });
 
 export const forgetPasswordCredentials = UserModel.pick({
-  email: true
+  email: true,
 });
 
 const resetPasswordCredentialsSchema = z.object({
   token: z.string(),
   currPassword: z.string(),
-  newPassword: z.string()
-})
+  newPassword: z.string(),
+});
 
 export const EditableCredentials = UserModel.pick({
   email: true,
@@ -37,5 +36,9 @@ export const EditableCredentials = UserModel.pick({
 export class SignupCredentialsDto extends createZodDto(SignupCredentials) {}
 export class SigninCredentialsDto extends createZodDto(SigninCredentials) {}
 export class EditableCredentialsDto extends createZodDto(EditableCredentials) {}
-export class forgetPasswordCredentialsDto extends createZodDto(forgetPasswordCredentials){}
-export class resetPasswordCredentialsDto extends createZodDto(resetPasswordCredentialsSchema){}
+export class forgetPasswordCredentialsDto extends createZodDto(
+  forgetPasswordCredentials
+) {}
+export class resetPasswordCredentialsDto extends createZodDto(
+  resetPasswordCredentialsSchema
+) {}

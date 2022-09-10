@@ -13,10 +13,7 @@ import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
-
-const generateEmailDefaultFrom = (name: string, email: string): string => {
-  return '"' + name + '"' + "<" + email + ">";
-};
+import { generateEmailFromField } from "./utils/mail";
 
 @Module({
   imports: [
@@ -30,8 +27,8 @@ const generateEmailDefaultFrom = (name: string, email: string): string => {
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transport: {
-          host: "smtp-relay.sendinblue.com",
-          port: 587,
+          host: configService.get("SMTP_HOST"),
+          port: configService.get("SMTP_PORT"),
           secure: false, // upgrade later with STARTTLS
           auth: {
             user: configService.get("SMTP_EMAIL"),
@@ -39,7 +36,7 @@ const generateEmailDefaultFrom = (name: string, email: string): string => {
           },
         },
         defaults: {
-          from: generateEmailDefaultFrom(
+          from: generateEmailFromField(
             configService.get("SMTP_NAME"),
             configService.get("SMTP_EMAIL")
           ),

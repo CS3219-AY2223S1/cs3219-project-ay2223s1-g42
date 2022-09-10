@@ -8,3 +8,8 @@ export enum AUTH_ERROR {
   INVALID_EMAIL_VERIFY_EMAIL_TOKEN = "Email verification token is invalid",
   RESET_EMAIL_ALREADY_SENT = "Password reset email has already been sent"
 }
+
+export const VERIFY_EMAIL_OPTIONS = {
+  subject: "Email Verification",
+  template: "emailVerification",
+};
