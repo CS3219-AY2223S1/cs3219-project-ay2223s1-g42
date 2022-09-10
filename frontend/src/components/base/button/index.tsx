@@ -1,5 +1,4 @@
-import React from "react";
-
-export default function index() {
-  return <div></div>;
-}
+export * from "./primary";
+export * from "./seconday";
+export * from "./blue";
+export * from "./red";

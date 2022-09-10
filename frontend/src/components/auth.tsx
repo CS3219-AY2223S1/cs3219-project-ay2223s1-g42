@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
+import { BlueButton, PrimaryButton, RedButton } from "../components/base";
+
 const serverUrl = "http://localhost:5000";
 const websocketUrl = "ws://localhost:5000";
 
@@ -135,67 +137,65 @@ export default function Auth() {
   };
 
   return (
-    <div className="row flex-center flex">
-      <div className="col-6 form-widget">
-        <div>
-          <p className="description">
-            Sign in via credentials with your email and password below
-          </p>
-          <div className="flex flex-col gap-2">
-            <div>
-              <input
-                className="inputField"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                className="inputField"
-                type="username"
-                placeholder="Your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                className="inputField"
-                type="password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+    <div className="flex flex-col space-y-2 self-center">
+      <div>
+        <h2 className="font-display text-2xl font-bold leading-relaxed">
+          Sign in via credentials with your email and password below
+        </h2>
+        <div className="flex flex-col gap-2">
+          <div>
+            <input
+              className="inputField"
+              type="email"
+              placeholder="Your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleSignup(email, username, password);
-              }}
-              className="button block"
-              disabled={loading}
-            >
-              <span>{loading ? "Loading" : "Signup via credentials"}</span>
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleCredentialLogin(email, password);
-              }}
-              className="button block"
-              disabled={loading}
-            >
-              <span>{loading ? "Loading" : "Login via credentials"}</span>
-            </button>
+            <input
+              className="inputField"
+              type="username"
+              placeholder="Your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-          {isLoggedIn && (
-            <button onClick={sendChat}>send broadcast message</button>
-          )}
+          <div>
+            <input
+              className="inputField"
+              type="password"
+              placeholder="Your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
         </div>
+        <div className="flex flex-col space-y-2 mt-4">
+          <RedButton
+            onClick={(e) => {
+              e.preventDefault();
+              handleSignup(email, username, password);
+            }}
+            // className="button block"
+            disabled={loading}
+          >
+            <span>{loading ? "Loading" : "Sign up"}</span>
+          </RedButton>
+          <BlueButton
+            onClick={(e) => {
+              e.preventDefault();
+              handleCredentialLogin(email, password);
+            }}
+            disabled={loading}
+          >
+            <span>{loading ? "Loading" : "Login"}</span>
+          </BlueButton>
+          <PrimaryButton>Sign in</PrimaryButton>
+        </div>
+        {isLoggedIn && (
+          <button onClick={sendChat}>send broadcast message</button>
+        )}
       </div>
     </div>
   );

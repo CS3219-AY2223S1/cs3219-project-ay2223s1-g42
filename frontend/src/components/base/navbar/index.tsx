@@ -1,5 +1,3 @@
-import React from "react";
-
-export default function index() {
-  return <div></div>;
+export function Navbar() {
+  return <nav className="sticky h-14 text-lg top-0 z-[45] bg-red-200" />;
 }
