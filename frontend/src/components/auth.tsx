@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
+const serverUrl = "http://localhost:5000";
+const websocketUrl = "ws://localhost:5000";
+
 export default function Auth() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +35,7 @@ export default function Auth() {
   ) => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/auth/local/signup", {
+      const response = await fetch(`${serverUrl}/auth/local/signup`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -57,7 +60,7 @@ export default function Auth() {
   const handleCredentialLogin = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/auth/local/signin", {
+      const response = await fetch(`${serverUrl}/auth/local/signin`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -83,7 +86,7 @@ export default function Auth() {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await fetch("http://localhost:5000/users/me", {
+        const res = await fetch(`${serverUrl}/users/me`, {
           method: "GET",
           credentials: "include",
         }).then((res) => res.json());
@@ -101,10 +104,10 @@ export default function Auth() {
       }
     };
     fetchMe();
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    const newSocket = io("ws://localhost:5000", { withCredentials: true });
+    const newSocket = io(websocketUrl, { withCredentials: true });
     newSocket.on("connect", () => {
       console.log("connected to websocket server");
       setIsConnected(true);
