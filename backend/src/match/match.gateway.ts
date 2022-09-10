@@ -9,7 +9,7 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
-import { CORS_OPTIONS } from "../config/constants";
+import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 
 // import { CurrentUser } from "../utils/decorators/get-current-user.decorator";

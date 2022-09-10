@@ -1,20 +1,20 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { CookieOptions } from "express";
 
-export const CSRF_OPTIONS = {
+const CSRF_OPTIONS = {
   cookie: true,
   httpOnly: true,
-  secure: true,
+  secure: false,
   sameSite: "lax",
 };
 
-export const COOKIE_OPTIONS: CookieOptions = {
+const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: true,
+  secure: false,
   sameSite: "lax",
 };
 
-export const CORS_OPTIONS: CorsOptions = {
+const CORS_OPTIONS: CorsOptions = {
   origin: [
     // // coinhall.org domains:
     // "https://coinhall.org",
@@ -27,3 +27,5 @@ export const CORS_OPTIONS: CorsOptions = {
   ],
   credentials: true,
 };
+
+export { CSRF_OPTIONS, COOKIE_OPTIONS, CORS_OPTIONS };
