@@ -1,23 +1,26 @@
 version: "3.8"
 services:
   dev-db:
-    image: postgres:14
+    image: mysql:8.0
     ports:
-      - 5434:5432
+      - 3366:3306
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nest
+      MYSQL_DATABASE: mysqldb
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+      MYSQL_ROOT_PASSWORD: root
     networks:
       - cs3219
   test-db:
-    image: postgres:14
+    image: mysql:8.0
     ports:
-      - 5435:5432
+      - 3367:3306
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nest
+      MYSQL_DATABASE: mysqldb
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+      MYSQL_ROOT_PASSWORD: root
     networks:
       - cs3219
   dev-redis:

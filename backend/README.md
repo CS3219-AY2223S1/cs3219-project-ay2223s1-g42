@@ -29,33 +29,49 @@
 ## Installation
 
 ```bash
-$ npm install
+$ yarn
 ```
+
+## Install pscale (for planetscale)
+
+Read the docs [here](https://planetscale.com/docs/concepts/planetscale-environment-setup)
 
 ## Running the app
 
 ```bash
-# development
-$ npm run start
+# SKIP this line if using planetscale dev-db
+$ yarn db:dev:start # when prompted for sleep time, enter 10 (use 25 if doesnt work)
+$ yarn start:dev
+```
 
-# watch mode
-$ npm run start:dev
+## Updating schema
 
-# production mode
-$ npm run start:prod
+```bash
+# for LOCAL DB (via docker)
+$ yarn prisma:dev:migrate
+$ yarn prisma:dev:generate
+
+# for PLANETSCALE dev db
+$ yarn db:dev:push
+```
+
+## View development database
+
+```bash
+$ yarn prisma:dev:studio
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Support

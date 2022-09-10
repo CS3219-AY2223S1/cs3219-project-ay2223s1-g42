@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 generator zod {
@@ -36,8 +37,9 @@ generator zod {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 model User {
@@ -48,10 +50,10 @@ model User {
   username String @unique
   /// @z.string().email({ message: "Invalid email address" })
   email String @unique
-  // hash for password
-  hash String
-  // hash for refresh token
-  hashRt String?
+  // hash for password, set as @db.Text to remove length limit set by varchar
+  hash String @db.Text
+  // hash for refresh token, set as @db.Text to remove length limit set by varchar
+  hashRt String? @db.Text
 
   @@map("users")
 }

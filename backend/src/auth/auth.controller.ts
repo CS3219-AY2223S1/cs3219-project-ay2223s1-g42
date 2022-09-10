@@ -15,7 +15,7 @@ import { AuthService, Tokens } from "./auth.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
-import { COOKIE_OPTIONS } from "../config/constants";
+import { COOKIE_OPTIONS } from "../config";
 
 @Controller("auth")
 export class AuthController {
