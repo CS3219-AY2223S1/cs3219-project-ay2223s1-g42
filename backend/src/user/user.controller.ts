@@ -7,6 +7,13 @@ import {
   Param,
   Patch,
 } from "@nestjs/common";
+import {
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
+  ApiUnprocessableEntityResponse,
+  ApiOperation,
+} from "@nestjs/swagger";
 import { User } from "@prisma/client";
 
 import { EditableCredentialsDto } from "../utils/zod";
@@ -23,6 +30,9 @@ export class UserController {
    * @returns user object
    */
   @Get("me")
+  @ApiOkResponse({ description: "The resource was returned successfully" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request" })
+  @ApiNotFoundResponse({ description: "Resource not found" })
   getMe(@GetUser() user: User) {
     return user;
   }
@@ -34,6 +44,9 @@ export class UserController {
    */
   @PublicRoute()
   @Get(":id")
+  @ApiOkResponse({ description: "The resource was returned successfully" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request" })
+  @ApiNotFoundResponse({ description: "Resource not found" })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
     if (err) {
@@ -50,6 +63,11 @@ export class UserController {
    * @returns user object of the edited user
    */
   @Patch(":id")
+  @ApiOperation({ summary: "Edit data of specified user" })
+  @ApiOkResponse({ description: "The resource was updated successfully" })
+  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request" })
+  @ApiUnprocessableEntityResponse({ description: "Bad Request" })
   async editUser(
     @GetUser() user: User,
     @Param("id") id: string,
@@ -76,6 +94,10 @@ export class UserController {
    * @returns deleted user object
    */
   @Delete(":id")
+  @ApiOperation({ summary: "Delete data of specified user" })
+  @ApiOkResponse({ description: "The resource was returned successfully" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request" })
+  @ApiNotFoundResponse({ description: "Resource not found" })
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
