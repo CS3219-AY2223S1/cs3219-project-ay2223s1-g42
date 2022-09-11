@@ -14,8 +14,8 @@ import { User } from "@prisma/client";
 
 import {
   EditableCredentialsDto,
-  forgetPasswordCredentialsDto,
-  resetPasswordCredentialsDto,
+  ForgetPasswordCredentialsDto,
+  ResetPasswordCredentialsDto,
 } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
@@ -102,7 +102,7 @@ export class UserController {
   @Post("/forget-password")
   @HttpCode(HttpStatus.CREATED)
   async forgetPassword(
-    @Body() forgetPasswordInfo: forgetPasswordCredentialsDto
+    @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
   ) {
     const { email } = forgetPasswordInfo;
     await this.userService.resetPassword(email);
@@ -116,9 +116,9 @@ export class UserController {
   @PublicRoute()
   @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() resetPasswordInfo: resetPasswordCredentialsDto) {
-    const { token, newPassword } = resetPasswordInfo;
-    await this.userService.verifyResetEmail(token, newPassword);
+  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
+    const { token, password } = resetPasswordInfo;
+    await this.userService.verifyResetEmail(token, password);
     return { message: "success" };
   }
 }
