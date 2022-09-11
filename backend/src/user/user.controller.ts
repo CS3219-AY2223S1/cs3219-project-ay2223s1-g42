@@ -12,7 +12,11 @@ import {
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import { EditableCredentialsDto, forgetPasswordCredentialsDto, resetPasswordCredentialsDto } from "../utils/zod";
+import {
+  EditableCredentialsDto,
+  forgetPasswordCredentialsDto,
+  resetPasswordCredentialsDto,
+} from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 
@@ -97,7 +101,9 @@ export class UserController {
   @PublicRoute()
   @Post("/forgetPassword")
   @HttpCode(HttpStatus.CREATED)
-  async forgetPassword(@Body()  forgetPasswordInfo : forgetPasswordCredentialsDto ) {
+  async forgetPassword(
+    @Body() forgetPasswordInfo: forgetPasswordCredentialsDto
+  ) {
     const { email } = forgetPasswordInfo;
     console.log(email);
     await this.userService.resetPassword(email);
@@ -105,21 +111,16 @@ export class UserController {
   }
 
   /**
-   * For the user to reset 
+   * For the user to reset
    * @param user user object obtained from email included in JWT token
    */
 
   @PublicRoute()
   @Post("/verify")
   @HttpCode(HttpStatus.OK)
-  async resetPassword(
-    @Body() resetPasswordInfo : resetPasswordCredentialsDto 
-  ) {
+  async resetPassword(@Body() resetPasswordInfo: resetPasswordCredentialsDto) {
     const { token, newPassword } = resetPasswordInfo;
-    await this.userService.verifyResetEmail(
-      token,  
-      newPassword
-    );
+    await this.userService.verifyResetEmail(token, newPassword);
     return { message: "success" };
   }
 }

@@ -25,7 +25,7 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
 const UPDATE_ERROR = "Unable to reset password";
 
 type UpdateableUserFields = Partial<
-  Pick<User, "username" | "email" | "hashRt" | "hash" >
+  Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
 
 type CacheableResetEmail = {
@@ -210,13 +210,11 @@ export class UserService {
     //Reset password
     const resetPasswordVerificationToken = v4();
 
-    await this.cache.set<CacheableResetEmail>(
-      resetPasswordVerificationToken, 
-      { 
-        userId,
-        username,
-        email,
-     });
+    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
+      userId,
+      username,
+      email,
+    });
 
     //Send email
     await this.mailerService
@@ -239,28 +237,27 @@ export class UserService {
       });
   }
 
-  async verifyResetEmail(token: string,  newPassword: string) {
+  async verifyResetEmail(token: string, newPassword: string) {
     const cachedUser = await this.cache.get<CacheableResetEmail>(token);
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
-    const { userId, username, email } = cachedUser;
+    const { userId, email } = cachedUser;
 
     //Check whether there is a user associated with the token
     const [err, user] = await this.findByEmail(email, true);
 
-    if (err || !user ) {
+    if (err || !user) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
     }
 
     //Update new password in the database
     const hashedNewPassword = await argon2.hash(newPassword);
-    
-    const [error, userToReset] = await this.update(
-      userId,
-      {hash: hashedNewPassword}
-    );
+
+    const [error, userToReset] = await this.update(userId, {
+      hash: hashedNewPassword,
+    });
 
     if (error || !userToReset) {
       throw new ForbiddenException(UPDATE_ERROR);

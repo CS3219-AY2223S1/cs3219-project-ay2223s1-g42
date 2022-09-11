@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import * as redisStore from "cache-manager-ioredis";
 import { RedisCacheService } from "./redisCache.service";
 
-@Module({ 
+@Module({
   imports: [
     CacheModule.registerAsync({
       inject: [ConfigService],

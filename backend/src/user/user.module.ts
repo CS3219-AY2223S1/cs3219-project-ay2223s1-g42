@@ -5,7 +5,6 @@ import { RedisCacheModule } from "../cache/redisCache.module";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 
-
 @Module({
   imports: [RedisCacheModule, MailerModule],
   controllers: [UserController],
