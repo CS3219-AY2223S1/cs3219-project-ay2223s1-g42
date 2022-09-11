@@ -95,11 +95,11 @@ export class UserController {
   }
 
   /**
-   * Directs the user to the forget password site
-   * @param user user object obtained from email included in JWT token
+   * Sends the provided email an link to reset password
+   * @param forgetPasswordInfo contains email needed to reset password
    */
   @PublicRoute()
-  @Post("/forgetPassword")
+  @Post("/forget-password")
   @HttpCode(HttpStatus.CREATED)
   async forgetPassword(
     @Body() forgetPasswordInfo: forgetPasswordCredentialsDto
@@ -110,12 +110,11 @@ export class UserController {
   }
 
   /**
-   * For the user to reset
-   * @param user user object obtained from email included in JWT token
+   * Reset password of user that is stored in the specified token
+   * @param resetPasswordInfo info of user needed for password reset
    */
-
   @PublicRoute()
-  @Post("/verify")
+  @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordInfo: resetPasswordCredentialsDto) {
     const { token, newPassword } = resetPasswordInfo;

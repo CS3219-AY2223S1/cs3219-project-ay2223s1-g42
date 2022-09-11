@@ -34,8 +34,6 @@ type CacheableResetEmail = {
   email: string;
 };
 
-const RESET_PASSWORD_EMAIL_PREFIX = "reset-password-email:";
-
 @Injectable({})
 export class UserService {
   constructor(
@@ -242,7 +240,7 @@ export class UserService {
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
-    
+
     // clear the email that requested for a reset in cache
     await this.cache.del(token);
 
