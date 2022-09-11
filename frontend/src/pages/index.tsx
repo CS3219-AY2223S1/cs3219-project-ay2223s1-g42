@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Head from "next/head";
+
 import Auth from "../components/auth";
 import Account from "../components/account";
 import { Layout, Navbar } from "../components/base";
