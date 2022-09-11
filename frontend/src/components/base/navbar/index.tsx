@@ -1,8 +1,21 @@
-import React from "react";
+const LINKS = [
+  {
+    href: "/mmr",
+    title: "match",
+  },
+  {
+    href: "/history",
+    title: "history",
+  },
+  {
+    href: "/questions",
+    title: "questions",
+  },
+];
 
 export function Navbar() {
   return (
-    <nav className="sticky h-14 text-lg top-0 z-[45] bg-red-200">
+    <nav className="sticky h-14 text-lg top-0 z-50 bg-red-200">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
@@ -18,15 +31,11 @@ export function Navbar() {
             }
           >
             <ul className="text-white items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
-              <li className="hover:text-gray-600">
-                <a href="/mmr">Match</a>
-              </li>
-              <li className="hover:text-gray-600">
-                <a href="/me/history">History</a>
-              </li>
-              <li className="hover:text-gray-600">
-                <a href="/questions">Questions</a>
-              </li>
+              {LINKS.map(({ href, title }) => (
+                <li key={href} className="hover:text-gray-600 capitalize">
+                  <a href={href}>{title}</a>
+                </li>
+              ))}
               <li className="hover:text-gray-600">
                 <div className="p-4">
                   <div className="group relative">
@@ -51,4 +60,4 @@ export function Navbar() {
       </div>
     </nav>
   );
-  
+}

@@ -26,6 +26,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
+    "react-step-builder": "^3.0.6",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.5.2",
     "zod": "^3.18.0",
