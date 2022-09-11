@@ -23,7 +23,9 @@ export const forgetPasswordCredentials = UserModel.pick({
 
 const resetPasswordCredentialsSchema = z.object({
   token: z.string(),
-  newPassword: z.string(),
+  newPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
 });
 
 export const EditableCredentials = UserModel.pick({
