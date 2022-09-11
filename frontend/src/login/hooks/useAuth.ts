@@ -48,6 +48,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             options.onSuccess();
           }
         },
+        retryDelay: 10000,
       }
     );
   },

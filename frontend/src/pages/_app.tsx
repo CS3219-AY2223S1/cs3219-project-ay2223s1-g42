@@ -14,21 +14,15 @@ import { SocketProvider } from "../context/socket";
 // Create a client
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: async (error, query) => {
-      // error assumed to be axios error
-      const axiosErr = error as AxiosError;
-      if (axiosErr.response?.status === 401) {
-        console.log("Refreshing Token");
-        try {
-          const res = await Axios.get("/auth/refresh");
-          if (res.status === 200) {
-            queryClient.refetchQueries(query.queryKey);
-          }
-        } catch (err) {
-          throw err;
-        }
-      }
-    },
+    // onError: async (error, query) => {
+    //   // error assumed to be axios error
+    //   const axiosErr = error as AxiosError;
+    //   if (axiosErr.response?.status === 401) {
+    //     console.log("Refreshing Token");
+    //     await Axios.get("/auth/refresh");
+    //     query.invalidate();
+    //   }
+    // },
   }),
 });
 
