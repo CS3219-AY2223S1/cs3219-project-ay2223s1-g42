@@ -7,6 +7,7 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { ApiOperation, ApiOkResponse } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
 
@@ -23,6 +24,10 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Creates a new user with the provided credentials" })
+  @ApiOkResponse({
+    description: "Successfully sent a verification email to the email provided",
+  })
   async signup(
     @Body() credentials: SignupCredentialsDto,
     @Res({ passthrough: true }) res: Response
@@ -35,6 +40,10 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Signs the user in" })
+  @ApiOkResponse({
+    description: "Successfully signed in and received JWT token cookies",
+  })
   async signin(
     @Body() credentials: SigninCredentialsDto,
     @Res({ passthrough: true }) res: Response
@@ -46,6 +55,10 @@ export class AuthController {
 
   @Post("/signout")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Signs the user out" })
+  @ApiOkResponse({
+    description: "Successfully signed out and cleared JWT token cookies",
+  })
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
@@ -59,6 +72,10 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post("/refresh")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Refresh JWT token cookies" })
+  @ApiOkResponse({
+    description: "Successfully refreshed JWT tokens",
+  })
   async refresh(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response

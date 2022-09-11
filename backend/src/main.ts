@@ -1,5 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import helmet from "helmet";
 import * as cookieParser from "cookie-parser";
 // import * as path from "path";
@@ -20,6 +21,14 @@ async function bootstrap() {
   });
   // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
   const port = app.get(ConfigService).get("PORT");
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle("G420 PeerPussies API")
+    .setDescription("The REST interface for querying the G420 PeerPussies API")
+    .setVersion("1.0")
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup("api", app, document);
 
   app.use(cookieParser());
   app.use(helmet());
