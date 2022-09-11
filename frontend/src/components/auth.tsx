@@ -10,6 +10,7 @@ import TextInput from "./base/input/TextInput";
 import useSocket from "../context/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import Toast from "./base/toast";
 
 export default function Auth() {
   // form state
@@ -124,6 +125,7 @@ export default function Auth() {
               <button onClick={sendChat}>send broadcast message</button>
             </>
           )}
+          <Toast />
         </div>
       </div>
     </div>
