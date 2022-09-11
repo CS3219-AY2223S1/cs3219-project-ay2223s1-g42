@@ -31,10 +31,12 @@
     "react-step-builder": "^3.0.6",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.5.2",
+    "tailwindcss-radix": "^2.6.0",
     "zod": "^3.18.0",
     "zustand": "^4.1.1"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
     "@types/node": "^18.7.14",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
