@@ -1,11 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-import {
-  SignInCredentials,
-  SignUpCredentials,
-} from "../../../../../backend/src/utils/zod/credentials";
-
 type ApiResponse = {
   message: string;
 };
@@ -13,6 +8,15 @@ type ApiResponse = {
 type User = {
   id: number;
   email: string;
+  username: string;
+};
+
+type SignInCredentials = {
+  email: string;
+  password: string;
+};
+
+type SignUpCredentials = SignInCredentials & {
   username: string;
 };
 
