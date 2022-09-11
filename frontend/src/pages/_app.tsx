@@ -9,6 +9,7 @@ import { AxiosError } from "axios";
 
 import "../styles/globals.css";
 import { Axios } from "../services/auth";
+import { SocketProvider } from "../context/socket";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -33,10 +34,12 @@ const queryClient = new QueryClient({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />;
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <SocketProvider>
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </SocketProvider>
   );
 };
 
