@@ -23,7 +23,6 @@ export const forgetPasswordCredentials = UserModel.pick({
 
 const resetPasswordCredentialsSchema = z.object({
   token: z.string(),
-  currPassword: z.string(),
   newPassword: z.string(),
 });
 

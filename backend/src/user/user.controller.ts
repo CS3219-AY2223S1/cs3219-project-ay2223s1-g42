@@ -15,7 +15,6 @@ import { User } from "@prisma/client";
 import { EditableCredentialsDto, forgetPasswordCredentialsDto, resetPasswordCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
-import { createSecureContext } from "tls";
 
 @Controller("users")
 export class UserController {
@@ -116,10 +115,9 @@ export class UserController {
   async resetPassword(
     @Body() resetPasswordInfo : resetPasswordCredentialsDto 
   ) {
-    const { token, currPassword, newPassword } = resetPasswordInfo;
+    const { token, newPassword } = resetPasswordInfo;
     await this.userService.verifyResetEmail(
-      token, 
-      currPassword, 
+      token,  
       newPassword
     );
     return { message: "success" };

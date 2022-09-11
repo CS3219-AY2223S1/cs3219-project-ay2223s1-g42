@@ -3,7 +3,6 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
-import { randomBytes, randomUUID } from "crypto";
 import { v4 } from "uuid";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -29,10 +28,11 @@ type UpdateableUserFields = Partial<
 >;
 
 type CacheableResetEmail = {
+  userId: number;
+  username: string;
   email: string;
 };
 
-const RESET_PASSWORD_PREFIX = "reset-password:";
 const RESET_PASSWORD_EMAIL_PREFIX = "reset-password-email:";
 
 @Injectable({})
@@ -198,42 +198,23 @@ export class UserService {
     // find user via email provided
     const [err, user] = await this.findByEmail(email);
     const username = user.username;
+    const userId = user.id;
 
     // if user doesn't exist, do nothing. Just bring user to email sent page
     if (err || !user) {
       return;
     }
 
-    // check if email in cache, print out that the reset mail has already been sent
-    const cachedEmail = await this.cache.get(RESET_PASSWORD_EMAIL_PREFIX + email);
-
-    if (!!cachedEmail) {
-      throw new ForbiddenException(AUTH_ERROR.RESET_EMAIL_ALREADY_SENT);
-    }
-
     //Reset password
-    const resetPasswordVerificationToken = RESET_PASSWORD_PREFIX + v4();
+    const resetPasswordVerificationToken = v4();
 
     await this.cache.set<CacheableResetEmail>(
       resetPasswordVerificationToken, 
-      {
+      { 
+        userId,
+        username,
         email,
      });
-
-    //Generate a random temporary password for user of length 16
-    const temporaryPassword = randomUUID().slice(0,16);
-
-    //Hashed the temporary password
-    const hashedTempPassword = await argon2.hash(temporaryPassword);
-
-    const [error, userToReset] = await this.update(
-      user.id, {hash: hashedTempPassword}
-    );
-    
-    //Throw an error if we are unable to update password to the new random password
-    if (error || !userToReset) {
-      throw new ForbiddenException(UPDATE_ERROR);
-    }
 
     //Send email
     await this.mailerService
@@ -245,7 +226,6 @@ export class UserService {
           // Data to be sent to template engine.
           code: resetPasswordVerificationToken,
           username: username,
-          newPassword: temporaryPassword,
         },
       })
       .then((success) => {
@@ -256,29 +236,23 @@ export class UserService {
       });
   }
 
-  async verifyResetEmail(token: string, confirmationPassword: string, newPassword: string) {
+  async verifyResetEmail(token: string,  newPassword: string) {
     const cachedUser = await this.cache.get<CacheableResetEmail>(token);
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
-    const { email } = cachedUser;
+    const { userId, username, email } = cachedUser;
+
+    //Check whether there is a user associated with the token
     const [err, user] = await this.findByEmail(email, true);
 
-    if (err) {
+    if (err || !user ) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
     }
 
-    const userId = user.id;
-    const currentPassword = user.hash;
+    //Update new password in the database
     const hashedNewPassword = await argon2.hash(newPassword);
-
-    //Check whether password entered matches the password in the email
-    const isPasswordCorrect = await argon2.verify(currentPassword, confirmationPassword);
-
-    if (!isPasswordCorrect) {
-      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
-    }
     
     const [error, userToReset] = await this.update(
       userId,
@@ -290,6 +264,6 @@ export class UserService {
     }
 
     // clear the email that requested for a reset in cache
-    await this.cache.del(email);
+    await this.cache.del(token);
   }
 }
