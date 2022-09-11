@@ -1,3 +1,5 @@
+import { PrimaryButton } from "../button";
+
 const LINKS = [
   {
     href: "/mmr",
@@ -39,10 +41,8 @@ export function Navbar() {
               <li className="hover:text-gray-600">
                 <div className="p-4">
                   <div className="group relative">
-                    <button className="bg-gray-800 text-white px-5 h-10 rounded">
-                      Profile
-                    </button>
-                    <nav className="bg-white invisible border-gray-800 rounded w-60 absolute left-0 top-full transition-all opacity-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-1">
+                    <PrimaryButton>Profile</PrimaryButton>
+                    <nav className="bg-red-500 invisible border-gray-800 rounded w-60 absolute left-0 top-full transition-all opacity-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-1">
                       <ul className="py-1">
                         <li>
                           <a href="#" className="block px-4 py-2">
