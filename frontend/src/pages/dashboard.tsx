@@ -1,6 +1,6 @@
 import React from "react";
 
-import Navbar from "../components/base/navbar";
+import { Navbar } from "../components/base/navbar";
 
 export default function dashboard() {
   return (
