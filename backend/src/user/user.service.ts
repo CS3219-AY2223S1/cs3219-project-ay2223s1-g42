@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 import { MailerService } from "@nestjs-modules/mailer";
 import { Prisma, User } from "@prisma/client";
+import { ConfigService } from "@nestjs/config";
 import * as radash from "radash";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
@@ -38,6 +39,7 @@ const RESET_PASSWORD_EMAIL_PREFIX = "reset-password-email:";
 @Injectable({})
 export class UserService {
   constructor(
+    private config: ConfigService,
     private prisma: PrismaService,
     private cache: RedisCacheService,
     private mailerService: MailerService
@@ -226,6 +228,7 @@ export class UserService {
           // Data to be sent to template engine.
           code: resetPasswordVerificationToken,
           username: username,
+          url: this.config.get("FRONTEND_URL"),
         },
       })
       .then((success) => {
