@@ -6,10 +6,7 @@ export function Layout({
   ...other
 }: HtmlHTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className="flex mt-8 max-w-5xl justify-center mx-auto bg-blue-200"
-      {...other}
-    >
+    <div className="flex mt-8 max-w-5xl justify-center mx-auto" {...other}>
       {children}
     </div>
   );

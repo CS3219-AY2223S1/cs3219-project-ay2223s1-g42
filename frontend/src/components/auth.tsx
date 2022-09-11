@@ -5,6 +5,7 @@ import type { Socket } from "socket.io-client";
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SignUpCredentials } from "../login/types";
+import TextInput from "./base/input/TextInput";
 
 const serverUrl = "http://localhost:5000";
 const websocketUrl = "ws://localhost:5000";
@@ -100,28 +101,28 @@ export default function Auth() {
         </h2>
         <div className="flex flex-col gap-2">
           <div>
-            <input
-              className="inputField"
+            <TextInput
+              label="Email"
               type="email"
-              placeholder="Your email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <input
-              className="inputField"
+            <TextInput
+              label="Username"
               type="username"
-              placeholder="Your username"
+              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div>
-            <input
-              className="inputField"
+            <TextInput
+              label="Password"
               type="password"
-              placeholder="Your password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
