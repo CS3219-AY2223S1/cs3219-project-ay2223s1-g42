@@ -242,6 +242,9 @@ export class UserService {
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
+    
+    // clear the email that requested for a reset in cache
+    await this.cache.del(token);
 
     const { userId, email } = cachedUser;
 
@@ -262,8 +265,5 @@ export class UserService {
     if (error || !userToReset) {
       throw new ForbiddenException(UPDATE_ERROR);
     }
-
-    // clear the email that requested for a reset in cache
-    await this.cache.del(token);
   }
 }

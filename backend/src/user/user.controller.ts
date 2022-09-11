@@ -105,7 +105,6 @@ export class UserController {
     @Body() forgetPasswordInfo: forgetPasswordCredentialsDto
   ) {
     const { email } = forgetPasswordInfo;
-    console.log(email);
     await this.userService.resetPassword(email);
     return { message: "success" };
   }
