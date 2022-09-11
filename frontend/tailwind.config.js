@@ -15,8 +15,28 @@ module.exports = {
       "3xl": "1600px",
     },
     extend: {
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme("colors.neutral.700"),
+            h2: {
+              color: theme("colors.neutral.800"),
+            },
+            h3: {
+              color: theme("colors.netrual.800"),
+            },
+            a: {
+              color: theme("colors.neutral.500"),
+              "&:hover": {
+                color: theme("colors.neutral.700"),
+              },
+            },
+          },
+        },
+      }),
       fontFamily: {
-        // sans: ['"Nunito Sans"', "sans-serif"],
+        display: ["AllianceNo1", "sans-serif"],
+        sans: ["AllianceNo2", "sans-serif"],
         // mono: ['"Ubuntu Mono"', "monospace"],
       },
       colors: {

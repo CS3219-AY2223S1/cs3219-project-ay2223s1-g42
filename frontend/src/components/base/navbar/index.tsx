@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function index() {
+export function Navbar() {
   return (
-    <nav className="fixed w-full bg-gray-750">
+    <nav className="sticky h-14 text-lg top-0 z-[45] bg-red-200">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
@@ -51,4 +51,4 @@ export default function index() {
       </div>
     </nav>
   );
-}
+  

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Auth from "../components/auth";
 import Account from "../components/account";
+import { Layout, Navbar } from "../components/base";
 
 const Home: NextPage = () => {
   return (
@@ -13,19 +14,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <div
-          className="container bg-red-500"
-          style={{ padding: "50px 0 100px 0" }}
-        >
+        {/* <div className="flex max-w-5xl h-screen justify-center mx-auto bg-red-100"> */}
+        <Navbar />
+        <Layout>
           <Auth />
-          {/* {!session ? (
+        </Layout>
+        {/* {!session ? (
             <Auth />
           ) : (
             <Account key={session.user.id} session={session} />
           )} */}
-        </div>
-        {/* Connected status: {isConnected ? "Connected" : "Disconnected"} */}
       </div>
+      {/* Connected status: {isConnected ? "Connected" : "Disconnected"} */}
+      {/* </div> */}
     </>
   );
 };
