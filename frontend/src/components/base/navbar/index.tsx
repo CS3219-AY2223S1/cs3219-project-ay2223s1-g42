@@ -2,7 +2,7 @@ import React from "react";
 
 export default function index() {
   return (
-    <nav className="w-full bg-gray-750">
+    <nav className="fixed w-full bg-gray-750">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
