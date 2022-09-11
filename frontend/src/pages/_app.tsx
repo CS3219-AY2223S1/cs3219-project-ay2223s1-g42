@@ -1,16 +1,43 @@
-import axios from "axios";
 import type { AppType } from "next/dist/shared/lib/utils";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AxiosError } from "axios";
 
-import { env } from "../env/client.mjs";
 import "../styles/globals.css";
+import { Axios } from "../services/auth";
 
-axios.defaults.baseURL = env.NEXT_PUBLIC_API_URL;
-axios.defaults.withCredentials = true;
-axios.defaults.headers.post["Content-Type"] = "application/json";
-axios.defaults.headers.post["Accept"] = "application/json";
+// Create a client
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: async (error, query) => {
+      // error assumed to be axios error
+      const axiosErr = error as AxiosError;
+      if (axiosErr.response?.status === 401) {
+        console.log("Refreshing Token");
+        try {
+          const res = await Axios.get("/auth/refresh");
+          if (res.status === 200) {
+            queryClient.refetchQueries(query.queryKey);
+          }
+        } catch (err) {
+          throw err;
+        }
+      }
+    },
+  }),
+});
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  return <Component {...pageProps} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />;
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 };
 
 export default MyApp;

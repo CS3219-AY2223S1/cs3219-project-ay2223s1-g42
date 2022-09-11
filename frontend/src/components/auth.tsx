@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
+import { useAuthStore } from "../login/hooks";
+import { SignInCredentials, SignUpCredentials } from "../login/types";
 
 const serverUrl = "http://localhost:5000";
 const websocketUrl = "ws://localhost:5000";
@@ -30,83 +32,37 @@ export default function Auth() {
     // }
   };
 
-  const handleSignup = async (
-    email: string,
-    username: string,
-    password: string
-  ) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${serverUrl}/auth/local/signup`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, username, password }),
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error("failed to signup");
-      }
-      console.log("successfully signed up");
-      console.log({ response });
-      setIsLoggedIn(true);
-    } catch (error: any) {
-      alert(error.error_description || error.message);
-    } finally {
-      setLoading(false);
-    }
+  const user = useAuthStore((state) => state.user);
+  const useGetMe = useAuthStore((state) => state.getMe);
+  const getMe = useGetMe();
+
+  // TODO: auto-refresh every 5 minutes
+  const useRefresh = useAuthStore((state) => state.refresh);
+  const refreshMutation = useRefresh();
+
+  const useSignInMutation = useAuthStore((state) => state.signin);
+  const signinMutation = useSignInMutation();
+  const handleSignin = async (credentials: SignInCredentials) => {
+    signinMutation.mutate(credentials);
+    getMe.refetch();
   };
 
-  const handleCredentialLogin = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${serverUrl}/auth/local/signin`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error("failed to sign in");
-      }
-      const res = await response.json();
-      console.log("successfully signed in");
-      console.log({ res });
-      setIsLoggedIn(true);
-    } catch (error: any) {
-      alert(error.error_description || error.message);
-    } finally {
-      setLoading(false);
-    }
+  const useSignUpMutation = useAuthStore((state) => state.signup);
+  const signUpMutation = useSignUpMutation();
+  const handleSignup = async (credentials: SignUpCredentials) => {
+    signUpMutation.mutate(credentials);
+    getMe.refetch();
+  };
+
+  const useSignOutMutation = useAuthStore((state) => state.signout);
+  const signOutMutation = useSignOutMutation();
+  const handleSignout = async () => {
+    signOutMutation.mutate();
   };
 
   useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        const res = await fetch(`${serverUrl}/users/me`, {
-          method: "GET",
-          credentials: "include",
-        }).then((res) => res.json());
-
-        if (!res) {
-          throw new Error("failed to fetch user");
-        }
-
-        if (res) {
-          setIsLoggedIn(true);
-        }
-      } catch (e) {
-        console.error(e);
-        setIsLoggedIn(false);
-      }
-    };
-    fetchMe();
-  }, [isLoggedIn]);
+    console.log({ user });
+  }, [user]);
 
   useEffect(() => {
     const newSocket = io(websocketUrl, { withCredentials: true });
@@ -172,30 +128,34 @@ export default function Auth() {
           </div>
         </div>
         <div className="flex flex-col space-y-2 mt-4">
-          <RedButton
-            onClick={(e) => {
-              e.preventDefault();
-              handleSignup(email, username, password);
-            }}
-            // className="button block"
-            disabled={loading}
-          >
-            <span>{loading ? "Loading" : "Sign up"}</span>
-          </RedButton>
-          <BlueButton
-            onClick={(e) => {
-              e.preventDefault();
-              handleCredentialLogin(email, password);
-            }}
-            disabled={loading}
-          >
-            <span>{loading ? "Loading" : "Login"}</span>
-          </BlueButton>
-          <PrimaryButton>Sign in</PrimaryButton>
+          {!user ? (
+            <>
+              <RedButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignup({ email, username, password });
+                }}
+                // className="button block"
+                disabled={signUpMutation.isLoading}
+              >
+                <span>{loading ? "Loading" : "Sign up"}</span>
+              </RedButton>
+              <BlueButton
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSignin({ email, password });
+                }}
+                disabled={signinMutation.isLoading}
+              >
+                <span>{loading ? "Loading" : "Login"}</span>
+              </BlueButton>
+              <PrimaryButton>Sign in</PrimaryButton>
+              <button onClick={sendChat}>send broadcast message</button>
+            </>
+          ) : (
+            <RedButton onClick={handleSignout}>Sign out</RedButton>
+          )}
         </div>
-        {isLoggedIn && (
-          <button onClick={sendChat}>send broadcast message</button>
-        )}
       </div>
     </div>
   );
