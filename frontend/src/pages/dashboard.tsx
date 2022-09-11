@@ -1,10 +1,6 @@
 import { Navbar } from "../components/base/navbar";
-import useSocket from "../hooks/useSocket";
 
 export default function dashboard() {
-  const { me } = useSocket();
-  console.log("me from dashboard component: ", me);
-
   return (
     <div className="justify-between text-gray-100 min-h-screen bg-black">
       <Navbar />

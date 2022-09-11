@@ -9,6 +9,7 @@ import { io, Socket } from "socket.io-client";
 import Peer from "simple-peer";
 import { User } from "../login/types";
 import { useAuthStore } from "../login/hooks";
+import { env } from "../env/client.mjs";
 
 type ISocket = {
   callAccepted: boolean;
@@ -45,8 +46,6 @@ type Call = {
   signal?: Peer.SignalData;
 };
 
-// const socket = io("ws://localhost:5000", { withCredentials: true });
-
 export const SocketProvider = ({ children }: { children: any }) => {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [callAccepted, setCallAccepted] = useState<boolean>(false);
@@ -65,7 +64,7 @@ export const SocketProvider = ({ children }: { children: any }) => {
   const connectionRef = useRef<Peer.Instance>();
 
   useEffect(() => {
-    const socket = io("ws://localhost:5000", { withCredentials: true });
+    const socket = io(env.NEXT_PUBLIC_WS_URL, { withCredentials: true });
     socket.on("connect", () => {
       console.log("connected to websocket server");
       setConnected(true);

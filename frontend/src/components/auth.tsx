@@ -12,19 +12,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 export default function Auth() {
-  const router = useRouter();
+  // form state
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
 
   const queryClient = useQueryClient();
 
+  // user state
   const user = useAuthStore((state) => state.user);
   const useGetMe = useAuthStore((state) => state.getMe);
-  const getMe = useGetMe({ onSuccess: () => setLoading(false) });
+  const getMe = useGetMe();
 
+  // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
   const signinMutation = useSignInMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
@@ -33,6 +33,7 @@ export default function Auth() {
     signinMutation.mutate(credentials);
   };
 
+  // sign up mutations
   const useSignUpMutation = useAuthStore((state) => state.signup);
   const signUpMutation = useSignUpMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
@@ -41,6 +42,7 @@ export default function Auth() {
     signUpMutation.mutate(credentials);
   };
 
+  // sign out mutations
   const useSignOutMutation = useAuthStore((state) => state.signout);
   const signOutMutation = useSignOutMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
@@ -90,7 +92,7 @@ export default function Auth() {
           />
         </div>
         <div className="flex flex-col space-y-2 mt-4">
-          {!user && getMe.failureCount > 0 ? (
+          {!user ? (
             <>
               <RedButton
                 onClick={(e) => {
@@ -114,15 +116,13 @@ export default function Auth() {
               <PrimaryButton>Sign in</PrimaryButton>
               <button onClick={sendChat}>send broadcast message</button>
             </>
-          ) : user ? (
+          ) : (
             <>
               <RedButton onClick={handleSignout}>
                 <span>{signOutMutation.isLoading ? "Loading" : "Signout"}</span>
               </RedButton>
               <button onClick={sendChat}>send broadcast message</button>
             </>
-          ) : (
-            <div> LOADING </div>
           )}
         </div>
       </div>
