@@ -125,8 +125,8 @@ export default function Auth() {
               <button onClick={sendChat}>send broadcast message</button>
             </>
           )}
-          <Toast />
         </div>
+        <Toast />
       </div>
     </div>
   );

@@ -28,9 +28,9 @@ const Toast = (props: Props) => {
         open={open}
         onOpenChange={setOpen}
         className={cx(
-          "z-50 fixed bottom-4 inset-x-4 w-auto md:top-4 md:right-4 md:left-auto md:bottom-auto md:w-full md:max-w-sm",
+          "z-50 fixed bottom-4 inset-x-4 w-auto left-auto right-auto md:top-auto md:w-full md:max-w-2xl",
           "bg-white border-[1px] border-neutral-900",
-          "radix-state-open:animate-toast-slide-in-bottom md:radix-state-open:animate-toast-slide-in-right",
+          "radix-state-open:animate-toast-slide-in-bottom md:radix-state-open:animate-toast-slide-in-bottom",
           "radix-state-closed:animate-toast-hide",
           "radix-swipe-end:animate-toast-swipe-out",
           "translate-x-radix-toast-swipe-move-x",
@@ -55,11 +55,11 @@ const Toast = (props: Props) => {
               <div className="h-0 flex-1 flex">
                 <ToastPrimitive.Action
                   altText="view now"
-                  className="w-full border border-transparent px-3 py-2 flex items-center
+                  className="w-full border-[1px] border-neutral-900 px-3 py-2 flex items-center
                   justify-center text-sm font-medium text-neutral-600 hover:bg-neutral-900
                   hover:text-neutral-50 focus:z-10 focus:outline-none focus-visible:ring
                   focus-visible:ring-neutral-800 focus-visible:ring-opacity-75 duration-200
-                  ease-out"
+                  ease-out "
                   onClick={(e) => {
                     e.preventDefault();
                     window.open("https://github.com");
