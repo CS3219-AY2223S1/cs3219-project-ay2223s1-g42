@@ -4,13 +4,13 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
 };
 
-export default function TextInput({ label, className, ...other }: Props) {
+export function TextInput({ label, className, ...other }: Props) {
   return (
     <div className="relative">
       <input
         type="text"
         id={"floating_outlined"}
-        className={`block px-2.5 pb-2.5 pt-4 w-full text-sm text-neutral-900 bg-transparent border-[1px] border-neutral-900 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer ${className}`}
+        className={`block px-2.5 pb-2.5 pt-4 w-full text-md text-neutral-900 bg-transparent border-[1px] border-neutral-900 appearance-none  focus:outline-none focus:ring-0 focus:border-blue-600 peer placeholder-transparent focus:placeholder-neutral-400 ${className}`}
         {...other}
       />
       <label
