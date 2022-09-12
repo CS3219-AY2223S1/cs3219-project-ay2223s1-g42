@@ -10,14 +10,26 @@ const EnvSchema = z.object({
   JWT_SECRET: z.string(),
   JWT_REFRESH_SECRET: z.string(),
   COOKIE_SECRET: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.number().default(6379),
+  CACHE_TTL: z.number().default(1800),
+  SMTP_EMAIL: z.string().email(),
+  SMTP_PASSWORD: z.string(),
+  SMTP_NAME: z.string(),
+  FRONTEND_URL: z.string(),
+  SMTP_PORT: z.number().default(587),
+  SMTP_HOST: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {
-  const { PORT, ...rest } = config;
+  const { PORT, REDIS_PORT, CACHE_TTL, SMTP_PORT, ...rest } = config;
   // convert PORT env variable to number before
   // parsing thru zod schema
   const parsedEnv = EnvSchema.parse({
     PORT: parseInt(PORT as string),
+    REDIS_PORT: parseInt(REDIS_PORT as string),
+    CACHE_TTL: parseInt(CACHE_TTL as string),
+    SMTP_PORT: parseInt(SMTP_PORT as string),
     ...rest,
   });
   return parsedEnv;
