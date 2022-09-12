@@ -16,6 +16,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
+        
         // sans: ['"Nunito Sans"', "sans-serif"],
         // mono: ['"Ubuntu Mono"', "monospace"],
       },

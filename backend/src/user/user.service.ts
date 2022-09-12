@@ -18,12 +18,15 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
 };
 
 type UpdateableUserFields = Partial<
-  Pick<User, "username" | "email" | "hashRt">
+  Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
+
 
 @Injectable({})
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+  ) {}
 
   async find({
     id,
@@ -171,4 +174,6 @@ export class UserService {
     });
     return res;
   }
+
+  
 }

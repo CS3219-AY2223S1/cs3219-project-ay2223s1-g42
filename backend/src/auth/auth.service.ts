@@ -27,6 +27,12 @@ type CacheableUserFields = {
   hash: string;
 };
 
+type CacheableResetEmail = {
+  userId: number;
+  username: string;
+  email: string;
+};
+
 @Injectable({})
 export class AuthService {
   constructor(
@@ -215,5 +221,80 @@ export class AuthService {
       throw err;
     }
     return;
+  }
+
+  /**
+   * Sends the user a reset password email and returns the JWT token
+   * @param email the email account that requested for a password reset
+   */
+   async resetPassword(email: string) {
+    // find user via email provided
+    const [err, user] = await this.users.findByEmail(email);
+    const username = user.username;
+    const userId = user.id;
+
+    // if user doesn't exist, do nothing. Just bring user to email sent page
+    if (err || !user) {
+      return;
+    }
+
+    //Reset password
+    const resetPasswordVerificationToken = v4();
+
+    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
+      userId,
+      username,
+      email,
+    });
+
+    //Send email
+    await this.mailerService
+      .sendMail({
+        to: email,
+        subject: "Email Verification for resetting of password ✔",
+        template: "resetPasswordVerification", // The `.pug` or `.hbs` extension is appended automatically.
+        context: {
+          // Data to be sent to template engine.
+          code: resetPasswordVerificationToken,
+          username: username,
+          url: this.config.get("FRONTEND_URL"),
+        },
+      })
+      .then((success) => {
+        console.log(success);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async verifyResetEmail(token: string, newPassword: string) {
+    const cachedUser = await this.cache.get<CacheableResetEmail>(token);
+    if (!cachedUser) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
+    }
+
+    // clear the email that requested for a reset in cache
+    await this.cache.del(token);
+
+    const { userId, email } = cachedUser;
+
+    //Check whether there is a user associated with the token
+    const [err, user] = await this.users.findByEmail(email, true);
+
+    if (err || !user) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
+    }
+
+    //Update new password in the database
+    const hashedNewPassword = await argon2.hash(newPassword);
+
+    const [error, userToReset] = await this.users.update(userId, {
+      hash: hashedNewPassword,
+    });
+
+    if (error || !userToReset) {
+      throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
+    }
   }
 }
