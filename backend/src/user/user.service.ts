@@ -1,14 +1,9 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
-import { MailerService } from "@nestjs-modules/mailer";
+import { Injectable } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
-import { ConfigService } from "@nestjs/config";
 import * as radash from "radash";
 import * as argon2 from "argon2";
-import { v4 } from "uuid";
 
 import { PrismaService } from "../prisma/prisma.service";
-import { AUTH_ERROR } from "../auth/constants";
-import { RedisCacheService } from "../cache/redisCache.service";
 
 const USER_FIELDS: Prisma.UserSelect = {
   email: true,
@@ -22,25 +17,15 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
   hashRt: true,
 };
 
-const UPDATE_ERROR = "Unable to reset password";
-
 type UpdateableUserFields = Partial<
   Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
 
-type CacheableResetEmail = {
-  userId: number;
-  username: string;
-  email: string;
-};
 
 @Injectable({})
 export class UserService {
   constructor(
-    private config: ConfigService,
     private prisma: PrismaService,
-    private cache: RedisCacheService,
-    private mailerService: MailerService
   ) {}
 
   async find({
@@ -190,78 +175,5 @@ export class UserService {
     return res;
   }
 
-  /**
-   * Sends the user a reset password email and returns the JWT token
-   * @param email the email account that requested for a password reset
-   */
-  async resetPassword(email: string) {
-    // find user via email provided
-    const [err, user] = await this.findByEmail(email);
-    const username = user.username;
-    const userId = user.id;
-
-    // if user doesn't exist, do nothing. Just bring user to email sent page
-    if (err || !user) {
-      return;
-    }
-
-    //Reset password
-    const resetPasswordVerificationToken = v4();
-
-    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
-      userId,
-      username,
-      email,
-    });
-
-    //Send email
-    await this.mailerService
-      .sendMail({
-        to: email,
-        subject: "Email Verification for resetting of password ✔",
-        template: "resetPasswordVerification", // The `.pug` or `.hbs` extension is appended automatically.
-        context: {
-          // Data to be sent to template engine.
-          code: resetPasswordVerificationToken,
-          username: username,
-          url: this.config.get("FRONTEND_URL"),
-        },
-      })
-      .then((success) => {
-        console.log(success);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  async verifyResetEmail(token: string, newPassword: string) {
-    const cachedUser = await this.cache.get<CacheableResetEmail>(token);
-    if (!cachedUser) {
-      throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
-    }
-
-    // clear the email that requested for a reset in cache
-    await this.cache.del(token);
-
-    const { userId, email } = cachedUser;
-
-    //Check whether there is a user associated with the token
-    const [err, user] = await this.findByEmail(email, true);
-
-    if (err || !user) {
-      throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
-    }
-
-    //Update new password in the database
-    const hashedNewPassword = await argon2.hash(newPassword);
-
-    const [error, userToReset] = await this.update(userId, {
-      hash: hashedNewPassword,
-    });
-
-    if (error || !userToReset) {
-      throw new ForbiddenException(UPDATE_ERROR);
-    }
-  }
+  
 }

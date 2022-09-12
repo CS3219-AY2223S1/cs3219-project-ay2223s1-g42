@@ -4,19 +4,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
-  Post,
   Param,
   Patch,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import {
-  EditableCredentialsDto,
-  ForgetPasswordCredentialsDto,
-  ResetPasswordCredentialsDto,
-} from "../utils/zod";
+import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 
@@ -94,31 +87,5 @@ export class UserController {
     throw new BadRequestException("Failed to delete user.");
   }
 
-  /**
-   * Sends the provided email an link to reset password
-   * @param forgetPasswordInfo contains email needed to reset password
-   */
-  @PublicRoute()
-  @Post("/forget-password")
-  @HttpCode(HttpStatus.CREATED)
-  async forgetPassword(
-    @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
-  ) {
-    const { email } = forgetPasswordInfo;
-    await this.userService.resetPassword(email);
-    return { message: "success" };
-  }
 
-  /**
-   * Reset password of user that is stored in the specified token
-   * @param resetPasswordInfo info of user needed for password reset
-   */
-  @PublicRoute()
-  @Post("/reset-password")
-  @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
-    const { token, password } = resetPasswordInfo;
-    await this.userService.verifyResetEmail(token, password);
-    return { message: "success" };
-  }
 }

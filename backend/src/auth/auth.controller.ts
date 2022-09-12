@@ -12,7 +12,12 @@ import { User } from "@prisma/client";
 import { Response } from "express";
 
 import { AuthService, Tokens } from "./auth.service";
-import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
+import { 
+  SigninCredentialsDto, 
+  SignupCredentialsDto, 
+  ForgetPasswordCredentialsDto, 
+  ResetPasswordCredentialsDto 
+} from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
@@ -85,5 +90,33 @@ export class AuthController {
   clearCookies(res: Response) {
     res.clearCookie("refresh_token", COOKIE_OPTIONS);
     res.clearCookie("access_token", COOKIE_OPTIONS);
+  }
+
+  /**
+   * Sends the provided email an link to reset password
+   * @param forgetPasswordInfo contains email needed to reset password
+   */
+  @PublicRoute()
+  @Post("/forget-password")
+  @HttpCode(HttpStatus.CREATED)
+  async forgetPassword(
+    @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
+  ) {
+    const { email } = forgetPasswordInfo;
+    await this.authService.resetPassword(email);
+    return { message: "success" };
+  }
+
+  /**
+   * Reset password of user that is stored in the specified token
+   * @param resetPasswordInfo info of user needed for password reset
+   */
+  @PublicRoute()
+  @Post("/reset-password")
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
+    const { token, password } = resetPasswordInfo;
+    await this.authService.verifyResetEmail(token, password);
+    return { message: "success" };
   }
 }
