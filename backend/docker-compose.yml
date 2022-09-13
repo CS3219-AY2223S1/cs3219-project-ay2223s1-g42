@@ -23,17 +23,5 @@ services:
       MYSQL_ROOT_PASSWORD: root
     networks:
       - cs3219
-  dev-redis:
-    image: "redis:7.0-alpine"
-    ports:
-      - 6380:6379
-    networks:
-        - cs3219
-  test-redis:
-    image: "redis:7.0-alpine"
-    ports:
-      - 6381:6379
-    networks:
-        - cs3219
 networks:
   cs3219:
