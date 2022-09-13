@@ -1,6 +1,6 @@
 import { HtmlHTMLAttributes } from "react";
 
-export function Layout({
+export function Container({
   children,
   className,
   ...other

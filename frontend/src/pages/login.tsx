@@ -6,13 +6,14 @@ import {
   BlueButton,
   PrimaryButton,
   RedButton,
-  Layout,
+  Container,
   SecondaryButton,
   LinkButton,
 } from "../components/base";
 
 import GoogleOauth from "../login/components/googleOauth";
 import { TextInput } from "../components/base";
+import GoogleIcon from "../components/icon/GoogleIcon";
 
 type LoginCredentials = {
   email: string;
@@ -32,17 +33,17 @@ export default function login() {
   const [password, setPassword] = useState("");
 
   return (
-    <Layout>
+    <Container>
       <div className="w-full px-4 flex flex-col text-center space-y-12 mx-auto">
         <h1 className="font-display font-bold leading-tight text-5xl text-black-600">
           Welcome.
         </h1>
         <div>
-        <BlueButton className="w-full">
-            <GoogleOauth
-            label="Sign in with Google"
-            className="flex flex-row space-x-2 justify-center items-center"
-            />  
+          <BlueButton className="w-full flex items-center justify-center relative">
+            <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
+              <GoogleIcon className="h-5 w-5 text-red-500" />
+            </div>
+            Sign in with Google
           </BlueButton>
           <div className="relative flex py-5 items-center">
             <div className="flex-grow border-t border-neutral-400"></div>
@@ -85,8 +86,6 @@ export default function login() {
           <LinkButton className="self-center">Sign up</LinkButton>
         </div>
       </div>
-      
-      
-    </Layout>
+    </Container>
   );
 }
