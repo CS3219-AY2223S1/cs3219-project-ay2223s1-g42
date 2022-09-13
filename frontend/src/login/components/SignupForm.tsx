@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -9,21 +8,21 @@ import {
   PrimaryButton,
   LinkButton,
 } from "../../components/base";
-import { ErrorAlert } from "../../components/base/alert";
+import { ErrorAlert, SuccessAlert } from "../../components/base/alert";
 import { GoogleIcon } from "../../components/icons";
 import { useAuthStore } from "../hooks";
 import {
-  SignInCredentials,
-  SigninCredentialsSchema,
   FormProps,
+  SignUpCredentials,
+  SignupCredentialsSchema,
 } from "../types";
 
-const LoginForm = ({ setForm }: FormProps) => {
+const SignupForm = ({ setForm }: FormProps) => {
   const queryClient = useQueryClient();
 
   // sign in mutations
-  const useSignInMutation = useAuthStore((state) => state.signin);
-  const signinMutation = useSignInMutation({
+  const useSignUpMutation = useAuthStore((state) => state.signup);
+  const signupMutation = useSignUpMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
   });
 
@@ -33,40 +32,47 @@ const LoginForm = ({ setForm }: FormProps) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<SignInCredentials>({
-    resolver: zodResolver(SigninCredentialsSchema),
+  } = useForm<SignUpCredentials>({
+    resolver: zodResolver(SignupCredentialsSchema),
   });
 
   // submit function
-  const handleSignin = async (credentials: SignInCredentials) => {
-    signinMutation.mutate(credentials);
+  const handleSignup = async (credentials: SignUpCredentials) => {
+    signupMutation.mutate(credentials);
     reset();
   };
-  const onSubmit = handleSubmit(handleSignin);
+  const onSubmit = handleSubmit(handleSignup);
 
   return (
     <>
-      {signinMutation.isError && (
+      {signupMutation.isError ? (
         <ErrorAlert
-          title={"Login failed!"}
-          message={"Invalid login credentials."}
+          title={"Sign up failed!"}
+          message={"An error occurred while signing up."}
         />
+      ) : signupMutation.isSuccess ? (
+        <SuccessAlert
+          title="Sign up successful!"
+          message="An email has been sent to your email address. Please verify your email address to continue."
+        />
+      ) : (
+        <></>
       )}
       <div>
         <BlueButton className="w-full flex items-center justify-center relative">
           <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
             <GoogleIcon className="h-5 w-5 text-red-500" />
           </div>
-          Sign in with Google
+          Sign up with Google
         </BlueButton>
         <div className="relative flex py-5 items-center">
           <div className="flex-grow border-t border-neutral-400"></div>
           <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
-            Or, sign in with your email
+            Or, sign up with your email
           </span>
           <div className="flex-grow border-t border-neutral-400"></div>
         </div>
-        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <form className="flex flex-col gap-8 space-y-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
             <TextInput
               label="Email"
@@ -78,35 +84,31 @@ const LoginForm = ({ setForm }: FormProps) => {
               {...register("email", { required: true })}
             />
             <TextInput
+              label="Username"
+              type="text"
+              placeholder="Username123"
+              isError={!!errors.username?.message}
+              error={errors.username?.message?.replace("String", "Username")}
+              autoComplete="username"
+              {...register("username", { required: true })}
+            />
+            <TextInput
               label="Password"
               type="password"
               placeholder="Very$ecureP4ssword"
               isError={!!errors.password?.message}
               error={errors.password?.message}
-              autoComplete="current-password"
+              autoComplete="new-password"
               {...register("password", { required: true })}
             />
-            <div className="flex flex-row-reverse">
-              <Link
-                className="hover:border-b-neutral-400"
-                href="/reset-password"
-              >
-                <a
-                  className="font-sans transition duration-300 ease-out border-b-[1px] 
-                  border-transparent hover:border-neutral-400 text-neutral-400"
-                >
-                  Forget password?
-                </a>
-              </Link>
-            </div>
           </div>
           <div className="flex flex-col gap-3">
-            <PrimaryButton type="submit">Sign in</PrimaryButton>
+            <PrimaryButton type="submit">Sign up</PrimaryButton>
             <LinkButton
               className="self-center"
-              onClick={() => setForm("signup")}
+              onClick={() => setForm("signin")}
             >
-              Sign up
+              Sign in
             </LinkButton>
           </div>
         </form>
@@ -115,4 +117,4 @@ const LoginForm = ({ setForm }: FormProps) => {
   );
 };
 
-export { LoginForm };
+export { SignupForm };
