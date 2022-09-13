@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import Peer from "simple-peer";
+
 import { User } from "../login/types";
 import { useAuthStore } from "../login/hooks";
 import { env } from "../env/client.mjs";
@@ -64,25 +65,31 @@ export const SocketProvider = ({ children }: { children: any }) => {
   const connectionRef = useRef<Peer.Instance>();
 
   useEffect(() => {
-    const socket = io(env.NEXT_PUBLIC_WS_URL, { withCredentials: true });
+    const socket = io(env.NEXT_PUBLIC_WS_URL, {
+      withCredentials: true,
+      transports: ["websocket"],
+    });
+
     socket.on("connect", () => {
       console.log("connected to websocket server");
       setConnected(true);
     });
-
     socket.on("disconnect", () => {
       setConnected(false);
     });
-
     socket.on("chat", (data) => {
       console.log({ data });
     });
+
     setSocket(socket);
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("chat");
+      setSocket((soc) => {
+        soc?.off("connect");
+        soc?.off("disconnect");
+        soc?.off("chat");
+        return undefined;
+      });
     };
   }, [user]);
 
@@ -175,5 +182,9 @@ export const SocketProvider = ({ children }: { children: any }) => {
 // Let's only export the `useAuth` hook instead of the context.
 // We only want to use the hook directly and never the context comopnent.
 export default function useSocket() {
-  return useContext(SocketContext);
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error(`missing SocketProvider component required for useSocket`);
+  }
+  return context;
 }

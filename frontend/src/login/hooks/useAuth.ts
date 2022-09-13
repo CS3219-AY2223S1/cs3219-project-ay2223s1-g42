@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import create from "zustand";
 
-import { Axios } from "../../services/auth";
+import { Axios } from "src/services/auth";
 import {
   User,
   ApiResponse,

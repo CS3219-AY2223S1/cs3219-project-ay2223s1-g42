@@ -8,9 +8,9 @@ import {
   TextInput,
   PrimaryButton,
   LinkButton,
-} from "../../components/base";
-import { ErrorAlert } from "../../components/base/alert";
-import { GoogleIcon } from "../../components/icons";
+} from "src/components/base";
+import { ErrorAlert } from "src/components/base/alert";
+import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
 import {
   SignInCredentials,
