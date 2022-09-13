@@ -5,7 +5,7 @@ import type { Socket } from "socket.io-client";
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SignUpCredentials } from "../login/types";
-import TextInput from "./base/input/TextInput";
+import { TextInput } from "./base/input/TextInput";
 // import useSocket from "../hooks/useSocket";
 import useSocket from "../context/socket";
 import { useQueryClient } from "@tanstack/react-query";
