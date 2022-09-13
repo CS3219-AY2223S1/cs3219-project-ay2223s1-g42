@@ -36,7 +36,9 @@ type AuthStore = {
   ) => UseMutationResult<ApiResponse, unknown, void, unknown>;
 };
 
-const AuthMutations = (setState: any) => {
+const AuthMutations = (
+  setState: ({ user }: { user: User | undefined }) => void
+) => {
   const getMeMutation = (options?: Options) => {
     return useQuery(
       ["me"],

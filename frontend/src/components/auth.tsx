@@ -7,7 +7,7 @@ import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SignUpCredentials } from "../login/types";
 import { TextInput } from "./base/input";
 // import useSocket from "../hooks/useSocket";
-import useSocket from "../context/socket";
+import useSocket from "../hooks/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Toast from "./base/toast";

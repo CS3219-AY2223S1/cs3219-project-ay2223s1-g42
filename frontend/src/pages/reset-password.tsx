@@ -19,7 +19,7 @@ export default function resetPassword() {
           type="email"
           placeholder="Email Address"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.currentTarget.value)}
         />
         <PrimaryButton className="max-w-3xl">
           Send Reset Instructions

@@ -1,10 +1,6 @@
-import { ButtonHTMLAttributes } from "react";
+import { Props } from "./types";
 
-export function LinkButton({
-  className,
-  children,
-  ...other
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function LinkButton({ className, children, ...other }: Props) {
   return (
     <button
       className={`font-sans transition duration-300 ease-out border-b-[1px]

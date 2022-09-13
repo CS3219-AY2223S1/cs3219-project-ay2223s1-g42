@@ -8,6 +8,8 @@ import {
   TextInput,
   PrimaryButton,
   LinkButton,
+  RedButton,
+  SecondaryButton,
 } from "src/components/base";
 import { ErrorAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
@@ -23,9 +25,7 @@ const LoginForm = ({ setForm }: FormProps) => {
 
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
-  const signinMutation = useSignInMutation({
-    onSuccess: () => queryClient.invalidateQueries(["me"]),
-  });
+  const signinMutation = useSignInMutation();
 
   // form setup
   const {
@@ -101,7 +101,9 @@ const LoginForm = ({ setForm }: FormProps) => {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <PrimaryButton type="submit">Sign in</PrimaryButton>
+            <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
+              Sign in
+            </PrimaryButton>
             <LinkButton
               className="self-center"
               onClick={() => setForm("signup")}

@@ -7,7 +7,7 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "../styles/globals.css";
-import { SocketProvider } from "../context/socket";
+import { SocketProvider } from "../hooks/socket";
 
 // Create a client
 const queryClient = new QueryClient({
