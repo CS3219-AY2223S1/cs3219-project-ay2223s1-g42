@@ -38,9 +38,12 @@ export default function login() {
           Welcome.
         </h1>
         <div>
-         
-            <GoogleOauth/>  
-           
+        <BlueButton className="w-full">
+            <GoogleOauth
+            label="Sign in with Google"
+            className="flex flex-row space-x-2 justify-center items-center"
+            />  
+          </BlueButton>
           <div className="relative flex py-5 items-center">
             <div className="flex-grow border-t border-neutral-400"></div>
             <span className="flex-shrink mx-4 text-neutral-400">
@@ -78,10 +81,12 @@ export default function login() {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          <PrimaryButton>Sign in</PrimaryButton>
+          <PrimaryButton onSubmit={onSubmit}>Sign in</PrimaryButton>
           <LinkButton className="self-center">Sign up</LinkButton>
         </div>
       </div>
+      
+      
     </Layout>
   );
 }
