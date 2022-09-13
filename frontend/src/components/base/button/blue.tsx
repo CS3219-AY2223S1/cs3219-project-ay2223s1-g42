@@ -9,7 +9,7 @@ export function BlueButton({
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <BaseButton
-      className={`border-blue-600 bg-blue-600 text-neutral-50 hover:bg-blue-500 hover:border-blue-500 ${className}`}
+      className={`border-blue-600 bg-blue-600 text-neutral-50 hover:bg-blue-700 hover:border-blue-700 ${className}`}
       {...other}
     >
       {children}

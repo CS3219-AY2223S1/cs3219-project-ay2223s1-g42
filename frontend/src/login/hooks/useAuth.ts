@@ -15,7 +15,8 @@ import {
 } from "../types";
 
 type Options = {
-  onSuccess: () => Promise<void> | void | undefined;
+  onSuccess?: () => Promise<void> | void | undefined;
+  onError?: () => Promise<void> | void;
 };
 
 type AuthStore = {
@@ -76,6 +77,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
           if (options?.onSuccess) {
             options.onSuccess();
           }
+        },
+        onError: (error) => {
+          console.log({ error });
         },
       }
     );

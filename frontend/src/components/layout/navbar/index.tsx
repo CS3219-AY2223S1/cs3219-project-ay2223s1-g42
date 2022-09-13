@@ -1,4 +1,4 @@
-import { PrimaryButton } from "../button";
+import { PrimaryButton } from "../../base/button";
 
 const LINKS = [
   {

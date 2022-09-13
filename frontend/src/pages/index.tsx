@@ -4,7 +4,7 @@ import Head from "next/head";
 
 import Auth from "../components/auth";
 import Account from "../components/account";
-import { Layout, Navbar } from "../components/base";
+import { Container, Navbar } from "../components/base";
 
 const Home: NextPage = () => {
   return (
@@ -17,9 +17,9 @@ const Home: NextPage = () => {
       <div>
         {/* <div className="flex max-w-5xl h-screen justify-center mx-auto bg-red-100"> */}
         <Navbar />
-        <Layout>
+        <Container>
           <Auth />
-        </Layout>
+        </Container>
         {/* {!session ? (
             <Auth />
           ) : (

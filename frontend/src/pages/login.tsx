@@ -1,22 +1,23 @@
-import React from "react";
-import { useAuthStore } from "../login/hooks";
-import { SignInCredentials, SigninCredentialsSchema } from "../login/types";
+import { useState } from "react";
+
+import { Container } from "../components/base";
+import { LoginForm, SignupForm } from "../login/components";
 
 export default function login() {
+  const [form, setForm] = useState<"signin" | "signup">("signin");
+
   return (
-    <div className="flex flex-col justify-between text-gray-100 min-h-screen items-center bg-red-500">
-      <div className="w-screen max-w-5xl px-4 flex flex-col mb-12 bg-blue-500 text-center">
-        centered loginsadddddddddddddddddddddddddddddddddddddddd
-        ssssssssssssssssssssssssssssssssscentered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss
+    <Container>
+      <div className="w-full px-4 flex flex-col text-center mx-auto">
+        <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
+          Welcome.
+        </h1>
+        {form === "signin" ? (
+          <LoginForm setForm={setForm} />
+        ) : (
+          <SignupForm setForm={setForm} />
+        )}
       </div>
-    </div>
+    </Container>
   );
 }
