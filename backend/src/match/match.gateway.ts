@@ -9,7 +9,6 @@ import {
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
 import { intersects } from "radash";
-import { User } from "@prisma/client";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
@@ -24,7 +23,7 @@ type PoolUser = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
 };
 
-// @UseGuards(WsJwtAccessGuard)
+@UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -70,20 +69,17 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log({ userPoolItem });
     this.pool.set(userPoolItem.id, userPoolItem);
 
-    // //receive player info
-    // socket.on("message", (message) => {
-    //   const new_item: PoolItem<any> = {
-    //     socket: socket,
-    //     time_joined: Date.now(),
-    //     ...JSON.parse(message.toString()),
-    //   };
-    //   // add player to pool if they are not already in pool
-    //   if (!this.pool.has(new_item.id)) {
-    //     this.pool.set(new_item.id, new_item);
-    //   } else {
-    //     socket.disconnect();
-    //   }
-    // });
+    if (!this.pool.has(data.id)) {
+      const poolUser: PoolUser = {
+        ...data,
+        socket: client,
+        timeJoined: Date.now(),
+      };
+      console.log({ poolUser });
+      this.pool.set(poolUser.id, poolUser);
+    } else {
+      client.disconnect();
+    }
   }
 
   // matching logic
@@ -105,6 +101,42 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
     return { aRes, bRes };
   };
+
+
+  // matchmakes users within the current pool with each other every 5s
+  @Cron(CronExpression.EVERY_5_SECONDS)
+  matchMake() {
+    if (this.pool.size < 1) {
+      return;
+    }
+    for (const [A, p1] of this.pool) {
+      for (const [B, p2] of this.pool) {
+        if (p1.id !== p2.id && this.isMatch(p1, p2)) {
+          const a = this.pool.get(A);
+          const b = this.pool.get(B);
+          if (a && b) {
+            console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
+
+            const { aRes, bRes } = this.returnResults(a, b);
+            a.socket.send(JSON.stringify(aRes));
+            b.socket.send(JSON.stringify(bRes));
+
+            a.socket.disconnect();
+            b.socket.disconnect();
+            this.pool.delete(A);
+            this.pool.delete(B);
+          }
+        } else {
+          const b = this.pool.get(B);
+          if (b && Date.now() - b.timeJoined > this.queueTime) {
+            console.log(`${b.id} timed out of queue.`);
+            b.socket.disconnect();
+            this.pool.delete(B);
+          }
+        }
+      }
+    }
+  }
 
   // removeSocket = (x: any): any => {
   //   const { socket, ...a } = x;
