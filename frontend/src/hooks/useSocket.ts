@@ -5,6 +5,7 @@ import create from "zustand";
 
 import { Axios } from "src/services/auth";
 import { User } from "src/login";
+import { env } from "src/env/client.mjs";
 
 type Call = {
   from?: User;
@@ -18,6 +19,7 @@ type SocketStore = {
   stream: MediaStream | undefined;
   name: string;
   call: Call;
+  connected: boolean;
   myVideo: React.MutableRefObject<HTMLMediaElement | undefined> | undefined;
   otherVideo: React.MutableRefObject<HTMLMediaElement | undefined> | undefined;
   connectionRef: React.MutableRefObject<Peer.Instance | undefined> | undefined;
@@ -25,6 +27,7 @@ type SocketStore = {
   callUser: (from: User, id: number) => void;
   leaveCall: () => void;
   sendChat: () => void;
+  setupVideo: () => void;
 };
 
 type SocketValues = Omit<
@@ -36,6 +39,36 @@ const SocketMutations = (
   setState: (values: Partial<SocketValues>) => void,
   getState: () => SocketValues
 ): SocketStore => {
+  const socket = io(env.NEXT_PUBLIC_WS_URL, {
+    withCredentials: true,
+    transports: ["websocket"],
+  });
+
+  socket.on("connect", () => {
+    console.log("connected to websocket server");
+    setState({ connected: true });
+  });
+  socket.on("disconnect", () => {
+    setState({ connected: false });
+  });
+  socket.on("chat", (data) => {
+    console.log({ data });
+  });
+
+  const setupVideo = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setState({ stream });
+        if (!getState().myVideo) {
+          return;
+        } else {
+          // set source of media for video element
+          getState().myVideo!.current!.srcObject = stream;
+        }
+      });
+  };
+
   const answerCall = () => {
     setState({ callAccepted: true });
     const peer = new Peer({
@@ -93,14 +126,32 @@ const SocketMutations = (
     getState().connectionRef!.current = peer;
   };
 
+  const leaveCall = () => {
+    setState({ callEnded: true });
+    getState().connectionRef!.current!.destroy();
+  };
+
+  const sendChat = () => {
+    getState().socket?.emit("chat", { message: "hello to chat from client" });
+  };
+
   return {
-    socket: undefined,
-    answerCall: answerCall,
-    callUser: callUser,
-    signin: signinMutation,
-    signup: signupMutation,
-    signout: signoutMutation,
+    socket,
+    callAccepted: false,
+    callEnded: false,
+    stream: undefined,
+    name: "",
+    call: {},
+    connected: false,
+    myVideo: undefined,
+    otherVideo: undefined,
+    connectionRef: undefined,
+    answerCall,
+    callUser,
+    leaveCall,
+    sendChat,
+    setupVideo,
   };
 };
 
-export const useAuthStore = create<SocketStore>(SocketMutations);
+export const useSocketStore = create<SocketStore>(SocketMutations);

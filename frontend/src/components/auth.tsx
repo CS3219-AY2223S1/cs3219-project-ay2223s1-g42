@@ -11,6 +11,7 @@ import useSocket from "../hooks/socket";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Toast from "./base/toast";
+import { useSocketStore } from "src/hooks/useSocket";
 
 export default function Auth() {
   // form state
@@ -56,12 +57,23 @@ export default function Auth() {
     console.log({ user });
   }, [user]);
 
-  const { sendChat } = useSocket();
   const renderCounter = useRef(0);
   renderCounter.current = renderCounter.current + 1;
   // console.log(
   //   `me from auth component render count: ${renderCounter.current}, me: ${me}`
   // );
+
+  const socket = useSocketStore((state) => state.socket);
+  const setupVideo = useSocketStore((state) => state.setupVideo);
+  const sendChat = useSocketStore((state) => state.sendChat);
+
+  useEffect(() => {
+    console.log({ socket });
+  }, [socket]);
+
+  useEffect(() => {
+    setupVideo();
+  }, []);
 
   return (
     <div className="flex flex-col space-y-2 self-center">

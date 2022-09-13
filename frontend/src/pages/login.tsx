@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSocketStore } from "src/hooks/useSocket";
 
 import { Container } from "../components/base";
 import { LoginForm, SignupForm } from "../login/components";
 
 export default function login() {
   const [form, setForm] = useState<"signin" | "signup">("signin");
-
   return (
     <Container>
       <div className="w-full px-4 flex flex-col text-center mx-auto">

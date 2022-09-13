@@ -16,12 +16,12 @@ const queryClient = new QueryClient({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <SocketProvider>
-      <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </SocketProvider>
+    // <SocketProvider>
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+    // </SocketProvider>
   );
 };
 
