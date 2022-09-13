@@ -5,7 +5,7 @@ import type { Socket } from "socket.io-client";
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SignUpCredentials } from "../login/types";
-import { TextInput } from "./base/input/TextInput";
+import { TextInput } from "./base/input";
 // import useSocket from "../hooks/useSocket";
 import useSocket from "../context/socket";
 import { useQueryClient } from "@tanstack/react-query";
@@ -75,21 +75,21 @@ export default function Auth() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.currentTarget.value)}
           />
           <TextInput
             label="Username"
             type="username"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.currentTarget.value)}
           />
           <TextInput
             label="Password"
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.currentTarget.value)}
           />
         </div>
         <div className="flex flex-col space-y-2 mt-4">

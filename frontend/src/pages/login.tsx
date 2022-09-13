@@ -16,6 +16,7 @@ import {
   TextInput,
 } from "../components/base";
 import { GoogleIcon } from "../components/icons";
+import { ErrorAlert } from "../components/base/alert";
 
 export default function login() {
   const queryClient = useQueryClient();
@@ -43,9 +44,15 @@ export default function login() {
   return (
     <Container>
       <div className="w-full px-4 flex flex-col text-center mx-auto">
-        <h1 className="font-display font-bold leading-tight text-5xl mb-12 text-black-600">
+        <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
           Welcome.
         </h1>
+        {signinMutation.isError && (
+          <ErrorAlert
+            title={"Login failed!"}
+            message={"Invalid login credentials."}
+          />
+        )}
         <div>
           <BlueButton className="w-full flex items-center justify-center relative">
             <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
@@ -76,7 +83,7 @@ export default function login() {
                 placeholder="Very$ecureP4ssword"
                 isError={!!errors.password?.message}
                 error={errors.password?.message}
-                {...register("password", { required: true, minLength: 8 })}
+                {...register("password", { required: true })}
               />
               <div className="flex flex-row-reverse">
                 <LinkButton className="font-light self-end text-neutral-400 hover:border-b-neutral-400">
