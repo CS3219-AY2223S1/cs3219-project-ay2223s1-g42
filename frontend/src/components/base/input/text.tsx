@@ -14,7 +14,7 @@ const TextInput = React.forwardRef<HTMLInputElement, Props>(
         <div className="relative">
           <input
             type="text"
-            id={"floating_outlined"}
+            id={`floating_outlined_${other.name}`}
             ref={ref}
             className={cs(
               "block px-2.5 pb-2.5 pt-4 w-full text-md",

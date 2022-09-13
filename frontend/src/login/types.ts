@@ -7,7 +7,7 @@ export type ApiResponse = {
 export const UserSchema = z.object({
   id: z.number(),
   email: z.string().email(),
-  username: z.string(),
+  username: z.string().min(4).max(20),
 });
 export type User = z.infer<typeof UserSchema>;
 
