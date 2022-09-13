@@ -19,6 +19,7 @@ import {
 } from "../components/base";
 import { GoogleIcon } from "../components/icons";
 import { ErrorAlert } from "../components/base/alert";
+import { SuccessAlert } from "../components/base/alert/success";
 
 type FormProps = {
   setForm: (form: "signin" | "signup") => void;
@@ -32,10 +33,8 @@ const SignupForm = ({ setForm }: FormProps) => {
   const signupMutation = useSignUpMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
   });
-  const handleSignup = async (credentials: SignUpCredentials) => {
-    signupMutation.mutate(credentials);
-  };
 
+  // form setup
   const {
     register,
     handleSubmit,
@@ -45,14 +44,27 @@ const SignupForm = ({ setForm }: FormProps) => {
     resolver: zodResolver(SignupCredentialsSchema),
   });
 
+  // submit function
+  const handleSignup = async (credentials: SignUpCredentials) => {
+    signupMutation.mutate(credentials);
+    reset();
+  };
   const onSubmit = handleSubmit(handleSignup);
+
   return (
     <>
-      {signupMutation.isError && (
+      {signupMutation.isError ? (
         <ErrorAlert
           title={"Sign up failed!"}
-          message={"An error occurred while signin up."}
+          message={"An error occurred while signing up."}
         />
+      ) : signupMutation.isSuccess ? (
+        <SuccessAlert
+          title="Sign up successful!"
+          message="An email has been sent to your email address. Please verify your email address to continue."
+        />
+      ) : (
+        <></>
       )}
       <div>
         <BlueButton className="w-full flex items-center justify-center relative">
@@ -121,10 +133,8 @@ const LoginForm = ({ setForm }: FormProps) => {
   const signinMutation = useSignInMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
   });
-  const handleSignin = async (credentials: SignInCredentials) => {
-    signinMutation.mutate(credentials);
-  };
 
+  // form setup
   const {
     register,
     handleSubmit,
@@ -134,7 +144,13 @@ const LoginForm = ({ setForm }: FormProps) => {
     resolver: zodResolver(SigninCredentialsSchema),
   });
 
+  // submit function
+  const handleSignin = async (credentials: SignInCredentials) => {
+    signinMutation.mutate(credentials);
+    reset();
+  };
   const onSubmit = handleSubmit(handleSignin);
+
   return (
     <>
       {signinMutation.isError && (
