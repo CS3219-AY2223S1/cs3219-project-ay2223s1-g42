@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SigninCredentialsSchema } from "../login/types";
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
-import TextInput from "../components/base/input/TextInput";
+import { TextInput } from "../components/base/input/TextInput";
 
 
 
