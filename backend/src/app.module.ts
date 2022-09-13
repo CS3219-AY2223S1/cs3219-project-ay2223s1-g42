@@ -4,7 +4,10 @@ import { ZodValidationPipe } from "nestjs-zod";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+<<<<<<< HEAD
 import { ScheduleModule } from "@nestjs/schedule";
+=======
+>>>>>>> chore: fix merge conflicts 2
 
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";

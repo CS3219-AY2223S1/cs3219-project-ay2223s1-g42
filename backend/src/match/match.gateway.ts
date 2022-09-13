@@ -9,7 +9,6 @@ import {
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
 import { intersects } from "radash";
-import { User } from "@prisma/client";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
@@ -26,9 +25,10 @@ export type PoolUserData = PublicUserInfo & {
 export type PoolUser = PoolUserData & {
   socketId: string;
   timeJoined: number;
+  difficulties: QuestionDifficulty[];
 };
 
-// @UseGuards(WsJwtAccessGuard)
+@UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
   namespace: MATCH_WS_NAMESPACE,
@@ -69,7 +69,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
       return;
     }
-
     // try to match user with another user from queue,
     // create room if successful otherwise add user to queue
     const matchedRoom = await this.matchService.handleJoinMatchQueue(poolUser);
