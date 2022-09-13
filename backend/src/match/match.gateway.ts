@@ -9,28 +9,20 @@ import {
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
 import { intersects } from "radash";
-import { User } from "@prisma/client";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
-import { PublicUserInfo } from "../utils/zod";
+import { PublicUserInfo } from "../utils/zod/userInfo";
+import { QuestionDifficulty } from "src/utils/zod/question";
+// import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
-enum QuizDifficulty {
-  EASY = "easy",
-  MEDIUM = "medium",
-  HARD = "hard",
-}
-
-export type PoolUser = Pick<User, "id" | "email" | "username"> & {
-  difficulties: QuizDifficulty[];
-};
-
-export type PoolItem<T> = T & {
+type PoolUser = PublicUserInfo & {
   socket: Socket;
   timeJoined: number;
+  difficulties: QuestionDifficulty[];
 };
 
-// @UseGuards(WsJwtAccessGuard)
+@UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -40,11 +32,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   users = 0;
   queueTime = 20000;
   pollInterval = 1000;
-  // pool: Map<string | number, PoolItem<PoolUser>> = new Map<
-  //   string | number,
-  //   PoolItem<PoolUser>
-  // >();
-  pool: PoolItem<PoolUser>[] = [];
+  pool: Map<string | number, PoolUser> = new Map<string | number, PoolUser>();
 
   async handleConnection() {
     console.log("client has connected");
@@ -72,102 +60,75 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage("pool")
   async onJoinPool(client: Socket, data: any) {
     console.log({ data });
-    const userPoolItem: PoolItem<PoolUser> = {
-      ...data,
-      socket: client,
-      timeJoined: Date.now(),
-    };
-    console.log({ userPoolItem });
-    this.pool.push(userPoolItem);
 
-    // //receive player info
-    // socket.on("message", (message) => {
-    //   const new_item: PoolItem<any> = {
-    //     socket: socket,
-    //     time_joined: Date.now(),
-    //     ...JSON.parse(message.toString()),
-    //   };
-    //   // add player to pool if they are not already in pool
-    //   if (!this.pool.has(new_item.id)) {
-    //     this.pool.set(new_item.id, new_item);
-    //   } else {
-    //     socket.disconnect();
-    //   }
-    // });
+    if (!this.pool.has(data.id)) {
+      const poolUser: PoolUser = {
+        ...data,
+        socket: client,
+        timeJoined: Date.now(),
+      };
+      console.log({ poolUser });
+      this.pool.set(poolUser.id, poolUser);
+    } else {
+      client.disconnect();
+    }
   }
 
   // matching logic
-  isMatch = (user1: PoolItem<PoolUser>, user2: PoolItem<PoolUser>) => {
+  isMatch = (user1: PoolUser, user2: PoolUser) => {
     // if user1 and user2 have any common difficulties, return true
     return intersects(user1.difficulties, user2.difficulties);
+  };
+
+  returnResults = (a: PoolUser, b: PoolUser) => {
+    const aRes = {
+      self: a,
+      other: b,
+    };
+    const bRes = {
+      self: b,
+      other: a,
+    };
+    return { aRes, bRes };
   };
 
   // matchmakes users within the current pool with each other every 5s
   @Cron(CronExpression.EVERY_5_SECONDS)
   matchMake() {
-    console.log(`running matchmake on ${this.pool.length}`);
-
-    // if pool is empty, return
-    if (this.pool.length < 1) {
+    if (this.pool.size < 1) {
       return;
     }
+    for (const [A, p1] of this.pool) {
+      for (const [B, p2] of this.pool) {
+        if (p1.id !== p2.id && this.isMatch(p1, p2)) {
+          const a = this.pool.get(A);
+          const b = this.pool.get(B);
+          if (a && b) {
+            console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
 
-    for (const p1 of this.pool) {
-      for (const p2 of this.pool) {
-        // if only single user in pool or no compatible match found,
-        // disconnect users that have been in pool for too long
-        // if (p1.id === p2.id || !this.isMatch(p1, p2)) {
-        if (!this.isMatch(p1, p2)) {
-          // const b = this.pool.get(B);
-          const b = p2;
+            const { aRes, bRes } = this.returnResults(a, b);
+            a.socket.send(JSON.stringify(aRes));
+            b.socket.send(JSON.stringify(bRes));
+
+            a.socket.disconnect();
+            b.socket.disconnect();
+            this.pool.delete(A);
+            this.pool.delete(B);
+          }
+        } else {
+          const b = this.pool.get(B);
           if (b && Date.now() - b.timeJoined > this.queueTime) {
             console.log(`${b.id} timed out of queue.`);
             b.socket.disconnect();
-            // this.pool.delete(B);
-            this.pool.filter((p) => p.id !== b.id);
+            this.pool.delete(B);
           }
-          return;
-        }
-        // if match found, return other user data to both users
-        // WITHOUT their socket datas (might need to include)
-        // const a = this.pool.get(A);
-        // const b = this.pool.get(B);
-        const a = p1;
-        const b = p2;
-        if (a && b) {
-          console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
-          const dataForA = {
-            opponent: {
-              id: b.id,
-              email: b.email,
-              username: b.email,
-              socket: b.socket.id,
-            },
-          };
-          const dataForB = {
-            opponent: {
-              id: a.id,
-              email: a.email,
-              username: a.email,
-              socketId: a.socket.id,
-            },
-          };
-          console.log({ dataForA, dataForB });
-          a.socket.send(dataForA);
-          b.socket.send(dataForB);
-          a.socket.disconnect();
-          b.socket.disconnect();
-          // this.pool.delete(A);
-          // this.pool.delete(B);
-          this.pool.pop();
-          this.pool.pop();
         }
       }
     }
   }
 
-  removeSocket = (x: any): any => {
-    const { socket, ...a } = x;
-    return a;
-  };
+  // removeSocket = (x: any): any => {
+  //   const { socket, ...a } = x;
+  //   return a;
+  // };
 }
