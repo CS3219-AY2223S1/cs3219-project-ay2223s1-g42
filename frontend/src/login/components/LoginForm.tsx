@@ -53,13 +53,13 @@ const LoginForm = ({ setForm }: FormProps) => {
         />
       )}
       <div>
-        <BlueButton className="w-full flex items-center justify-center relative">
+        <BlueButton className="relative w-full flex items-center justify-center">
           <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
             <GoogleIcon className="h-5 w-5 text-red-500" />
           </div>
           Sign in with Google
         </BlueButton>
-        <div className="relative flex py-5 items-center">
+        <div className="flex py-5 items-center">
           <div className="flex-grow border-t border-neutral-400"></div>
           <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
             Or, sign in with your email
