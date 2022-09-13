@@ -1,12 +1,15 @@
 import { HtmlHTMLAttributes } from "react";
-import { Navbar } from "../navbar";
 
 export function Layout({
   children,
+  className,
   ...other
 }: HtmlHTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="flex mt-8 max-w-5xl justify-center mx-auto" {...other}>
+    <div
+      className={`flex max-w-xl justify-center items-center px-4 mx-auto min-h-screen ${className}`}
+      {...other}
+    >
       {children}
     </div>
   );
