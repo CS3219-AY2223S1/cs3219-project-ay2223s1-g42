@@ -12,6 +12,7 @@ import {
   ApiResponse,
   SignInCredentials,
   SignUpCredentials,
+  ForgetPasswordInfo,
 } from "../types";
 
 type Options = {
@@ -34,6 +35,9 @@ type AuthStore = {
   signout: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, void, unknown>;
+  forgetPassword: (
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, ForgetPasswordInfo, unknown>;
 };
 
 const AuthMutations = (
@@ -113,6 +117,24 @@ const AuthMutations = (
       }
     );
   };
+  const forgetPasswordMutation = (options?: Options) => {
+    return useMutation(
+      (params: ForgetPasswordInfo) =>
+        Axios.post<ApiResponse>(`/auth/forget-password`, params).then(
+          (res) => res.data
+        ),
+      {
+        onSuccess: (data) => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
+  };
   return {
     user: undefined,
     getMe: getMeMutation,
@@ -120,6 +142,7 @@ const AuthMutations = (
     signin: signinMutation,
     signup: signupMutation,
     signout: signoutMutation,
+    forgetPassword: forgetPasswordMutation,
   };
 };
 
