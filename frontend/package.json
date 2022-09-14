@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.1",
     "@hookform/resolvers": "^2.9.8",
     "@monaco-editor/react": "^4.4.5",
     "@radix-ui/react-alert-dialog": "^1.0.0",
