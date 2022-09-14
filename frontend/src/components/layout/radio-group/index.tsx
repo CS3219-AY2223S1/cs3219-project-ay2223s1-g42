@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 
-const plans = [
+const difficulties = [
   {
     name: "Easy",
   },
@@ -14,7 +14,7 @@ const plans = [
 ];
 
 export function RadioGroupButtons() {
-  const [selected, setSelected] = useState(plans[0]);
+  const [selected, setSelected] = useState(difficulties[0]);
 
   return (
     <div className="w-full px-4 py-16">
@@ -22,20 +22,18 @@ export function RadioGroupButtons() {
         <RadioGroup value={selected} onChange={setSelected}>
           <RadioGroup.Label className="sr-only">Server size</RadioGroup.Label>
           <div className="space-y-2">
-            {plans.map((plan) => (
+            {difficulties.map((difficulty) => (
               <RadioGroup.Option
-                key={plan.name}
-                value={plan}
-                className={({ active, checked }) =>
-                  `${
-                    active
-                      ? "ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300"
-                      : ""
-                  }
+                key={difficulty.name}
+                value={difficulty}
+                className={({ checked }) =>
+                  `
                   ${
-                    checked ? "bg-sky-900 bg-opacity-75 text-white" : "bg-white"
+                    checked
+                      ? "bg-neutral-900"
+                      : "bg-neutral-50 hover:bg-neutral-700"
                   }
-                    relative flex cursor-pointer px-5 py-4 shadow-md focus:outline-none`
+                    relative flex cursor-pointer font-sans font-medium transition duration-100 px-3 py-3 ease-out border-[1px] justify-center items-center `
                 }
               >
                 {({ active, checked }) => (
@@ -45,29 +43,23 @@ export function RadioGroupButtons() {
                         <div className="text-sm">
                           <RadioGroup.Label
                             as="p"
-                            className={`font-medium  ${
-                              checked ? "text-white" : "text-gray-900"
+                            className={`font-sans font-medium ${
+                              checked ? "text-neutral-50" : "text-neutral-900"
                             }`}
                           >
-                            {plan.name}
+                            {difficulty.name}
                           </RadioGroup.Label>
                           {/* <RadioGroup.Description
                             as="span"
                             className={`inline ${
-                              checked ? "text-sky-100" : "text-gray-500"
+                              checked ? "text-neutral-50" : "text-neutral-900"
                             }`}
-                          >
-                            <span>
-                              {plan.ram}/{plan.cpus}
-                            </span>{" "}
-                            <span aria-hidden="true">&middot;</span>{" "}
-                            <span>{plan.disk}</span>
-                          </RadioGroup.Description> */}
+                          ></RadioGroup.Description> */}
                         </div>
                       </div>
                       {checked && (
                         <div className="shrink-0 text-white">
-                          <CheckIcon className="h-6 w-6" />
+                          <CheckIcon className="h-5 w-5" />
                         </div>
                       )}
                     </div>
@@ -82,7 +74,7 @@ export function RadioGroupButtons() {
   );
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: any) {
   return (
     <svg viewBox="0 0 24 24" fill="none" {...props}>
       <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
@@ -90,8 +82,8 @@ function CheckIcon(props) {
         d="M7 13l3 3 7-7"
         stroke="#fff"
         strokeWidth={1.5}
-        // strokeLinecap="round"
-        // strokeLinejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
