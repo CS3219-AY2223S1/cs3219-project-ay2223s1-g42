@@ -20,7 +20,9 @@ export function RadioGroupButtons() {
     <div className="w-full px-4 py-16">
       <div className="mx-auto w-full max-w-md">
         <RadioGroup value={selected} onChange={setSelected}>
-          <RadioGroup.Label className="sr-only">Server size</RadioGroup.Label>
+          {/* <RadioGroup.Label className="sr-only text-neutral-900">
+            Difficulty level
+          </RadioGroup.Label> */}
           <div className="space-y-2">
             {difficulties.map((difficulty) => (
               <RadioGroup.Option
@@ -31,7 +33,7 @@ export function RadioGroupButtons() {
                   ${
                     checked
                       ? "bg-neutral-900"
-                      : "bg-neutral-50 hover:bg-neutral-700"
+                      : "bg-neutral-50 hover:bg-neutral-400"
                   }
                     relative flex cursor-pointer font-sans font-medium transition duration-100 px-3 py-3 ease-out border-[1px] justify-center items-center `
                 }
@@ -44,7 +46,9 @@ export function RadioGroupButtons() {
                           <RadioGroup.Label
                             as="p"
                             className={`font-sans font-medium ${
-                              checked ? "text-neutral-50" : "text-neutral-900"
+                              checked
+                                ? "text-neutral-50"
+                                : "text-neutral-900 hover:text-neutral-50"
                             }`}
                           >
                             {difficulty.name}

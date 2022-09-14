@@ -4,11 +4,11 @@ import { PrimaryButton } from "../components/base/button";
 
 export default function dashboard() {
   return (
-    <div className="justify-between text-neutral-900 min-h-screen bg-neutral-50">
+    <div className="justify-between min-h-screen bg-neutral-50">
       <Navbar />
       <div className="flex h-screen items-center">
         <div className="m-auto space-y-10">
-          <h1 className="text-5xl">Welcome to PeerPrep</h1>
+          <h1 className="text-5xl text-neutral-900">Welcome to PeerPrep</h1>
           <div className="flex flex-col items-center">
             <RadioGroupButtons />
           </div>
