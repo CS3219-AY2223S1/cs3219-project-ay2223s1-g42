@@ -35,8 +35,8 @@ module.exports = {
         },
       }),
       fontFamily: {
-        display: ["AllianceNo1", "sans-serif"],
-        sans: ["AllianceNo2", "sans-serif"],
+        
+        // sans: ['"Nunito Sans"', "sans-serif"],
         // mono: ['"Ubuntu Mono"', "monospace"],
       },
       colors: {
