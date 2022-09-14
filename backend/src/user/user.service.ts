@@ -18,12 +18,15 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
 };
 
 type UpdateableUserFields = Partial<
-  Pick<User, "username" | "email" | "hashRt">
+  Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
+
 
 @Injectable({})
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+  ) {}
 
   async find({
     id,
@@ -49,7 +52,7 @@ export class UserService {
 
   /**
    * Finds the ONLY user with the provided ID
-   * @param id id of user to fid
+   * @param id id of user to find
    * @returns [`Err`, `User`]
    */
   async findById(id: number, includeHash = false) {
@@ -63,7 +66,7 @@ export class UserService {
 
   /**
    * Finds the ONLY user with the provided email
-   * @param email email of user to fid
+   * @param email email of user to find
    * @returns [`Err`, `User`]
    */
   async findByEmail(email: string, includeHash = false) {
@@ -76,7 +79,7 @@ export class UserService {
 
   /**
    * Finds the ONLY user with the provided username
-   * @param username username of user to fid
+   * @param username username of user to find
    * @returns [`Err`, `User`]
    */
   async findByUsername(username: string, includeHash = false) {
@@ -85,6 +88,20 @@ export class UserService {
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
     }); 
 
+    return res;
+  }
+
+  /**
+   * Finds the FIRST user with the provided username OR email
+   * @param email email of user to find
+   * @param username of user to find
+   * @returns [`Err`, `User`]
+   */
+  async findFirstByEitherUniqueFields(email: string, username: string) {
+    const res = await radash.try(this.prisma.user.findFirst)({
+      where: { OR: [{ username }, { email }] },
+      select: USER_FIELDS,
+    });
     return res;
   }
 
@@ -125,6 +142,17 @@ export class UserService {
    */
   async create(email: string, username: string, password: string) {
     const hash = await argon2.hash(password);
+    return this.createWithHash(email, username, hash);
+  }
+
+  /**
+   * Creates a new user in the database with hash
+   * @param email email of user
+   * @param username username of user
+   * @param hash hash of user
+   * @returns [`Err`, `User`]
+   */
+  async createWithHash(email: string, username: string, hash: string) {
     const res = await radash.try(this.prisma.user.create)({
       data: {
         email,
@@ -148,4 +176,6 @@ export class UserService {
     });
     return res;
   }
+
+  
 }
