@@ -9,7 +9,9 @@ export default function dashboard() {
       <TheNavbar />
       <Container>
         <div className="m-auto space-y-10">
-          <h1 className="text-5xl text-neutral-900">Welcome to PeerPrep</h1>
+          <h1 className="font-display text-5xl text-neutral-900 text-center">
+            Welcome to PeerPrep
+          </h1>
           <RadioGroupButtons />
           <div className="flex flex-col">
             <PrimaryButton>Match</PrimaryButton>

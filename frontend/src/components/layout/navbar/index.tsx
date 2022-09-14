@@ -63,7 +63,7 @@ const DesktopNavItem = ({ label, href }: NavItem) => {
     <li>
       <Link href={href}>
         <a
-          className="block my-2 font-sans transition duration-300 ease-out
+          className="block my-2 transition duration-300 ease-out
           border-b-[1px] border-transparent hover:border-neutral-800"
         >
           {label}
@@ -88,7 +88,7 @@ const DesktopNavItems = () => {
 const TheNavbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
-    <nav className="pl-4 pr-2 py-3 md:p-4 bg-neutral-100 fixed w-full z-50 top-0 left-0">
+    <nav className="font-display pl-4 pr-2 py-3 md:p-4 bg-neutral-100 fixed w-full z-50 top-0 left-0">
       <div className="max-w-5xl flex flex-wrap justify-between items-center mx-auto">
         <a href="#" className="flex items-center h-full">
           {/* <img
@@ -96,7 +96,7 @@ const TheNavbar = () => {
             className="mr-3 h-6 sm:h-9"
             alt="Flowbite Logo"
           /> */}
-          <span className="self-center text-2xl font-semibold whitespace-nowrap text-neutral-800">
+          <span className="font-display self-center text-2xl font-semibold whitespace-nowrap text-neutral-800">
             PussyPrep
           </span>
         </a>

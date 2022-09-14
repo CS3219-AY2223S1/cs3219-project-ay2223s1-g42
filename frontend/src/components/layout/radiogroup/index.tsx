@@ -53,7 +53,7 @@ export function RadioGroupButtons() {
                   <RadioGroup.Label
                     as="p"
                     className={cx(
-                      "font-sans font-semibold text-lg capitalize mb-2",
+                      "font-display font-semibold text-lg capitalize mb-2",
                       {
                         "text-neutral-50": checked,
                         "text-neutral-900": !checked,
