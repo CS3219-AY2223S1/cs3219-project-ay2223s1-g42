@@ -18,11 +18,11 @@ import { User } from "@prisma/client";
 import { Response } from "express";
 
 import { AuthService, Tokens } from "./auth.service";
-import { 
-  SigninCredentialsDto, 
-  SignupCredentialsDto, 
-  ForgetPasswordCredentialsDto, 
-  ResetPasswordCredentialsDto 
+import {
+  SigninCredentialsDto,
+  SignupCredentialsDto,
+  ForgetPasswordCredentialsDto,
+  ResetPasswordCredentialsDto,
 } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
@@ -42,12 +42,8 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: "Bad Request: Invalid or missing Input",
   })
-  async signup(
-    @Body() credentials: SignupCredentialsDto,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const tokens = await this.authService.signup(credentials);
-    this.setCookies(res, tokens);
+  async signup(@Body() credentials: SignupCredentialsDto) {
+    await this.authService.signup(credentials);
     return { message: "success" };
   }
 
