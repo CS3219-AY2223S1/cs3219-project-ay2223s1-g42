@@ -53,10 +53,11 @@ export class UserService {
    * @returns [`Err`, `User`]
    */
   async findById(id: number, includeHash = false) {
-    const res = await radash.try(this.prisma.user.findUnique)({
+    const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { id },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
-    });
+    }); 
+
     return res;
   }
 
@@ -66,7 +67,7 @@ export class UserService {
    * @returns [`Err`, `User`]
    */
   async findByEmail(email: string, includeHash = false) {
-    const res = await radash.try(this.prisma.user.findUnique)({
+    const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { email },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
     });
@@ -79,10 +80,11 @@ export class UserService {
    * @returns [`Err`, `User`]
    */
   async findByUsername(username: string, includeHash = false) {
-    const res = await radash.try(this.prisma.user.findUnique)({
+    const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { username },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
-    });
+    }); 
+
     return res;
   }
 
