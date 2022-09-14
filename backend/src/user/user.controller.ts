@@ -70,8 +70,8 @@ export class UserController {
   @ApiOperation({ summary: "Edit data of specified user" })
   @ApiOkResponse({ description: "The resource was updated successfully" })
   @ApiNotFoundResponse({ description: "Resource not found" })
-  @ApiUnauthorizedResponse({ description: "Unauthorized Request" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request, client does not have access rights to the requested content" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
   @ApiUnprocessableEntityResponse({ description: "Bad Request" })
   @ApiBadRequestResponse({description: "Bad Request, id specified is invalid"})
 
