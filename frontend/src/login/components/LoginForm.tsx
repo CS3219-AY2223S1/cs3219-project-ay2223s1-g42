@@ -25,7 +25,9 @@ const LoginForm = ({ setForm }: FormProps) => {
 
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
-  const signinMutation = useSignInMutation();
+  const signinMutation = useSignInMutation({
+    onSuccess: () => queryClient.invalidateQueries(["me"]),
+  });
 
   // form setup
   const {
