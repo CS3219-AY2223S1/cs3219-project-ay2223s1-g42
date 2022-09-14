@@ -4,7 +4,7 @@ import { PrimaryButton } from "../components/base/button";
 
 export default function dashboard() {
   return (
-    <div className="justify-between min-h-screen bg-neutral-50">
+    <div className="justify-between min-h-screen bg-neutral-100">
       <Navbar />
       <div className="flex h-screen items-center">
         <div className="m-auto space-y-10">
@@ -13,7 +13,7 @@ export default function dashboard() {
             <RadioGroupButtons />
           </div>
           <div className="flex flex-col">
-            <PrimaryButton className="bg-white">Match</PrimaryButton>
+            <PrimaryButton>Match</PrimaryButton>
           </div>
         </div>
       </div>
