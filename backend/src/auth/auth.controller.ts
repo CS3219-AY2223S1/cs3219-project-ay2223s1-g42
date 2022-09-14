@@ -13,11 +13,11 @@ import { User } from "@prisma/client";
 import { Response } from "express";
 
 import { AuthService, Tokens } from "./auth.service";
-import { 
-  SigninCredentialsDto, 
-  SignupCredentialsDto, 
-  ForgetPasswordCredentialsDto, 
-  ResetPasswordCredentialsDto 
+import {
+  SigninCredentialsDto,
+  SignupCredentialsDto,
+  ForgetPasswordCredentialsDto,
+  ResetPasswordCredentialsDto,
 } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";

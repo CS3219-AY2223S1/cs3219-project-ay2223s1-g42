@@ -1,62 +1,54 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import io from "socket.io-client";
 import type { Socket } from "socket.io-client";
 
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SignUpCredentials } from "../login/types";
-import TextInput from "./base/input/TextInput";
-
-const serverUrl = "http://localhost:5000";
-const websocketUrl = "ws://localhost:5000";
+import { TextInput } from "./base/input";
+// import useSocket from "../hooks/useSocket";
+import useSocket from "../hooks/socket";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import Toast from "./base/toast";
+import { useSocketStore } from "src/hooks/useSocket";
 
 export default function Auth() {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [loading, setLoading] = useState(false);
+  // form state
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [isConnected, setIsConnected] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleLogin = async (email: string) => {
-    // try {
-    //   setLoading(true);
-    //   const { error } = await supabase.auth.signInWithOtp({ email });
-    //   if (error) throw error;
-    //   alert("Check your email for the login link!");
-    // } catch (error: any) {
-    //   alert(error.error_description || error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
-
+  // user state
   const user = useAuthStore((state) => state.user);
   const useGetMe = useAuthStore((state) => state.getMe);
   const getMe = useGetMe();
 
-  // TODO: auto-refresh every 5 minutes
-  const useRefresh = useAuthStore((state) => state.refresh);
-  const refreshMutation = useRefresh();
-
+  // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
-  const signinMutation = useSignInMutation();
+  const signinMutation = useSignInMutation({
+    onSuccess: () => queryClient.invalidateQueries(["me"]),
+  });
   const handleSignin = async (credentials: SignInCredentials) => {
     signinMutation.mutate(credentials);
-    getMe.refetch();
   };
 
+  // sign up mutations
   const useSignUpMutation = useAuthStore((state) => state.signup);
-  const signUpMutation = useSignUpMutation();
+  const signUpMutation = useSignUpMutation({
+    onSuccess: () => queryClient.invalidateQueries(["me"]),
+  });
   const handleSignup = async (credentials: SignUpCredentials) => {
     signUpMutation.mutate(credentials);
-    getMe.refetch();
   };
 
+  // sign out mutations
   const useSignOutMutation = useAuthStore((state) => state.signout);
-  const signOutMutation = useSignOutMutation();
+  const signOutMutation = useSignOutMutation({
+    onSuccess: () => queryClient.invalidateQueries(["me"]),
+  });
   const handleSignout = async () => {
     signOutMutation.mutate();
   };
@@ -65,33 +57,23 @@ export default function Auth() {
     console.log({ user });
   }, [user]);
 
+  const renderCounter = useRef(0);
+  renderCounter.current = renderCounter.current + 1;
+  // console.log(
+  //   `me from auth component render count: ${renderCounter.current}, me: ${me}`
+  // );
+
+  const socket = useSocketStore((state) => state.socket);
+  const setupVideo = useSocketStore((state) => state.setupVideo);
+  const sendChat = useSocketStore((state) => state.sendChat);
+
   useEffect(() => {
-    const newSocket = io(websocketUrl, { withCredentials: true });
-    newSocket.on("connect", () => {
-      console.log("connected to websocket server");
-      setIsConnected(true);
-    });
+    console.log({ socket });
+  }, [socket]);
 
-    newSocket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
-    newSocket.on("chat", (data) => {
-      console.log({ data });
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.off("connect");
-      newSocket.off("disconnect");
-      newSocket.off("chat");
-    };
+  useEffect(() => {
+    setupVideo();
   }, []);
-
-  const sendChat = () => {
-    socket?.emit("chat", { message: "hello to chat from client" });
-  };
 
   return (
     <div className="flex flex-col space-y-2 self-center">
@@ -105,21 +87,21 @@ export default function Auth() {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.currentTarget.value)}
           />
           <TextInput
             label="Username"
             type="username"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.currentTarget.value)}
           />
           <TextInput
             label="Password"
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.currentTarget.value)}
           />
         </div>
         <div className="flex flex-col space-y-2 mt-4">
@@ -133,7 +115,7 @@ export default function Auth() {
                 // className="button block"
                 disabled={signUpMutation.isLoading}
               >
-                <span>{loading ? "Loading" : "Sign up"}</span>
+                <span>{signUpMutation.isLoading ? "Loading" : "Sign up"}</span>
               </RedButton>
               <BlueButton
                 onClick={(e) => {
@@ -142,15 +124,21 @@ export default function Auth() {
                 }}
                 disabled={signinMutation.isLoading}
               >
-                <span>{loading ? "Loading" : "Login"}</span>
+                <span>{signinMutation.isLoading ? "Loading" : "Login"}</span>
               </BlueButton>
               <PrimaryButton>Sign in</PrimaryButton>
               <button onClick={sendChat}>send broadcast message</button>
             </>
           ) : (
-            <RedButton onClick={handleSignout}>Sign out</RedButton>
+            <>
+              <RedButton onClick={handleSignout}>
+                <span>{signOutMutation.isLoading ? "Loading" : "Signout"}</span>
+              </RedButton>
+              <button onClick={sendChat}>send broadcast message</button>
+            </>
           )}
         </div>
+        <Toast />
       </div>
     </div>
   );

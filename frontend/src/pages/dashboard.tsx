@@ -1,4 +1,4 @@
-import { Navbar } from "../components/base/navbar";
+import { Navbar } from "../components/layout/navbar";
 
 export default function dashboard() {
   return (

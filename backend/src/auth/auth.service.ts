@@ -227,7 +227,7 @@ export class AuthService {
    * Sends the user a reset password email and returns the JWT token
    * @param email the email account that requested for a password reset
    */
-   async resetPassword(email: string) {
+  async resetPassword(email: string) {
     // find user via email provided
     const [err, user] = await this.users.findByEmail(email);
     const username = user.username;

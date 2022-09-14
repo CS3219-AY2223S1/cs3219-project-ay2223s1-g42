@@ -1,15 +1,12 @@
-import { ButtonHTMLAttributes } from "react";
-
 import { BaseButton } from "./base";
+import { Props } from "./types";
 
-export function BlueButton({
-  className,
-  children,
-  ...other
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function BlueButton({ className, children, ...other }: Props) {
   return (
     <BaseButton
-      className={`border-blue-600 bg-blue-600 text-neutral-50 hover:bg-blue-500 hover:border-blue-500 ${className}`}
+      loadColor="neutral-50"
+      loadHoverColor="neutral-50"
+      className={`border-blue-600 bg-blue-600 text-neutral-50 hover:bg-blue-700 hover:border-blue-700 ${className}`}
       {...other}
     >
       {children}
