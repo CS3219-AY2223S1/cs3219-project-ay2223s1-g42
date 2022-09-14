@@ -22,11 +22,11 @@ const ResetPasswordForm = () => {
   });
 
   // submit function
-  const handleSignin = async (credentials: ResetPasswordInfo) => {
+  const handleReset = async (credentials: ResetPasswordInfo) => {
     resetPasswordMutation.mutate(credentials);
     reset();
   };
-  const onSubmit = handleSubmit(handleSignin);
+  const onSubmit = handleSubmit(handleReset);
 
   return (
     <>

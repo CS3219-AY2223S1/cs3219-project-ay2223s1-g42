@@ -1,15 +1,17 @@
+import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
+import { env } from "src/env/client.mjs";
+import { ApiResponse } from "src/login";
+import { Axios } from "src/services/auth";
+
 import { ResetPasswordForm } from "../../login/components";
 
-export default function resetPassword() {
+const ResetPasswordPage: NextPage<ApiResponse> = ({ message }) => {
   const router = useRouter();
-  useEffect(() => {
-    if (!router.isReady) return;
-    console.log(router.query.token as string);
-    // codes using router.query
-  }, [router.isReady]);
+  const { token } = router.query;
+  console.log({ token });
 
   return (
     <div className="flex flex-col justify-center min-h-screen items-center">
@@ -18,4 +20,6 @@ export default function resetPassword() {
       </div>
     </div>
   );
-}
+};
+
+export default ResetPasswordPage;
