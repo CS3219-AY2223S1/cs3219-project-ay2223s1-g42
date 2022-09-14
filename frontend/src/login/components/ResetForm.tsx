@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SuccessAlert } from "src/components/base/alert";
 
 import {
   BlueButton,
@@ -11,8 +12,6 @@ import {
   RedButton,
   SecondaryButton,
 } from "src/components/base";
-import { ErrorAlert } from "src/components/base/alert";
-import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
 import {
   SignInCredentials,
@@ -26,6 +25,7 @@ const ResetForm = () => {
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
   const signinMutation = useSignInMutation();
+
 
   // form setup
   const {
@@ -47,16 +47,26 @@ const ResetForm = () => {
   return (
     <>
     <TextInput
-    label="Email Address"
+    label="Email"
     type="email"
-    placeholder="Email Address"
-    value={email}
-    onChange={(e) => setEmail(e.currentTarget.value)}
-  />
-  <PrimaryButton className="max-w-3xl">
-    Send Reset Instructions
-  </PrimaryButton>
+    placeholder="name@company.com"
+    isError={!!errors.email?.message}
+    error={errors.email?.message}
+    autoComplete="email"
+    {...register("email", { required: true })}
+    />
+   <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
+   Submit
+   </PrimaryButton>
+   <LinkButton
+    className="self-center"
+    onClick={() =>alert('alert')}>
+      
+    </LinkButton>
+      
+    
   </>
+  )
 };
 
 export { ResetForm };
