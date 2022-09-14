@@ -4,6 +4,7 @@ import { useAuthStore } from "../login/hooks";
 import { SignInCredentials, SigninCredentialsSchema } from "../login/types";
 import { BlueButton, PrimaryButton, RedButton } from "../components/base";
 import { TextInput } from "../components/base/input";
+import { ResetForm } from "src/login/components/resetForm";
 
 export default function resetPassword() {
   const [email, setEmail] = useState("");
@@ -14,16 +15,7 @@ export default function resetPassword() {
         <h1 className="font-bold leading-tight text-4xl mt-0 mb-2 text-black-600 flex flex-col py-5 text-left">
           Reset Password
         </h1>
-        <TextInput
-          label="Email Address"
-          type="email"
-          placeholder="Email Address"
-          value={email}
-          onChange={(e) => setEmail(e.currentTarget.value)}
-        />
-        <PrimaryButton className="max-w-3xl">
-          Send Reset Instructions
-        </PrimaryButton>
+       <ResetForm/>
       </div>
     </div>
   );
