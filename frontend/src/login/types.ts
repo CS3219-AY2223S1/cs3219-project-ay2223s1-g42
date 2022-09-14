@@ -27,6 +27,9 @@ export const EditableCredentialsSchema = UserSchema.pick({
   username: true,
 }).partial();
 export const ForgetPasswordInfoSchema = UserSchema.pick({ email: true });
+export const ResetPasswordInfoSchema = SignupCredentialsSchema.pick({
+  password: true,
+}).extend({ token: z.string() });
 
 // schema types
 export type User = z.infer<typeof UserSchema>;
@@ -34,12 +37,9 @@ export type SignUpCredentials = z.infer<typeof SignupCredentialsSchema>;
 export type SignInCredentials = z.infer<typeof SigninCredentialsSchema>;
 export type EditableCredentials = z.infer<typeof EditableCredentialsSchema>;
 export type ForgetPasswordInfo = z.infer<typeof ForgetPasswordInfoSchema>;
+export type ResetPasswordInfo = z.infer<typeof ResetPasswordInfoSchema>;
 
 export type FormType = "signup" | "signin";
 export type FormProps = {
   setForm: (form: FormType) => void;
-};
-
-export type SuccessFormProps = {
-  setSuccess: (isSuccess: boolean) => void;
 };
