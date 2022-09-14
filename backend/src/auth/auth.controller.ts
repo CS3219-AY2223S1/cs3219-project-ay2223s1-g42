@@ -28,7 +28,7 @@ export class AuthController {
   @ApiOkResponse({
     description: "Successfully sent a verification email to the email provided",
   })
-  @ApiBadRequestResponse({description:"Invalid or missing Input"})
+  @ApiBadRequestResponse({description:"Bad Request: Invalid or missing Input"})
   async signup(
     @Body() credentials: SignupCredentialsDto,
     @Res({ passthrough: true }) res: Response
@@ -42,7 +42,7 @@ export class AuthController {
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Signs the user in" })
-  @ApiBadRequestResponse({description:"Invalid or missing Input"})
+  @ApiBadRequestResponse({description:"Bad Request: Invalid or missing Input"})
   @ApiOkResponse({
     description: "Successfully signed in and received JWT token cookies",
   })
@@ -61,7 +61,7 @@ export class AuthController {
   @ApiOkResponse({
     description: "Successfully signed out and cleared JWT token cookies",
   })
-  @ApiUnauthorizedResponse({description:"User is not logged in"})
+  @ApiUnauthorizedResponse({description:"Unauthorized Request: User is not logged in"})
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response

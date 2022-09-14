@@ -35,8 +35,8 @@ export class UserController {
    */
   @Get("me")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiUnauthorizedResponse({ description: "Unauthorized Request" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: User is not logged in" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   getMe(@GetUser() user: User) {
     return user;
   }
@@ -49,8 +49,9 @@ export class UserController {
   @PublicRoute()
   @Get(":id")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request", })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
     if (err instanceof Prisma.NotFoundError) {
@@ -69,11 +70,11 @@ export class UserController {
   @Patch(":id")
   @ApiOperation({ summary: "Edit data of specified user" })
   @ApiOkResponse({ description: "The resource was updated successfully" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
   @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
-  @ApiUnprocessableEntityResponse({ description: "Bad Request" })
-  @ApiBadRequestResponse({description: "Bad Request, id specified is invalid"})
+  @ApiUnprocessableEntityResponse({ description: "Bad Request: Unable to process instruction" })
+  @ApiBadRequestResponse({description: "Bad Request: ID specified is invalid"})
 
   async editUser(
     @GetUser() user: User,
@@ -105,9 +106,9 @@ export class UserController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete data of specified user" })
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
-  @ApiBadRequestResponse({description: "Bad Request, id specified is invalid"})
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiBadRequestResponse({description: "Bad Request: id specified is invalid"})
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
