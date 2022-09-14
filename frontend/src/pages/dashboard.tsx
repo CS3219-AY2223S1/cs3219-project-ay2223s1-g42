@@ -1,22 +1,21 @@
-import { Navbar } from "../components/layout/navbar";
-import { RadioGroupButtons } from "../components/layout/radio-group";
+import { TheNavbar } from "../components/layout/navbar";
+import { RadioGroupButtons } from "../components/layout/radiogroup";
 import { PrimaryButton } from "../components/base/button";
+import { Container } from "src/components/layout";
 
 export default function dashboard() {
   return (
-    <div className="justify-between min-h-screen bg-neutral-100">
-      <Navbar />
-      <div className="flex h-screen items-center">
+    <div className="justify-between h-[10000px] min-h-screen bg-neutral-100">
+      <TheNavbar />
+      <Container>
         <div className="m-auto space-y-10">
           <h1 className="text-5xl text-neutral-900">Welcome to PeerPrep</h1>
-          <div className="flex flex-col items-center">
-            <RadioGroupButtons />
-          </div>
+          <RadioGroupButtons />
           <div className="flex flex-col">
             <PrimaryButton>Match</PrimaryButton>
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }
