@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Body,
   Controller,
   Delete,
@@ -13,8 +15,10 @@ import {
   ApiForbiddenResponse,
   ApiUnprocessableEntityResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
 } from "@nestjs/swagger";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 
 import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
@@ -31,8 +35,8 @@ export class UserController {
    */
   @Get("me")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: User is not logged in" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   getMe(@GetUser() user: User) {
     return user;
   }
@@ -45,12 +49,13 @@ export class UserController {
   @PublicRoute()
   @Get(":id")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
-    if (err) {
-      throw err;
+    if (err instanceof Prisma.NotFoundError) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     return user;
   }
@@ -65,9 +70,12 @@ export class UserController {
   @Patch(":id")
   @ApiOperation({ summary: "Edit data of specified user" })
   @ApiOkResponse({ description: "The resource was updated successfully" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request" })
-  @ApiUnprocessableEntityResponse({ description: "Bad Request" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
+  @ApiUnprocessableEntityResponse({ description: "Bad Request: Unable to process instruction" })
+  @ApiBadRequestResponse({description: "Bad Request: ID specified is invalid"})
+
   async editUser(
     @GetUser() user: User,
     @Param("id") id: string,
@@ -79,8 +87,10 @@ export class UserController {
         email,
         username,
       });
-      if (err) {
-        throw err;
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new HttpException('Resource not found', HttpStatus.NOT_FOUND);
+      } else if (err instanceof Prisma.PrismaClientValidationError) {
+        throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
       }
       return newUser;
     }
@@ -96,8 +106,9 @@ export class UserController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete data of specified user" })
   @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request" })
-  @ApiNotFoundResponse({ description: "Resource not found" })
+  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
+  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiBadRequestResponse({description: "Bad Request: id specified is invalid"})
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
