@@ -6,8 +6,9 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
+import { TheNavbar, Container } from "src/components/layout";
+import { useAuthStore } from "src/login";
 import "../styles/globals.css";
-import { SocketProvider } from "../hooks/socket";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -15,13 +16,21 @@ const queryClient = new QueryClient({
 });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const user = useAuthStore((state) => state.user);
   return (
-    // <SocketProvider>
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      {user ? (
+        <div className="justify-between h-[10000px] min-h-screen bg-neutral-100">
+          <TheNavbar />
+          <Container>
+            <Component {...pageProps} />
+          </Container>
+        </div>
+      ) : (
+        <Component {...pageProps} />
+      )}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-    // </SocketProvider>
   );
 };
 
