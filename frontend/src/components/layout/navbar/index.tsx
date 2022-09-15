@@ -14,11 +14,11 @@ type NavItem = {
 const LINKS = [
   {
     label: "match",
-    href: "/mmr",
+    href: "/login",
   },
   {
     label: "history",
-    href: "/history",
+    href: "/dashboard",
   },
   {
     label: "questions",
