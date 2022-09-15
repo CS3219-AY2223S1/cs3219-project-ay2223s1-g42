@@ -10,12 +10,12 @@ import { ResetPasswordForm } from "../../login/components";
 
 const ResetPasswordPage: NextPage<ApiResponse> = ({ message }) => {
   const router = useRouter();
-  const { token } = router.query;
-  console.log({ token });
+  console.log(router.query);
 
   return (
     <div className="flex flex-col justify-center min-h-screen items-center">
       <div className="w-screen max-w-lg px-4 flex flex-col mb-12 text-center space-y-4">
+        <p>your current id is: {router.query.token}</p>
         <ResetPasswordForm />
       </div>
     </div>
