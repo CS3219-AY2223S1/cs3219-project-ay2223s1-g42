@@ -19,6 +19,7 @@ import {
   SigninCredentialsSchema,
   FormProps,
 } from "../types";
+import { LightLink } from "src/components/base/link";
 
 const LoginForm = ({ setForm }: FormProps) => {
   const queryClient = useQueryClient();
@@ -89,17 +90,7 @@ const LoginForm = ({ setForm }: FormProps) => {
               {...register("password", { required: true })}
             />
             <div className="flex flex-row-reverse">
-              <Link
-                className="hover:border-b-neutral-400"
-                href="/reset-password"
-              >
-                <a
-                  className="font-sans transition duration-300 ease-out border-b-[1px] 
-                  border-transparent hover:border-neutral-400 text-neutral-400"
-                >
-                  Forget password?
-                </a>
-              </Link>
+              <LightLink href="/reset-password">Forget password?</LightLink>
             </div>
           </div>
           <div className="flex flex-col gap-3">

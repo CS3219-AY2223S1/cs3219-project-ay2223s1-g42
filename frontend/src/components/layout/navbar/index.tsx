@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { useState } from "react";
 import cx from "classnames";
 
 import { BurgerMenuIcon } from "src/components/icons";
 import { PrimaryButton } from "../../base/button";
+import { BaseLink, PrimaryLink } from "src/components/base/link";
 
 type NavItem = {
   label: string;
@@ -33,9 +33,9 @@ const MobileNavItem = ({ label, href, isLast }: NavItem) => {
         "border-b-[1px] border-neutral-900 ": !isLast,
       })}
     >
-      <Link href={href}>
-        <a className="block my-2">{label}</a>
-      </Link>
+      <BaseLink href={href} className="block my-2">
+        {label}
+      </BaseLink>
     </li>
   );
 };
@@ -61,14 +61,9 @@ const MobileNavItems = () => {
 const DesktopNavItem = ({ label, href }: NavItem) => {
   return (
     <li>
-      <Link href={href}>
-        <a
-          className="block my-2 transition duration-300 ease-out
-          border-b-[1px] border-transparent hover:border-neutral-800"
-        >
-          {label}
-        </a>
-      </Link>
+      <PrimaryLink href={href} className="block my-2">
+        {label}
+      </PrimaryLink>
     </li>
   );
 };
