@@ -48,5 +48,7 @@ export enum API_RESPONSES_DESCRIPTION {
   SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION = "The resource was updated successfully",
   UNABLE_TO_PROCESS_INSTRUCTION_DESCRIPTION = "Unable to process instruction",
   BAD_REQUEST_INVALID_ID_DESCRIPTION = "Client provided no ID or invalid ID",
+  BAD_REQUEST_INVALID_INPUT_DESCRIPTION = "Client provided invalid credentials or ID",
+  BAD_REQUEST_INVALID_TOKEN_DESCRIPTION = "Client provided invalid token",
   INTERNAL_SERVER_ERROR = "Internal Server Error"
 }
