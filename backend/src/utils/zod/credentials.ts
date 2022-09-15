@@ -3,7 +3,7 @@ import { createZodDto } from "nestjs-zod/dto";
 
 import { UserModel } from "../../zod";
 
-export const SignupCredentials = UserModel.pick({
+export const SignupSchema = UserModel.pick({
   email: true,
   username: true,
 }).extend({
@@ -12,17 +12,31 @@ export const SignupCredentials = UserModel.pick({
     .min(8, { message: "Password must be at least 8 characters" }),
 });
 
-export const SigninCredentials = SignupCredentials.pick({
+export const SigninSchema = SignupSchema.pick({
   email: true,
   password: true,
 });
 
-export const EditableCredentials = UserModel.pick({
+export const ForgetPasswordSchema = UserModel.pick({
+  email: true,
+});
+
+const ResetPasswordSchema = SignupSchema.pick({
+  password: true,
+}).extend({ token: z.string() });
+
+export const EditableSchema = UserModel.pick({
   email: true,
   username: true,
   hashRt: true,
 }).partial();
 
-export class SignupCredentialsDto extends createZodDto(SignupCredentials) {}
-export class SigninCredentialsDto extends createZodDto(SigninCredentials) {}
-export class EditableCredentialsDto extends createZodDto(EditableCredentials) {}
+export class SignupCredentialsDto extends createZodDto(SignupSchema) {}
+export class SigninCredentialsDto extends createZodDto(SigninSchema) {}
+export class EditableCredentialsDto extends createZodDto(EditableSchema) {}
+export class ForgetPasswordCredentialsDto extends createZodDto(
+  ForgetPasswordSchema
+) {}
+export class ResetPasswordCredentialsDto extends createZodDto(
+  ResetPasswordSchema
+) {}
