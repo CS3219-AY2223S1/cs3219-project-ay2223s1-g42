@@ -14,6 +14,7 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
@@ -45,6 +46,10 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
   })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
+  })
   async signup(@Body() credentials: SignupCredentialsDto) {
     await this.authService.signup(credentials);
     return { message: "success" };
@@ -59,6 +64,10 @@ export class AuthController {
   })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async signin(
     @Body() credentials: SigninCredentialsDto,
@@ -78,6 +87,10 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_SIGN_OUT_DESCRIPTION,
   })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
+  })
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
@@ -94,6 +107,10 @@ export class AuthController {
   @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async refresh(
     @GetUser() user: User,
@@ -114,6 +131,10 @@ export class AuthController {
   })
   @ApiForbiddenResponse({
     description: API_RESPONSES_DESCRIPTION.FORBIDDEN_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async verifyEmail(
     @Param("token") token: string,
@@ -151,6 +172,10 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION
     .BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
   })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
+  })
   async forgetPassword(
     @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
   ) {
@@ -175,6 +200,10 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION
     .BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
     const { token, password } = resetPasswordInfo;

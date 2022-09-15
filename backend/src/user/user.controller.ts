@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Body,
   Controller,
   Delete,
@@ -24,6 +22,7 @@ import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import PrismaKnownErrorHandling from "src/utils/prisma-error-handling";
 
 @Controller("users")
 export class UserController {
@@ -35,7 +34,7 @@ export class UserController {
    * @returns user object
    */
   @Get("me")
-  @ApiOperation({ summary: API_OPERATIONS.JWTVerificationTokenSummary })
+  @ApiOperation({ summary: API_OPERATIONS.JWT_VERIFICATION_TOKEN_SUMMARY })
   @ApiOkResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
@@ -75,9 +74,7 @@ export class UserController {
   })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
-    if (err instanceof Prisma.NotFoundError) {
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
+    PrismaKnownErrorHandling(err);
     return user;
   }
 
@@ -96,7 +93,7 @@ export class UserController {
   @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
   @ApiUnauthorizedResponse({
     description:
-    API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+    API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiForbiddenResponse({
     description:
@@ -119,11 +116,7 @@ export class UserController {
         email,
         username,
       });
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new HttpException("Resource not found", HttpStatus.NOT_FOUND);
-      } else if (err instanceof Prisma.PrismaClientValidationError) {
-        throw new HttpException("Bad Request", HttpStatus.BAD_REQUEST);
-      }
+      PrismaKnownErrorHandling(err);
       return newUser;
     }
     throw new BadRequestException("Failed to update user.");
@@ -146,14 +139,12 @@ export class UserController {
   })
   @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
   @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
   })
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
-      if (err) {
-        throw err;
-      }
+      PrismaKnownErrorHandling(err);
       return deletedUser;
     }
     throw new BadRequestException("Failed to delete user.");
