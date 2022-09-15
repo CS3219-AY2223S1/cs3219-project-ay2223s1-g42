@@ -86,7 +86,7 @@ export class UserService {
     }); 
 
     return res;
-  }
+  } 
 
   /**
    * Updates the username/email/refresh token hash of an existing user in the database

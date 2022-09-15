@@ -35,13 +35,9 @@ export class UserController {
    */
   @Get("me")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-<<<<<<< HEAD
-  @ApiUnauthorizedResponse({ description: "Unauthorized Request: User is not logged in" })
-=======
   @ApiUnauthorizedResponse({
     description: "Unauthorized Request: User is not logged in",
   })
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
   @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   getMe(@GetUser() user: User) {
     return user;
@@ -55,10 +51,6 @@ export class UserController {
   @PublicRoute()
   @Get(":id")
   @ApiOkResponse({ description: "The resource was returned successfully" })
-<<<<<<< HEAD
-  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
-=======
   @ApiUnauthorizedResponse({
     description:
       "Unauthorized Request: Client provided no credentials or invalid credentials",
@@ -67,16 +59,11 @@ export class UserController {
     description:
       "Unauthorized Request: Client does not have access rights to the requested content",
   })
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
   @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
     if (err instanceof Prisma.NotFoundError) {
-<<<<<<< HEAD
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-=======
       throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
     }
     return user;
   }
@@ -92,13 +79,6 @@ export class UserController {
   @ApiOperation({ summary: "Edit data of specified user" })
   @ApiOkResponse({ description: "The resource was updated successfully" })
   @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
-<<<<<<< HEAD
-  @ApiUnauthorizedResponse({ description: "Unauthorized Request: Client provided no credentials or invalid credentials" })
-  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
-  @ApiUnprocessableEntityResponse({ description: "Bad Request: Unable to process instruction" })
-  @ApiBadRequestResponse({description: "Bad Request: ID specified is invalid"})
-
-=======
   @ApiUnauthorizedResponse({
     description:
       "Unauthorized Request: Client provided no credentials or invalid credentials",
@@ -113,7 +93,6 @@ export class UserController {
   @ApiBadRequestResponse({
     description: "Bad Request: ID specified is invalid",
   })
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
   async editUser(
     @GetUser() user: User,
     @Param("id") id: string,
@@ -126,15 +105,9 @@ export class UserController {
         username,
       });
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-<<<<<<< HEAD
-        throw new HttpException('Resource not found', HttpStatus.NOT_FOUND);
-      } else if (err instanceof Prisma.PrismaClientValidationError) {
-        throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-=======
         throw new HttpException("Resource not found", HttpStatus.NOT_FOUND);
       } else if (err instanceof Prisma.PrismaClientValidationError) {
         throw new HttpException("Bad Request", HttpStatus.BAD_REQUEST);
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
       }
       return newUser;
     }
@@ -150,11 +123,6 @@ export class UserController {
   @Delete(":id")
   @ApiOperation({ summary: "Delete data of specified user" })
   @ApiOkResponse({ description: "The resource was returned successfully" })
-<<<<<<< HEAD
-  @ApiForbiddenResponse({ description: "Unauthorized Request: Client does not have access rights to the requested content" })
-  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
-  @ApiBadRequestResponse({description: "Bad Request: id specified is invalid"})
-=======
   @ApiForbiddenResponse({
     description:
       "Unauthorized Request: Client does not have access rights to the requested content",
@@ -163,7 +131,6 @@ export class UserController {
   @ApiBadRequestResponse({
     description: "Bad Request: id specified is invalid",
   })
->>>>>>> fb5dc7ed9d67f6c5e64e96f4f69f1781c9682796
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);

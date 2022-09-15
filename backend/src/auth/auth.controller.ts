@@ -27,6 +27,7 @@ import {
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
+import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants"
 
 @Controller("auth")
 export class AuthController {
@@ -35,12 +36,12 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Creates a new user with the provided credentials" })
+  @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY})
   @ApiOkResponse({
-    description: "Successfully sent a verification email to the email provided",
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
   })
   @ApiBadRequestResponse({
-    description: "Bad Request: Invalid or missing Input",
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
   })
   async signup(@Body() credentials: SignupCredentialsDto) {
     await this.authService.signup(credentials);
@@ -51,11 +52,11 @@ export class AuthController {
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Signs the user in" })
-  @ApiBadRequestResponse({
-    description: "Bad Request: Invalid or missing Input",
-  })
   @ApiOkResponse({
-    description: "Successfully signed in and received JWT token cookies",
+    description: API_OPERATIONS.SIGN_IN_SUMMARY,
+  })
+  @ApiBadRequestResponse({
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION
   })
   async signin(
     @Body() credentials: SigninCredentialsDto,
@@ -68,12 +69,12 @@ export class AuthController {
 
   @Post("/signout")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Signs the user out" })
+  @ApiOperation({ summary: API_OPERATIONS.SIGN_OUT_SUMMARY })
   @ApiOkResponse({
-    description: "Successfully signed out and cleared JWT token cookies",
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNOUT_DESCRIPTION,
   })
   @ApiUnauthorizedResponse({
-    description: "Unauthorized Request: User is not logged in",
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_SIGN_OUT_DESCRIPTION,
   })
   async signout(
     @GetUser() user: User,
@@ -88,9 +89,9 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Post("/refresh")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: "Refresh JWT token cookies" })
+  @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
   @ApiOkResponse({
-    description: "Successfully refreshed JWT tokens",
+    description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
   })
   async refresh(
     @GetUser() user: User,
