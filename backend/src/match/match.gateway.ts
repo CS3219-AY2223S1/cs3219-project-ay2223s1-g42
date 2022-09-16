@@ -68,18 +68,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
     console.log({ userPoolItem });
     this.pool.set(userPoolItem.id, userPoolItem);
-
-    if (!this.pool.has(data.id)) {
-      const poolUser: PoolUser = {
-        ...data,
-        socket: client,
-        timeJoined: Date.now(),
-      };
-      console.log("new user joined: ", { poolUser });
-      this.pool.set(poolUser.id, poolUser);
-    } else {
-      client.disconnect();
-    }
   }
 
   // matching logic
