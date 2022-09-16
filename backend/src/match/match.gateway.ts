@@ -60,11 +60,12 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("pool")
   async onJoinPool(client: Socket, data: any) {
-    console.log("received data in pool handler: ", { data });
+    const parsed = JSON.parse(data);
+    console.log("received data in pool handler: ", { parsed });
 
     if (!this.pool.has(data.id)) {
       const poolUser: PoolUser = {
-        ...data,
+        ...parsed,
         socket: client,
         timeJoined: Date.now(),
       };
@@ -83,13 +84,13 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   returnResults = (a: PoolUser, b: PoolUser, roomId: string) => {
     const aRes = {
-      self: a,
-      other: b,
+      self: a.id,
+      otherId: b.id,
       roomId,
     };
     const bRes = {
-      self: b,
-      other: a,
+      self: b.id,
+      otherId: a.id,
       roomId,
     };
     return { aRes, bRes };
