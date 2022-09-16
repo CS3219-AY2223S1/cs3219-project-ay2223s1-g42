@@ -4,9 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { TextInput, PrimaryButton } from "src/components/base";
 import { useAuthStore } from "../hooks";
-import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
+import {
+  ResetPasswordInfo,
+  ResetPasswordInfoSchema,
+  TokenProps,
+} from "../types";
 
-const ResetPasswordForm = () => {
+const ResetPasswordForm = ({ token }: TokenProps) => {
   // forget password mutation
   const useResetPasswordMutation = useAuthStore((state) => state.resetPassword);
   const resetPasswordMutation = useResetPasswordMutation();
@@ -22,11 +26,12 @@ const ResetPasswordForm = () => {
   });
 
   // submit function
-  const handleReset = async (credentials: ResetPasswordInfo) => {
+  const handleResetPassword = async (credentials: ResetPasswordInfo) => {
+    credentials.token = token;
     resetPasswordMutation.mutate(credentials);
     reset();
   };
-  const onSubmit = handleSubmit(handleReset);
+  const onSubmit = handleSubmit(handleResetPassword);
 
   return (
     <>

@@ -43,3 +43,6 @@ export type FormType = "signup" | "signin";
 export type FormProps = {
   setForm: (form: FormType) => void;
 };
+export type TokenProps = {
+  token: string;
+};
