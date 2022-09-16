@@ -21,7 +21,6 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   useEffect(() => {
-    console.log("_app user: ", { user });
     if (!user) {
       router.push("/login");
     }
