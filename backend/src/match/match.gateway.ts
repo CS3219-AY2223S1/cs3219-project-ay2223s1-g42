@@ -28,7 +28,7 @@ export type PoolUser = PoolUserData & {
   difficulties: QuestionDifficulty[];
 };
 
-@UseGuards(WsJwtAccessGuard)
+// @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
   namespace: MATCH_WS_NAMESPACE,
