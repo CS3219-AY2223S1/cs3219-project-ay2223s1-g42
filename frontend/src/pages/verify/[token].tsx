@@ -1,10 +1,11 @@
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 
-import { PrimaryButton } from "../../components/base";
-import { env } from "../../env/server.mjs";
-import { ApiResponse } from "../../login";
-import { Axios } from "../../services/auth";
+import { PrimaryButton } from "src/components/base";
+import { PrimaryLink } from "src/components/base/link";
+import { env } from "src/env/client.mjs";
+import { ApiResponse } from "src/login";
+import { Axios } from "src/services/auth";
 
 const VerifyEmailPage: NextPage<ApiResponse> = ({ message }) => {
   const isSuccess = message === "success";
@@ -17,9 +18,7 @@ const VerifyEmailPage: NextPage<ApiResponse> = ({ message }) => {
             <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
               Email verification is successful!
             </h4>
-            <Link className="hover:border-b-neutral-400" href="/">
-              <PrimaryButton type="submit">Return Home</PrimaryButton>
-            </Link>
+            <PrimaryLink href="/">Return home</PrimaryLink>
           </>
         ) : (
           <>

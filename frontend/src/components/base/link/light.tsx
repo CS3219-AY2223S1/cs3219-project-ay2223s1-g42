@@ -1,7 +1,7 @@
 import { BaseLink } from "./base";
 import { Props } from "./types";
 
-const LightLink = ({ href, children, className, ...other }: Props) => {
+const LightLink = ({ href, children, className = "", ...other }: Props) => {
   return (
     <BaseLink
       href={href}

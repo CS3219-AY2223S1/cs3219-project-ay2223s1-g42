@@ -1,9 +1,9 @@
 import { useState } from "react";
 import cx from "classnames";
 
-import { BurgerMenuIcon } from "src/components/icons";
-import { PrimaryButton } from "../../base/button";
 import { BaseLink, PrimaryLink } from "src/components/base/link";
+import { PrimaryButton } from "src/components/base";
+import { BurgerMenuIcon } from "src/components/icons";
 
 type NavItem = {
   label: string;
@@ -13,16 +13,16 @@ type NavItem = {
 
 const LINKS = [
   {
-    label: "match",
+    label: "login",
     href: "/login",
   },
   {
-    label: "history",
-    href: "/dashboard",
+    label: "sign up",
+    href: "/signup",
   },
   {
-    label: "questions",
-    href: "/questions",
+    label: "reset",
+    href: "/reset-password/123123",
   },
 ];
 
@@ -85,7 +85,7 @@ const TheNavbar = () => {
   return (
     <nav className="font-display pl-4 pr-2 py-3 md:p-4 bg-neutral-100 fixed w-full z-50 top-0 left-0">
       <div className="max-w-5xl flex flex-wrap justify-between items-center mx-auto">
-        <a href="#" className="flex items-center h-full">
+        <BaseLink href="/" className="flex items-center h-full">
           {/* <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="mr-3 h-6 sm:h-9"
@@ -94,7 +94,7 @@ const TheNavbar = () => {
           <span className="font-display self-center text-2xl font-semibold whitespace-nowrap text-neutral-800">
             PussyPrep
           </span>
-        </a>
+        </BaseLink>
         <div className="flex flex-row gap-3 md:gap-4">
           <DesktopNavItems />
           <PrimaryButton className="text-base md:px-6">

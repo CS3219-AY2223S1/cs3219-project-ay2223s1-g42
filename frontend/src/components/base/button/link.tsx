@@ -1,6 +1,6 @@
 import { Props } from "./types";
 
-export function LinkButton({ className, children, ...other }: Props) {
+export function LinkButton({ className = "", children, ...other }: Props) {
   return (
     <button
       className={`font-sans transition duration-300 ease-out border-b-[1px]

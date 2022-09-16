@@ -9,7 +9,7 @@ import {
   PrimaryButton,
   LinkButton,
 } from "src/components/base";
-import { ErrorAlert } from "src/components/base/alert";
+import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
 import { useRouter } from "next/router";
@@ -18,7 +18,8 @@ import {
   SigninCredentialsSchema,
   FormProps,
 } from "../types";
-import { LightLink } from "src/components/base/link";
+import { LightLink, PrimaryLink } from "src/components/base/link";
+import { useEffect } from "react";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
@@ -27,7 +28,10 @@ const LoginForm = () => {
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
   const signinMutation = useSignInMutation({
-    onSuccess: () => queryClient.invalidateQueries(["me"]),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
+      router.push("/");
+    },
   });
 
   // form setup
@@ -42,6 +46,7 @@ const LoginForm = () => {
 
   // submit function
   const handleSignin = async (credentials: SignInCredentials) => {
+    console.log("signing in now!!!");
     signinMutation.mutate(credentials);
     reset();
   };
@@ -49,11 +54,15 @@ const LoginForm = () => {
 
   return (
     <>
-      {signinMutation.isError && (
+      {signinMutation.isError ? (
         <ErrorAlert
           title={"Login failed!"}
           message={"Invalid login credentials."}
         />
+      ) : signinMutation.isSuccess ? (
+        <SuccessAlert title="Login successful!" message="Redirecting..." />
+      ) : (
+        <></>
       )}
       <>
         <BlueButton className="relative w-full flex items-center justify-center">
@@ -69,7 +78,7 @@ const LoginForm = () => {
           </span>
           <div className="flex-grow border-t border-neutral-400"></div>
         </div>
-        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <form className="flex flex-col gap-8 mb-3" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
             <TextInput
               label="Email"
@@ -97,12 +106,9 @@ const LoginForm = () => {
             Sign in
           </PrimaryButton>
         </form>
-        <LinkButton
-          className="self-center mt-3"
-          onClick={() => router.push("/signup")}
-        >
+        <PrimaryLink className="self-center" href="/signup">
           Sign up
-        </LinkButton>
+        </PrimaryLink>
       </>
     </>
   );

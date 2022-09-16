@@ -2,7 +2,7 @@ import { Spinner } from "src/components/icons";
 import { BaseProps } from "./types";
 
 export function BaseButton({
-  className,
+  className = "",
   children,
   isLoading,
   loadColor = "neutral-900",

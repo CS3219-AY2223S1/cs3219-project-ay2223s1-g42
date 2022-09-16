@@ -35,12 +35,12 @@ const ForgetPasswordForm = () => {
       {forgetPasswordMutation.isSuccess ? (
         <SuccessAlert
           title="Email sent!"
-          message="Please check your email for instructions to reset your password."
+          message="Please check your email to reset your password."
         />
       ) : forgetPasswordMutation.isError ? (
         <ErrorAlert
           title="Error occurred!"
-          message="Failed to send reset instructions email to the provided address"
+          message="Failed to send reset instructions."
         />
       ) : (
         <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">

@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/router";
 
 import {
   BlueButton,
@@ -12,7 +13,7 @@ import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
-import { useRouter } from "next/router";
+import { PrimaryLink } from "src/components/base/link";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
@@ -70,7 +71,10 @@ const SignupForm = () => {
           </span>
           <div className="flex-grow border-t border-neutral-400"></div>
         </div>
-        <form className="flex flex-col gap-8 space-y-8" onSubmit={onSubmit}>
+        <form
+          className="flex flex-col gap-8 space-y-8 mb-3"
+          onSubmit={onSubmit}
+        >
           <div className="flex flex-col gap-5">
             <TextInput
               label="Email"
@@ -104,12 +108,9 @@ const SignupForm = () => {
             Sign up
           </PrimaryButton>
         </form>
-        <LinkButton
-          className="self-center mt-3"
-          onClick={() => router.push("/login")}
-        >
+        <PrimaryLink className="self-center" href="/login">
           Sign in
-        </LinkButton>
+        </PrimaryLink>
       </div>
     </>
   );

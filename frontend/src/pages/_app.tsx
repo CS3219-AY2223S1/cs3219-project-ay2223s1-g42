@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import type { AppType } from "next/dist/shared/lib/utils";
 import {
   QueryCache,
@@ -8,6 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "../styles/globals.css";
 import AppLayout from "src/components/layout/AppLayout";
+import { useAuthStore } from "src/login";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -15,6 +18,14 @@ const queryClient = new QueryClient({
 });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    console.log("_app user: ", { user });
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
   return (
     <QueryClientProvider client={queryClient}>
       <AppLayout>

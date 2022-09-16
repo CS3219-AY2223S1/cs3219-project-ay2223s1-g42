@@ -1,7 +1,7 @@
 import { BaseLink } from "./base";
 import { Props } from "./types";
 
-const PrimaryLink = ({ href, children, className, ...other }: Props) => {
+const PrimaryLink = ({ href, children, className = "", ...other }: Props) => {
   return (
     <BaseLink
       href={href}

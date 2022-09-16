@@ -1,12 +1,12 @@
-import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { TextInput, PrimaryButton } from "../../components/base";
 import { useAuthStore } from "../hooks";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
-import { ErrorAlert } from "../../components/base/alert";
+import { PrimaryButton, TextInput } from "src/components/base";
+import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
+import { PrimaryLink } from "src/components/base/link";
 
 type Props = {
   token: string;
@@ -41,18 +41,12 @@ const ResetPasswordForm = ({ token }: Props) => {
       {resetPasswordMutation.isError ? (
         <ErrorAlert
           title={"Password reset failed!"}
-          message={
-            "Invalid token, or token has expired. Please submit your email again"
-          }
+          message={"Invalid token detected. Please re-submit your email."}
         />
       ) : resetPasswordMutation.isSuccess ? (
         <>
-          <h4 className="leading-tight text-1xl text-black-50 flex flex-col">
-            Password Reset is successful!
-          </h4>
-          <Link className="hover:border-b-neutral-400" href="/login">
-            <PrimaryButton type="submit">Sign in here</PrimaryButton>
-          </Link>
+          <SuccessAlert title="Password reset successful!" />
+          <PrimaryLink href="/login">Sign in here</PrimaryLink>
         </>
       ) : (
         <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">

@@ -2,7 +2,7 @@ import { HtmlHTMLAttributes } from "react";
 
 export function Container({
   children,
-  className,
+  className = "",
   ...other
 }: HtmlHTMLAttributes<HTMLDivElement>) {
   return (

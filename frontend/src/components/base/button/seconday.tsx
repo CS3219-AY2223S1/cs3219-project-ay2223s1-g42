@@ -1,7 +1,7 @@
 import { BaseButton } from "./base";
 import { Props } from "./types";
 
-export function SecondaryButton({ className, children, ...other }: Props) {
+export function SecondaryButton({ className = "", children, ...other }: Props) {
   return (
     <BaseButton
       loadColor="neutral-900"

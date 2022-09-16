@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useAuthStore } from "src/login";
 import { Container } from "./container";
 import { TheNavbar } from "./navbar";
@@ -12,8 +11,6 @@ export default function AppLayout({ children }: Props) {
   const user = useAuthStore((state) => state.user);
   const useGetMe = useAuthStore((state) => state.getMe);
   useGetMe();
-
-  console.log("re-rendeirng app layout");
 
   if (user) {
     return (

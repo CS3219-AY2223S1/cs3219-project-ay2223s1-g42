@@ -1,6 +1,6 @@
 type Props = {
   title: string;
-  message: string;
+  message?: string;
 };
 
 const SuccessAlert = ({ title, message }: Props) => {

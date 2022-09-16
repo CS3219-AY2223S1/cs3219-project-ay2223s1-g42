@@ -8,7 +8,7 @@ type Props = HTMLProps<HTMLInputElement> & {
 };
 
 const TextInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ label, className, isError, error, ...other }, ref) => {
+  ({ label, className = "", isError, error, ...other }, ref) => {
     return (
       <div>
         <div className="relative">
