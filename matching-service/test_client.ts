@@ -15,7 +15,7 @@ const clientMatchResultHandler = (args) => {
 // create client operator and pass in handler function
 // call client.match({PLAYER_OBJECT}) to add a player to the pool.
 const client = new MatchMakingClient(
-  "ws://127.0.0.1:8001",
+  "ws://127.0.0.1:5000",
   clientMatchResultHandler
 );
 
@@ -25,16 +25,36 @@ const client = new MatchMakingClient(
 //  ... any other properties you want
 // }
 
-const player1 = { id: 1, elo: 150, power: 700, name: "John" };
+const player1 = {
+  id: 1,
+  email: "user1@asdas.com",
+  username: "user1",
+  difficulties: ["easy", "hard"],
+};
 client.match(player1);
 
-const player2 = { id: 2, elo: 320, power: 900, name: "Sergio" };
+const player2 = {
+  id: 2,
+  email: "user2@asdas.com",
+  username: "user2",
+  difficulties: ["hard", "medium"],
+};
 client.match(player2);
 
-const player3 = { id: 3, elo: 380, power: 300, name: "Brooklyn" };
+const player3 = {
+  id: 3,
+  email: "user3@asdas.com",
+  username: "user3",
+  difficulties: ["medium"],
+};
 client.match(player3);
 
-const player4 = { id: 4, elo: 160, power: 450, name: "Miguel" };
+const player4 = {
+  id: 4,
+  email: "user4@asdas.com",
+  username: "user4",
+  difficulties: ["medium", "easy"],
+};
 client.match(player4);
 
 // let i = 5;
