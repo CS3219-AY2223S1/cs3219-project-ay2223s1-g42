@@ -57,7 +57,7 @@ const LoginForm = ({ setForm }: FormProps) => {
       <div>
         <BlueButton className="relative w-full flex items-center justify-center">
           <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
-            <GoogleIcon className="h-5 w-5 text-red-500" />
+            <GoogleIcon className="h-5 w-5" />
           </div>
           Sign in with Google
         </BlueButton>
