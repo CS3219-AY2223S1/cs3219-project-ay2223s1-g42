@@ -6,7 +6,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
-import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "./constants";
+import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";

@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Body,
   Controller,
   Delete,
@@ -17,12 +15,15 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiInternalServerErrorResponse
 } from "@nestjs/swagger";
 import { Prisma, User } from "@prisma/client";
 
 import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
+import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import PrismaKnownErrorHandling from "../utils/prisma-error-handling";
 
 @Controller("users")
 export class UserController {
@@ -34,11 +35,22 @@ export class UserController {
    * @returns user object
    */
   @Get("me")
-  @ApiOkResponse({ description: "The resource was returned successfully" })
-  @ApiUnauthorizedResponse({
-    description: "Unauthorized Request: User is not logged in",
+  @ApiOperation({ summary: API_OPERATIONS.JWT_VERIFICATION_TOKEN_SUMMARY })
+  @ApiOkResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
   })
-  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiUnauthorizedResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
+  })
   getMe(@GetUser() user: User) {
     return user;
   }
@@ -50,21 +62,28 @@ export class UserController {
    */
   @PublicRoute()
   @Get(":id")
-  @ApiOkResponse({ description: "The resource was returned successfully" })
+  @ApiOperation({ summary: API_OPERATIONS.RETURN_USER_INFO_WITH_ID_SUMMARY })
+  @ApiOkResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
+  })
   @ApiUnauthorizedResponse({
     description:
-      "Unauthorized Request: Client provided no credentials or invalid credentials",
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
   })
   @ApiForbiddenResponse({
-    description:
-      "Unauthorized Request: Client does not have access rights to the requested content",
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
-  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
+  })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
-    if (err instanceof Prisma.NotFoundError) {
-      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-    }
+    PrismaKnownErrorHandling(err);
     return user;
   }
 
@@ -76,22 +95,28 @@ export class UserController {
    * @returns user object of the edited user
    */
   @Patch(":id")
-  @ApiOperation({ summary: "Edit data of specified user" })
-  @ApiOkResponse({ description: "The resource was updated successfully" })
-  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiOperation({ summary: API_OPERATIONS.EDIT_USER_INFO_SUMMARY })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION 
+  })
+  @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
   @ApiUnauthorizedResponse({
     description:
-      "Unauthorized Request: Client provided no credentials or invalid credentials",
+    API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiForbiddenResponse({
     description:
-      "Unauthorized Request: Client does not have access rights to the requested content",
+      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiUnprocessableEntityResponse({
-    description: "Bad Request: Unable to process instruction",
+    description: API_RESPONSES_DESCRIPTION.UNABLE_TO_PROCESS_INSTRUCTION_DESCRIPTION,
   })
   @ApiBadRequestResponse({
-    description: "Bad Request: ID specified is invalid",
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async editUser(
     @GetUser() user: User,
@@ -104,11 +129,7 @@ export class UserController {
         email,
         username,
       });
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new HttpException("Resource not found", HttpStatus.NOT_FOUND);
-      } else if (err instanceof Prisma.PrismaClientValidationError) {
-        throw new HttpException("Bad Request", HttpStatus.BAD_REQUEST);
-      }
+      PrismaKnownErrorHandling(err);
       return newUser;
     }
     throw new BadRequestException("Failed to update user.");
@@ -121,22 +142,26 @@ export class UserController {
    * @returns deleted user object
    */
   @Delete(":id")
-  @ApiOperation({ summary: "Delete data of specified user" })
-  @ApiOkResponse({ description: "The resource was returned successfully" })
+  @ApiOperation({ summary: API_OPERATIONS.DELETE_USER_SUMMARY })
+  @ApiOkResponse({ 
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION 
+  })
   @ApiForbiddenResponse({
     description:
-      "Unauthorized Request: Client does not have access rights to the requested content",
+    API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
-  @ApiNotFoundResponse({ description: "Not Found: Resource not found" })
+  @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
   @ApiBadRequestResponse({
-    description: "Bad Request: id specified is invalid",
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION
+    .INTERNAL_SERVER_ERROR
   })
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
-      if (err) {
-        throw err;
-      }
+      PrismaKnownErrorHandling(err);
       return deletedUser;
     }
     throw new BadRequestException("Failed to delete user.");
