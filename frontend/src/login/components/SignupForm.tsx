@@ -103,7 +103,9 @@ const SignupForm = ({ setForm }: FormProps) => {
             />
           </div>
           <div className="flex flex-col gap-3">
-            <PrimaryButton type="submit">Sign up</PrimaryButton>
+            <PrimaryButton type="submit" isLoading={signupMutation.isLoading}>
+              Sign up
+            </PrimaryButton>
             <LinkButton
               className="self-center"
               onClick={() => setForm("signin")}
