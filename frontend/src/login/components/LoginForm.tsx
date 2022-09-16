@@ -91,7 +91,7 @@ const LoginForm = ({ setForm }: FormProps) => {
             <div className="flex flex-row-reverse">
               <Link
                 className="hover:border-b-neutral-400"
-                href="/reset-password"
+                href="/forget-password"
               >
                 <a
                   className="font-sans transition duration-300 ease-out border-b-[1px] 
