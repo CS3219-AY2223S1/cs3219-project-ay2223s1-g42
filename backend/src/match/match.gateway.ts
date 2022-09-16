@@ -23,7 +23,7 @@ type PoolUser = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
 };
 
-@UseGuards(WsJwtAccessGuard)
+// @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -75,7 +75,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket: client,
         timeJoined: Date.now(),
       };
-      console.log({ poolUser });
+      console.log("new user joined: ", { poolUser });
       this.pool.set(poolUser.id, poolUser);
     } else {
       client.disconnect();
@@ -102,7 +102,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return { aRes, bRes };
   };
 
-
   // matchmakes users within the current pool with each other every 5s
   @Cron(CronExpression.EVERY_5_SECONDS)
   matchMake() {
@@ -116,8 +115,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
           const b = this.pool.get(B);
           if (a && b) {
             console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
-
-            const { aRes, bRes } = this.returnResults(a, b);
+            const roomId = v4();
+            const { aRes, bRes } = this.returnResults(a, b, roomId);
             a.socket.send(JSON.stringify(aRes));
             b.socket.send(JSON.stringify(bRes));
 

@@ -9,6 +9,7 @@ export const UserModel = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   hash: z.string(),
   hashRt: z.string().nullish(),
-});
+})
 
-export class UserDto extends createZodDto(UserModel) {}
+export class UserDto extends createZodDto(UserModel) {
+}
