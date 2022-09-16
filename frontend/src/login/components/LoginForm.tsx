@@ -8,12 +8,11 @@ import {
   TextInput,
   PrimaryButton,
   LinkButton,
-  RedButton,
-  SecondaryButton,
 } from "src/components/base";
 import { ErrorAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
+import { useRouter } from "next/router";
 import {
   SignInCredentials,
   SigninCredentialsSchema,
@@ -21,8 +20,9 @@ import {
 } from "../types";
 import { LightLink } from "src/components/base/link";
 
-const LoginForm = ({ setForm }: FormProps) => {
+const LoginForm = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.signin);
@@ -55,10 +55,10 @@ const LoginForm = ({ setForm }: FormProps) => {
           message={"Invalid login credentials."}
         />
       )}
-      <div>
+      <>
         <BlueButton className="relative w-full flex items-center justify-center">
           <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
-            <GoogleIcon className="h-5 w-5 text-red-500" />
+            <GoogleIcon className="h-5 w-5" />
           </div>
           Sign in with Google
         </BlueButton>
@@ -93,19 +93,17 @@ const LoginForm = ({ setForm }: FormProps) => {
               <LightLink href="/reset-password">Forget password?</LightLink>
             </div>
           </div>
-          <div className="flex flex-col gap-3">
-            <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
-              Sign in
-            </PrimaryButton>
-            <LinkButton
-              className="self-center"
-              onClick={() => setForm("signup")}
-            >
-              Sign up
-            </LinkButton>
-          </div>
+          <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
+            Sign in
+          </PrimaryButton>
         </form>
-      </div>
+        <LinkButton
+          className="self-center mt-3"
+          onClick={() => router.push("/signup")}
+        >
+          Sign up
+        </LinkButton>
+      </>
     </>
   );
 };

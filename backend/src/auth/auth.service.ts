@@ -230,13 +230,14 @@ export class AuthService {
   async resetPassword(email: string) {
     // find user via email provided
     const [err, user] = await this.users.findByEmail(email);
-    const username = user.username;
-    const userId = user.id;
 
     // if user doesn't exist, do nothing. Just bring user to email sent page
     if (err || !user) {
       return;
     }
+
+    const username = user.username;
+    const userId = user.id;
 
     //Reset password
     const resetPasswordVerificationToken = v4();

@@ -11,14 +11,12 @@ import {
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
-import {
-  FormProps,
-  SignUpCredentials,
-  SignupCredentialsSchema,
-} from "../types";
+import { SignUpCredentials, SignupCredentialsSchema } from "../types";
+import { useRouter } from "next/router";
 
-const SignupForm = ({ setForm }: FormProps) => {
+const SignupForm = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   // sign in mutations
   const useSignUpMutation = useAuthStore((state) => state.signup);
@@ -102,16 +100,16 @@ const SignupForm = ({ setForm }: FormProps) => {
               {...register("password", { required: true })}
             />
           </div>
-          <div className="flex flex-col gap-3">
-            <PrimaryButton type="submit">Sign up</PrimaryButton>
-            <LinkButton
-              className="self-center"
-              onClick={() => setForm("signin")}
-            >
-              Sign in
-            </LinkButton>
-          </div>
+          <PrimaryButton type="submit" isLoading={signupMutation.isLoading}>
+            Sign up
+          </PrimaryButton>
         </form>
+        <LinkButton
+          className="self-center mt-3"
+          onClick={() => router.push("/login")}
+        >
+          Sign in
+        </LinkButton>
       </div>
     </>
   );

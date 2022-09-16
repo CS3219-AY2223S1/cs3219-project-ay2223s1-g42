@@ -12,6 +12,8 @@ import {
   ApiResponse,
   SignInCredentials,
   SignUpCredentials,
+  ForgetPasswordInfo,
+  ResetPasswordInfo,
 } from "../types";
 
 type Options = {
@@ -34,6 +36,12 @@ type AuthStore = {
   signout: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, void, unknown>;
+  forgetPassword: (
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, ForgetPasswordInfo, unknown>;
+  resetPassword: (
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, ResetPasswordInfo, unknown>;
 };
 
 const AuthMutations = (
@@ -113,6 +121,42 @@ const AuthMutations = (
       }
     );
   };
+  const forgetPasswordMutation = (options?: Options) => {
+    return useMutation(
+      (params: ForgetPasswordInfo) =>
+        Axios.post<ApiResponse>(`/auth/forget-password`, params).then(
+          (res) => res.data
+        ),
+      {
+        onSuccess: (data) => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
+  };
+  const resetPasswordMutation = (options?: Options) => {
+    return useMutation(
+      (params: ResetPasswordInfo) =>
+        Axios.post<ApiResponse>(`/auth/reset-password`, params).then(
+          (res) => res.data
+        ),
+      {
+        onSuccess: (data) => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
+  };
   return {
     user: undefined,
     getMe,
@@ -120,6 +164,8 @@ const AuthMutations = (
     signin: signinMutation,
     signup: signupMutation,
     signout: signoutMutation,
+    forgetPassword: forgetPasswordMutation,
+    resetPassword: resetPasswordMutation,
   };
 };
 
