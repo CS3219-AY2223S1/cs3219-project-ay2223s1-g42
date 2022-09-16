@@ -6,7 +6,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
-import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "./constants";
+import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
@@ -227,7 +227,7 @@ export class AuthService {
    * Sends the user a reset password email and returns the JWT token
    * @param email the email account that requested for a password reset
    */
-   async resetPassword(email: string) {
+  async resetPassword(email: string) {
     // find user via email provided
     const [err, user] = await this.users.findByEmail(email);
     const username = user.username;
