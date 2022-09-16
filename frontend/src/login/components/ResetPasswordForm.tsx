@@ -38,20 +38,16 @@ const ResetPasswordForm = ({ token }: Props) => {
 
   return (
     <>
-      {resetPasswordMutation.isError && (
+      {resetPasswordMutation.isError ? (
         <ErrorAlert
           title={"Password reset failed!"}
           message={
             "Invalid token, or token has expired. Please submit your email again"
           }
         />
-      )}
-      <h1 className="font-bold leading-tight text-4xl mt-0 mb-2 text-black-600 flex flex-col py-5 text-left">
-        Reset Password
-      </h1>
-      {resetPasswordMutation.isSuccess ? (
+      ) : resetPasswordMutation.isSuccess ? (
         <>
-          <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
+          <h4 className="leading-tight text-1xl text-black-50 flex flex-col">
             Password Reset is successful!
           </h4>
           <Link className="hover:border-b-neutral-400" href="/login">
@@ -59,25 +55,28 @@ const ResetPasswordForm = ({ token }: Props) => {
           </Link>
         </>
       ) : (
-        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-          <TextInput
-            label="New Password"
-            type="password"
-            placeholder="Very$ecureP4ssword"
-            isError={!!errors.password?.message}
-            error={errors.password?.message}
-            autoComplete="new-password"
-            {...register("password", { required: true })}
-          />
-          <PrimaryButton
-            className="max-w-3xl"
-            type="submit"
-            isLoading={resetPasswordMutation.isLoading}
-          >
-            Reset Password
-          </PrimaryButton>
-        </form>
+        <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">
+          Please enter your new password
+        </h4>
       )}
+      <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <TextInput
+          label="New Password"
+          type="password"
+          placeholder="Very$ecureP4ssword"
+          isError={!!errors.password?.message}
+          error={errors.password?.message}
+          autoComplete="new-password"
+          {...register("password", { required: true })}
+        />
+        <PrimaryButton
+          className="max-w-3xl"
+          type="submit"
+          isLoading={resetPasswordMutation.isLoading}
+        >
+          Reset password
+        </PrimaryButton>
+      </form>
     </>
   );
 };
