@@ -47,8 +47,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async signup(@Body() credentials: SignupCredentialsDto) {
     await this.authService.signup(credentials);
@@ -66,8 +65,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async signin(
     @Body() credentials: SigninCredentialsDto,
@@ -88,8 +86,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_SIGN_OUT_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async signout(
     @GetUser() user: User,
@@ -109,8 +106,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async refresh(
     @GetUser() user: User,
@@ -133,8 +129,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.FORBIDDEN_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async verifyEmail(
     @Param("token") token: string,
@@ -162,19 +157,17 @@ export class AuthController {
   @PublicRoute()
   @Post("/forget-password")
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY})
+  @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY })
   @ApiOkResponse({
     description:
-      API_RESPONSES_DESCRIPTION
-      .SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
   })
   @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async forgetPassword(
     @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
@@ -191,19 +184,17 @@ export class AuthController {
   @PublicRoute()
   @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.RESET_PASSWORD_SUMMARY})
+  @ApiOperation({ summary: API_OPERATIONS.RESET_PASSWORD_SUMMARY })
   @ApiOkResponse({
     description:
-      API_RESPONSES_DESCRIPTION
-      .SUCCESSFUL_RESET_PASSWORD_DESCRIPTION,
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RESET_PASSWORD_DESCRIPTION,
   })
   @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
     const { token, password } = resetPasswordInfo;
