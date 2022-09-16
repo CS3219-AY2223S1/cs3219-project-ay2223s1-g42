@@ -14,6 +14,7 @@ import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { PublicUserInfo } from "../utils/zod/userInfo";
 import { QuestionDifficulty } from "src/utils/zod/question";
+import { v4 } from "uuid";
 // import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
 type PoolUser = PublicUserInfo & {
@@ -22,7 +23,7 @@ type PoolUser = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
 };
 
-@UseGuards(WsJwtAccessGuard)
+// @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -59,7 +60,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage("pool")
   async onJoinPool(client: Socket, data: any) {
-    console.log({ data });
+    console.log("received data in pool handler: ", { data });
 
     if (!this.pool.has(data.id)) {
       const poolUser: PoolUser = {
@@ -67,7 +68,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket: client,
         timeJoined: Date.now(),
       };
-      console.log({ poolUser });
+      console.log("new user joined: ", { poolUser });
       this.pool.set(poolUser.id, poolUser);
     } else {
       client.disconnect();
@@ -80,14 +81,16 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return intersects(user1.difficulties, user2.difficulties);
   };
 
-  returnResults = (a: PoolUser, b: PoolUser) => {
+  returnResults = (a: PoolUser, b: PoolUser, roomId: string) => {
     const aRes = {
       self: a,
       other: b,
+      roomId,
     };
     const bRes = {
       self: b,
       other: a,
+      roomId,
     };
     return { aRes, bRes };
   };
@@ -105,8 +108,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
           const b = this.pool.get(B);
           if (a && b) {
             console.log(`MATCH FOUND: ${a.id} vs ${b.id}`);
-
-            const { aRes, bRes } = this.returnResults(a, b);
+            const roomId = v4();
+            const { aRes, bRes } = this.returnResults(a, b, roomId);
             a.socket.send(JSON.stringify(aRes));
             b.socket.send(JSON.stringify(bRes));
 
