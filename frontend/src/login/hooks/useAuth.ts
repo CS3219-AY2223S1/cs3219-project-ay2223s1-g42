@@ -47,7 +47,7 @@ type AuthStore = {
 const AuthMutations = (
   setState: ({ user }: { user: User | undefined }) => void
 ) => {
-  const getMeMutation = (options?: Options) => {
+  const getMe = (options?: Options) => {
     return useQuery(
       ["me"],
       () => Axios.get<User>("/users/me").then((res) => res.data),
@@ -159,7 +159,7 @@ const AuthMutations = (
   };
   return {
     user: undefined,
-    getMe: getMeMutation,
+    getMe,
     refresh: refreshMutation,
     signin: signinMutation,
     signup: signupMutation,

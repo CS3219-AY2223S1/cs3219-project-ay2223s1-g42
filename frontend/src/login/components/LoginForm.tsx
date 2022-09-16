@@ -12,8 +12,13 @@ import {
 import { ErrorAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
 import { useAuthStore } from "../hooks";
-import { SignInCredentials, SigninCredentialsSchema } from "../types";
 import { useRouter } from "next/router";
+import {
+  SignInCredentials,
+  SigninCredentialsSchema,
+  FormProps,
+} from "../types";
+import { LightLink } from "src/components/base/link";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
@@ -85,17 +90,7 @@ const LoginForm = () => {
               {...register("password", { required: true })}
             />
             <div className="flex flex-row-reverse">
-              <Link
-                className="hover:border-b-neutral-400"
-                href="/forget-password"
-              >
-                <a
-                  className="font-sans transition duration-300 ease-out border-b-[1px] 
-                  border-transparent hover:border-neutral-400 text-neutral-400"
-                >
-                  Forget password?
-                </a>
-              </Link>
+              <LightLink href="/reset-password">Forget password?</LightLink>
             </div>
           </div>
           <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>

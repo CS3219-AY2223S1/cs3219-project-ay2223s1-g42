@@ -1,2 +1,4 @@
 export * from "./GoogleIcon";
-export * from "./Spinner";
+export * from "./SpinnerIcon";
+export * from "./CheckIcon";
+export * from "./BurgerMenuIcon";

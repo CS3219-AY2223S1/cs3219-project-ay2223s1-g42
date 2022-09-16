@@ -7,7 +7,7 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "../styles/globals.css";
-import { SocketProvider } from "../hooks/socket";
+import AppLayout from "src/components/layout/AppLayout";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -16,12 +16,12 @@ const queryClient = new QueryClient({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    // <SocketProvider>
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <AppLayout>
+        <Component {...pageProps} />
+      </AppLayout>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-    // </SocketProvider>
   );
 };
 
