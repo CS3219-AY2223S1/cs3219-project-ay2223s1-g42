@@ -7,6 +7,12 @@ import { Axios } from "src/services/auth";
 import { User } from "src/login";
 import { env } from "src/env/client.mjs";
 
+type QuestionDifficulty = "easy" | "medium" | "hard";
+
+export type PoolUser = User & {
+  difficulties: QuestionDifficulty[];
+};
+
 type Call = {
   from?: User;
   signal?: Peer.SignalData;
@@ -28,6 +34,7 @@ type SocketStore = {
   leaveCall: () => void;
   sendChat: () => void;
   setupVideo: () => void;
+  findMatch: (user: PoolUser) => void;
 };
 
 type SocketValues = Omit<
@@ -53,6 +60,9 @@ const SocketMutations = (
   });
   socket.on("chat", (data) => {
     console.log({ data });
+  });
+  socket.on("message", (data) => {
+    console.log("message received: ", { data });
   });
 
   const setupVideo = () => {
@@ -135,6 +145,10 @@ const SocketMutations = (
     getState().socket?.emit("chat", { message: "hello to chat from client" });
   };
 
+  const findMatch = (user: PoolUser) => {
+    getState().socket?.emit("pool", JSON.stringify(user));
+  };
+
   return {
     socket,
     callAccepted: false,
@@ -151,6 +165,7 @@ const SocketMutations = (
     leaveCall,
     sendChat,
     setupVideo,
+    findMatch,
   };
 };
 
