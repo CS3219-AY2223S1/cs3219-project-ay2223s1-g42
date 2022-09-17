@@ -1,15 +1,13 @@
 import type { NextPage } from "next";
-import { useEffect } from "react";
-import Head from "next/head";
-import { useRouter } from "next/router";
 
 import { PrimaryButton } from "../components/base";
-import { useAuthStore } from "src/login";
 import { Spinner } from "src/components/icons";
 import { RadioGroupButtons } from "src/components/layout/radiogroup";
+import { useAuthStore, useSocketStore } from "src/hooks";
 
 const Home: NextPage = () => {
   const user = useAuthStore((state) => state.user);
+  const socket = useSocketStore((state) => state.socket);
   if (!user) {
     return <Spinner className="h-12 w-12" />;
   }

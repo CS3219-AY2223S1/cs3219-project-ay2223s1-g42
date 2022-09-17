@@ -3,17 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 
-import {
-  BlueButton,
-  TextInput,
-  PrimaryButton,
-  LinkButton,
-} from "src/components/base";
+import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
-import { useAuthStore } from "../hooks";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
 import { PrimaryLink } from "src/components/base/link";
+import { useAuthStore } from "src/hooks";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
