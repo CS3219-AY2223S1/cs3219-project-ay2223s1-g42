@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -99,7 +100,7 @@ export class AuthController {
 
   @PublicRoute()
   @UseGuards(JwtRefreshGuard)
-  @Post("/refresh")
+  @Get("/refresh")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
   @ApiOkResponse({

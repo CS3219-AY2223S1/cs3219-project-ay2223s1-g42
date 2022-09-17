@@ -1,20 +1,30 @@
-import React from "react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Spinner } from "src/components/icons";
+
+import { useAuthStore } from "src/login";
+import { LoginForm } from "../login/components";
 
 export default function login() {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
   return (
-    <div className="flex flex-col justify-between text-gray-100 min-h-screen items-center bg-red-500">
-      <div className="w-screen max-w-5xl px-4 flex flex-col mb-12 bg-blue-500 text-center">
-        centered loginsadddddddddddddddddddddddddddddddddddddddd
-        ssssssssssssssssssssssssssssssssscentered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss centered
-        loginsadddddddddddddddddddddddddddddddddddddddd
-        sssssssssssssssssssssssssssssssss
-      </div>
-    </div>
+    <>
+      {user ? (
+        <Spinner className="h-12 w-12" />
+      ) : (
+        <div className="w-full px-4 flex flex-col text-center mx-auto">
+          <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
+            Welcome.
+          </h1>
+          <LoginForm />
+        </div>
+      )}
+    </>
   );
 }
