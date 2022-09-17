@@ -3,11 +3,23 @@ import type { NextPage } from "next";
 import { PrimaryButton } from "../components/base";
 import { Spinner } from "src/components/icons";
 import { RadioGroupButtons } from "src/components/layout/radiogroup";
-import { useAuthStore, useSocketStore } from "src/hooks";
+import { PoolUser, useAuthStore, useSocketStore } from "src/hooks";
 
 const Home: NextPage = () => {
   const user = useAuthStore((state) => state.user);
-  const socket = useSocketStore((state) => state.socket);
+  const findMatch = useSocketStore((state) => state.findMatch);
+  const handleFindMatch = () => {
+    if (!user) {
+      console.log("user not found, cannot find match");
+      return;
+    }
+    const poolUser: PoolUser = {
+      ...user,
+      difficulties: ["easy", "medium"],
+    };
+    console.log("finding match: ", { poolUser });
+    findMatch(poolUser);
+  };
   if (!user) {
     return <Spinner className="h-12 w-12" />;
   }
@@ -18,7 +30,7 @@ const Home: NextPage = () => {
       </h1>
       <RadioGroupButtons />
       <div className="flex flex-col">
-        <PrimaryButton>Match</PrimaryButton>
+        <PrimaryButton onClick={handleFindMatch}>Match</PrimaryButton>
       </div>
     </div>
   );

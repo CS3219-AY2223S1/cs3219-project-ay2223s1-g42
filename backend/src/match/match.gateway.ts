@@ -23,7 +23,7 @@ type PoolUser = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
 };
 
-// @UseGuards(WsJwtAccessGuard)
+@UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
 })
@@ -59,15 +59,22 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("pool")
-  async onJoinPool(client: Socket, data: PoolUser) {
-    console.log({ data });
-    const userPoolItem: PoolUser = {
-      ...data,
-      socket: client,
-      timeJoined: Date.now(),
-    };
-    console.log({ userPoolItem });
-    this.pool.set(userPoolItem.id, userPoolItem);
+  async onJoinPool(client: Socket, data: any) {
+    const parsed = JSON.parse(data);
+    const randomId = `${parsed.id}${Math.random() * 10}`;
+    if (!this.pool.has(randomId)) {
+      const poolUser: PoolUser = {
+        ...parsed,
+        id: randomId,
+        socket: client,
+        timeJoined: Date.now(),
+      };
+      console.log("new user joined: ", { poolUser });
+      this.pool.set(poolUser.id, poolUser);
+    } else {
+      console.log("user already in pool, disconnecting...");
+      client.disconnect();
+    }
   }
 
   // matching logic
