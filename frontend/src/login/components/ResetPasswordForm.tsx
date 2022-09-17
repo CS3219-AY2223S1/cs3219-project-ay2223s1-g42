@@ -1,12 +1,11 @@
 import { useForm } from "react-hook-form";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from "../hooks";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
 import { PrimaryButton, TextInput } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { PrimaryLink } from "src/components/base/link";
+import { useAuthStore } from "src/hooks";
 
 type Props = {
   token: string;

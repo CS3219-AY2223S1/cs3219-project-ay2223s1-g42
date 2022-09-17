@@ -1,4 +1,3 @@
-import { Container } from "src/components/layout";
 import { ForgetPasswordForm } from "../login/components";
 
 export default function forgetPassword() {
