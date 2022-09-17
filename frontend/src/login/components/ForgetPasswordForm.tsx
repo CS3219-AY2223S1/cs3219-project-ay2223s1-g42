@@ -2,9 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { TextInput, PrimaryButton } from "src/components/base";
-import { useAuthStore } from "../hooks";
 import { ForgetPasswordInfo, ForgetPasswordInfoSchema } from "../types";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
+import { useAuthStore } from "src/hooks";
 
 const ForgetPasswordForm = () => {
   // forget password mutation

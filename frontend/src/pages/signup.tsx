@@ -1,8 +1,4 @@
-import { useRouter } from "next/router";
-import { useState } from "react";
-
-import { Container } from "../components/base";
-import { LoginForm, SignupForm } from "../login/components";
+import { SignupForm } from "../login/components";
 
 export default function signup() {
   return (
