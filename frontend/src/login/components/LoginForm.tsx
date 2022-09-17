@@ -99,7 +99,7 @@ const LoginForm = () => {
               {...register("password", { required: true })}
             />
             <div className="flex flex-row-reverse">
-              <LightLink href="/reset-password">Forget password?</LightLink>
+              <LightLink href="/forget-password">Forget password?</LightLink>
             </div>
           </div>
           <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
