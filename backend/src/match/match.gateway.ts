@@ -45,6 +45,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage(MATCH_MESSAGES.JOIN_QUEUE)
   async onJoinMatch(client: Socket, data: any) {
+    // parse user and add socket id
     const parsed: PoolUserData = JSON.parse(data);
     const randomId = parseInt(`${parsed.id}${Math.random() * 10}`);
     const poolUser: PoolUser = {
@@ -60,6 +61,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const existingRoom = await this.matchService.handleUserAlreadyMatched(
       poolUser
     );
+    console.log("esisting room", { existingRoom });
     if (existingRoom) {
       client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
       return;

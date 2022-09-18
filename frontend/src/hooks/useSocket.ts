@@ -53,13 +53,7 @@ const SocketMutations = (
   console.log({ socket });
 
   socket.on("connect", () => {
-<<<<<<< HEAD
     console.log("connected to websocket server :)");
-=======
-    console.log("connected to websocket server");
-
-    console.log(`${env.NEXT_PUBLIC_WS_URL}/match`);
->>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     setState({ connected: true });
   });
   socket.on("disconnect", () => {
@@ -167,10 +161,7 @@ const SocketMutations = (
   };
 
   const findMatch = (user: PoolUser) => {
-<<<<<<< HEAD
     console.log("finding match: ", { user, socketId: getState().socket?.id });
-=======
->>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     getState().socket?.emit("join", JSON.stringify(user));
   };
 
