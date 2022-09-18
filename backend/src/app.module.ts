@@ -10,14 +10,18 @@ import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { QuestionModule } from "./question/question.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
 import { generateEmailFromField } from "./utils/mail";
+import { RoomServiceModule } from "./room/room.service.module";
+import { MatchServiceModule } from "./match/match.service.module";
+import { MatchModule } from "./match/match.module";
+import { RoomModule } from "./room/room.module";
 
 @Module({
   imports: [
+    MatchServiceModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: [".env.local", ".env"],
@@ -52,12 +56,15 @@ import { generateEmailFromField } from "./utils/mail";
         },
       }),
     }),
+    RedisCacheModule,
     PrismaModule,
     UserModule,
     QuestionModule,
     AuthModule,
-    MatchModule,
-    RedisCacheModule,
+    RoomServiceModule,
+    RoomModule,
+
+    // MatchModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
