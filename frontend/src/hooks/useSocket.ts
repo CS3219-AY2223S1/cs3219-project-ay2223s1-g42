@@ -46,13 +46,15 @@ const SocketMutations = (
   setState: (values: Partial<SocketValues>) => void,
   getState: () => SocketValues
 ): SocketStore => {
-  const socket = io(env.NEXT_PUBLIC_WS_URL, {
+  const socket = io(`${env.NEXT_PUBLIC_WS_URL}/match`, {
     withCredentials: true,
     transports: ["websocket"],
   });
 
   socket.on("connect", () => {
     console.log("connected to websocket server");
+
+    console.log(`${env.NEXT_PUBLIC_WS_URL}/match`);
     setState({ connected: true });
   });
   socket.on("disconnect", () => {
@@ -62,7 +64,20 @@ const SocketMutations = (
     console.log({ data });
   });
   socket.on("message", (data) => {
-    console.log("message received: ", { data });
+    const parsed = JSON.parse(data);
+    console.log("message received: ", { parsed });
+  });
+  socket.on("matched", (data) => {
+    const parsedExistingRoom = JSON.parse(data);
+    console.log("existing room: ", { parsedExistingRoom });
+  });
+  socket.on("joined", (data) => {
+    const parsedJoinSuccess = JSON.parse(data);
+    console.log("successfully joined queue: ", { parsedJoinSuccess });
+  });
+  socket.on("found", (data) => {
+    const parsedMatchedRoom = JSON.parse(data);
+    console.log("matched room: ", { parsedMatchedRoom });
   });
 
   const setupVideo = () => {
@@ -146,7 +161,7 @@ const SocketMutations = (
   };
 
   const findMatch = (user: PoolUser) => {
-    getState().socket?.emit("pool", JSON.stringify(user));
+    getState().socket?.emit("join", JSON.stringify(user));
   };
 
   return {
