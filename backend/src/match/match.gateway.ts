@@ -43,16 +43,9 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log("client has disconnected");
   }
 
-  @SubscribeMessage("chat")
-  async onChat(client: Socket, message) {
-    const msg = message.message;
-    // console.log(client.handshake);
-    client.broadcast.emit("chat", msg);
-    client.emit("chat", msg);
-  }
-
   @SubscribeMessage(MATCH_MESSAGES.JOIN_QUEUE)
   async onJoinMatch(client: Socket, data: any) {
+    // parse user and add socket id
     const parsed: PoolUserData = JSON.parse(data);
     const randomId = parseInt(`${parsed.id}${Math.random() * 10}`);
     const poolUser: PoolUser = {
@@ -68,6 +61,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const existingRoom = await this.matchService.handleUserAlreadyMatched(
       poolUser
     );
+    console.log("esisting room", { existingRoom });
     if (existingRoom) {
       client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
       return;
@@ -78,21 +72,22 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const matchedRoom = await this.matchService.handleJoinMatchQueue(poolUser);
     if (!matchedRoom) {
       console.log("user added to pool...");
-      client.emit(MATCH_MESSAGES.JOIN_QUEUE_SUCCESS, { message: "success" });
+      client.emit(
+        MATCH_MESSAGES.JOIN_QUEUE_SUCCESS,
+        JSON.stringify({ message: "success" })
+      );
       return;
     }
 
     console.log({ matchedRoom });
 
-    // emit MATCH_FOUND to all matched users and remove them from all queues
-    for (const user of matchedRoom.users) {
-      await this.server
-        .to(user.socketId)
-        .emit(MATCH_MESSAGES.MATCH_FOUND, JSON.stringify(matchedRoom));
-    }
-
-    for (const user of matchedRoom.users) {
-      await this.matchService.disconnectFromMatchQueue(user);
-    }
+    // emit MATCH_FOUND to all matched users
+    const notifyAllUsers = matchedRoom.users.map(
+      async (user) =>
+        await this.server
+          .to(user.socketId)
+          .emit(MATCH_MESSAGES.MATCH_FOUND, JSON.stringify(matchedRoom))
+    );
+    await Promise.all(notifyAllUsers);
   }
 }

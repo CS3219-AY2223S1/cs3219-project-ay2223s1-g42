@@ -50,14 +50,14 @@ const SocketMutations = (
     withCredentials: true,
     transports: ["websocket"],
   });
+  console.log({ socket });
 
   socket.on("connect", () => {
-    console.log("connected to websocket server");
-
-    console.log(`${env.NEXT_PUBLIC_WS_URL}/match`);
+    console.log("connected to websocket server :)");
     setState({ connected: true });
   });
   socket.on("disconnect", () => {
+    console.log("disconnected from ws server :(");
     setState({ connected: false });
   });
   socket.on("chat", (data) => {
@@ -161,6 +161,7 @@ const SocketMutations = (
   };
 
   const findMatch = (user: PoolUser) => {
+    console.log("finding match: ", { user, socketId: getState().socket?.id });
     getState().socket?.emit("join", JSON.stringify(user));
   };
 
