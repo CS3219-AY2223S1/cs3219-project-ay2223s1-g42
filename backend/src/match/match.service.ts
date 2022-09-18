@@ -1,5 +1,4 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Socket } from "socket.io";
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
@@ -27,27 +26,41 @@ export class MatchService {
     return existingRoom;
   }
 
+  /**
+   * Attempts to matche user with other user(s) in the difficulty
+   * queues selected by the user, if no other users found, will add
+   * the user to the difficulty queues selected.
+   * @param user new user attempting to join the queue
+   * @returns (optional) room data if user was matched, otherwise undefined
+   */
   async handleJoinMatchQueue(user: PoolUser) {
-    // search for all other users in the difficulty namespace(s)
-    const allMatchedUsers = await Promise.all(
-      user.difficulties.map(
-        async (difficulty) =>
-          await this.cache.getAllKeysInNamespace([NAMESPACES.MATCH, difficulty])
-      )
+    // search for all other users in all difficulty namespaces user has selected
+    const fetchAllMatchedUsers = user.difficulties.map(
+      async (difficulty) =>
+        await this.cache.getAllKeysInNamespace([NAMESPACES.MATCH, difficulty])
     );
-    const matchedUsers = allMatchedUsers.flat();
-
-    console.log("all matched users: ", { matchedUsers });
+    const allMatchedUsers = await Promise.all(fetchAllMatchedUsers);
+    const matchedUsers = Array.from(new Set(allMatchedUsers.flat()));
 
     // if any other users are found, return and match user w the first user returned
     if (matchedUsers.length > 0) {
+      // get user to be matched with
       const matchedUserId = matchedUsers[0];
       const matchedUser = await this.cache.getKeyInNamespace<PoolUser>(
         [NAMESPACES.MATCH, NAMESPACES.USERS],
         matchedUserId
       );
-      console.log("users of new room: ", [user, matchedUser]);
-      const newRoom = this.roomService.createRoom([user, matchedUser]);
+
+      // create room and store all users as room users
+      const newRoom = await this.roomService.createRoom([user, matchedUser]);
+
+      // remove all users from match queues
+      const disconnectAllUsers = newRoom.users.map(
+        async (user) => await this.disconnectFromMatchQueue(user)
+      );
+      await Promise.all(disconnectAllUsers);
+
+      // return new room
       return newRoom;
     }
 
@@ -58,38 +71,38 @@ export class MatchService {
       user
     );
 
-    // add user to all difficulty queues
-    await Promise.all(
-      user.difficulties.map(
-        async (difficulty) =>
-          await this.cache.setKeyInNamespace(
-            [NAMESPACES.MATCH, difficulty],
-            user.id.toString(),
-            user
-          )
-      )
+    // add user to all difficulty namespaces selected
+    const addToAllQueues = user.difficulties.map(
+      async (difficulty) =>
+        await this.cache.setKeyInNamespace(
+          [NAMESPACES.MATCH, difficulty],
+          user.id.toString(),
+          user
+        )
     );
+    await Promise.all(addToAllQueues);
   }
 
-  // disconnect user from all difficulty queues
+  /**
+   * Disconnects user from all selected difficulty namespaces
+   * and from the queued users namespaces
+   * @param user User to be disconnected
+   */
   async disconnectFromMatchQueue(user: PoolUser) {
-    console.log(
-      `disconnecting user ${user.id} from ${user.difficulties} queues...`
-    );
     // remove user from queued users namespace
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.MATCH, NAMESPACES.USERS],
       user.id.toString()
     );
-    // remove user from all difficulty queues
-    await Promise.all(
-      user.difficulties.map(
-        async (difficulty) =>
-          await this.cache.deleteKeyInNamespace(
-            [NAMESPACES.MATCH, difficulty],
-            user.id.toString()
-          )
-      )
+
+    // remove user from all difficulty namespaces selected
+    const deleteFromAllQueues = user.difficulties.map(
+      async (difficulty) =>
+        await this.cache.deleteKeyInNamespace(
+          [NAMESPACES.MATCH, difficulty],
+          user.id.toString()
+        )
     );
+    await Promise.all(deleteFromAllQueues);
   }
 }
