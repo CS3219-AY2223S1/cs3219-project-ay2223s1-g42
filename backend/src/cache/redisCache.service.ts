@@ -62,6 +62,7 @@ export class RedisCacheService {
   }
 
   /**
+<<<<<<< HEAD
    * Returns all keys of values within the given namespace
    * @param namespaces namespace of keys to be returned
    * @returns keys of all values in the namespace
@@ -76,6 +77,15 @@ export class RedisCacheService {
       const splitFullKey = fullKey.split(NAMESPACE_DELIM);
       return splitFullKey[splitFullKey.length - 1];
     });
+=======
+   * Returns all keys within the given namespace
+   * @param namespaces namespace of keys to be returned
+   * @returns all keys in the namespace
+   */
+  async getAllKeysInNamespace(namespaces: string[]): Promise<string[]> {
+    const namespace = RedisCacheService.createNamespace(namespaces);
+    const keys = await this.cache.store.keys(namespace.concat("*"));
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     return keys;
   }
 

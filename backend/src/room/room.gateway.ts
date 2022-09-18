@@ -28,8 +28,11 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+<<<<<<< HEAD
   constructor(private roomService: RoomService) {}
 
+=======
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
   async handleConnection() {
     console.log("client has connected to room");
   }

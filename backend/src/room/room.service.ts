@@ -1,5 +1,9 @@
 import { v4 } from "uuid";
+<<<<<<< HEAD
 import { Injectable, Scope } from "@nestjs/common";
+=======
+import { Inject, Injectable, Scope } from "@nestjs/common";
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
@@ -8,7 +12,13 @@ import { Room } from "./room.gateway";
 
 @Injectable()
 export class RoomService {
+<<<<<<< HEAD
   constructor(private cache: RedisCacheService) {}
+=======
+  constructor(private cache: RedisCacheService) {
+    console.log("room service cache: ", cache);
+  }
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
 
   async getRoomFromUserId(userId: string) {
     console.log("checking room from user id...");
@@ -20,13 +30,17 @@ export class RoomService {
   }
 
   async createRoom(users: PoolUser[]) {
+<<<<<<< HEAD
     // create room
+=======
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     const roomId = v4();
     const room: Room = {
       users,
       id: roomId,
     };
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
+<<<<<<< HEAD
 
     // add user to room users
     const addRoomedUsers = room.users.map(async (user) => {
@@ -37,6 +51,8 @@ export class RoomService {
       );
     });
     await Promise.all(addRoomedUsers);
+=======
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     return room;
   }
 

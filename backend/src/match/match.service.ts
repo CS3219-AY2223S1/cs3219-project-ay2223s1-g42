@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+=======
+import { Injectable, Scope } from "@nestjs/common";
+import { Socket } from "socket.io";
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
 import { RoomService } from "src/room/room.service";
 
+<<<<<<< HEAD
 @Injectable()
 export class MatchService {
   constructor(
@@ -12,6 +18,17 @@ export class MatchService {
     private roomService: RoomService,
     private cache: RedisCacheService
   ) {}
+=======
+Injectable({ scope: Scope.DEFAULT });
+export class MatchService {
+  constructor(
+    private cache: RedisCacheService,
+    private roomService: RoomService
+  ) {
+    console.log("room service: ", roomService);
+    console.log("cache service: ", cache);
+  }
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
 
   /**
    * Verifies if user has already been matched by checking
@@ -20,12 +37,18 @@ export class MatchService {
    * @returns existing room data
    */
   async handleUserAlreadyMatched(user: PoolUser) {
+<<<<<<< HEAD
+=======
+    console.log(this.roomService);
+    console.log(this.cache);
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
     const existingRoom = await this.roomService.getRoomFromUserId(
       user.id.toString()
     );
     return existingRoom;
   }
 
+<<<<<<< HEAD
   /**
    * Attempts to matche user with other user(s) in the difficulty
    * queues selected by the user, if no other users found, will add
@@ -45,11 +68,26 @@ export class MatchService {
     // if any other users are found, return and match user w the first user returned
     if (matchedUsers.length > 0) {
       // get user to be matched with
+=======
+  async handleJoinMatchQueue(user: PoolUser) {
+    // search for all other users in the difficulty namespace(s)
+    const allMatchedUsers = await Promise.all(
+      user.difficulties.map(
+        async (difficulty) =>
+          await this.cache.getAllKeysInNamespace([NAMESPACES.MATCH, difficulty])
+      )
+    );
+    const matchedUsers = allMatchedUsers.flat();
+
+    // if any other users are found, return and match user w the first user returned
+    if (matchedUsers.length > 0) {
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
       const matchedUserId = matchedUsers[0];
       const matchedUser = await this.cache.getKeyInNamespace<PoolUser>(
         [NAMESPACES.MATCH, NAMESPACES.USERS],
         matchedUserId
       );
+<<<<<<< HEAD
 
       // create room and store all users as room users
       const newRoom = await this.roomService.createRoom([user, matchedUser]);
@@ -61,6 +99,9 @@ export class MatchService {
       await Promise.all(disconnectAllUsers);
 
       // return new room
+=======
+      const newRoom = this.roomService.createRoom([user, matchedUser]);
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
       return newRoom;
     }
 
@@ -71,6 +112,7 @@ export class MatchService {
       user
     );
 
+<<<<<<< HEAD
     // add user to all difficulty namespaces selected
     const addToAllQueues = user.difficulties.map(
       async (difficulty) =>
@@ -88,12 +130,29 @@ export class MatchService {
    * and from the queued users namespaces
    * @param user User to be disconnected
    */
+=======
+    // add user to all difficulty queues
+    await Promise.all(
+      user.difficulties.map(
+        async (difficulty) =>
+          await this.cache.setKeyInNamespace(
+            [NAMESPACES.MATCH, difficulty],
+            user.id.toString(),
+            user
+          )
+      )
+    );
+  }
+
+  // disconnect user from all difficulty queues
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
   async disconnectFromMatchQueue(user: PoolUser) {
     // remove user from queued users namespace
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.MATCH, NAMESPACES.USERS],
       user.id.toString()
     );
+<<<<<<< HEAD
 
     // remove user from all difficulty namespaces selected
     const deleteFromAllQueues = user.difficulties.map(
@@ -104,5 +163,17 @@ export class MatchService {
         )
     );
     await Promise.all(deleteFromAllQueues);
+=======
+    // remove user from all difficulty queues
+    await Promise.all(
+      user.difficulties.map(
+        async (difficulty) =>
+          await this.cache.deleteKeyInNamespace(
+            [NAMESPACES.MATCH, difficulty],
+            user.id.toString()
+          )
+      )
+    );
+>>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
   }
 }

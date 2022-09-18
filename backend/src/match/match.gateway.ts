@@ -6,9 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { Server, Socket } from "socket.io";
-import { intersects } from "radash";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
@@ -25,7 +23,6 @@ export type PoolUserData = PublicUserInfo & {
 export type PoolUser = PoolUserData & {
   socketId: string;
   timeJoined: number;
-  difficulties: QuestionDifficulty[];
 };
 
 @UseGuards(WsJwtAccessGuard)
@@ -40,6 +37,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private matchService: MatchService) {}
 
   async handleConnection() {
+    console.log("match service: ", this.matchService);
     console.log("client has connected");
   }
   async handleDisconnect() {
@@ -48,7 +46,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage(MATCH_MESSAGES.JOIN_QUEUE)
   async onJoinMatch(client: Socket, data: any) {
-    // parse user and add socket id
     const parsed: PoolUserData = JSON.parse(data);
     const randomId = parseInt(`${parsed.id}${Math.random() * 10}`);
     const poolUser: PoolUser = {
@@ -64,7 +61,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const existingRoom = await this.matchService.handleUserAlreadyMatched(
       poolUser
     );
-    console.log("esisting room", { existingRoom });
     if (existingRoom) {
       client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
       return;
