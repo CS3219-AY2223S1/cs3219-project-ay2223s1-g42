@@ -1,10 +1,12 @@
 import { Module } from "@nestjs/common";
 
-import { UserModule } from "../user/user.module";
+import { RedisCacheModule } from "src/cache/redisCache.module";
+import { RoomServiceModule } from "src/room/room.service.module";
 import { MatchGateway } from "./match.gateway";
+import { MatchServiceModule } from "./match.service.module";
 
 @Module({
-  imports: [UserModule],
+  imports: [MatchServiceModule],
   providers: [MatchGateway],
 })
 export class MatchModule {}
