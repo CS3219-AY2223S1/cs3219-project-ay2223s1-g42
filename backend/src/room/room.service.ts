@@ -1,5 +1,9 @@
 import { v4 } from "uuid";
+<<<<<<< HEAD
 import { Injectable } from "@nestjs/common";
+=======
+import { Injectable, Scope } from "@nestjs/common";
+>>>>>>> b15594b2b60c7f7c2ba8316ea880d60c90b19ca8
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";

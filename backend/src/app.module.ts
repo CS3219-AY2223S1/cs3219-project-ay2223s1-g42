@@ -14,8 +14,6 @@ import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
 import { generateEmailFromField } from "./utils/mail";
-import { RoomServiceModule } from "./room/room.service.module";
-import { MatchServiceModule } from "./match/match.service.module";
 import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
 
@@ -60,20 +58,8 @@ import { RoomModule } from "./room/room.module";
     UserModule,
     QuestionModule,
     AuthModule,
-<<<<<<< HEAD
-<<<<<<< HEAD
     RoomModule,
     MatchModule,
-=======
-    RoomServiceModule,
-    RoomModule,
-
-    // MatchModule,
->>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
-=======
-    RoomModule,
-    MatchModule,
->>>>>>> feat: fix dep injection bug with circular dep fix
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

@@ -1,4 +1,4 @@
-import { Injectable, Inject, CACHE_MANAGER, Scope } from "@nestjs/common";
+import { Injectable, Inject, CACHE_MANAGER } from "@nestjs/common";
 import { Cache } from "cache-manager";
 
 const NAMESPACE_DELIM = ":";
@@ -62,8 +62,6 @@ export class RedisCacheService {
   }
 
   /**
-<<<<<<< HEAD
-<<<<<<< HEAD
    * Returns all keys of values within the given namespace
    * @param namespaces namespace of keys to be returned
    * @returns keys of all values in the namespace
@@ -78,29 +76,6 @@ export class RedisCacheService {
       const splitFullKey = fullKey.split(NAMESPACE_DELIM);
       return splitFullKey[splitFullKey.length - 1];
     });
-=======
-   * Returns all keys within the given namespace
-=======
-   * Returns all keys of values within the given namespace
->>>>>>> feat: fix dep injection bug with circular dep fix
-   * @param namespaces namespace of keys to be returned
-   * @returns keys of all values in the namespace
-   */
-  async getAllKeysInNamespace(namespaces: string[]): Promise<string[]> {
-    const namespace = RedisCacheService.createNamespace(namespaces);
-<<<<<<< HEAD
-    const keys = await this.cache.store.keys(namespace.concat("*"));
->>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
-=======
-    const fullKeys: string[] = await this.cache.store.keys(
-      namespace.concat("*")
-    );
-    // strip namespace from key
-    const keys = fullKeys.map((fullKey: string) => {
-      const splitFullKey = fullKey.split(NAMESPACE_DELIM);
-      return splitFullKey[splitFullKey.length - 1];
-    });
->>>>>>> feat: fix dep injection bug with circular dep fix
     return keys;
   }
 

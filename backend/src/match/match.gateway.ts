@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common";
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -66,6 +66,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
       return;
     }
+
     // try to match user with another user from queue,
     // create room if successful otherwise add user to queue
     const matchedRoom = await this.matchService.handleJoinMatchQueue(poolUser);

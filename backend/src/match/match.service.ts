@@ -1,4 +1,3 @@
-
 import { Socket } from "socket.io";
 
 import { NAMESPACES } from "src/cache/constants";
@@ -27,7 +26,6 @@ export class MatchService {
     );
     return existingRoom;
   }
-
 
   /**
    * Attempts to matche user with other user(s) in the difficulty
