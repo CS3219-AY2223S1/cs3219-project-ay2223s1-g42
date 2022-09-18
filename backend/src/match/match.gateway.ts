@@ -14,7 +14,6 @@ import { PublicUserInfo } from "../utils/zod/userInfo";
 import { QuestionDifficulty } from "src/utils/zod/question";
 import { MatchService } from "./match.service";
 import { MATCH_MESSAGES, MATCH_WS_NAMESPACE } from "./constants";
-// import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
 
 export type PoolUserData = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
@@ -63,7 +62,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     console.log("esisting room", { existingRoom });
     if (existingRoom) {
-      client.emit(MATCH_MESSAGES.ROOM_EXISTS, existingRoom);
+      client.emit(MATCH_MESSAGES.ROOM_EXISTS, JSON.stringify(existingRoom));
       return;
     }
 
