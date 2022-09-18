@@ -17,7 +17,6 @@ const Home: NextPage = () => {
       ...user,
       difficulties: ["easy", "medium"],
     };
-    console.log("finding match: ", { poolUser });
     findMatch(poolUser);
   };
   if (!user) {

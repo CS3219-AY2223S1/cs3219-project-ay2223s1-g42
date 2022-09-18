@@ -20,12 +20,23 @@ export class RoomService {
   }
 
   async createRoom(users: PoolUser[]) {
+    // create room
     const roomId = v4();
     const room: Room = {
       users,
       id: roomId,
     };
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
+
+    // add user to room users
+    const addRoomedUsers = room.users.map(async (user) => {
+      await this.cache.setKeyInNamespace(
+        [NAMESPACES.ROOM, NAMESPACES.USERS],
+        user.id.toString(),
+        room
+      );
+    });
+    await Promise.all(addRoomedUsers);
     return room;
   }
 
