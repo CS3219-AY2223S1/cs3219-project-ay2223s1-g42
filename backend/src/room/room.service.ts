@@ -1,9 +1,13 @@
 import { v4 } from "uuid";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Injectable, Scope } from "@nestjs/common";
 =======
 import { Inject, Injectable, Scope } from "@nestjs/common";
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
+=======
+import { Injectable, Scope } from "@nestjs/common";
+>>>>>>> feat: fix dep injection bug with circular dep fix
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
@@ -13,12 +17,16 @@ import { Room } from "./room.gateway";
 @Injectable()
 export class RoomService {
 <<<<<<< HEAD
+<<<<<<< HEAD
   constructor(private cache: RedisCacheService) {}
 =======
   constructor(private cache: RedisCacheService) {
     console.log("room service cache: ", cache);
   }
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
+=======
+  constructor(private cache: RedisCacheService) {}
+>>>>>>> feat: fix dep injection bug with circular dep fix
 
   async getRoomFromUserId(userId: string) {
     console.log("checking room from user id...");

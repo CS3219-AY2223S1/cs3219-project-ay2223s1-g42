@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 =======
 import { Injectable, Scope } from "@nestjs/common";
+=======
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
+>>>>>>> feat: fix dep injection bug with circular dep fix
 import { Socket } from "socket.io";
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
 
@@ -10,6 +14,7 @@ import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
 import { RoomService } from "src/room/room.service";
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 @Injectable()
 export class MatchService {
@@ -29,6 +34,15 @@ export class MatchService {
     console.log("cache service: ", cache);
   }
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
+=======
+@Injectable()
+export class MatchService {
+  constructor(
+    @Inject(forwardRef(() => RoomService))
+    private roomService: RoomService,
+    private cache: RedisCacheService
+  ) {}
+>>>>>>> feat: fix dep injection bug with circular dep fix
 
   /**
    * Verifies if user has already been matched by checking
@@ -38,10 +52,13 @@ export class MatchService {
    */
   async handleUserAlreadyMatched(user: PoolUser) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     console.log(this.roomService);
     console.log(this.cache);
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
+=======
+>>>>>>> feat: fix dep injection bug with circular dep fix
     const existingRoom = await this.roomService.getRoomFromUserId(
       user.id.toString()
     );
@@ -79,6 +96,8 @@ export class MatchService {
     );
     const matchedUsers = allMatchedUsers.flat();
 
+    console.log("all matched users: ", { matchedUsers });
+
     // if any other users are found, return and match user w the first user returned
     if (matchedUsers.length > 0) {
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
@@ -87,6 +106,7 @@ export class MatchService {
         [NAMESPACES.MATCH, NAMESPACES.USERS],
         matchedUserId
       );
+<<<<<<< HEAD
 <<<<<<< HEAD
 
       // create room and store all users as room users
@@ -100,6 +120,9 @@ export class MatchService {
 
       // return new room
 =======
+=======
+      console.log("users of new room: ", [user, matchedUser]);
+>>>>>>> feat: fix dep injection bug with circular dep fix
       const newRoom = this.roomService.createRoom([user, matchedUser]);
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
       return newRoom;
@@ -147,6 +170,9 @@ export class MatchService {
   // disconnect user from all difficulty queues
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
   async disconnectFromMatchQueue(user: PoolUser) {
+    console.log(
+      `disconnecting user ${user.id} from ${user.difficulties} queues...`
+    );
     // remove user from queued users namespace
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.MATCH, NAMESPACES.USERS],

@@ -21,7 +21,6 @@ import { RoomModule } from "./room/room.module";
 
 @Module({
   imports: [
-    MatchServiceModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: [".env.local", ".env"],
@@ -62,6 +61,7 @@ import { RoomModule } from "./room/room.module";
     QuestionModule,
     AuthModule,
 <<<<<<< HEAD
+<<<<<<< HEAD
     RoomModule,
     MatchModule,
 =======
@@ -70,6 +70,10 @@ import { RoomModule } from "./room/room.module";
 
     // MatchModule,
 >>>>>>> feat: tmoved all websockets to redis, tdebugging undefined dep injection
+=======
+    RoomModule,
+    MatchModule,
+>>>>>>> feat: fix dep injection bug with circular dep fix
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

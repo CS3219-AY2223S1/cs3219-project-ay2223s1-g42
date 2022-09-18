@@ -37,7 +37,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private matchService: MatchService) {}
 
   async handleConnection() {
-    console.log("match service: ", this.matchService);
     console.log("client has connected");
   }
   async handleDisconnect() {
