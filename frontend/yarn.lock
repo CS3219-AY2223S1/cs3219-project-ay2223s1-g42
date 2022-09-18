@@ -463,14 +463,6 @@
     "@radix-ui/react-use-callback-ref" "1.0.0"
     "@radix-ui/react-use-layout-effect" "1.0.0"
 
-"@radix-ui/react-separator@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@radix-ui/react-separator/-/react-separator-1.0.0.tgz#ae318b5e7e1436b68d77cf08b7cd25a37893021f"
-  integrity sha512-narSsDP+CKJWEOV9Yx9aOpw4bLaNRNIvnqmfx30mAJAJ9wPKoyVmcLzFj0Hyx3yQNZx7EokMwW6KtMyxN5jDUw==
-  dependencies:
-    "@babel/runtime" "^7.13.10"
-    "@radix-ui/react-primitive" "1.0.0"
-
 "@radix-ui/react-slot@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-slot/-/react-slot-1.0.0.tgz#7fa805b99891dea1e862d8f8fbe07f4d6d0fd698"
@@ -2382,11 +2374,6 @@ react-remove-scroll@2.5.4:
     tslib "^2.1.0"
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
-
-react-step-builder@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/react-step-builder/-/react-step-builder-3.0.6.tgz#d271add73c279c570ba8e70c274255e11a52d0eb"
-  integrity sha512-5tt2ExMzBaB2JYq3aqVF8MyOERi3NYxfnVKTsAwTsyWkbV7w618ESZiFhQeJ508CS2BHU+CdUhxVO/qzCxRwjQ==
 
 react-style-singleton@^2.2.1:
   version "2.2.1"

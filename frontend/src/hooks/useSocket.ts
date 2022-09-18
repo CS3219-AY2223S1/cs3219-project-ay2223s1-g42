@@ -13,12 +13,24 @@ export type PoolUser = User & {
   difficulties: QuestionDifficulty[];
 };
 
+export type RoomUser = PoolUser & {
+  socketId: string;
+  timeJoined: Date;
+};
+
 type Call = {
   from?: User;
   signal?: Peer.SignalData;
 };
 
+type Room = {
+  id: string;
+  users: RoomUser[];
+  difficulty?: QuestionDifficulty;
+};
+
 type SocketStore = {
+  room: Room | undefined;
   socket: Socket | undefined;
   callAccepted: boolean;
   callEnded: boolean;
@@ -76,8 +88,9 @@ const SocketMutations = (
     console.log("successfully joined queue: ", { parsedJoinSuccess });
   });
   socket.on("found", (data) => {
-    const parsedMatchedRoom = JSON.parse(data);
+    const parsedMatchedRoom: Room = JSON.parse(data);
     console.log("matched room: ", { parsedMatchedRoom });
+    setState({ room: parsedMatchedRoom });
   });
 
   const setupVideo = () => {
@@ -166,6 +179,7 @@ const SocketMutations = (
   };
 
   return {
+    room: undefined,
     socket,
     callAccepted: false,
     callEnded: false,
