@@ -28,6 +28,8 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+  constructor(private roomService: RoomService) {}
+
   async handleConnection() {
     console.log("client has connected to room");
   }

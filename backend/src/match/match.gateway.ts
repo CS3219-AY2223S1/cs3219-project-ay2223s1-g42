@@ -37,7 +37,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private matchService: MatchService) {}
 
   async handleConnection() {
-    console.log("match service: ", this.matchService);
     console.log("client has connected");
   }
   async handleDisconnect() {
@@ -63,6 +62,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       timeJoined: Date.now(),
     };
 
+    console.log("joined: ", { poolUser });
+
     // if user already in room, send existing room id to user
     const existingRoom = await this.matchService.handleUserAlreadyMatched(
       poolUser
@@ -81,14 +82,17 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
+    console.log({ matchedRoom });
+
     // emit MATCH_FOUND to all matched users and remove them from all queues
-    await Promise.all(
-      matchedRoom.users.map(async (user) => {
-        this.server
-          .to(user.socketId)
-          .emit(MATCH_MESSAGES.MATCH_FOUND, matchedRoom);
-        await this.matchService.disconnectFromMatchQueue(user);
-      })
-    );
+    for (const user of matchedRoom.users) {
+      await this.server
+        .to(user.socketId)
+        .emit(MATCH_MESSAGES.MATCH_FOUND, JSON.stringify(matchedRoom));
+    }
+
+    for (const user of matchedRoom.users) {
+      await this.matchService.disconnectFromMatchQueue(user);
+    }
   }
 }
