@@ -15,7 +15,7 @@ import {
   ApiOperation,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
-  ApiInternalServerErrorResponse
+  ApiInternalServerErrorResponse,
 } from "@nestjs/swagger";
 import { Prisma, User } from "@prisma/client";
 
@@ -48,8 +48,7 @@ export class UserController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   getMe(@GetUser() user: User) {
     return user;
@@ -68,8 +67,7 @@ export class UserController {
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
   })
   @ApiUnauthorizedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
   })
   @ApiForbiddenResponse({
     description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
@@ -78,8 +76,7 @@ export class UserController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
@@ -97,26 +94,28 @@ export class UserController {
   @Patch(":id")
   @ApiOperation({ summary: API_OPERATIONS.EDIT_USER_INFO_SUMMARY })
   @ApiOkResponse({
-    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION 
-  })
-  @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
-  @ApiUnauthorizedResponse({
     description:
-    API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
+  })
+  @ApiUnauthorizedResponse({
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiForbiddenResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiUnprocessableEntityResponse({
-    description: API_RESPONSES_DESCRIPTION.UNABLE_TO_PROCESS_INSTRUCTION_DESCRIPTION,
+    description:
+      API_RESPONSES_DESCRIPTION.UNABLE_TO_PROCESS_INSTRUCTION_DESCRIPTION,
   })
   @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async editUser(
     @GetUser() user: User,
@@ -143,20 +142,21 @@ export class UserController {
    */
   @Delete(":id")
   @ApiOperation({ summary: API_OPERATIONS.DELETE_USER_SUMMARY })
-  @ApiOkResponse({ 
-    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION 
+  @ApiOkResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION,
   })
   @ApiForbiddenResponse({
-    description:
-    API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
-  @ApiNotFoundResponse({ description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
+  })
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION
-    .INTERNAL_SERVER_ERROR
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {

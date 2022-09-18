@@ -23,5 +23,5 @@ export default function PrismaKnownErrorHandling(e: Error) {
     throw new HttpException("Bad Request", HttpStatus.BAD_REQUEST);
   } else if (e instanceof Prisma.NotFoundError) {
     throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-  } 
+  }
 }

@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { MailerService } from "@nestjs-modules/mailer";
@@ -10,6 +15,8 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
+import PrismaKnownErrorHandling from "../utils/prisma-error-handling";
+import { Prisma } from "@prisma/client";
 
 export type JwtPayload = {
   sub: number;
@@ -51,10 +58,12 @@ export class AuthService {
     const { email, username, password } = credentials;
 
     // check if user's email and username in db
-    const [, user] = await this.users.findFirstByEitherUniqueFields(
+    const [err, user] = await this.users.findFirstByEitherUniqueFields(
       email,
       username
     );
+
+    PrismaKnownErrorHandling(err);
 
     if (user) {
       if (user.email == email) {
@@ -99,6 +108,10 @@ export class AuthService {
       })
       .catch((err) => {
         console.log(err);
+        throw new HttpException(
+          "Internal Server Error",
+          HttpStatus.INTERNAL_SERVER_ERROR
+        );
       });
   }
 
@@ -118,8 +131,11 @@ export class AuthService {
 
     // find user via username + email provided
     const [err, user] = await this.users.find({ email, includeHash: true });
+
+    PrismaKnownErrorHandling(err);
+
     // if user doesn't exist, throw exception
-    if (err || !user) {
+    if (!user) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
     }
 
@@ -153,7 +169,7 @@ export class AuthService {
           throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_CREDENTIALS);
         }
       }
-      throw err;
+      PrismaKnownErrorHandling(err);
     }
 
     // clear new user in cache
@@ -171,7 +187,7 @@ export class AuthService {
   async signout(id: number) {
     const [err] = await this.users.clearRefreshToken(id);
     if (err) {
-      throw err;
+      PrismaKnownErrorHandling(err);
     }
     return;
   }
@@ -218,7 +234,7 @@ export class AuthService {
     const [err] = await this.users.update(id, { hashRt });
     // throw if err updating refresh token hash
     if (err) {
-      throw err;
+      PrismaKnownErrorHandling(err);
     }
     return;
   }
@@ -266,6 +282,7 @@ export class AuthService {
       })
       .catch((err) => {
         console.log(err);
+        PrismaKnownErrorHandling(err);
       });
   }
 
@@ -283,7 +300,9 @@ export class AuthService {
     //Check whether there is a user associated with the token
     const [err, user] = await this.users.findByEmail(email, true);
 
-    if (err || !user) {
+    PrismaKnownErrorHandling(err);
+
+    if (!user) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
     }
 

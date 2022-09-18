@@ -21,12 +21,9 @@ type UpdateableUserFields = Partial<
   Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
 
-
 @Injectable({})
 export class UserService {
-  constructor(
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async find({
     id,
@@ -59,7 +56,7 @@ export class UserService {
     const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { id },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
-    }); 
+    });
 
     return res;
   }
@@ -86,7 +83,7 @@ export class UserService {
     const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { username },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
-    }); 
+    });
 
     return res;
   }
@@ -98,7 +95,7 @@ export class UserService {
    * @returns [`Err`, `User`]
    */
   async findFirstByEitherUniqueFields(email: string, username: string) {
-    const res = await radash.try(this.prisma.user.findFirst)({
+    const res = await radash.try(this.prisma.user.findFirstOrThrow)({
       where: { OR: [{ username }, { email }] },
       select: USER_FIELDS,
     });
@@ -176,6 +173,4 @@ export class UserService {
     });
     return res;
   }
-
-  
 }

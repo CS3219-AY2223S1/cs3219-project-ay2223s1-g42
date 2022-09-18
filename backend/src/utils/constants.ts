@@ -50,5 +50,7 @@ export enum API_RESPONSES_DESCRIPTION {
   BAD_REQUEST_INVALID_ID_DESCRIPTION = "Client provided no ID or invalid ID",
   BAD_REQUEST_INVALID_INPUT_DESCRIPTION = "Client provided invalid credentials or ID",
   BAD_REQUEST_INVALID_TOKEN_DESCRIPTION = "Client provided invalid token",
-  INTERNAL_SERVER_ERROR = "Internal Server Error"
+  INTERNAL_SERVER_ERROR = "Internal Server Error",
+  FORBIDDEN_SIGNUP_DESCRIPTION = "User used an unavailable email/username or has already signed up but have yet to verify account",
+  FORBIDDEN_SIGNIN_DESCRIPTION = "User entered invalid credentials or is unverified",
 }
