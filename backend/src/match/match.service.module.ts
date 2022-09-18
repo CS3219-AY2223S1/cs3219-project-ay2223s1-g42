@@ -5,7 +5,7 @@ import { RoomServiceModule } from "src/room/room.service.module";
 import { MatchService } from "./match.service";
 
 @Module({
-  imports: [RoomServiceModule],
+  imports: [RoomServiceModule, RedisCacheModule],
   providers: [MatchService],
   exports: [MatchService],
 })

@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { Inject, Injectable, Scope } from "@nestjs/common";
+import { Injectable, Scope } from "@nestjs/common";
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
@@ -8,9 +8,7 @@ import { Room } from "./room.gateway";
 
 @Injectable()
 export class RoomService {
-  constructor(private cache: RedisCacheService) {
-    console.log("room service cache: ", cache);
-  }
+  constructor(private cache: RedisCacheService) {}
 
   async getRoomFromUserId(userId: string) {
     console.log("checking room from user id...");

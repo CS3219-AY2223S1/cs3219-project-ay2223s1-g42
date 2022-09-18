@@ -1,4 +1,4 @@
-import { Injectable, Scope } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
 
 import { NAMESPACES } from "src/cache/constants";
@@ -6,15 +6,13 @@ import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
 import { RoomService } from "src/room/room.service";
 
-Injectable({ scope: Scope.DEFAULT });
+@Injectable()
 export class MatchService {
   constructor(
-    private cache: RedisCacheService,
-    private roomService: RoomService
-  ) {
-    console.log("room service: ", roomService);
-    console.log("cache service: ", cache);
-  }
+    @Inject(forwardRef(() => RoomService))
+    private roomService: RoomService,
+    private cache: RedisCacheService
+  ) {}
 
   /**
    * Verifies if user has already been matched by checking
@@ -23,8 +21,6 @@ export class MatchService {
    * @returns existing room data
    */
   async handleUserAlreadyMatched(user: PoolUser) {
-    console.log(this.roomService);
-    console.log(this.cache);
     const existingRoom = await this.roomService.getRoomFromUserId(
       user.id.toString()
     );
@@ -41,6 +37,8 @@ export class MatchService {
     );
     const matchedUsers = allMatchedUsers.flat();
 
+    console.log("all matched users: ", { matchedUsers });
+
     // if any other users are found, return and match user w the first user returned
     if (matchedUsers.length > 0) {
       const matchedUserId = matchedUsers[0];
@@ -48,6 +46,7 @@ export class MatchService {
         [NAMESPACES.MATCH, NAMESPACES.USERS],
         matchedUserId
       );
+      console.log("users of new room: ", [user, matchedUser]);
       const newRoom = this.roomService.createRoom([user, matchedUser]);
       return newRoom;
     }
@@ -74,6 +73,9 @@ export class MatchService {
 
   // disconnect user from all difficulty queues
   async disconnectFromMatchQueue(user: PoolUser) {
+    console.log(
+      `disconnecting user ${user.id} from ${user.difficulties} queues...`
+    );
     // remove user from queued users namespace
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.MATCH, NAMESPACES.USERS],
