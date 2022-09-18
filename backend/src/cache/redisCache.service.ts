@@ -62,13 +62,20 @@ export class RedisCacheService {
   }
 
   /**
-   * Returns all keys within the given namespace
+   * Returns all keys of values within the given namespace
    * @param namespaces namespace of keys to be returned
-   * @returns all keys in the namespace
+   * @returns keys of all values in the namespace
    */
   async getAllKeysInNamespace(namespaces: string[]): Promise<string[]> {
     const namespace = RedisCacheService.createNamespace(namespaces);
-    const keys = await this.cache.store.keys(namespace.concat("*"));
+    const fullKeys: string[] = await this.cache.store.keys(
+      namespace.concat("*")
+    );
+    // strip namespace from key
+    const keys = fullKeys.map((fullKey: string) => {
+      const splitFullKey = fullKey.split(NAMESPACE_DELIM);
+      return splitFullKey[splitFullKey.length - 1];
+    });
     return keys;
   }
 

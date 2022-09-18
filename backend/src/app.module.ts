@@ -21,7 +21,6 @@ import { RoomModule } from "./room/room.module";
 
 @Module({
   imports: [
-    MatchServiceModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: [".env.local", ".env"],
@@ -61,10 +60,8 @@ import { RoomModule } from "./room/room.module";
     UserModule,
     QuestionModule,
     AuthModule,
-    RoomServiceModule,
     RoomModule,
-
-    // MatchModule,
+    MatchModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },
