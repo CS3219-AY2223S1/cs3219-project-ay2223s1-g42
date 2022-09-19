@@ -1,45 +1,38 @@
-import { Test } from "@nestjs/testing";
-import PrismaKnownErrorHandling from "src/utils/prisma-error-handling";
-
 import { UserController } from "../src/user/user.controller";
 import { UserService } from "../src/user/user.service";
-import { AuthController } from "../src/auth/auth.controller";
-import { AuthService } from "../src/auth/auth.service";
+import { Test } from "@nestjs/testing";
 
 const mockUserService = {
-  getMe: jest.fn().mockImplementation((user) => user),
-  getUser: jest.fn().mockImplementation((id) => id),
-  editUser: jest.fn().mockImplementation((id, userInfo) => ({
-    id,
+  find: jest.fn().mockReturnValue([
+    new Error("test"),
+    {
+      id: 10,
+      email: "test@example.com",
+      username: "test",
+      password: "tteeeessttt",
+    },
+  ]),
+  update: jest.fn().mockReturnValue({
+    email: "testy@example.com",
+    username: "testy",
+  }),
+  delete: jest.fn().mockReturnValue([
+    new Error("test"),
+    {
+      id: 10,
+      email: "test@example.com",
+      username: "test",
+      password: "tteeeessttt",
+    },
+  ]),
+  create: jest.fn().mockImplementation((userInfo) => ({
     ...userInfo,
   })),
-  deleteUser: jest.fn().mockImplementation((id) => id),
 };
 
-const mockAuthService = {
-  signin: jest.fn().mockImplementation((userInfo) => ({
-    ...userInfo,
-  })),
-};
-
-describe("Testing the User Controller", async () => {
+describe("Testing the User Controller", () => {
   let userController: UserController;
   let userService: UserService;
-  let authController: AuthController;
-  let authService: AuthService;
-
-  //Create mock user
-  const [err, user] = await userService.create(
-    "test@example.com",
-    "Test",
-    "SecurePassword"
-  );
-
-  if (err) {
-    PrismaKnownErrorHandling(err);
-  }
-
-  const testUserId = user.id;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -52,8 +45,6 @@ describe("Testing the User Controller", async () => {
 
     userController = moduleRef.get<UserController>(UserController);
     userService = moduleRef.get<UserService>(UserService);
-    authController = moduleRef.get<AuthController>(AuthController);
-    authService = moduleRef.get<AuthService>(AuthService);
   });
 
   describe("Test: Controller is defined", () => {
@@ -62,58 +53,63 @@ describe("Testing the User Controller", async () => {
     });
   });
 
-  describe(`Test: @Get(":id")`, () => {
-    it("Should get the user that is created", () => {
-      expect(mockUserService.getUser(testUserId)).toEqual({
-        email: user.email,
-        username: user.username,
-        hash: user.hash,
+  describe(`Test: @get("me")`, () => {
+    it("Should return user", () => {
+      const user = mockUserService.create({
+        email: "test@example.com",
+        username: "test",
+        password: "tteeeessttt",
       });
-      expect(mockUserService.getUser).toHaveBeenCalled();
+      expect(userController.getMe(user)).toBe(user);
+      expect(mockUserService.create).toHaveBeenCalledWith(user);
     });
   });
 
-  describe(`Test: @Patch(":id")`, () => {
-    it("Should get the user that is updated", () => {
+  describe(`Test: @get(":id")`, () => {
+    it("Should return user with the specified id", async () => {
+      const user = mockUserService.create({
+        id: 10,
+        email: "test@example.com",
+        username: "test",
+        password: "tteeeessttt",
+      });
+
+      expect(await userController.getUser("10")).toStrictEqual(user);
+    });
+  });
+
+  describe(`Test: @PATCH(":id")`, () => {
+    it("Should update user", async () => {
+      const user = mockUserService.create({
+        id: 10,
+        email: "test@example.com",
+        username: "test",
+        password: "tteeeessttt",
+      });
+      const updatedUser = mockUserService.create({
+        email: "testy@example.com",
+        username: "testy",
+      });
       expect(
-        mockUserService.editUser(testUserId, {
-          username: "testtest",
+        await userController.editUser(user, "10", {
+          email: "testy@example.com",
+          username: "testy",
         })
-      ).toEqual({
-        email: user.email,
-        username: user.username,
-        hash: user.hash,
-      });
-    });
-    expect(mockUserService.editUser).toHaveBeenCalled();
-  });
-
-  describe(`Test: @Delete(":id")`, () => {
-    it("Should get deleted user's info", () => {
-      expect(mockUserService.deleteUser(testUserId)).toEqual({
-        email: user.email,
-        username: user.username,
-        hash: user.hash,
-      });
-      expect(mockUserService.deleteUser).toHaveBeenCalled();
+      ).toStrictEqual(updatedUser);
+      //expect(await mockUserService.update).toHaveBeenCalledWith(user);
     });
   });
 
-  describe(`Test: @Get("me")`, () => {
-    it("Should get the current user", () => {
-      //Sign in
-      mockAuthService.signin({
-        email: user.email,
-        hash: user.hash,
+  describe(`Test: @DELETE(":id")`, () => {
+    it("Should delete user", async () => {
+      const user = mockUserService.create({
+        id: 10,
+        email: "test@example.com",
+        username: "test",
+        password: "tteeeessttt",
       });
-
-      expect(user).toEqual({
-        email: user.email,
-        username: user.username,
-        hash: user.hash,
-      });
-
-      expect(mockUserService.getMe).toHaveBeenCalled();
+      expect(await userController.deleteUser(user, "10")).toStrictEqual(user);
+      //expect(await mockUserService.update).toHaveBeenCalledWith(user);
     });
   });
 });
