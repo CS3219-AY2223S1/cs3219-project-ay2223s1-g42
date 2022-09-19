@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 
-import { UserModule } from "../user/user.module";
 import { MatchGateway } from "./match.gateway";
+import { MatchServiceModule } from "./match.service.module";
 
 @Module({
-  imports: [UserModule],
+  imports: [MatchServiceModule],
   providers: [MatchGateway],
 })
 export class MatchModule {}

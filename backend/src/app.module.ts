@@ -4,19 +4,22 @@ import { ZodValidationPipe } from "nestjs-zod";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { ScheduleModule } from "@nestjs/schedule";
 
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { QuestionModule } from "./question/question.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { MatchModule } from "./match/match.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
 import { RedisCacheModule } from "./cache/redisCache.module";
 import { generateEmailFromField } from "./utils/mail";
+import { MatchModule } from "./match/match.module";
+import { RoomModule } from "./room/room.module";
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: [".env.local", ".env"],
       load: [configuration],
@@ -50,12 +53,13 @@ import { generateEmailFromField } from "./utils/mail";
         },
       }),
     }),
+    RedisCacheModule,
     PrismaModule,
     UserModule,
     QuestionModule,
     AuthModule,
+    RoomModule,
     MatchModule,
-    RedisCacheModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

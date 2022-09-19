@@ -14,7 +14,7 @@ import {
   SignUpCredentials,
   ForgetPasswordInfo,
   ResetPasswordInfo,
-} from "../types";
+} from "../login/types";
 
 type Options = {
   onSuccess?: () => Promise<void> | void | undefined;

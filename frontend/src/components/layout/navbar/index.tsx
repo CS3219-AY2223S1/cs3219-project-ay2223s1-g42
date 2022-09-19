@@ -111,17 +111,19 @@ const TheNavbar = () => {
         </BaseLink>
         <div className="flex flex-row gap-3 md:gap-4">
           <DesktopNavItems />
-          <PrimaryButton className="text-base md:px-6">
+          <PrimaryButton className="text-base md:px-6 bg-neutral-100">
             Get started
           </PrimaryButton>
-          <button
+          <PrimaryButton
             type="button"
-            className="inline-flex items-center p-2 text-sm text-neutral-800 md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="inline-flex items-center p-2 text-sm text-neutral-800
+            md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200
+            hover:bg-transparent hover:text-neutral-800"
             onClick={() => setIsDropdownOpen((open) => !open)}
           >
             <span className="sr-only">Open main menu</span>
             <BurgerMenuIcon className="h-7 w-7" />
-          </button>
+          </PrimaryButton>
         </div>
       </div>
       {/* mobile nav dropdown */}

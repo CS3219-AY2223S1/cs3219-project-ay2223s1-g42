@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Spinner } from "src/components/icons";
 
-import { useAuthStore } from "src/login";
+import { Spinner } from "src/components/icons";
+import { useAuthStore } from "src/hooks";
 import { LoginForm } from "../login/components";
 
 export default function login() {

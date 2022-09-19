@@ -1,4 +1,4 @@
-import { useAuthStore } from "src/login";
+import { useAuthStore } from "src/hooks";
 import { Container } from "./container";
 import { TheNavbar } from "./navbar";
 
