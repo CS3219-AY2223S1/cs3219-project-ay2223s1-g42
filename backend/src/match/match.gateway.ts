@@ -46,10 +46,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onJoinMatch(client: Socket, data: any) {
     // parse user and add socket id
     const parsed: PoolUserData = JSON.parse(data);
-    const randomId = parseInt(`${parsed.id}${Math.random() * 10}`);
     const poolUser: PoolUser = {
       ...parsed,
-      id: randomId,
       socketId: client.id,
       timeJoined: Date.now(),
     };

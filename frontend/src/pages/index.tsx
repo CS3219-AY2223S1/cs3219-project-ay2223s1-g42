@@ -15,7 +15,7 @@ const Home: NextPage = () => {
 
   const handleFindMatch = () => {
     if (!user) {
-      console.log("user not found, cannot find match");
+      console.error("user not found, cannot find match");
       return;
     }
     const poolUser: PoolUser = {

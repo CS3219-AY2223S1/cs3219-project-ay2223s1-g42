@@ -29,7 +29,6 @@ const ResetPasswordForm = ({ token }: Props) => {
   // submit function
   const handleResetPassword = async (credentials: ResetPasswordInfo) => {
     const resetData = { ...credentials, token };
-    console.log({ resetData });
     resetPasswordMutation.mutate(resetData);
     reset();
   };

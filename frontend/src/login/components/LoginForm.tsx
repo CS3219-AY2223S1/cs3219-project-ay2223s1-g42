@@ -35,7 +35,6 @@ const LoginForm = () => {
 
   // submit function
   const handleSignin = async (credentials: SignInCredentials) => {
-    console.log("signing in now!!!");
     signinMutation.mutate(credentials);
     reset();
   };

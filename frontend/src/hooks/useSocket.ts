@@ -44,7 +44,6 @@ type SocketStore = {
   answerCall: () => void;
   callUser: (from: User, id: number) => void;
   leaveCall: () => void;
-  sendChat: () => void;
   setupVideo: () => void;
   findMatch: (user: PoolUser) => void;
 };
@@ -62,7 +61,6 @@ const SocketMutations = (
     withCredentials: true,
     transports: ["websocket"],
   });
-  console.log({ socket });
 
   socket.on("connect", () => {
     console.log("connected to websocket server :)");
@@ -71,9 +69,6 @@ const SocketMutations = (
   socket.on("disconnect", () => {
     console.log("disconnected from ws server :(");
     setState({ connected: false });
-  });
-  socket.on("chat", (data) => {
-    console.log({ data });
   });
   socket.on("message", (data) => {
     const parsed = JSON.parse(data);
@@ -169,12 +164,7 @@ const SocketMutations = (
     getState().connectionRef!.current!.destroy();
   };
 
-  const sendChat = () => {
-    getState().socket?.emit("chat", { message: "hello to chat from client" });
-  };
-
   const findMatch = (user: PoolUser) => {
-    console.log("finding match: ", { user, socketId: getState().socket?.id });
     getState().socket?.emit("join", JSON.stringify(user));
   };
 
@@ -193,7 +183,6 @@ const SocketMutations = (
     answerCall,
     callUser,
     leaveCall,
-    sendChat,
     setupVideo,
     findMatch,
   };
