@@ -1,25 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/router";
 
-import {
-  BlueButton,
-  TextInput,
-  PrimaryButton,
-  LinkButton,
-} from "src/components/base";
+import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
-import { useAuthStore } from "../hooks";
-import { useRouter } from "next/router";
-import {
-  SignInCredentials,
-  SigninCredentialsSchema,
-  FormProps,
-} from "../types";
+import { SignInCredentials, SigninCredentialsSchema } from "../types";
 import { LightLink, PrimaryLink } from "src/components/base/link";
-import { useEffect } from "react";
+import { useAuthStore } from "src/hooks";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
@@ -46,7 +35,6 @@ const LoginForm = () => {
 
   // submit function
   const handleSignin = async (credentials: SignInCredentials) => {
-    console.log("signing in now!!!");
     signinMutation.mutate(credentials);
     reset();
   };

@@ -10,6 +10,7 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
+import { NAMESPACES } from "src/cache/constants";
 
 export type JwtPayload = {
   sub: number;
@@ -33,7 +34,7 @@ type CacheableResetEmail = {
   email: string;
 };
 
-@Injectable({})
+@Injectable()
 export class AuthService {
   constructor(
     private jwt: JwtService,
@@ -64,7 +65,10 @@ export class AuthService {
       }
     }
 
-    const cachedEmail = await this.cache.get(email);
+    const cachedEmail = await this.cache.getKeyInNamespace(
+      [NAMESPACES.AUTH],
+      email
+    );
     if (!!cachedEmail) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
@@ -73,13 +77,17 @@ export class AuthService {
     const emailVerificationToken = v4();
     const hash = await argon2.hash(password);
 
-    // store user information in cache
-    await this.cache.set<CacheableUserFields>(emailVerificationToken, {
-      hash,
+    // store user information in cache within the AUTH namespace
+    await this.cache.setKeyInNamespace<CacheableUserFields>(
+      [NAMESPACES.AUTH],
+      emailVerificationToken,
+      { hash, email, username }
+    );
+    await this.cache.setKeyInNamespace<string>(
+      [NAMESPACES.AUTH],
       email,
-      username,
-    });
-    await this.cache.set<string>(email, emailVerificationToken);
+      emailVerificationToken
+    );
 
     // send email
     await this.mailerService
@@ -111,7 +119,10 @@ export class AuthService {
     const { email, password } = credentials;
 
     // check if email is unverified
-    const cachedEmail = await this.cache.get(email);
+    const cachedEmail = await this.cache.getKeyInNamespace(
+      [NAMESPACES.AUTH],
+      email
+    );
     if (!!cachedEmail) {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
@@ -137,13 +148,15 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const cachedUser = await this.cache.get<CacheableUserFields>(token);
+    const cachedUser = await this.cache.getKeyInNamespace<CacheableUserFields>(
+      [NAMESPACES.AUTH],
+      token
+    );
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
     const { username, email, hash } = cachedUser;
-
     const [err, user] = await this.users.createWithHash(email, username, hash);
 
     // if user already exists, throw exception
@@ -157,8 +170,8 @@ export class AuthService {
     }
 
     // clear new user in cache
-    await this.cache.del(token);
-    await this.cache.del(email);
+    await this.cache.deleteKeyInNamespace([NAMESPACES.AUTH], token);
+    await this.cache.deleteKeyInNamespace([NAMESPACES.AUTH], email);
 
     // generate tokens for new user
     const tokens = await this.signTokens(user.id, user.email);
@@ -230,7 +243,6 @@ export class AuthService {
   async resetPassword(email: string) {
     // find user via email provided
     const [err, user] = await this.users.findByEmail(email);
-
     // if user doesn't exist, do nothing. Just bring user to email sent page
     if (err || !user) {
       return;
@@ -239,16 +251,19 @@ export class AuthService {
     const username = user.username;
     const userId = user.id;
 
-    //Reset password
+    // reset password
     const resetPasswordVerificationToken = v4();
+    await this.cache.setKeyInNamespace<CacheableResetEmail>(
+      [NAMESPACES.AUTH],
+      resetPasswordVerificationToken,
+      {
+        userId,
+        username,
+        email,
+      }
+    );
 
-    await this.cache.set<CacheableResetEmail>(resetPasswordVerificationToken, {
-      userId,
-      username,
-      email,
-    });
-
-    //Send email
+    // send email
     await this.mailerService
       .sendMail({
         to: email,
@@ -270,26 +285,26 @@ export class AuthService {
   }
 
   async verifyResetEmail(token: string, newPassword: string) {
-    const cachedUser = await this.cache.get<CacheableResetEmail>(token);
+    const cachedUser = await this.cache.getKeyInNamespace<CacheableResetEmail>(
+      [NAMESPACES.AUTH],
+      token
+    );
     if (!cachedUser) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
     // clear the email that requested for a reset in cache
-    await this.cache.del(token);
+    await this.cache.deleteKeyInNamespace([NAMESPACES.AUTH], token);
 
+    // check whether there is a user associated with the token
     const { userId, email } = cachedUser;
-
-    //Check whether there is a user associated with the token
     const [err, user] = await this.users.findByEmail(email, true);
-
     if (err || !user) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_USER);
     }
 
-    //Update new password in the database
+    // update new password in the database
     const hashedNewPassword = await argon2.hash(newPassword);
-
     const [error, userToReset] = await this.users.update(userId, {
       hash: hashedNewPassword,
     });

@@ -22,7 +22,7 @@ const difficulties = [
   },
 ];
 
-export function RadioGroupButtons() {
+export function QuestionRadioGroup() {
   const [selected, setSelected] = useState(difficulties[0]);
 
   return (
