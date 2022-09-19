@@ -50,5 +50,5 @@ export enum API_RESPONSES_DESCRIPTION {
   BAD_REQUEST_INVALID_ID_DESCRIPTION = "Client provided no ID or invalid ID",
   BAD_REQUEST_INVALID_INPUT_DESCRIPTION = "Client provided invalid credentials or ID",
   BAD_REQUEST_INVALID_TOKEN_DESCRIPTION = "Client provided invalid token",
-  INTERNAL_SERVER_ERROR = "Internal Server Error"
+  INTERNAL_SERVER_ERROR = "Internal Server Error",
 }

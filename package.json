@@ -10,9 +10,9 @@
   "scripts": {
     "dev": "npm-run-all --parallel frontend:dev backend:dev backend:studio",
     "local": "npm-run-all --parallel frontend:dev backend:local backend:studio",
-    "frontend:dev": "yarn --cwd frontend dev",
-    "backend:dev": "yarn --cwd backend start:dev",
-    "backend:local": "yarn --cwd backend start:local",
+    "frontend:dev": "yarn --cwd frontend && yarn --cwd frontend dev",
+    "backend:dev": "yarn --cwd backend && yarn --cwd backend start:dev",
+    "backend:local": "yarn --cwd backend && yarn --cwd backend start:local",
     "backend:studio": "yarn --cwd backend prisma:dev:studio",
     "build": "next build",
     "start": "next start",
