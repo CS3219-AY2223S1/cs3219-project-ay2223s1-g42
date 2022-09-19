@@ -1,6 +1,5 @@
 import { UseGuards } from "@nestjs/common";
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -11,46 +10,81 @@ import { Server, Socket } from "socket.io";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
+import { PublicUserInfo } from "../utils/zod/userInfo";
+import { QuestionDifficulty } from "src/utils/zod/question";
+import { MatchService } from "./match.service";
+import { MATCH_MESSAGES, MATCH_WS_NAMESPACE } from "./constants";
 
-// import { CurrentUser } from "../utils/decorators/get-current-user.decorator";
+export type PoolUserData = PublicUserInfo & {
+  difficulties: QuestionDifficulty[];
+};
+
+export type PoolUser = PoolUserData & {
+  socketId: string;
+  timeJoined: number;
+};
 
 @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
   cors: CORS_OPTIONS,
+  namespace: MATCH_WS_NAMESPACE,
 })
 export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
-  users = 0;
+
+  constructor(private matchService: MatchService) {}
 
   async handleConnection() {
-    // A client has connected
-    this.users++;
-    // Notify connected clients of current users
-    this.server.emit("users", this.users);
+    console.log("client has connected");
   }
   async handleDisconnect() {
-    // A client has disconnected
-    this.users--;
-    // Notify connected clients of current users
-    this.server.emit("users", this.users);
+    console.log("client has disconnected");
   }
 
-  @SubscribeMessage("chat")
-  async onChat(client: Socket, message) {
-    const msg = message.message;
-    // console.log(client.handshake);
-    client.broadcast.emit("chat", msg);
-    client.emit("chat", msg);
-  }
+  @SubscribeMessage(MATCH_MESSAGES.JOIN_QUEUE)
+  async onJoinMatch(client: Socket, data: any) {
+    // parse user and add socket id
+    const parsed: PoolUserData = JSON.parse(data);
+    const poolUser: PoolUser = {
+      ...parsed,
+      socketId: client.id,
+      timeJoined: Date.now(),
+    };
 
-  //   @UseGuards(SupabaseGuard)
-  //   @SubscribeMessage("chat")
-  //   listenForMessages(
-  //     @CurrentUser() user: SupabaseAuthUser,
-  //     @MessageBody() data: string
-  //   ) {
-  //     console.log({ user });
-  //     this.server.sockets.emit("receive_message", data);
-  //   }
+    console.log("joined: ", { poolUser });
+
+    // if user already in room, send existing room id to user
+    const existingRoom = await this.matchService.handleUserAlreadyMatched(
+      poolUser
+    );
+    console.log("esisting room", { existingRoom });
+    if (existingRoom) {
+      client.emit(MATCH_MESSAGES.ROOM_EXISTS, JSON.stringify(existingRoom));
+      return;
+    }
+
+    // try to match user with another user from queue,
+    // create room if successful otherwise add user to queue
+    const matchedRoom = await this.matchService.handleJoinMatchQueue(poolUser);
+    if (!matchedRoom) {
+      console.log("user added to pool...");
+      client.emit(
+        MATCH_MESSAGES.JOIN_QUEUE_SUCCESS,
+        JSON.stringify({ message: "success" })
+      );
+      return;
+    }
+
+    console.log({ matchedRoom });
+
+    // emit MATCH_FOUND to all matched users
+    const notifyAllUsers = matchedRoom.users.map(
+      async (user) =>
+        await this.server
+          .to(user.socketId)
+          .emit(MATCH_MESSAGES.MATCH_FOUND, JSON.stringify(matchedRoom))
+    );
+    await Promise.all(notifyAllUsers);
+  }
 }

@@ -19,7 +19,17 @@ export class MatchMakingClient {
           `All objects sent to matchmaking must have the same interface and have an 'id' property`
         );
       }
-      socket.send(JSON.stringify(args));
+      const data = JSON.stringify(args);
+      socket.emit("pool", data);
+      // socket.send(JSON.stringify(args));
+    });
+
+    socket.on("connect", () => {
+      console.log("connected to websocket server");
+    });
+
+    socket.on("chat", (data) => {
+      console.log({ data });
     });
 
     // runs when connection error occurs
