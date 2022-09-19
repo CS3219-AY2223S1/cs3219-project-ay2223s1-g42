@@ -1,18 +1,19 @@
+import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import { Spinner } from "src/components/icons";
 import { useAuthStore } from "src/hooks";
-import { LoginForm } from "../login/components";
+import { LoginForm } from "../login";
 
-export default function login() {
+const LoginPage: NextPage = () => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   useEffect(() => {
     if (user) {
       router.push("/");
     }
-  }, [user]);
+  }, [user, router]);
   return (
     <>
       {user ? (
@@ -27,4 +28,6 @@ export default function login() {
       )}
     </>
   );
-}
+};
+
+export default LoginPage;

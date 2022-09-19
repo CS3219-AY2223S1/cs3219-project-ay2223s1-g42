@@ -9,7 +9,7 @@ type Props = {
 export default function AppLayout({ children }: Props) {
   // fetch me query
   const user = useAuthStore((state) => state.user);
-  const useGetMe = useAuthStore((state) => state.getMe);
+  const useGetMe = useAuthStore((state) => state.useGetMe);
   useGetMe();
 
   if (user) {

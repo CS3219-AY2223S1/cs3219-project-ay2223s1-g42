@@ -1,4 +1,4 @@
-import React, { HTMLProps, InputHTMLAttributes } from "react";
+import React, { HTMLProps } from "react";
 import cx from "classnames";
 
 type Props = HTMLProps<HTMLInputElement> & {
@@ -8,7 +8,10 @@ type Props = HTMLProps<HTMLInputElement> & {
 };
 
 const TextInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ label, className = "", isError, error, ...other }, ref) => {
+  function ForwardedTextInput(
+    { label, className = "", isError, error, ...other },
+    ref
+  ) {
     return (
       <div>
         <div className="relative">

@@ -23,23 +23,23 @@ type Options = {
 
 type AuthStore = {
   user: User | undefined;
-  getMe: (options?: Options) => UseQueryResult<User, unknown>;
-  refresh: (
+  useGetMe: (options?: Options) => UseQueryResult<User, unknown>;
+  useRefreshMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, void, unknown>;
-  signin: (
+  useSigninMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, SignInCredentials, unknown>;
-  signup: (
+  useSignupMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, SignUpCredentials, unknown>;
-  signout: (
+  useSignoutMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, void, unknown>;
-  forgetPassword: (
+  useForgetPasswordMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, ForgetPasswordInfo, unknown>;
-  resetPassword: (
+  useResetPasswordMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, ResetPasswordInfo, unknown>;
 };
@@ -47,7 +47,7 @@ type AuthStore = {
 const AuthMutations = (
   setState: ({ user }: { user: User | undefined }) => void
 ) => {
-  const getMe = (options?: Options) => {
+  const useGetMe = (options?: Options) => {
     return useQuery(
       ["me"],
       () => Axios.get<User>("/users/me").then((res) => res.data),
@@ -62,11 +62,11 @@ const AuthMutations = (
       }
     );
   };
-  const refreshMutation = (options?: Options) => {
+  const useRefreshMutation = (options?: Options) => {
     const mutation = useMutation(
       () => Axios.get<ApiResponse>("/auth/refresh").then((res) => res.data),
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           if (options?.onSuccess) {
             options.onSuccess();
           }
@@ -75,14 +75,14 @@ const AuthMutations = (
     );
     return mutation;
   };
-  const signinMutation = (options?: Options) => {
+  const useSigninMutation = (options?: Options) => {
     return useMutation(
       (params: SignInCredentials) =>
         Axios.post<ApiResponse>(`/auth/local/signin`, params).then(
           (res) => res.data
         ),
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           if (options?.onSuccess) {
             options.onSuccess();
           }
@@ -93,14 +93,14 @@ const AuthMutations = (
       }
     );
   };
-  const signupMutation = (options?: Options) => {
+  const useSignupMutation = (options?: Options) => {
     return useMutation(
       (params: SignUpCredentials) =>
         Axios.post<ApiResponse>(`/auth/local/signup`, params).then(
           (res) => res.data
         ),
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           if (options?.onSuccess) {
             options.onSuccess();
           }
@@ -108,7 +108,7 @@ const AuthMutations = (
       }
     );
   };
-  const signoutMutation = (options?: Options) => {
+  const useSignoutMutation = (options?: Options) => {
     return useMutation(
       () => Axios.post<ApiResponse>(`/auth/signout`).then((res) => res.data),
       {
@@ -121,14 +121,14 @@ const AuthMutations = (
       }
     );
   };
-  const forgetPasswordMutation = (options?: Options) => {
+  const useForgetPasswordMutation = (options?: Options) => {
     return useMutation(
       (params: ForgetPasswordInfo) =>
         Axios.post<ApiResponse>(`/auth/forget-password`, params).then(
           (res) => res.data
         ),
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           if (options?.onSuccess) {
             options.onSuccess();
           }
@@ -139,14 +139,14 @@ const AuthMutations = (
       }
     );
   };
-  const resetPasswordMutation = (options?: Options) => {
+  const useResetPasswordMutation = (options?: Options) => {
     return useMutation(
       (params: ResetPasswordInfo) =>
         Axios.post<ApiResponse>(`/auth/reset-password`, params).then(
           (res) => res.data
         ),
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           if (options?.onSuccess) {
             options.onSuccess();
           }
@@ -159,13 +159,13 @@ const AuthMutations = (
   };
   return {
     user: undefined,
-    getMe,
-    refresh: refreshMutation,
-    signin: signinMutation,
-    signup: signupMutation,
-    signout: signoutMutation,
-    forgetPassword: forgetPasswordMutation,
-    resetPassword: resetPasswordMutation,
+    useGetMe,
+    useRefreshMutation,
+    useSigninMutation,
+    useSignupMutation,
+    useSignoutMutation,
+    useForgetPasswordMutation,
+    useResetPasswordMutation,
   };
 };
 

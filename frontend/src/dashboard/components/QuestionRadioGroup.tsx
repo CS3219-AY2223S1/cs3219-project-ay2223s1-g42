@@ -46,7 +46,7 @@ export function QuestionRadioGroup() {
             )
           }
         >
-          {({ active, checked }) => (
+          {({ checked }) => (
             <>
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">
