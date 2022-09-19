@@ -8,7 +8,7 @@ import { MatchDialog, QuestionRadioGroup } from "src/dashboard/components";
 
 const Home: NextPage = () => {
   const user = useAuthStore((state) => state.user);
-  const findMatch = useSocketStore((state) => state.find);
+  const findMatch = useSocketStore((state) => state.findMatch);
 
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
