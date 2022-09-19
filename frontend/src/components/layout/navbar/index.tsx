@@ -89,7 +89,7 @@ const TheNavbar = () => {
     <nav
       className={cx(
         "font-display pl-4 pr-2 py-3 md:p-4 fixed w-full z-50 top-0 left-0",
-        "bg-neutral-100/[0.97] backdrop-blur-sm transition ease-out translate-y-0",
+        "bg-neutral-100/[0.97] backdrop-blur-sm transition ease-out",
         {
           "translate-y-0": scrollDirection !== ScrollDir.DOWN,
           "-translate-y-20": scrollDirection === ScrollDir.DOWN,
