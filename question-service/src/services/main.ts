@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { updatePrismaQuestionsSummary } from "./logic/questions-summary";
 
 export async function updateQuestionsSummary() {
   const prisma = new PrismaClient();

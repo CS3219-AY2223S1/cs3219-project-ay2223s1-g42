@@ -16,7 +16,8 @@
     "db:dev:rm": "docker compose rm dev-db dev-redis -s -f -v",
     "db:dev:start": "docker compose up dev-db dev-redis -d",
     "prisma:dev:generate": "dotenv -e .env.local -- yarn prisma generate",
-    "prisma:dev:migrate": "dotenv -e .env.local -- yarn prisma migrate dev"
+    "prisma:dev:migrate": "dotenv -e .env.local -- yarn prisma migrate dev",
+    "prisma:studio": "yarn prisma studio"
   },
   "dependencies": {
     "@prisma/client": "4.3.1",
