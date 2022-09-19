@@ -9,7 +9,9 @@
   "private": true,
   "scripts": {
     "dev": "npm-run-all --parallel frontend:dev backend:dev backend:studio",
+    "dev:rm": "yarn --cwd backend db:dev:rm",
     "local": "npm-run-all --parallel frontend:dev backend:local backend:studio",
+    "local:rm": "yarn --cwd backend db:local:rm",
     "frontend:dev": "yarn --cwd frontend && yarn --cwd frontend dev",
     "backend:dev": "yarn --cwd backend && yarn --cwd backend start:dev",
     "backend:local": "yarn --cwd backend && yarn --cwd backend start:local",
