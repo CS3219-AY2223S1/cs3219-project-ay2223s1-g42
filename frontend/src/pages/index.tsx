@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PrimaryButton } from "../components/base";
 import { Spinner } from "src/components/icons";
@@ -7,10 +7,11 @@ import { PoolUser, useAuthStore, useSocketStore } from "src/hooks";
 import { MatchDialog, QuestionRadioGroup } from "src/dashboard/components";
 
 const Home: NextPage = () => {
+  // store states
   const user = useAuthStore((state) => state.user);
-  const room = useSocketStore((state) => state.room);
+  const socket = useSocketStore((state) => state.socket);
   const findMatch = useSocketStore((state) => state.findMatch);
-
+  // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
   const handleFindMatch = () => {
@@ -25,6 +26,12 @@ const Home: NextPage = () => {
     setIsMatchingDialogOpen(true);
     findMatch(poolUser);
   };
+
+  useEffect(() => {
+    if (user) {
+      socket?.connect();
+    }
+  }, [user]);
 
   if (!user) {
     return <Spinner className="h-12 w-12" />;
