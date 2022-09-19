@@ -15,9 +15,11 @@
     "debug": "firebase emulators:start --inspect-functions",
     "db:dev:rm": "docker compose rm dev-db dev-redis -s -f -v",
     "db:dev:start": "docker compose up dev-db dev-redis -d",
-    "prisma:dev:generate": "dotenv -e .env -- npx prisma generate"
+    "prisma:dev:generate": "dotenv -e .env.local -- yarn prisma generate",
+    "prisma:dev:migrate": "dotenv -e .env.local -- yarn prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/client": "4.3.1",
     "@types/node": "^18.7.18",
     "axios": "^0.27.2",
     "firebase-admin": "^11.0.1",
@@ -36,6 +38,7 @@
     "firebase-functions-test": "^0.2.0",
     "firebase-tools": "^11.1.0",
     "prettier": "^2.6.2",
+    "prettier-plugin-prisma": "^4.2.0",
     "rimraf": "^3.0.2",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.5.4"

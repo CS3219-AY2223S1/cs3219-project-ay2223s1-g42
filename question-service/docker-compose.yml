@@ -3,37 +3,14 @@ services:
   dev-db:
     image: mysql:8.0
     ports:
-      - 3366:3306
+      - 3306:3306
     restart: always
     environment:
-      MYSQL_DATABASE: mysqldb
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: mysql
+      MYSQL_DATABASE: question-service
+      MYSQL_USER: mysql_user
+      MYSQL_PASSWORD: mysql_password
       MYSQL_ROOT_PASSWORD: root
     networks:
       - cs3219
-  test-db:
-    image: mysql:8.0
-    ports:
-      - 3367:3306
-    environment:
-      MYSQL_DATABASE: mysqldb
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: mysql
-      MYSQL_ROOT_PASSWORD: root
-    networks:
-      - cs3219
-  dev-redis:
-    image: "redis:7.0-alpine"
-    ports:
-      - 6380:6379
-    networks:
-        - cs3219
-  test-redis:
-    image: "redis:7.0-alpine"
-    ports:
-      - 6381:6379
-    networks:
-        - cs3219
 networks:
   cs3219:

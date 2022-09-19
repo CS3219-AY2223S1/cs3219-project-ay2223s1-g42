@@ -2,14 +2,61 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
-model Question {
-  
+// model QuestionSummary {
+//   id               Int                    @id @default(autoincrement())
+//   acRate           Float
+//   difficulty       String
+//   paidOnly         Boolean
+//   title            String
+//   titleSlug        String                 @unique
+//   topicTags        TopicTagsOnQuestions[]
+//   topicId          Int
+//   hasSolution      Boolean
+//   hasVideoSolution Boolean
+//   createdAt        DateTime               @default(now())
+//   updatedAt        DateTime               @updatedAt
+// }
+
+// model TopicTag {
+//   id        Int                    @id @default(autoincrement())
+//   name      String                 @unique
+//   questions TopicTagsOnQuestions[]
+// }
+
+// model TopicTagsOnQuestions {
+//   questionSummary   QuestionSummary @relation(fields: [questionSummaryId], references: [id])
+//   questionSummaryId Int
+//   topicTag          TopicTag        @relation(fields: [topicTagId], references: [id])
+//   topicTagId        Int
+
+//   @@id([questionSummaryId, topicTagId])
+// }
+model QuestionSummary {
+  id               Int        @id @default(autoincrement())
+  acRate           Float
+  difficulty       String
+  paidOnly         Boolean
+  title            String
+  titleSlug        String     @unique
+  topicTags        TopicTag[]
+  hasSolution      Boolean
+  hasVideoSolution Boolean
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model TopicTag {
+  id        Int               @id @default(autoincrement())
+  name      String            @unique
+  questions QuestionSummary[]
 }
