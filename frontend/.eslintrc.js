@@ -5,6 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: "module",
   },
+  ignorePatterns: [".eslintrc.js", "tailwind.config.js", "postcss.config.js"],
   plugins: ["@typescript-eslint"],
   extends: [
     "next/core-web-vitals",
