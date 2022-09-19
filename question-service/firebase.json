@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "source": ".",
+    "predeploy": ["yarn build"],
+    "ignore": [
+      "**/.env*",
+      "**/.secret*",
+      "**/*.log",
+      "**/node_modules/**"
+    ]
+  }
+}

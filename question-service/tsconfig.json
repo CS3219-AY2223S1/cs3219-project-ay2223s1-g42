@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "*.js",
+    "./src",
+    "./tome"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
