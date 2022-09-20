@@ -10,7 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "../styles/globals.css";
 import AppLayout from "src/components/layout/AppLayout";
-import { useAuthStore } from "src/login";
+import { useAuthStore } from "src/hooks";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -24,7 +24,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     if (!user) {
       router.push("/login");
     }
-  }, [user]);
+  }, [user, router]);
   return (
     <QueryClientProvider client={queryClient}>
       <AppLayout>

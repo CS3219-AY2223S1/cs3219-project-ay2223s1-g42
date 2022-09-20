@@ -17,7 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
 } from "@nestjs/swagger";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 
 import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";

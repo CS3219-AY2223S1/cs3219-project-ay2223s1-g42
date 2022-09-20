@@ -3,20 +3,11 @@ import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { ConfigService } from "@nestjs/config";
 import { Socket } from "socket.io";
-import * as jwt from "jsonwebtoken";
-
-import { JwtPayload } from "../auth.service";
-import { UserService } from "../../user/user.service";
-import { access } from "fs";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class WsJwtAccessGuard extends AuthGuard("jwt-ws") {
-  constructor(
-    private config: ConfigService,
-    private reflector: Reflector,
-    private users: UserService
-  ) {
+  constructor(private config: ConfigService, private reflector: Reflector) {
     super();
   }
 

@@ -22,7 +22,7 @@ const difficulties = [
   },
 ];
 
-export function RadioGroupButtons() {
+export function QuestionRadioGroup() {
   const [selected, setSelected] = useState(difficulties[0]);
 
   return (
@@ -46,7 +46,7 @@ export function RadioGroupButtons() {
             )
           }
         >
-          {({ active, checked }) => (
+          {({ checked }) => (
             <>
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">

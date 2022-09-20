@@ -4,6 +4,7 @@ import cx from "classnames";
 import { BaseLink, PrimaryLink } from "src/components/base/link";
 import { PrimaryButton } from "src/components/base";
 import { BurgerMenuIcon } from "src/components/icons";
+import { ScrollDir, useScrollDirection } from "./useScrollDirection";
 
 type NavItem = {
   label: string;
@@ -81,9 +82,22 @@ const DesktopNavItems = () => {
 };
 
 const TheNavbar = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const scrollDirection = useScrollDirection();
+
   return (
-    <nav className="font-display pl-4 pr-2 py-3 md:p-4 bg-neutral-100 fixed w-full z-50 top-0 left-0">
+    <nav
+      className={cx(
+        "font-display pl-4 pr-2 py-3 md:p-4 fixed w-full z-50 top-0 left-0",
+        "bg-neutral-100/[0.97] backdrop-blur-sm transition ease-out",
+        {
+          "translate-y-0": scrollDirection !== ScrollDir.DOWN,
+          "-translate-y-20": scrollDirection === ScrollDir.DOWN,
+          "-translate-y-60":
+            scrollDirection === ScrollDir.DOWN && isDropdownOpen,
+        }
+      )}
+    >
       <div className="max-w-5xl flex flex-wrap justify-between items-center mx-auto">
         <BaseLink href="/" className="flex items-center h-full">
           {/* <img
@@ -97,21 +111,23 @@ const TheNavbar = () => {
         </BaseLink>
         <div className="flex flex-row gap-3 md:gap-4">
           <DesktopNavItems />
-          <PrimaryButton className="text-base md:px-6">
+          <PrimaryButton className="text-base md:px-6 bg-neutral-100">
             Get started
           </PrimaryButton>
-          <button
+          <PrimaryButton
             type="button"
-            className="inline-flex items-center p-2 text-sm text-neutral-800 md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200"
-            onClick={() => setIsOpen((open) => !open)}
+            className="inline-flex items-center p-2 text-sm text-neutral-800
+            md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200
+            hover:bg-transparent hover:text-neutral-800"
+            onClick={() => setIsDropdownOpen((open) => !open)}
           >
             <span className="sr-only">Open main menu</span>
             <BurgerMenuIcon className="h-7 w-7" />
-          </button>
+          </PrimaryButton>
         </div>
       </div>
       {/* mobile nav dropdown */}
-      {isOpen ? <MobileNavItems /> : <></>}
+      {isDropdownOpen ? <MobileNavItems /> : <></>}
     </nav>
   );
 };

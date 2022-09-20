@@ -4,6 +4,7 @@
 
 # migrations
 *.sql*
+/prisma/*
 
 # Logs
 logs

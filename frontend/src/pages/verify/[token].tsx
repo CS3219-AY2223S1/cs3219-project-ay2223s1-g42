@@ -1,8 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 
-import { PrimaryButton } from "src/components/base";
-import { PrimaryLink } from "src/components/base/link";
+import { PrimaryButton, PrimaryLink } from "src/components/base";
 import { env } from "src/env/client.mjs";
 import { ApiResponse } from "src/login";
 import { Axios } from "src/services/auth";

@@ -21,7 +21,7 @@ type UpdateableUserFields = Partial<
   Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
 
-@Injectable({})
+@Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 

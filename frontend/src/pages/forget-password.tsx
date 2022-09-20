@@ -1,7 +1,8 @@
-import { Container } from "src/components/layout";
+import { NextPage } from "next";
+
 import { ForgetPasswordForm } from "../login/components";
 
-export default function forgetPassword() {
+const ForgetPasswordPage: NextPage = () => {
   return (
     <div className="w-full px-4 flex flex-col text-center mx-auto">
       <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
@@ -10,4 +11,6 @@ export default function forgetPassword() {
       <ForgetPasswordForm />
     </div>
   );
-}
+};
+
+export default ForgetPasswordPage;

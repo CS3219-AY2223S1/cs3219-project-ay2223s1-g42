@@ -1,26 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
 
-import {
-  BlueButton,
-  TextInput,
-  PrimaryButton,
-  LinkButton,
-} from "src/components/base";
+import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { GoogleIcon } from "src/components/icons";
-import { useAuthStore } from "../hooks";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
 import { PrimaryLink } from "src/components/base/link";
+import { useAuthStore } from "src/hooks";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   // sign in mutations
-  const useSignUpMutation = useAuthStore((state) => state.signup);
+  const useSignUpMutation = useAuthStore((state) => state.useSignupMutation);
   const signupMutation = useSignUpMutation({
     onSuccess: () => queryClient.invalidateQueries(["me"]),
   });

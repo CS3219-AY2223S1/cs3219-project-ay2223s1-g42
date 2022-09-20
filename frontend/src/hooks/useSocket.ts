@@ -3,16 +3,33 @@ import { io, Socket } from "socket.io-client";
 import Peer from "simple-peer";
 import create from "zustand";
 
-import { Axios } from "src/services/auth";
 import { User } from "src/login";
 import { env } from "src/env/client.mjs";
+
+type QuestionDifficulty = "easy" | "medium" | "hard";
+
+export type PoolUser = User & {
+  difficulties: QuestionDifficulty[];
+};
+
+export type RoomUser = PoolUser & {
+  socketId: string;
+  timeJoined: Date;
+};
 
 type Call = {
   from?: User;
   signal?: Peer.SignalData;
 };
 
+type Room = {
+  id: string;
+  users: RoomUser[];
+  difficulty?: QuestionDifficulty;
+};
+
 type SocketStore = {
+  room: Room | undefined;
   socket: Socket | undefined;
   callAccepted: boolean;
   callEnded: boolean;
@@ -26,8 +43,8 @@ type SocketStore = {
   answerCall: () => void;
   callUser: (from: User, id: number) => void;
   leaveCall: () => void;
-  sendChat: () => void;
   setupVideo: () => void;
+  findMatch: (user: PoolUser) => void;
 };
 
 type SocketValues = Omit<
@@ -39,20 +56,35 @@ const SocketMutations = (
   setState: (values: Partial<SocketValues>) => void,
   getState: () => SocketValues
 ): SocketStore => {
-  const socket = io(env.NEXT_PUBLIC_WS_URL, {
+  const socket = io(`${env.NEXT_PUBLIC_WS_URL}/match`, {
     withCredentials: true,
     transports: ["websocket"],
   });
 
   socket.on("connect", () => {
-    console.log("connected to websocket server");
+    console.log("connected to websocket server :)");
     setState({ connected: true });
   });
   socket.on("disconnect", () => {
+    console.log("disconnected from ws server :(");
     setState({ connected: false });
   });
-  socket.on("chat", (data) => {
-    console.log({ data });
+  socket.on("message", (data) => {
+    const parsed = JSON.parse(data);
+    console.log("message received: ", { parsed });
+  });
+  socket.on("matched", (data) => {
+    const parsedExistingRoom = JSON.parse(data);
+    console.log("existing room: ", { parsedExistingRoom });
+  });
+  socket.on("joined", (data) => {
+    const parsedJoinSuccess = JSON.parse(data);
+    console.log("successfully joined queue: ", { parsedJoinSuccess });
+  });
+  socket.on("found", (data) => {
+    const parsedMatchedRoom: Room = JSON.parse(data);
+    console.log("matched room: ", { parsedMatchedRoom });
+    setState({ room: parsedMatchedRoom });
   });
 
   const setupVideo = () => {
@@ -131,11 +163,12 @@ const SocketMutations = (
     getState().connectionRef!.current!.destroy();
   };
 
-  const sendChat = () => {
-    getState().socket?.emit("chat", { message: "hello to chat from client" });
+  const findMatch = (user: PoolUser) => {
+    getState().socket?.emit("join", JSON.stringify(user));
   };
 
   return {
+    room: undefined,
     socket,
     callAccepted: false,
     callEnded: false,
@@ -149,8 +182,8 @@ const SocketMutations = (
     answerCall,
     callUser,
     leaveCall,
-    sendChat,
     setupVideo,
+    findMatch,
   };
 };
 

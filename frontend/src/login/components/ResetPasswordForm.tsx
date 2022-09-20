@@ -1,12 +1,11 @@
 import { useForm } from "react-hook-form";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from "../hooks";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
 import { PrimaryButton, TextInput } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
 import { PrimaryLink } from "src/components/base/link";
+import { useAuthStore } from "src/hooks";
 
 type Props = {
   token: string;
@@ -14,7 +13,9 @@ type Props = {
 
 const ResetPasswordForm = ({ token }: Props) => {
   // forget password mutation
-  const useResetPasswordMutation = useAuthStore((state) => state.resetPassword);
+  const useResetPasswordMutation = useAuthStore(
+    (state) => state.useResetPasswordMutation
+  );
   const resetPasswordMutation = useResetPasswordMutation();
 
   // form setup
@@ -30,7 +31,6 @@ const ResetPasswordForm = ({ token }: Props) => {
   // submit function
   const handleResetPassword = async (credentials: ResetPasswordInfo) => {
     const resetData = { ...credentials, token };
-    console.log({ resetData });
     resetPasswordMutation.mutate(resetData);
     reset();
   };
