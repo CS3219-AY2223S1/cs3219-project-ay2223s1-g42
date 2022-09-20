@@ -8,7 +8,7 @@ import {
 } from "@prisma/client/runtime";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
-export default function PrismaKnownErrorHandling(e: Error) {
+export default function ThrowKnownPrismaErrors(e: Error) {
   if (
     e instanceof PrismaClientUnknownRequestError ||
     e instanceof PrismaClientRustPanicError ||

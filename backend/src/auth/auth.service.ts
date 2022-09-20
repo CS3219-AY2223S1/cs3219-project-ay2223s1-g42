@@ -15,9 +15,8 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
+import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
 import { NAMESPACES } from "src/cache/constants";
-import PrismaKnownErrorHandling from "../utils/prisma-error-handling";
-import { Prisma } from "@prisma/client";
 
 export type JwtPayload = {
   sub: number;
@@ -64,7 +63,7 @@ export class AuthService {
       username
     );
 
-    PrismaKnownErrorHandling(err);
+    ThrowKnownPrismaErrors(err);
 
     if (user) {
       if (user.email == email) {
@@ -143,7 +142,7 @@ export class AuthService {
     // find user via username + email provided
     const [err, user] = await this.users.find({ email, includeHash: true });
 
-    PrismaKnownErrorHandling(err);
+    ThrowKnownPrismaErrors(err);
 
     // if user doesn't exist, throw exception
     if (!user) {
@@ -182,7 +181,7 @@ export class AuthService {
           throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_CREDENTIALS);
         }
       }
-      PrismaKnownErrorHandling(err);
+      ThrowKnownPrismaErrors(err);
     }
 
     // clear new user in cache
@@ -200,7 +199,7 @@ export class AuthService {
   async signout(id: number) {
     const [err] = await this.users.clearRefreshToken(id);
     if (err) {
-      PrismaKnownErrorHandling(err);
+      ThrowKnownPrismaErrors(err);
     }
     return;
   }
@@ -247,7 +246,7 @@ export class AuthService {
     const [err] = await this.users.update(id, { hashRt });
     // throw if err updating refresh token hash
     if (err) {
-      PrismaKnownErrorHandling(err);
+      ThrowKnownPrismaErrors(err);
     }
     return;
   }
@@ -296,8 +295,7 @@ export class AuthService {
         console.log(success);
       })
       .catch((err) => {
-        console.log(err);
-        PrismaKnownErrorHandling(err);
+        ThrowKnownPrismaErrors(err);
       });
   }
 
@@ -316,7 +314,8 @@ export class AuthService {
     // check whether there is a user associated with the token
     const { userId, email } = cachedUser;
     const [err, user] = await this.users.findByEmail(email, true);
-    PrismaKnownErrorHandling(err);
+
+    ThrowKnownPrismaErrors(err);
 
     if (!user) {
       throw new ForbiddenException(AUTH_ERROR.INVALID_USER);

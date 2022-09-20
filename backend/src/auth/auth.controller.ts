@@ -41,7 +41,7 @@ export class AuthController {
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
   })
