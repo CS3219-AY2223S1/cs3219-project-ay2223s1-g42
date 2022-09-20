@@ -30,8 +30,8 @@ npm install -g firebase-tools
 # Login to Firebase 
 firebase login
 
-# Run the database locally and generate the schema
-yarn dev
+# Run the database locally and generate the schema, may need to modify the sleep timer
+yarn dev:init
 
 # Manually start a local functions emulator
 yarn serve
