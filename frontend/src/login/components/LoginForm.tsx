@@ -15,7 +15,7 @@ const LoginForm = () => {
   const router = useRouter();
 
   // sign in mutations
-  const useSignInMutation = useAuthStore((state) => state.signin);
+  const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
   const signinMutation = useSignInMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(["me"]);

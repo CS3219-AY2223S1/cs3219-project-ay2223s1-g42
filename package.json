@@ -1,0 +1,33 @@
+{
+  "name": "peerpussies",
+  "version": "1.0.0",
+  "description": "CS3219 G42 code collab project",
+  "main": "index.js",
+  "repository": "git@github.com:CS3219-AY2223S1/cs3219-project-ay2223s1-g42.git",
+  "author": "aidanaden <aidanaden@hotmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "npm-run-all --parallel frontend:dev backend:dev backend:studio",
+    "dev:rm": "yarn --cwd backend db:dev:rm",
+    "local": "npm-run-all --parallel frontend:dev backend:local backend:studio",
+    "local:rm": "yarn --cwd backend db:local:rm",
+    "frontend:dev": "yarn --cwd frontend && yarn --cwd frontend dev",
+    "backend:dev": "yarn --cwd backend && yarn --cwd backend start:dev",
+    "backend:local": "yarn --cwd backend && yarn --cwd backend start:local",
+    "backend:studio": "yarn --cwd backend prisma:dev:studio",
+    "build": "next build",
+    "start": "next start",
+    "prepare": "husky install",
+    "lint": "npm-run-all --parallel frontend:lint backend:lint",
+    "lint-staged": "npm-run-all --parallel frontend:lint-staged backend:lint-staged",
+    "frontend:lint": "yarn --cwd frontend lint",
+    "frontend:lint-staged": "yarn --cwd frontend lint-staged",
+    "backend:lint": "yarn --cwd backend lint",
+    "backend:lint-staged": "yarn --cwd backend lint-staged"
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "npm-run-all": "^4.1.5"
+  }
+}

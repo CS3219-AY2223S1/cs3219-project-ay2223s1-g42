@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { PrimaryButton, RedButton } from "src/components/base";
 import { PrimaryDialog } from "src/components/base/dialog";
 import { useAuthStore, useSocketStore } from "src/hooks";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import cx from "classnames";
 
 import { BaseLink, PrimaryLink } from "src/components/base/link";

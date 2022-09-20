@@ -1,8 +1,9 @@
+import { NextPage } from "next";
 import { useRouter } from "next/router";
 
 import { ResetPasswordForm } from "src/login/components";
 
-const ResetPasswordPage = () => {
+const ResetPasswordPage: NextPage = () => {
   const router = useRouter();
 
   return (

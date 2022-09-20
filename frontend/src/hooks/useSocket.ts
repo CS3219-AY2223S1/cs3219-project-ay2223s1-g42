@@ -3,7 +3,6 @@ import { io, Socket } from "socket.io-client";
 import Peer from "simple-peer";
 import create from "zustand";
 
-import { Axios } from "src/services/auth";
 import { User } from "src/login";
 import { env } from "src/env/client.mjs";
 
