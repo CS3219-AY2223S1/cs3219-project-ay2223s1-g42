@@ -1,5 +1,8 @@
+import { NextPage } from "next";
 import React from "react";
 
-export default function room() {
+const RoomPage: NextPage = () => {
   return <div></div>;
-}
+};
+
+export default RoomPage;

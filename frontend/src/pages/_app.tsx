@@ -24,7 +24,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     if (!user) {
       router.push("/login");
     }
-  }, [user]);
+  }, [user, router]);
   return (
     <QueryClientProvider client={queryClient}>
       <AppLayout>

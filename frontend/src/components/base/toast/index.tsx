@@ -4,9 +4,7 @@ import { useState } from "react";
 
 import { PrimaryButton } from "../button";
 
-type Props = {};
-
-const Toast = (props: Props) => {
+const Toast = () => {
   const [open, setOpen] = useState(false);
   return (
     <ToastPrimitive.Provider>

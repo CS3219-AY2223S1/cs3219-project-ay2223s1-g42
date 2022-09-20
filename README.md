@@ -1,24 +1,19 @@
-# CS3219-AY22-23-G42(0) PeerPussies
+# CS3219-AY22-23-G42(0) Peer Prep
 
 Instructions for setting up below!
 
-## User Service
+## Run the application locally
 
-1. Set up local postgres database
+### Requirements
+
+1. Set up local MySQL database
 2. Enter your postgresql connection string in `.env` file:
-   `DATABASE_URL=postgres://<username>:<password>@localhost:<port_no>`
-3. Install npm packages using `yarn`
-4. Create migration with `yarn prisma migrate dev`
-5. Generate prisma database client with `yarn prisma generate`
-6. Run User Service using `yarn dev`.
+   `DATABASE_URL=mysql://<username>:<password>@localhost:<port_no>/Users`
 
-## Matching Service
+### Install and run in a local environment
 
-1. Install npm packages using `yarn`
-2. Run server with `yarn dev:server`
-3. Run test clients with `yarn dev:client`
+1. `yarn local` and wait for Nest to show that it is listening on localhost:5000 (or [::1]:5000)
+2. `yarn local:rm` to stop all the docker containers.
+   * [:x:] This will remove any data stored on the database.
 
-## Frontend
-
-1. Install npm packages using `npm i`.
-2. Run Frontend using `npm start`.
+Yes, it's as simple as that. We've created a script that would handle all the necessary installations and database migrations.
