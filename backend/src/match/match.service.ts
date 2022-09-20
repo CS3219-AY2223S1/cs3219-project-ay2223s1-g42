@@ -1,5 +1,3 @@
-import { Socket } from "socket.io";
-
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
