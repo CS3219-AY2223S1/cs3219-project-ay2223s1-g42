@@ -17,7 +17,8 @@
     "db:dev:start": "docker compose up dev-db dev-redis -d",
     "prisma:dev:generate": "dotenv -e .env.local -- yarn prisma generate",
     "prisma:dev:migrate": "dotenv -e .env.local -- yarn prisma migrate dev",
-    "prisma:studio": "yarn prisma studio"
+    "prisma:studio": "yarn prisma studio",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
   },
   "dependencies": {
     "@prisma/client": "4.3.1",
@@ -38,6 +39,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "firebase-functions-test": "^0.2.0",
     "firebase-tools": "^11.1.0",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.6.2",
     "prettier-plugin-prisma": "^4.2.0",
     "rimraf": "^3.0.2",
