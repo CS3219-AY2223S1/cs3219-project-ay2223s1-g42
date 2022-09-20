@@ -7,36 +7,36 @@ import {
 const prisma = new PrismaClient();
 
 async function main() {
-  // const questionsMap = await getLeetcodeQuestions();
-  // await updatePrismaQuestionsSummary(prisma, questionsMap);
-  // prisma.questionSummary
-  //   .findFirst({
-  //     where: { titleSlug: { equals: "two-sum" } },
-  //     include: { topicTags: true },
-  //   })
-  //   .then((res) =>
-  //     console.log({ ...res, tags: res?.topicTags.map((v) => v.name) })
-  //   );
-  // prisma.questionSummary
-  //   .findFirst({ include: { topicTags: true } })
-  //   .then((res) => console.log(res));
-  // prisma.topicTag
-  //   .findMany({
-  //     where: {
-  //       AND: [
-  //         { name: { equals: "array" } },
-  //         { name: { equals: "hash-table" } },
-  //       ],
-  //     },
-  //     include: { questions: true, _count: true },
-  //   })
-  //   .then((res) => console.log(res));
-  // prisma.topicTag
-  //   .findFirst({
-  //     include: { questions: true },
-  //     where: { name: { equals: "doubly-linked-list" } },
-  //   })
-  //   .then((res) => console.log(res));
+  const questionsMap = await getLeetcodeQuestions();
+  await updatePrismaQuestionsSummary(prisma, questionsMap);
+  prisma.questionSummary
+    .findFirst({
+      where: { titleSlug: { equals: "two-sum" } },
+      include: { topicTags: true },
+    })
+    .then((res) =>
+      console.log({ ...res, tags: res?.topicTags.map((v) => v.name) })
+    );
+  prisma.questionSummary
+    .findFirst({ include: { topicTags: true } })
+    .then((res) => console.log(res));
+  prisma.topicTag
+    .findMany({
+      where: {
+        AND: [
+          { name: { equals: "array" } },
+          { name: { equals: "hash-table" } },
+        ],
+      },
+      include: { questions: true, _count: true },
+    })
+    .then((res) => console.log(res));
+  prisma.topicTag
+    .findFirst({
+      include: { questions: true },
+      where: { name: { equals: "doubly-linked-list" } },
+    })
+    .then((res) => console.log(res));
 }
 
 main()
