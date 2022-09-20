@@ -25,6 +25,7 @@ export async function getExistingQuestionSummary(prisma: PrismaClient) {
   }
 
   for (const question of dbQuestions) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdAt, updatedAt, titleSlug, topicTags, ...info } = question;
     questionsMap[titleSlug] = {
       ...info,
@@ -86,19 +87,6 @@ export async function purgeStaleQuestionSummary(
   if (oldTitleSlugs.length == 0) {
     return;
   }
-
-  // ? Not needed as referentialIntegrity is enabled and
-  // ? allows cascading deletion/disconnects
-  // Disconnect relation
-  // for (const slug of oldTitleSlugs) {
-  //   await prisma.questionSummary.update({
-  //     where: { titleSlug: slug },
-  //     data: {
-  //       topicTags: { disconnect: [] },
-  //     },
-  //     include: { topicTags: true },
-  //   });
-  // }
 
   // Delete entry
   try {

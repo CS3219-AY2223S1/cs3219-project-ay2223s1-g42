@@ -56,24 +56,3 @@ model QuestionHint {
   QuestionContent   QuestionContent @relation(fields: [questionContentId], references: [id])
   questionContentId Int
 }
-
-// model QuestionContent {
-//   id                Int             @id @default(autoincrement())
-//   content           Bytes
-//   createdAt         DateTime        @default(now())
-//   updatedAt         DateTime        @updatedAt
-//   hints             QuestionHint[]
-//   titleSlug         String          @unique
-//   topicTags         TopicTag[]
-//   questionSummary   QuestionSummary @relation(fields: [questionSummaryId], references: [id])
-//   questionSummaryId Int             @unique
-
-//   @@index([titleSlug])
-// }
-
-// model QuestionHint {
-//   id                Int              @id @default(autoincrement())
-//   hint              Bytes
-//   QuestionContent   QuestionContent? @relation(fields: [questionContentId], references: [id])
-//   questionContentId Int?
-// }

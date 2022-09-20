@@ -64,7 +64,6 @@ export async function insertQuestionContent(
         },
       });
     }
-    console.timeLog("createMany");
   } catch (error) {
     logger.error(error);
   }
@@ -143,14 +142,3 @@ function normaliseLcQuestionContent(
   }
   return normalisedMap;
 }
-
-// (async () => {
-//   const prisma = new PrismaClient();
-//   const slugData = await prisma.questionSummary.findMany({});
-
-//   const slugs = slugData
-//     .filter((v) => v.paidOnly == false)
-//     .map((v) => v.titleSlug);
-
-//   const val = await getLcQuestionContent(slugs);
-// })();

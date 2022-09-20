@@ -7,6 +7,8 @@ export async function updateQuestionsSummary() {
   const prisma = new PrismaClient();
   try {
     await prisma.$connect();
+    await prisma.questionSummary.deleteMany({}).then((v) => console.log(v));
+    await prisma.topicTag.deleteMany({}).then((v) => console.log(v));
     await updatePrismaQuestionSummaries(prisma);
   } catch (error) {
     logger.error(error);
