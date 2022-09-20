@@ -1,4 +1,4 @@
-import { QuestionSummary } from "@prisma/client";
+import { QuestionHint, QuestionSummary } from "@prisma/client";
 
 export type QuestionSummaryType = {
   acRate: number;
@@ -33,5 +33,19 @@ export type NormalisedQuestionSummaryType = Omit<
   QuestionSummary,
   "createdAt" | "updatedAt" | "id"
 > & {
+  isDailyQuestion: boolean;
   topicTags: string[];
+};
+
+export type NormalisedQuestionContentType = {
+  content: Buffer;
+  hints: QuestionHint[];
+  titleSlug: string;
+};
+
+export type LeetcodeContentType = Omit<
+  NormalisedQuestionContentType,
+  "hints"
+> & {
+  hints: Buffer[];
 };
