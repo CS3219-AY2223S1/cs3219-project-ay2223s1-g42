@@ -3,8 +3,6 @@ import * as functions from "firebase-functions";
 import { updateQuestionsContent as contentEntry } from "./logic/questions-content.main";
 import { updateQuestionsSummary as summaryEntry } from "./logic/questions-summary.main";
 
-// process.env.DATABASE_URL = functions.config().prisma.db;
-
 export const updateQuestionsContentContent = functions
   .region("asia-southeast1")
   .runWith({ timeoutSeconds: 540, memory: "512MB", secrets: [] })

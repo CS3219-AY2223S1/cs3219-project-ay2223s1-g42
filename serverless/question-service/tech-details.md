@@ -29,6 +29,7 @@
 | `createdAt`        | `timestamp` | When the question was seeded                  |
 | `updatedAt`        | `timestamp` | When the question was last updated            |
 
+
 ##### Question Details
 
 | Column Name | Data Type   | Description                                |
@@ -38,6 +39,12 @@
 | `topicTags` | `string[]`  | Topics that are associated to the question |
 | `createdAt` | `timestamp` | When the question was seeded               |
 | `updatedAt` | `timestamp` | When the question was last updated         |
+
+> :exclamation:
+> Due to the limitations of MySQL, strings are up to `VARCHAR(155)`.
+> As such, `BYTES` are used which is `Buffer` in NodeJS.
+> Converting to Buffer -> Buffer.from(stringToBuffer);
+> Converting to String -> bufferVar.toString();
 
 #### GraphQL Queries
 
