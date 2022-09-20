@@ -36,21 +36,21 @@ export const updateQuestionsSummaryContent = functions
   });
 
 // ****** Test *****
-// export const test = functions
-//   .region("asia-southeast1")
-//   .runWith({ timeoutSeconds: 540 })
-//   .https.onRequest(async (_req, res) => {
-//     try {
-//       await summaryEntry()
-//         .then(() => functions.logger.log("summaries updated"))
-//         .catch(() => functions.logger.log("error detected"));
-//       await contentEntry()
-//         .then(() => functions.logger.log("content updated"))
-//         .catch(() => functions.logger.log("error detected"));
-//       res.send("updated successfully");
-//     } catch (error) {
-//       functions.logger.log(error);
-//     } finally {
-//       res.end();
-//     }
-//   });
+export const test = functions
+  .region("asia-southeast1")
+  .runWith({ timeoutSeconds: 540 })
+  .https.onRequest(async (_req, res) => {
+    try {
+      await summaryEntry()
+        .then(() => functions.logger.log("summaries updated"))
+        .catch(() => functions.logger.log("error detected"));
+      await contentEntry()
+        .then(() => functions.logger.log("content updated"))
+        .catch(() => functions.logger.log("error detected"));
+      res.send("updated successfully");
+    } catch (error) {
+      functions.logger.log(error);
+    } finally {
+      res.end();
+    }
+  });

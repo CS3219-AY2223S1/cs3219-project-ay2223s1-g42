@@ -22,7 +22,7 @@ export async function getExistingQuestionSummary(prisma: PrismaClient) {
   });
 
   if (isEmpty(dbQuestions)) {
-    logger.info("content database is empty");
+    logger.info("summary database is empty");
     return dbQuestions;
   }
 
