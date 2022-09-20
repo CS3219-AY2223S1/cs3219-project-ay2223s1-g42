@@ -16,7 +16,6 @@ import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
 import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
-import { Prisma } from "@prisma/client";
 
 export type JwtPayload = {
   sub: number;
@@ -281,7 +280,6 @@ export class AuthService {
         console.log(success);
       })
       .catch((err) => {
-        console.log(err);
         ThrowKnownPrismaErrors(err);
       });
   }
