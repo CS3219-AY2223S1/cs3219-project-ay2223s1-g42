@@ -5,8 +5,12 @@ import { updateQuestionsSummary as summaryEntry } from "./logic/questions-summar
 
 export const updateQuestionsContentContent = functions
   .region("asia-southeast1")
-  .runWith({ timeoutSeconds: 540, memory: "512MB", secrets: [] })
-  .pubsub.schedule("10 */1 * * *")
+  .runWith({
+    timeoutSeconds: 540,
+    memory: "512MB",
+    secrets: [],
+  })
+  .pubsub.schedule("5 */1 * * *")
   .onRun(async () => {
     try {
       contentEntry().then(() => functions.logger.log("contents updated"));
@@ -33,6 +37,7 @@ export const updateQuestionsSummaryContent = functions
 
 // ****** Test *****
 // export const test = functions
+//   .region("asia-southeast1")
 //   .runWith({ timeoutSeconds: 540 })
 //   .https.onRequest(async (_req, res) => {
 //     try {
@@ -42,8 +47,9 @@ export const updateQuestionsSummaryContent = functions
 //       await contentEntry()
 //         .then(() => functions.logger.log("content updated"))
 //         .catch(() => functions.logger.log("error detected"));
+//       res.send("updated successfully");
 //     } catch (error) {
-//       console.log(error);
+//       functions.logger.log(error);
 //     } finally {
 //       res.end();
 //     }

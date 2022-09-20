@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { logger } from "firebase-functions";
+import { isEmpty } from "lodash";
 
 import {
   ALL_QUESTIONS_QUERY,
@@ -20,8 +21,9 @@ export async function getExistingQuestionSummary(prisma: PrismaClient) {
     include: { topicTags: true },
   });
 
-  if (!dbQuestions) {
-    logger.info("database is empty");
+  if (isEmpty(dbQuestions)) {
+    logger.info("content database is empty");
+    return dbQuestions;
   }
 
   for (const question of dbQuestions) {

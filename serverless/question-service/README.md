@@ -2,7 +2,7 @@
 
 ## Installing
 
-Assuming that you have cloned the entire repository.
+Assuming that you have cloned the entire repository and you have `Docker` installed.
 
 ```bash
 
@@ -30,12 +30,18 @@ npm install -g firebase-tools
 # Login to Firebase 
 firebase login
 
+# Run the database locally and generate the schema
+yarn dev
+
 # Manually start a local functions emulator
 yarn serve
 
 # Ensure that the Test portion in "src/index.ts" has been un-commented.
 # The "test" block is triggered by HTTP request while the production blocks 
 # functions similarly to cron jobs.
+
+# Teardown, this removes all previous DB entries
+yarn dev:rm
 ```
 
 ## Secrets Manager

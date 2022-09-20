@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { logger } from "firebase-functions";
-import * as _ from "lodash";
+import { isEmpty } from "lodash";
 
 import {
   LeetcodeContentType,
@@ -21,8 +21,8 @@ export async function getExistingQuestionContents(prisma: PrismaClient) {
     include: { hints: true },
   });
 
-  if (_.isEmpty(dbQuestionContent)) {
-    logger.info("database is empty");
+  if (isEmpty(dbQuestionContent)) {
+    logger.info("content database is empty");
     return dbQuestionContent;
   }
 
@@ -119,7 +119,10 @@ async function getLcQuestionContent(titleSlugs: string[]) {
     });
   }
   await processConcurrently(getLcContentFuncs, 10);
-  console.log([titleSlugs.length, Object.keys(lcMap).length]);
+  logger.info([
+    { remaining: titleSlugs.length },
+    { resolved: Object.keys(lcMap).length },
+  ]);
   return normaliseLcQuestionContent(lcMap);
 }
 
