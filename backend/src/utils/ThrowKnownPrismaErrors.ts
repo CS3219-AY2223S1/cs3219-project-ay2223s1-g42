@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import {
   PrismaClientInitializationError,
-  PrismaClientKnownRequestError,
   PrismaClientRustPanicError,
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
