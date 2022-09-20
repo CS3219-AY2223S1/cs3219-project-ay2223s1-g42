@@ -16,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
@@ -40,12 +41,19 @@ export class AuthController {
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
+  })
+  @ApiCreatedResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
   })
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNUP_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
@@ -59,11 +67,14 @@ export class AuthController {
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: API_OPERATIONS.SIGN_IN_SUMMARY })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
+  })
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
   })
-  @ApiOkResponse({
-    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
+  @ApiForbiddenResponse({
+    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
@@ -105,6 +116,9 @@ export class AuthController {
   @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
+  })
+  @ApiUnauthorizedResponse({
+    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
@@ -163,6 +177,10 @@ export class AuthController {
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
   })
+  @ApiCreatedResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
+  })
   @ApiBadRequestResponse({
     description:
       API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
@@ -189,6 +207,10 @@ export class AuthController {
   @ApiOkResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_RESET_PASSWORD_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_TOKEN_DESCRIPTION,
   })
   @ApiBadRequestResponse({
     description:

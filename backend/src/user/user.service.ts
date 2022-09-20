@@ -95,7 +95,7 @@ export class UserService {
    * @returns [`Err`, `User`]
    */
   async findFirstByEitherUniqueFields(email: string, username: string) {
-    const res = await radash.try(this.prisma.user.findFirst)({
+    const res = await radash.try(this.prisma.user.findFirstOrThrow)({
       where: { OR: [{ username }, { email }] },
       select: USER_FIELDS,
     });
