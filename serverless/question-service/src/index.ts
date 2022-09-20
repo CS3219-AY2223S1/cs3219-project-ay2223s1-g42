@@ -7,7 +7,7 @@ import {
 const prisma = new PrismaClient();
 
 async function main() {
-  // const questionsMap = await getLeetcodeQuestions();
+  const questionsMap = await getLeetcodeQuestions();
   // await updatePrismaQuestionsSummary(prisma, questionsMap);
   // prisma.questionSummary
   //   .findFirst({
