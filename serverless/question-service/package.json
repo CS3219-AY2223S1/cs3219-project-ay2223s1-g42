@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "yarn clean && node esbuild.config.js",
-    "dev": "docker compose up -d && yarn prisma:dev:generate --name init",
+    "dev:init": "docker compose up --wait && sleep 10 && yarn prisma:dev:migrate",
     "dev:rm": "docker compose down",
     "serve": "yarn build && firebase emulators:start --only functions",
     "shell": "yarn build && firebase functions:shell",
