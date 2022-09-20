@@ -32,19 +32,19 @@ export const updateQuestionsSummaryContent = functions
   });
 
 // ****** Test *****
-// export const test = functions
-//   .runWith({ timeoutSeconds: 540 })
-//   .https.onRequest(async (_req, res) => {
-//     try {
-//       await summaryEntry()
-//         .then(() => functions.logger.log("summaries updated"))
-//         .catch(() => functions.logger.log("error detected"));
-//       await contentEntry()
-//         .then(() => functions.logger.log("content updated"))
-//         .catch(() => functions.logger.log("error detected"));
-//     } catch (error) {
-//       console.log(error);
-//     } finally {
-//       res.end();
-//     }
-//   });
+export const test = functions
+  .runWith({ timeoutSeconds: 540 })
+  .https.onRequest(async (_req, res) => {
+    try {
+      await summaryEntry()
+        .then(() => functions.logger.log("summaries updated"))
+        .catch(() => functions.logger.log("error detected"));
+      await contentEntry()
+        .then(() => functions.logger.log("content updated"))
+        .catch(() => functions.logger.log("error detected"));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      res.end();
+    }
+  });
