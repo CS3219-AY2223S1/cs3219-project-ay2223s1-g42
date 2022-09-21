@@ -58,12 +58,10 @@ export class AuthService {
     const { email, username, password } = credentials;
 
     // check if user's email and username in db
-    const [err, user] = await this.users.findFirstByEitherUniqueFields(
+    const [, user] = await this.users.findFirstByEitherUniqueFields(
       email,
       username
     );
-
-    ThrowKnownPrismaErrors(err);
 
     if (user) {
       if (user.email == email) {

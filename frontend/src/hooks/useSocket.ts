@@ -4,7 +4,6 @@ import Peer from "simple-peer";
 import create from "zustand";
 
 import { User } from "src/login";
-import { env } from "src/env/client.mjs";
 
 type QuestionDifficulty = "easy" | "medium" | "hard";
 
@@ -56,7 +55,7 @@ const SocketMutations = (
   setState: (values: Partial<SocketValues>) => void,
   getState: () => SocketValues
 ): SocketStore => {
-  const socket = io(`${env.NEXT_PUBLIC_WS_URL}/match`, {
+  const socket = io(`${import.meta.env.VITE_API_URL}/match`, {
     withCredentials: true,
     transports: ["websocket"],
     autoConnect: false,
