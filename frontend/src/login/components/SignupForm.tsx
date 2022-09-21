@@ -101,7 +101,7 @@ const SignupForm = () => {
             Sign up
           </PrimaryButton>
         </form>
-        <PrimaryLink className="self-center" href="/login">
+        <PrimaryLink className="self-center" to="/login">
           Sign in
         </PrimaryLink>
       </div>

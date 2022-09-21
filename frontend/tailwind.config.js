@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: [
+    "./*.html",
+    "./src/**/*.css",
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",

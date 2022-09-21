@@ -46,7 +46,7 @@ const ResetPasswordForm = ({ token }: Props) => {
       ) : resetPasswordMutation.isSuccess ? (
         <>
           <SuccessAlert title="Password reset successful!" />
-          <PrimaryLink href="/login">Sign in here</PrimaryLink>
+          <PrimaryLink to="/login">Sign in here</PrimaryLink>
         </>
       ) : (
         <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">

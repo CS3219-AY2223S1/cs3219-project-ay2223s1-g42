@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 
 import { PrimaryButton } from "../components/base";
@@ -6,7 +5,7 @@ import { Spinner } from "src/components/icons";
 import { PoolUser, useAuthStore, useSocketStore } from "src/hooks";
 import { MatchDialog, QuestionRadioGroup } from "src/dashboard/components";
 
-const Home: NextPage = () => {
+const Home = () => {
   // store states
   const user = useAuthStore((state) => state.user);
   const socket = useSocketStore((state) => state.socket);
@@ -31,7 +30,7 @@ const Home: NextPage = () => {
     if (user) {
       socket?.connect();
     }
-  }, [user]);
+  }, [socket, user]);
 
   if (!user) {
     return <Spinner className="h-12 w-12" />;

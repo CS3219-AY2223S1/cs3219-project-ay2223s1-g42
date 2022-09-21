@@ -1,14 +1,26 @@
-import { GetServerSideProps, NextPage } from "next";
-import Link from "next/link";
-
-import { PrimaryButton, PrimaryLink } from "src/components/base";
-import { env } from "src/env/client.mjs";
+import { useEffect, useState } from "react";
+import { PrimaryButton, PrimaryLink, BaseLink } from "src/components/base";
 import { ApiResponse } from "src/login";
 import { Axios } from "src/services/auth";
 
-const VerifyEmailPage: NextPage<ApiResponse> = ({ message }) => {
-  const isSuccess = message === "success";
-  console.log(message);
+type VerifyEmailPageProps = {
+  token: string;
+};
+
+const VerifyEmailPage = ({ token }: VerifyEmailPageProps) => {
+  const [verifyRes, setVerifyRes] = useState<{ message: string }>();
+
+  useEffect(() => {
+    const fetchVerify = async () => {
+      const res = await Axios.post<ApiResponse>(
+        `${import.meta.env.VITE_API_URL}/auth/verify/${token}`
+      ).then((resp) => resp.data);
+      setVerifyRes(res);
+    };
+    fetchVerify();
+  }, [token]);
+
+  const isSuccess = verifyRes?.message === "success";
   return (
     <div className="flex flex-col justify-center min-h-screen items-center">
       <div className="w-screen max-w-lg px-4 flex flex-col mb-12 text-center space-y-4">
@@ -17,40 +29,21 @@ const VerifyEmailPage: NextPage<ApiResponse> = ({ message }) => {
             <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
               Email verification is successful!
             </h4>
-            <PrimaryLink href="/">Return home</PrimaryLink>
+            <PrimaryLink to="/">Return home</PrimaryLink>
           </>
         ) : (
           <>
             <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
               Email verification failed! Please sign up again
             </h4>
-            <Link className="hover:border-b-neutral-400" href="/login">
+            <BaseLink className="hover:border-b-neutral-400" to="/login">
               <PrimaryButton type="submit">Sign up</PrimaryButton>
-            </Link>
+            </BaseLink>
           </>
         )}
       </div>
     </div>
   );
-};
-
-// This gets called on every request
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  // Fetch data from external API
-  const { token } = context.query;
-  console.log(token);
-  try {
-    const res = await Axios.post<ApiResponse>(
-      `${env.NEXT_PUBLIC_API_URL}/auth/verify/${token}`
-    ).then((resp) => resp.data);
-    // Pass data to the page via props
-    console.log(res);
-
-    return { props: res };
-  } catch (error) {
-    console.log(error);
-    return { props: { message: "failure" } };
-  }
 };
 
 export default VerifyEmailPage;

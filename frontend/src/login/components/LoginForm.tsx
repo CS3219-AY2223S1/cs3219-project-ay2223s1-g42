@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
 import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
 import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
@@ -11,15 +11,15 @@ import { LightLink, PrimaryLink } from "src/components/base/link";
 import { useAuthStore } from "src/hooks";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   // sign in mutations
   const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
   const signinMutation = useSignInMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(["me"]);
-      router.push("/");
+      navigate("/");
     },
   });
 
@@ -87,14 +87,14 @@ const LoginForm = () => {
               {...register("password", { required: true })}
             />
             <div className="flex flex-row-reverse">
-              <LightLink href="/forget-password">Forget password?</LightLink>
+              <LightLink to="/forget-password">Forget password?</LightLink>
             </div>
           </div>
           <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
             Sign in
           </PrimaryButton>
         </form>
-        <PrimaryLink className="self-center" href="/signup">
+        <PrimaryLink className="self-center" to="/signup">
           Sign up
         </PrimaryLink>
       </>
