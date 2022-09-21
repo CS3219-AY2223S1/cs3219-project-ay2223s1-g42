@@ -17,7 +17,7 @@ export function PrimaryDialog({
   return (
     <BaseDialog isOpen={isOpen} onClose={onClose}>
       <Dialog.Panel
-        className="w-full max-w-md transform overflow-hidden bg-neutral-50 p-4
+        className="w-full max-w-md transform overflow-hidden bg-neutral-100 p-4
         text-left align-middle transition-all border-[1px] border-neutral-900"
       >
         <Dialog.Title

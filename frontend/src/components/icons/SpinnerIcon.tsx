@@ -1,6 +1,4 @@
-type Props = {
-  className?: string;
-};
+import { Props } from "./types";
 
 const Spinner = ({ className }: Props) => {
   return (

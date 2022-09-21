@@ -8,7 +8,7 @@ export enum ScrollDir {
   DOWN = "down",
 }
 
-export function useScrollDirection() {
+const useScrollDirection = () => {
   const [scrollDir, setScrollDir] = useState<ScrollDir>(ScrollDir.NONE);
 
   useEffect(() => {
@@ -45,4 +45,6 @@ export function useScrollDirection() {
   }, [scrollDir]);
 
   return scrollDir;
-}
+};
+
+export { useScrollDirection };

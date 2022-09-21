@@ -21,11 +21,11 @@ const queryClient = new QueryClient({
 const App = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!user) {
-      navigate(`/login`);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!user) {
+  //     navigate(`/login`);
+  //   }
+  // }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<Loading />}>

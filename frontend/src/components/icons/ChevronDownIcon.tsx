@@ -1,6 +1,6 @@
 import { Props } from "./types";
 
-const CheckIcon = ({ className }: Props) => {
+const ChevronDownIcon = ({ className }: Props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +13,10 @@ const CheckIcon = ({ className }: Props) => {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M4.5 12.75l6 6 9-13.5"
+        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
       />
     </svg>
   );
 };
 
-export { CheckIcon };
+export { ChevronDownIcon };

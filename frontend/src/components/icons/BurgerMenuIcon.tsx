@@ -1,11 +1,9 @@
-type Props = {
-  className?: string;
-};
+import { Props } from "./types";
 
-const BurgerMenuIcon = (props: Props) => {
+const BurgerMenuIcon = ({ className }: Props) => {
   return (
     <svg
-      className={props.className}
+      className={className}
       aria-hidden="true"
       fill="currentColor"
       viewBox="0 0 20 20"

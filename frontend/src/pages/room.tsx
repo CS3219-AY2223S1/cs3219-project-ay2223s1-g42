@@ -1,9 +1,17 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import * as Y from "yjs";
 import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
+import { BaseTabs } from "src/components/base/tabs/base";
+import { BaseListbox } from "src/components/base/listbox/base";
+
+const tabValues: Record<string, ReactNode> = {
+  Description: <>{"Question description here!!!"}</>,
+  Solution: <>{"Question solution here!!!"}</>,
+  Submissions: <>{"Question submissions here!!!"}</>,
+};
 
 const RoomPage = (): JSX.Element => {
   const [doc, setDoc] = useState<Y.Doc | null>(null);
@@ -116,35 +124,42 @@ const RoomPage = (): JSX.Element => {
   }
 
   return (
-    <div>
-      App
-      <div style={{ color: "white" }}>
+    <div className="flex flex-col md:flex-row gap-3 w-full h-full px-3 py-2">
+      <div className="w-full h-full border-[1px] border-neutral-800">
+        <BaseTabs values={tabValues} />
+        {/* App
         <p>State: {connected ? "Connected" : "Disconneted"}</p>
-        {!connected ? (
+        {!connected && (
           <>
-            <button onClick={() => provider.connect()}>Connect</button>
+            <button
+              onClick={() => {
+                provider.connect();
+                console.log("clicked connect");
+              }}
+            >
+              Connect
+            </button>
+          </>
+        )}
+        <pre>{JSON.stringify(clients, null, 4)}</pre> */}
+      </div>
+
+      <div className="flex flex-col w-full h-full border-neutral-900 border-[1px]">
+        <BaseListbox />
+        {!!doc ? (
+          <>
+            <Editor
+              // height="auto"
+              defaultLanguage="typescript"
+              value={input}
+              theme="vs-dark"
+              className="w-full"
+              // onChange={handleEditorChange}
+              onMount={handleEditorDidMount}
+            />
           </>
         ) : (
-          !!doc && (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <pre>{JSON.stringify(clients, null, 4)}</pre>
-              <Editor
-                height="20vh"
-                defaultLanguage="typescript"
-                value={input}
-                // onChange={handleEditorChange}
-                onMount={handleEditorDidMount}
-              />
-              <br />
-              <button
-                onClick={() =>
-                  doc.getMap("data").set("input", `${Math.random()}`)
-                }
-              >
-                Emit random change
-              </button>
-            </div>
-          )
+          <></>
         )}
       </div>
     </div>

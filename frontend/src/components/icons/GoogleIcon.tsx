@@ -1,10 +1,8 @@
-type Props = {
-  className?: string;
-};
+import { Props } from "./types";
 
-export function GoogleIcon(props: Props) {
+const GoogleIcon = ({ className }: Props) => {
   return (
-    <svg className={props.className} viewBox="0 0 24 24" width="24" height="24">
+    <svg className={className} viewBox="0 0 24 24" width="24" height="24">
       <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
         <path
           fill="#4285F4"
@@ -25,4 +23,6 @@ export function GoogleIcon(props: Props) {
       </g>
     </svg>
   );
-}
+};
+
+export { GoogleIcon };

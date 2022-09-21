@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { PrimaryButton } from "../components/base";
+import { PrimaryButton } from "src/components/base";
 import { Spinner } from "src/components/icons";
 import { PoolUser, useAuthStore, useSocketStore } from "src/hooks";
 import { MatchDialog, QuestionRadioGroup } from "src/dashboard/components";

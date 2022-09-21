@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import cx from "classnames";
 
-import { CheckIcon } from "src/components/icons/CheckIcon";
+import { CheckIconFilled } from "src/components";
 
 const difficulties = [
   {
@@ -73,7 +73,11 @@ export function QuestionRadioGroup() {
                   </RadioGroup.Description>
                 </div>
                 <div className="shrink-0 text-neutral-50 h-10 w-10 ml-12 mr-4">
-                  {checked ? <CheckIcon className="w-full h-full" /> : <></>}
+                  {checked ? (
+                    <CheckIconFilled className="w-full h-full" />
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
             </>

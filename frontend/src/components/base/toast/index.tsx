@@ -69,7 +69,7 @@ const Toast = () => {
               <div className="h-0 flex-1 flex">
                 <ToastPrimitive.Close
                   className="w-full border border-transparent px-3 py-2 flex items-center
-                  justify-center text-sm font-medium text-neutral-600 hover:bg-neutral-200
+                  justify-center text-sm font-medium text-neutral-600 hover:bg-neutral-50
                   hover:text-neutral-800 focus:z-10 focus:outline-none focus-visible:ring
                   focus-visible:ring-neutral-800 focus-visible:ring-opacity-75 duration-200
                   ease-out"
