@@ -72,7 +72,7 @@ const ResetPasswordForm = ({ token }: Props) => {
           type="submit"
           isLoading={resetPasswordMutation.isLoading}
         >
-          Reset password
+          Reset Password
         </PrimaryButton>
       </form>
     </div>
