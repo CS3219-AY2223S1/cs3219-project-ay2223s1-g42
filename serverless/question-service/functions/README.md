@@ -109,6 +109,21 @@ firebase functions:secrets:destroy SECRET_NAME
 firebase functions:secrets:prune
 ```
 
+## Deployment
+
+To deploy the Cloud Functions, you can run the following commands
+
+```bash
+# Deploy all functions
+yarn deploy
+
+# Deploy only specified functions
+firebase deploy --only functions:SPECIFIC_FUNCTION
+
+# Example
+# firebase deploy --only functions:updateQuestionsContent
+```
+
 ## Troubleshooting
 
 1. `question-service` works locally, but does not run when deployed
