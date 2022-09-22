@@ -3,16 +3,18 @@
 ### Functional Requirements
 
 1. Matched users should be served the same question based on their matching criteria.
-2. System should index questions by difficulty and topic
-3. Users should be able to see the details of the question at a glance
+2. System should be able to get questions by difficulty and topic.
+3. Users should be able to see the details of the question at a glance.
 
 ### Non-functional Requirements
 
-1. Load time should be proportional to the amount of questions but should be <= 3 seconds.
+1. Questions, summary and details, should be served to users within 3 seconds.
 
 ### Detailed Design
 
 #### Schemas
+
+This is based of what LeetCode returns, for the actual schema that was applied, refer to `prisma/schema.prisma` which also covers the relations.
 
 ##### Question List Summary
 
@@ -122,7 +124,7 @@ query getQuestionDetail($titleSlug: String!) {
 
 ### Progress
 
-- [ ] Backend CRUD
-- [ ] Google Cloud Functions scheduling
+- [x] Serverless function CRUD
+- [x] Serverless function scheduling
+- [ ] Backend
 - [ ] Frontend
-- [ ] TO ADD ON MORE

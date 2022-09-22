@@ -1,11 +1,5 @@
 {
   "functions": {
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "*.env*"
-    ]
+    "ignore": ["*.env*", ".git", "node_modules", "*.log"]
   }
 }
