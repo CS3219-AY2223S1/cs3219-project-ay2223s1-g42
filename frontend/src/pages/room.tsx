@@ -119,8 +119,8 @@ const RoomPage = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 w-full h-full p-3">
-      <div className="w-full h-full border-[1px] border-neutral-800">
+    <div className="flex flex-col lg:flex-row gap-3 w-full h-full p-3">
+      <div className="w-full h-full max-h-full border-[1px] border-neutral-800">
         <RoomTabs />
         {/* App
         <p>State: {connected ? "Connected" : "Disconneted"}</p>
@@ -139,7 +139,7 @@ const RoomPage = (): JSX.Element => {
         <pre>{JSON.stringify(clients, null, 4)}</pre> */}
       </div>
 
-      <div className="flex flex-col w-full h-full border-neutral-900 border-[1px]">
+      <div className="flex flex-col w-full h-full border-neutral-900 border-[1px] bg-blue-500">
         <BaseListbox />
         {!!doc ? (
           <>

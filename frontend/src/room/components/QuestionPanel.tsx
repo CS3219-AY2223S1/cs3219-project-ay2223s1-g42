@@ -30,11 +30,11 @@ const QuestionPanel = () => {
   const rawHtmlContent = QUESTION_DATA.data.question.content;
   const cleanHtmlContent = sanitizeHtml(rawHtmlContent);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col h-full lg:max-w-[50vw]">
       <div>{parse(cleanHtmlContent)}</div>
       <div>{parse(cleanHtmlContent)}</div>
       <div>{parse(cleanHtmlContent)}</div>
-      <div>Hints</div>
+      <div>HELLO</div>
     </div>
   );
 };
