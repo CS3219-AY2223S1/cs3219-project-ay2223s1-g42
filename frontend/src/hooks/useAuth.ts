@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import create from "zustand";
 
-import { Axios } from "src/services/auth";
+import { Axios } from "src/services";
 import {
   User,
   ApiResponse,
@@ -44,7 +44,7 @@ type AuthStore = {
   ) => UseMutationResult<ApiResponse, unknown, ResetPasswordInfo, unknown>;
 };
 
-const AuthMutations = (
+const AuthStoreValues = (
   setState: ({ user }: { user: User | undefined }) => void
 ) => {
   const useGetMe = (options?: Options) => {
@@ -169,4 +169,4 @@ const AuthMutations = (
   };
 };
 
-export const useAuthStore = create<AuthStore>(AuthMutations);
+export const useAuthStore = create<AuthStore>(AuthStoreValues);

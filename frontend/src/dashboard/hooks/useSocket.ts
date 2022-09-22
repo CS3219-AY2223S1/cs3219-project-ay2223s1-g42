@@ -51,7 +51,7 @@ type SocketValues = Omit<
   "answerCall" | "callUser" | "leaveCall" | "sendChat"
 >;
 
-const SocketMutations = (
+const SocketStoreValues = (
   setState: (values: Partial<SocketValues>) => void,
   getState: () => SocketValues
 ): SocketStore => {
@@ -187,4 +187,4 @@ const SocketMutations = (
   };
 };
 
-export const useSocketStore = create<SocketStore>(SocketMutations);
+export const useSocketStore = create<SocketStore>(SocketStoreValues);

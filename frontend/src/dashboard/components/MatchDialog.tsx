@@ -1,6 +1,7 @@
 import { PrimaryButton, RedButton } from "src/components/base";
 import { PrimaryDialog } from "src/components/base/dialog";
-import { useAuthStore, useSocketStore } from "src/hooks";
+import { useAuthStore } from "src/hooks";
+import { useSocketStore } from "../hooks";
 
 type Props = {
   isOpen: boolean;

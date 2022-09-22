@@ -1,6 +1,6 @@
 import { Props } from "./types";
 
-const Spinner = ({ className }: Props) => {
+const SpinnerIcon = ({ className }: Props) => {
   return (
     <svg
       version="1.1"
@@ -30,4 +30,4 @@ const Spinner = ({ className }: Props) => {
   );
 };
 
-export { Spinner };
+export { SpinnerIcon };

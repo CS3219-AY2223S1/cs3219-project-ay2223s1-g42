@@ -4,14 +4,9 @@ import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { BaseTabs } from "src/components/base/tabs/base";
-import { BaseListbox } from "src/components/base/listbox/base";
 
-const tabValues: Record<string, ReactNode> = {
-  Description: <>{"Question description here!!!"}</>,
-  Solution: <>{"Question solution here!!!"}</>,
-  Submissions: <>{"Question submissions here!!!"}</>,
-};
+import { BaseDropdown, BaseListbox } from "src/components";
+import { RoomTabs } from "src/room";
 
 const RoomPage = (): JSX.Element => {
   const [doc, setDoc] = useState<Y.Doc | null>(null);
@@ -126,7 +121,7 @@ const RoomPage = (): JSX.Element => {
   return (
     <div className="flex flex-col md:flex-row gap-3 w-full h-full px-3 py-2">
       <div className="w-full h-full border-[1px] border-neutral-800">
-        <BaseTabs values={tabValues} />
+        <RoomTabs />
         {/* App
         <p>State: {connected ? "Connected" : "Disconneted"}</p>
         {!connected && (

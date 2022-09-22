@@ -2,21 +2,20 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { GoogleIcon } from "src/components/icons";
+import {
+  BlueButton,
+  TextInput,
+  PrimaryButton,
+  ErrorAlert,
+  GoogleIcon,
+  PrimaryLink,
+  SuccessAlert,
+} from "src/components";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
-import { PrimaryLink } from "src/components/base/link";
 import { useAuthStore } from "src/hooks";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
-
-  // sign in mutations
-  const useSignUpMutation = useAuthStore((state) => state.useSignupMutation);
-  const signupMutation = useSignUpMutation({
-    onSuccess: () => queryClient.invalidateQueries(["me"]),
-  });
 
   // form setup
   const {
@@ -28,15 +27,23 @@ const SignupForm = () => {
     resolver: zodResolver(SignupCredentialsSchema),
   });
 
+  // sign in mutations
+  const useSignUpMutation = useAuthStore((state) => state.useSignupMutation);
+  const signupMutation = useSignUpMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
+      reset();
+    },
+  });
+
   // submit function
   const handleSignup = async (credentials: SignUpCredentials) => {
     signupMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleSignup);
 
   return (
-    <>
+    <div>
       {signupMutation.isError ? (
         <ErrorAlert
           title={"Sign up failed!"}
@@ -105,7 +112,7 @@ const SignupForm = () => {
           Sign in
         </PrimaryLink>
       </div>
-    </>
+    </div>
   );
 };
 

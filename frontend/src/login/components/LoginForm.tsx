@@ -3,25 +3,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
-import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { GoogleIcon } from "src/components/icons";
-import { SignInCredentials, SigninCredentialsSchema } from "../types";
-import { LightLink, PrimaryLink } from "src/components/base/link";
+import {
+  ErrorAlert,
+  SuccessAlert,
+  BlueButton,
+  GoogleIcon,
+  TextInput,
+  LightLink,
+  PrimaryButton,
+  PrimaryLink,
+} from "src/components";
 import { useAuthStore } from "src/hooks";
+import { SignInCredentials, SigninCredentialsSchema } from "../types";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  // sign in mutations
-  const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
-  const signinMutation = useSignInMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
-      navigate("/");
-    },
-  });
 
   // form setup
   const {
@@ -33,15 +30,24 @@ const LoginForm = () => {
     resolver: zodResolver(SigninCredentialsSchema),
   });
 
+  // sign in mutations
+  const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
+  const signinMutation = useSignInMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
+      reset();
+      navigate("/");
+    },
+  });
+
   // submit function
   const handleSignin = async (credentials: SignInCredentials) => {
     signinMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleSignin);
 
   return (
-    <>
+    <div>
       {signinMutation.isError ? (
         <ErrorAlert
           title={"Login failed!"}
@@ -52,7 +58,7 @@ const LoginForm = () => {
       ) : (
         <></>
       )}
-      <>
+      <div>
         <BlueButton className="relative w-full flex items-center justify-center">
           <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
             <GoogleIcon className="h-5 w-5" />
@@ -97,8 +103,8 @@ const LoginForm = () => {
         <PrimaryLink className="self-center" to="/signup">
           Sign up
         </PrimaryLink>
-      </>
-    </>
+      </div>
+    </div>
   );
 };
 

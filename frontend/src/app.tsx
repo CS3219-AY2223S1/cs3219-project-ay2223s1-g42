@@ -9,9 +9,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./styles/globals.css";
 import routes from "~react-pages";
-import AppLayout from "./components/layout/AppLayout";
 import { useAuthStore } from "./hooks";
-import Loading from "./components/layout/Loading";
+import { LoadingLayout, AppLayout } from "./components";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -28,7 +27,7 @@ const App = () => {
   // }, []);
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<LoadingLayout />}>
         <AppLayout>{useRoutes(routes)}</AppLayout>
       </Suspense>
       <ReactQueryDevtools initialIsOpen={false} />

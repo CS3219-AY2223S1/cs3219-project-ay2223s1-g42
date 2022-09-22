@@ -16,6 +16,7 @@ const BaseTabs = ({ values }: BaseProp) => {
             className={({ selected }) =>
               cx(
                 "w-full py-2.5 text-sm font-medium leading-5 border-b-[1px] border-b-neutral-900",
+                "focus:outline-none rounded-none",
                 {
                   "bg-neutral-800 text-neutral-50": selected,
                   "text-neutral-800 hover:bg-neutral-300 bg-white": !selected,

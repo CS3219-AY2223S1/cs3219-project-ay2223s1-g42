@@ -1,49 +1,52 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 
-import { PrimaryButton, PrimaryLink, BaseLink } from "src/components/base";
+import { PrimaryButton, LoadingLayout } from "src/components";
 import { ApiResponse } from "src/login";
-import { Axios } from "src/services/auth";
+import { Axios } from "src/services";
 
-type VerifyEmailPageProps = {
-  token: string;
-};
+const VerifyEmailPage = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [verifyRes, setVerifyRes] = useState<string>("");
+  const navigate = useNavigate();
+  const { token } = useParams();
 
-const VerifyEmailPage = ({ token }: VerifyEmailPageProps) => {
-  const [verifyRes, setVerifyRes] = useState<{ message: string }>();
+  const isSuccess = verifyRes === "success";
 
   useEffect(() => {
     const fetchVerify = async () => {
-      const res = await Axios.post<ApiResponse>(
-        `${import.meta.env.VITE_API_URL}/auth/verify/${token}`
-      ).then((resp) => resp.data);
-      setVerifyRes(res);
+      try {
+        const res = await Axios.post<ApiResponse>(
+          `${import.meta.env.VITE_API_URL}/auth/verify/${token}`
+        ).then((resp) => resp.data);
+        setVerifyRes(res.message);
+      } catch (e) {
+        console.error(e);
+      }
+      setLoading(false);
     };
     fetchVerify();
   }, [token]);
 
-  const isSuccess = verifyRes?.message === "success";
   return (
-    <div className="flex flex-col justify-center min-h-screen items-center">
-      <div className="w-screen max-w-lg px-4 flex flex-col mb-12 text-center space-y-4">
-        {isSuccess ? (
-          <>
-            <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
-              Email verification is successful!
-            </h4>
-            <PrimaryLink to="/">Return home</PrimaryLink>
-          </>
-        ) : (
-          <>
-            <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-left">
-              Email verification failed! Please sign up again
-            </h4>
-            <BaseLink className="hover:border-b-neutral-400" to="/login">
-              <PrimaryButton type="submit">Sign up</PrimaryButton>
-            </BaseLink>
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      {loading ? (
+        <LoadingLayout />
+      ) : (
+        <div className="px-4 flex flex-col text-center gap-8">
+          <h4 className="font-display font-bold leading-tight text-xl text-neutral-800">
+            {isSuccess
+              ? "Email verification is successful!"
+              : "Email verification failed! Please sign up again"}
+          </h4>
+          <PrimaryButton
+            onClick={() => (isSuccess ? navigate("/") : navigate("/signup"))}
+          >
+            {isSuccess ? "Log in" : "Sign up"}
+          </PrimaryButton>
+        </div>
+      )}
+    </>
   );
 };
 

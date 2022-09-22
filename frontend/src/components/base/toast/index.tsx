@@ -56,7 +56,7 @@ const Toast = () => {
                   className="w-full border-[1px] border-neutral-900 px-3 py-2 flex items-center
                   justify-center text-sm font-medium text-neutral-600 hover:bg-neutral-900
                   hover:text-neutral-50 focus:z-10 focus:outline-none focus-visible:ring
-                  focus-visible:ring-neutral-800 focus-visible:ring-opacity-75 duration-200
+                  focus-visible:ring-neutral-800 focus-visible:ring-opacity-75 duration-300
                   ease-out "
                   onClick={(e) => {
                     e.preventDefault();

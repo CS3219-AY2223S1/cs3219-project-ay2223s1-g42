@@ -37,7 +37,7 @@ export function QuestionRadioGroup() {
           value={difficulty}
           className={({ checked }) =>
             cx(
-              "relative flex cursor-pointer font-sans font-medium transition duration-100",
+              "relative flex cursor-pointer font-sans font-medium transition duration-300",
               "p-4 ease-out border-[1px] border-neutral-900 justify-center items-center",
               {
                 "bg-neutral-900": checked,

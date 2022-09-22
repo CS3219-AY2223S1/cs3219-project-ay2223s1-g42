@@ -1,13 +1,14 @@
 import { useLocation } from "react-router";
+
 import { useAuthStore } from "src/hooks";
-import { Container } from "./container";
-import { TheNavbar } from "./navbar";
+import { Container } from "./Container";
+import { TheNavbar } from "./TheNavbar";
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default function AppLayout({ children }: Props) {
+const AppLayout = ({ children }: Props) => {
   // fetch me query
   const user = useAuthStore((state) => state.user);
   const useGetMe = useAuthStore((state) => state.useGetMe);
@@ -28,7 +29,7 @@ export default function AppLayout({ children }: Props) {
   }
 
   // layout for authenticated pages
-  if (user) {
+  if (user && !pathname.includes("verify") && !pathname.includes("reset")) {
     return (
       <div className="justify-between h-[10000px] min-h-screen bg-neutral-100">
         <TheNavbar />
@@ -39,4 +40,6 @@ export default function AppLayout({ children }: Props) {
 
   // layout for public pages
   return <Container>{children}</Container>;
-}
+};
+
+export { AppLayout };

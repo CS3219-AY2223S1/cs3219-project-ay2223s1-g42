@@ -1,23 +1,21 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
-import { PrimaryButton, TextInput } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { PrimaryLink } from "src/components/base/link";
+import {
+  ErrorAlert,
+  SuccessAlert,
+  PrimaryLink,
+  TextInput,
+  PrimaryButton,
+} from "src/components";
 import { useAuthStore } from "src/hooks";
+import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
 
 type Props = {
   token: string;
 };
 
 const ResetPasswordForm = ({ token }: Props) => {
-  // forget password mutation
-  const useResetPasswordMutation = useAuthStore(
-    (state) => state.useResetPasswordMutation
-  );
-  const resetPasswordMutation = useResetPasswordMutation();
-
   // form setup
   const {
     register,
@@ -28,16 +26,23 @@ const ResetPasswordForm = ({ token }: Props) => {
     resolver: zodResolver(ResetPasswordInfoSchema),
   });
 
+  // forget password mutation
+  const useResetPasswordMutation = useAuthStore(
+    (state) => state.useResetPasswordMutation
+  );
+  const resetPasswordMutation = useResetPasswordMutation({
+    onSuccess: reset,
+  });
+
   // submit function
   const handleResetPassword = async (credentials: ResetPasswordInfo) => {
     const resetData = { ...credentials, token };
     resetPasswordMutation.mutate(resetData);
-    reset();
   };
   const onSubmit = handleSubmit(handleResetPassword);
 
   return (
-    <>
+    <div>
       {resetPasswordMutation.isError ? (
         <ErrorAlert
           title={"Password reset failed!"}
@@ -46,10 +51,9 @@ const ResetPasswordForm = ({ token }: Props) => {
       ) : resetPasswordMutation.isSuccess ? (
         <>
           <SuccessAlert title="Password reset successful!" />
-          <PrimaryLink to="/login">Sign in here</PrimaryLink>
         </>
       ) : (
-        <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">
+        <h4 className="leading-tight text-neutral-800 flex flex-col text-center mb-4">
           Please enter your new password
         </h4>
       )}
@@ -71,7 +75,7 @@ const ResetPasswordForm = ({ token }: Props) => {
           Reset password
         </PrimaryButton>
       </form>
-    </>
+    </div>
   );
 };
 

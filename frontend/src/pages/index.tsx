@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 
-import { PrimaryButton } from "src/components/base";
-import { Spinner } from "src/components/icons";
-import { PoolUser, useAuthStore, useSocketStore } from "src/hooks";
-import { MatchDialog, QuestionRadioGroup } from "src/dashboard/components";
+import { PrimaryButton, SpinnerIcon } from "src/components";
+import { useAuthStore } from "src/hooks";
+import {
+  useSocketStore,
+  PoolUser,
+  MatchDialog,
+  QuestionRadioGroup,
+} from "src/dashboard";
 
-const Home = () => {
+const Dashboard = () => {
   // store states
   const user = useAuthStore((state) => state.user);
   const socket = useSocketStore((state) => state.socket);
@@ -33,7 +37,7 @@ const Home = () => {
   }, [socket, user]);
 
   if (!user) {
-    return <Spinner className="h-12 w-12" />;
+    return <SpinnerIcon className="h-12 w-12" />;
   }
   return (
     <div className="m-auto space-y-10">
@@ -52,4 +56,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Dashboard;
