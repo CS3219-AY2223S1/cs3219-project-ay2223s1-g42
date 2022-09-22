@@ -29,14 +29,30 @@ export class DocumentGateway implements OnGatewayInit {
       // gcEnabled: true,
     });
 
-    this.ySocketIO.on("document-loaded", (doc: Document) => {
+    this.ySocketIO.on("document-loaded", async (doc: Document) => {
       const roomId = doc.name;
-
-      console.log(`The document ${doc.name} was loaded`);
+      const [err, delta] = await this.documentService.getDocumentDeltaFromId(
+        roomId
+      );
+      if (err) {
+        console.error("error loading document: ", err);
+      }
+      doc.getText().applyDelta(delta);
     });
-    // this.ySocketIO.on("document-update", (doc: Document, update: Uint8Array) =>
-    //   console.log(`The document ${doc.name} is updated`)
-    // );
+
+    this.ySocketIO.on(
+      "document-update",
+      async (doc: Document, update: Uint8Array) => {
+        console.log("update: ", { doc, update });
+        const [err] = await this.documentService.saveRoomDocument(
+          doc.name,
+          doc
+        );
+        if (err) {
+          console.error("error saving document: ", err);
+        }
+      }
+    );
     // ysocketio.on('awareness-update', (doc: Document, update: Uint8Array) => console.log(`The awareness of the document ${doc.name} is updated`))
     // ysocketio.on('document-destroy', async (doc: Document) => console.log(`The document ${doc.name} is being destroyed`))
     // ysocketio.on('all-document-connections-closed', async (doc: Document) => console.log(`All clients of document ${doc.name} are disconected`))

@@ -69,8 +69,9 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // try to match user with another user from queue,
     // create room if successful otherwise add user to queue
-    const [matchedRoomErr, matchedRoom] =
-      await this.matchService.handleJoinMatchQueue(poolUser);
+    const [matchedRoomErr, matchedRoom] = await tryit(
+      this.matchService.handleJoinMatchQueue
+    )(poolUser);
 
     // emit error if error occurred
     if (matchedRoomErr) {

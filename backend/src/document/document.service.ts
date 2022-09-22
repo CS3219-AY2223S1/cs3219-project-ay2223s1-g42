@@ -9,15 +9,15 @@ import { Document } from "y-socket.io/dist/server";
 export class DocumentService {
   constructor(private cache: RedisCacheService) {}
 
-  async getDocumentFromId(id: string) {
-    const res = await tryit(this.cache.getKeyInNamespace)(
+  async getDocumentDeltaFromId(id: string) {
+    const res = await tryit(this.cache.getKeyInNamespace<any>)(
       [NAMESPACES.DOCUMENT],
       id
     );
     return res;
   }
 
-  async createRoomDocument(roomId: string, document: Document) {
+  async saveRoomDocument(roomId: string, document: Document) {
     const rawDelta = document.getText().toDelta();
     const res = await tryit(this.cache.setKeyInNamespace)(
       [NAMESPACES.DOCUMENT],

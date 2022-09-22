@@ -53,7 +53,10 @@ export class MatchService {
       );
 
       // create room and store all users as room users
-      const newRoom = await this.roomService.createRoom([user, matchedUser]);
+      const [, newRoom] = await this.roomService.createRoom([
+        user,
+        matchedUser,
+      ]);
 
       // remove all users from match queues
       const disconnectAllUsers = newRoom.users.map(
