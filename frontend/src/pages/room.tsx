@@ -119,7 +119,7 @@ const RoomPage = (): JSX.Element => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 w-full h-full px-3 py-2">
+    <div className="flex flex-col md:flex-row gap-3 w-full h-full p-3">
       <div className="w-full h-full border-[1px] border-neutral-800">
         <RoomTabs />
         {/* App

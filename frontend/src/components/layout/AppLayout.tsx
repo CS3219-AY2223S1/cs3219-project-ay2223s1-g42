@@ -21,9 +21,9 @@ const AppLayout = ({ children }: Props) => {
   // layout for room page
   if (user && pathname.startsWith("/room")) {
     return (
-      <div className="justify-between min-h-screen h-screen md:max-h-screen bg-neutral-100">
+      <div className="justify-between h-screen bg-red-500">
         <TheNavbar />
-        <div className="pt-[76px] md:pt-[72px] h-full">{children}</div>
+        <div className="mt-[76px] md:mt-[72px] h-full">{children}</div>
       </div>
     );
   }

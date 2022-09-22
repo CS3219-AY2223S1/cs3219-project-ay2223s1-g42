@@ -28,9 +28,12 @@ const BaseTabs = ({ values }: BaseProp) => {
           </Tab>
         ))}
       </Tab.List>
-      <Tab.Panels className="h-full w-full">
+      <Tab.Panels className="w-full">
         {Object.values(values).map((value, i) => (
-          <Tab.Panel key={i} className={cx("bg-neutral-100 p-3")}>
+          <Tab.Panel
+            key={i}
+            className={cx("bg-green-100 p-3 overflow-scroll h-full")}
+          >
             {value}
           </Tab.Panel>
         ))}
