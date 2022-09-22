@@ -1,39 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
 
 generator zod {
-  provider = "nestjs-zod-prisma"
-  output   = "../src/zod" // (default) the directory where generated zod schemas will be saved
-
-  relationModel = true // (default) Create and export both plain and related models.
-  // relationModel         = "default" // Do not export model without relations.
-  // relationModel            = false // Do not generate related model
-
-  generateDto = true // (default) Generate DTOs for NestJS
-
-  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
-  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
-
-  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
-
-  dtoCase = "PascalCase" // (default) Output DTOs using pascal case (ex. UserDto, PostDto)
-  // dtoCase             = "camelCase" // Output DTOs using camel case (ex. userDto, postDto)
-
-  dtoSuffix = "Dto" // (default) Suffix to apply to your prisma models when naming DTOs
-
-  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
-  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
-
-  imports = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
-
-  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
-  prismaJsonNullability = true // (default) uses prisma's scheme for JSON field nullability
-  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+  provider              = "nestjs-zod-prisma"
+  output                = "../src/zod"
+  modelCase             = "PascalCase"
+  dtoCase               = "PascalCase"
+  modelSuffix           = "Model"
+  useDecimalJs          = "true"
+  imports               = "null"
+  relationModel         = "true"
+  generateDto           = "true"
+  dtoSuffix             = "Dto"
+  prismaJsonNullability = "true"
 }
 
 datasource db {
@@ -50,10 +31,53 @@ model User {
   username  String   @unique
   /// @z.string().email({ message: "Invalid email address" })
   email     String   @unique
-  // hash for password, set as @db.Text to remove length limit set by varchar
   hash      String   @db.Text
-  // hash for refresh token, set as @db.Text to remove length limit set by varchar
   hashRt    String?  @db.Text
 
   @@map("users")
+}
+
+model QuestionSummary {
+  id               Int              @id @unique @default(autoincrement())
+  acRate           Float
+  difficulty       String
+  paidOnly         Boolean
+  title            String
+  titleSlug        String           @unique
+  hasSolution      Boolean
+  hasVideoSolution Boolean
+  isDailyQuestion  Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  topicTags        TopicTag[]
+  QuestionContent  QuestionContent?
+
+  @@index([titleSlug])
+}
+
+model TopicTag {
+  id                Int               @id @default(autoincrement())
+  name              String            @unique
+  questionSummaries QuestionSummary[]
+
+  @@index([name])
+}
+
+model QuestionContent {
+  id        Int             @id @default(autoincrement())
+  content   Bytes
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  titleSlug String          @unique
+  summary   QuestionSummary @relation(fields: [titleSlug], references: [titleSlug])
+  hints     QuestionHint[]
+
+  @@index([titleSlug])
+}
+
+model QuestionHint {
+  hintId            Int             @id @unique @default(autoincrement())
+  hintBuffer        Bytes
+  QuestionContent   QuestionContent @relation(fields: [questionContentId], references: [id])
+  questionContentId Int
 }
