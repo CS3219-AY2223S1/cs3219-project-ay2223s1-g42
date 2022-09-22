@@ -119,12 +119,18 @@ async function getLcQuestionContent(titleSlugs: string[]) {
     });
   }
   await processConcurrently(getLcContentFuncs, 10);
-  logger.info([
-    { remaining: titleSlugs.length },
-    { resolved: Object.keys(lcMap).length },
-  ]);
+
+  if (titleSlugs.length) {
+    logger.info([
+      { leftover: titleSlugs.length },
+      { resolved: Object.keys(lcMap).length },
+    ]);
+  }
+
   return normaliseLcQuestionContent(lcMap);
 }
+
+// ***** Util function ***** //
 
 function normaliseLcQuestionContent(
   lcMap: Record<string, LeetcodeContentType>

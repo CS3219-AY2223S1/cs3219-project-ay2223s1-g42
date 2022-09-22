@@ -1,21 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,
-    "target": "esnext",
-    "resolveJsonModule": true
+    "target": "es2017"
   },
-  "include": [
-    "*.js",
-    "./src",
-    "./tome"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": []
 }

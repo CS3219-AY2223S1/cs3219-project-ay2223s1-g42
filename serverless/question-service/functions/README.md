@@ -5,7 +5,6 @@
 Assuming that you have cloned the entire repository and you have `Docker` installed.
 
 ```bash
-
 # Enter the question-service directory
 cd serverless/question-service
 
@@ -13,6 +12,7 @@ cd serverless/question-service
 yarn
 
 ```
+
 To develop locally, create a `.env.local` file and fill it up appripriately with MySQL connection string as follows:
 
 ```bash

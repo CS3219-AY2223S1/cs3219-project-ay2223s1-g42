@@ -23,7 +23,7 @@ export async function getExistingQuestionSummary(prisma: PrismaClient) {
 
   if (isEmpty(dbQuestions)) {
     logger.info("summary database is empty");
-    return dbQuestions;
+    return questionsMap;
   }
 
   for (const question of dbQuestions) {
@@ -127,6 +127,9 @@ export async function getLeetcodeQuestions() {
   logger.info("successfully pulled questions summary from LeetCode");
 
   for (const q of data.data.psetQuestionList.questions) {
+    if (q.paidOnly) {
+      continue;
+    }
     questionMap[q.titleSlug] = {
       acRate: q.acRate,
       difficulty: q.difficulty,
