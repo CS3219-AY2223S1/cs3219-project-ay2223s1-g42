@@ -5,7 +5,6 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { tryit } from "radash";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
@@ -38,9 +37,9 @@ export class RoomGateway {
   async onJoinRoom(client: Socket, data: any) {
     // find room of user
     const roomUser: RoomUser = JSON.parse(data);
-    const [roomIdErr, roomId] = await tryit(
-      this.roomService.getRoomIdFromUserId
-    )(roomUser.id.toString());
+    const [roomIdErr, roomId] = await this.roomService.getRoomIdFromUserId(
+      roomUser.id.toString()
+    );
 
     // emit error if room id not found or error occurred
     if (roomIdErr || !roomId) {
@@ -51,7 +50,7 @@ export class RoomGateway {
     }
 
     // get room data
-    const room = await this.roomService.getRoomFromId(roomId);
+    const [, room] = await this.roomService.getRoomFromId(roomId);
 
     // broadcast user has joined to room
     client.join(room.id);
@@ -64,9 +63,9 @@ export class RoomGateway {
   async onLeaveRoom(client: Socket, data: any) {
     // find room of user
     const roomUser: RoomUser = JSON.parse(data);
-    const [roomIdErr, roomId] = await tryit(
-      this.roomService.getRoomIdFromUserId
-    )(roomUser.id.toString());
+    const [roomIdErr, roomId] = await this.roomService.getRoomIdFromUserId(
+      roomUser.id.toString()
+    );
 
     // emit error if room id not found or error occurred
     if (roomIdErr || !roomId) {
@@ -77,10 +76,10 @@ export class RoomGateway {
     }
 
     // get room data
-    const room = await this.roomService.getRoomFromId(roomId);
+    const [, room] = await this.roomService.getRoomFromId(roomId);
 
     // remove user from room
-    const [removeErr] = await tryit(this.roomService.removeUserFromRoom)(
+    const [removeErr] = await this.roomService.removeUserFromRoom(
       room,
       roomUser.id
     );

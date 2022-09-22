@@ -1,16 +1,13 @@
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
   OnGatewayInit,
 } from "@nestjs/websockets";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { Document, YSocketIO } from "y-socket.io/dist/server";
-import { tryit } from "radash";
 
 import { CORS_OPTIONS } from "src/config";
-import { RoomService } from "src/room/room.service";
-import { Inject, forwardRef } from "@nestjs/common";
+import { DocumentService } from "./document.service";
 
 @WebSocketGateway({
   cors: CORS_OPTIONS,
@@ -19,7 +16,7 @@ export class DocumentGateway implements OnGatewayInit {
   @WebSocketServer()
   ySocketIO: YSocketIO;
 
-  constructor(private roomService: RoomService) {}
+  constructor(private documentService: DocumentService) {}
 
   async afterInit(server: Server) {
     // Create the YSocketIO instance
@@ -32,12 +29,14 @@ export class DocumentGateway implements OnGatewayInit {
       // gcEnabled: true,
     });
 
-    this.ySocketIO.on("document-loaded", (doc: Document) =>
-      console.log(`The document ${doc.name} was loaded`)
-    );
-    this.ySocketIO.on("document-update", (doc: Document, update: Uint8Array) =>
-      console.log(`The document ${doc.name} is updated`)
-    );
+    this.ySocketIO.on("document-loaded", (doc: Document) => {
+      const roomId = doc.name;
+
+      console.log(`The document ${doc.name} was loaded`);
+    });
+    // this.ySocketIO.on("document-update", (doc: Document, update: Uint8Array) =>
+    //   console.log(`The document ${doc.name} is updated`)
+    // );
     // ysocketio.on('awareness-update', (doc: Document, update: Uint8Array) => console.log(`The awareness of the document ${doc.name} is updated`))
     // ysocketio.on('document-destroy', async (doc: Document) => console.log(`The document ${doc.name} is being destroyed`))
     // ysocketio.on('all-document-connections-closed', async (doc: Document) => console.log(`All clients of document ${doc.name} are disconected`))

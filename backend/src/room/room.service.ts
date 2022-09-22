@@ -5,20 +5,21 @@ import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "src/match/match.gateway";
 import { Room } from "./room.gateway";
+import { tryit } from "radash";
 
 @Injectable()
 export class RoomService {
   constructor(private cache: RedisCacheService) {}
 
-  async getRoomIdFromUserId(userId: string): Promise<string> {
-    const roomId = await this.cache.getKeyInNamespace<string>(
+  async getRoomIdFromUserId(userId: string) {
+    const res = await tryit(this.cache.getKeyInNamespace<string>)(
       [NAMESPACES.ROOM, NAMESPACES.USERS],
       userId
     );
-    return roomId;
+    return res;
   }
 
-  async createRoom(users: PoolUser[]) {
+  async createRoom(users: PoolUser[]): Promise<[Error, Room]> {
     // create room
     const roomId = v4();
     const room: Room = {
@@ -37,28 +38,36 @@ export class RoomService {
     });
 
     // throw if error occurred while adding room users
-    await Promise.all(addRoomedUsers);
-    return room;
+    const [err] = await tryit(Promise.all)(addRoomedUsers);
+    return [err, room];
   }
 
-  async addUserToRoom(room: Room, user: PoolUser) {
+  async addUserToRoom(room: Room, user: PoolUser): Promise<[Error, Room]> {
     const newUsers = room.users.concat(user);
     const newRoom: Room = {
       ...room,
       users: newUsers,
     };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
-    return newRoom;
+    const [err] = await tryit(this.cache.setKeyInNamespace)(
+      [NAMESPACES.ROOM],
+      room.id,
+      newRoom
+    );
+    return [err, newRoom];
   }
 
-  async removeUserFromRoom(room: Room, userId: number) {
+  async removeUserFromRoom(room: Room, userId: number): Promise<[Error, Room]> {
     const newUsers = room.users.filter((user) => user.id !== userId);
     const newRoom: Room = {
       ...room,
       users: newUsers,
     };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
-    return newRoom;
+    const [err] = await tryit(this.cache.setKeyInNamespace)(
+      [NAMESPACES.ROOM],
+      room.id,
+      newRoom
+    );
+    return [err, newRoom];
   }
 
   /**
@@ -66,9 +75,12 @@ export class RoomService {
    * @param roomId Id of room
    * @returns room data
    */
-  async getRoomFromId(roomId: string): Promise<Room> {
-    const room = this.cache.getKeyInNamespace<Room>([NAMESPACES.ROOM], roomId);
-    return room;
+  async getRoomFromId(roomId: string) {
+    const res = await tryit(this.cache.getKeyInNamespace<Room>)(
+      [NAMESPACES.ROOM],
+      roomId
+    );
+    return res;
   }
 
   /**
@@ -76,6 +88,10 @@ export class RoomService {
    * @param roomId Id of room
    */
   async deleteRoom(roomId: string) {
-    this.cache.deleteKeyInNamespace([NAMESPACES.ROOM], roomId);
+    const res = tryit(this.cache.deleteKeyInNamespace)(
+      [NAMESPACES.ROOM],
+      roomId
+    );
+    return res;
   }
 }

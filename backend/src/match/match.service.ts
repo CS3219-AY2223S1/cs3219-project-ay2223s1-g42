@@ -1,3 +1,5 @@
+import { tryit } from "radash";
+
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
@@ -16,13 +18,13 @@ export class MatchService {
    * Verifies if user has already been matched by checking
    * if user is in a room
    * @param user User
-   * @returns existing room data
+   * @returns [`Error`, Room ID]
    */
   async handleUserAlreadyMatched(user: PoolUser) {
-    const existingRoom = await this.roomService.getRoomIdFromUserId(
+    const res = await tryit(this.roomService.getRoomIdFromUserId)(
       user.id.toString()
     );
-    return existingRoom;
+    return res;
   }
 
   /**
@@ -106,10 +108,10 @@ export class MatchService {
   }
 
   async getQueueUserFromId(userId: string) {
-    const user = await this.cache.getKeyInNamespace<PoolUser>(
+    const res = await tryit(this.cache.getKeyInNamespace<PoolUser>)(
       [NAMESPACES.MATCH, NAMESPACES.USERS],
       userId
     );
-    return user;
+    return res;
   }
 }

@@ -69,9 +69,8 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // try to match user with another user from queue,
     // create room if successful otherwise add user to queue
-    const [matchedRoomErr, matchedRoom] = await tryit(
-      this.matchService.handleJoinMatchQueue
-    )(poolUser);
+    const [matchedRoomErr, matchedRoom] =
+      await this.matchService.handleJoinMatchQueue(poolUser);
 
     // emit error if error occurred
     if (matchedRoomErr) {
@@ -120,7 +119,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { id }: { id: number } = JSON.parse(data);
 
     // get queue user from user id
-    const [noUserErr, user] = await tryit(this.matchService.getQueueUserFromId)(
+    const [noUserErr, user] = await this.matchService.getQueueUserFromId(
       id.toString()
     );
 
