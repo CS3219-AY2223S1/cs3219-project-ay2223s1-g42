@@ -46,6 +46,7 @@ export const updateQuestionsSummary = functions
 //   })
 //   .https.onRequest(async (_req, res) => {
 //     try {
+//       await summaryEntry(process.env.DATABASE_URL ?? "NOT FOUND");
 //       await contentEntry(process.env.DATABASE_URL ?? "NOT FOUND");
 //     } catch (error) {
 //       functions.logger.log(error);

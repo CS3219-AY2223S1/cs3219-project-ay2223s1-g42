@@ -68,6 +68,28 @@ yarn serve
 
 [This write-up](https://planetscale.com/docs/tutorials/prisma-quickstart) goes over how to develop with a local instance of PlanetScale.
 
+## Seeding the Database
+
+LeetCode's endpoint rate-limits the number of queries it can respond to at a given time. In an attempt to circumvent this, `seed.sh` was added to help populate the database.
+
+This does not affect the table with question summaries as the endpoint returns all the relevant information there.
+
+To use the script, uncomment the provided `test` section:
+
+```bash
+# Ensure that seed.sh has execution permissions
+ls -l seed.sh
+
+# Grant execution perms if needed
+# chmod 755 seed.sh
+
+# Run the script with the following
+./seed.sh FIREBASE_EMULATOR_HTTP_ENDPOINT SLEEP_DURATION_BETWEEN RUNS
+
+# It should look something like this 
+# ./seed.sh "http://localhost:5001/PROJECT_ID/asia-southeast1/test" 12
+```
+
 ## Secrets Manager
 
 This can be used to pass the connection string into the Cloud Function

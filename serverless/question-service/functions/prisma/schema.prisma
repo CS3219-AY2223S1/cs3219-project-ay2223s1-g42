@@ -13,6 +13,22 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  /// @z.string().min(4).max(20)
+  username  String   @unique
+  /// @z.string().email({ message: "Invalid email address" })
+  email     String   @unique
+  // hash for password, set as @db.Text to remove length limit set by varchar
+  hash      String   @db.Text
+  // hash for refresh token, set as @db.Text to remove length limit set by varchar
+  hashRt    String?  @db.Text
+
+  @@map("users")
+}
+
 model QuestionSummary {
   id               Int              @id @unique @default(autoincrement())
   acRate           Float
