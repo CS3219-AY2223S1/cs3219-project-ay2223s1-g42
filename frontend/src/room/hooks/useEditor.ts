@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
@@ -11,16 +11,17 @@ const useEditor = () => {
   const [connected, setConnected] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const [clients, setClients] = useState<string[]>([]);
-  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
   const [binding, setBinding] = useState<MonacoBinding>();
+  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
 
   function handleEditorDidMount(
     editor: monaco.editor.IStandaloneCodeEditor,
     monaco: any
   ) {
-    console.log("editor did mount: ", { editor });
     // here is the editor instance
     // you can store it in `useRef` for further usage
+    // we store in `useState` since we want to re-run
+    // the effect when the editor instance changes
     setEditor(editor);
   }
 
@@ -48,7 +49,7 @@ const useEditor = () => {
       console.log("setting providers");
       // TODO: update to connect to nestjs backend
       const socketIOProvider = new SocketIOProvider(
-        "ws://localhost:1234",
+        "ws://localhost:5000",
         "testing-doc",
         doc,
         {
@@ -86,7 +87,7 @@ const useEditor = () => {
 
   useEffect(() => {
     console.log("running effect, ", { editor });
-    if (!!editor) {
+    if (editor) {
       const model = editor.getModel();
       console.log("model: ", { model });
       if (!model || !text || !provider) {

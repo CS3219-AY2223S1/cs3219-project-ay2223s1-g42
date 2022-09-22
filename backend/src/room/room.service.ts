@@ -10,13 +10,12 @@ import { Room } from "./room.gateway";
 export class RoomService {
   constructor(private cache: RedisCacheService) {}
 
-  async getRoomFromUserId(userId: string) {
-    console.log("checking room from user id...");
-    const room = await this.cache.getKeyInNamespace<Room>(
+  async getRoomIdFromUserId(userId: string): Promise<string> {
+    const roomId = await this.cache.getKeyInNamespace<string>(
       [NAMESPACES.ROOM, NAMESPACES.USERS],
       userId
     );
-    return room;
+    return roomId;
   }
 
   async createRoom(users: PoolUser[]) {
@@ -28,14 +27,16 @@ export class RoomService {
     };
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
 
-    // add user to room users
+    // add user to room users (store room id of each user in a room)
     const addRoomedUsers = room.users.map(async (user) => {
       await this.cache.setKeyInNamespace(
         [NAMESPACES.ROOM, NAMESPACES.USERS],
         user.id.toString(),
-        room
+        room.id
       );
     });
+
+    // throw if error occurred while adding room users
     await Promise.all(addRoomedUsers);
     return room;
   }
@@ -60,7 +61,21 @@ export class RoomService {
     return newRoom;
   }
 
+  /**
+   * Get room data from room id
+   * @param roomId Id of room
+   * @returns room data
+   */
+  async getRoomFromId(roomId: string): Promise<Room> {
+    const room = this.cache.getKeyInNamespace<Room>([NAMESPACES.ROOM], roomId);
+    return room;
+  }
+
+  /**
+   * Delete room given room id
+   * @param roomId Id of room
+   */
   async deleteRoom(roomId: string) {
-    await this.cache.deleteKeyInNamespace([NAMESPACES.ROOM], roomId);
+    this.cache.deleteKeyInNamespace([NAMESPACES.ROOM], roomId);
   }
 }

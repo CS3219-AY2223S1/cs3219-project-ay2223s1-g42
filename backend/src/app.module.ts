@@ -16,6 +16,7 @@ import { RedisCacheModule } from "./cache/redisCache.module";
 import { generateEmailFromField } from "./utils/mail";
 import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
+import { DocumentModule } from "./document/document.module";
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { RoomModule } from "./room/room.module";
     QuestionModule,
     AuthModule,
     RoomModule,
+    DocumentModule,
     MatchModule,
   ],
   providers: [

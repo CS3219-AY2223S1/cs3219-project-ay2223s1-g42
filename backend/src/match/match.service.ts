@@ -19,7 +19,7 @@ export class MatchService {
    * @returns existing room data
    */
   async handleUserAlreadyMatched(user: PoolUser) {
-    const existingRoom = await this.roomService.getRoomFromUserId(
+    const existingRoom = await this.roomService.getRoomIdFromUserId(
       user.id.toString()
     );
     return existingRoom;
@@ -89,7 +89,7 @@ export class MatchService {
    */
   async disconnectFromMatchQueue(user: PoolUser) {
     // remove user from queued users namespace
-    this.cache.deleteKeyInNamespace(
+    await this.cache.deleteKeyInNamespace(
       [NAMESPACES.MATCH, NAMESPACES.USERS],
       user.id.toString()
     );
@@ -103,5 +103,13 @@ export class MatchService {
         )
     );
     await Promise.all(deleteFromAllQueues);
+  }
+
+  async getQueueUserFromId(userId: string) {
+    const user = await this.cache.getKeyInNamespace<PoolUser>(
+      [NAMESPACES.MATCH, NAMESPACES.USERS],
+      userId
+    );
+    return user;
   }
 }

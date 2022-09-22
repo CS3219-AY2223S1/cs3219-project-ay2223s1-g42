@@ -34,6 +34,7 @@ export class WsAccessJwtStrategy extends PassportStrategy(Strategy, "jwt-ws") {
     if (!user) {
       return null;
     }
+    console.log("ws validate user: ", { user });
     return user;
   }
 }
