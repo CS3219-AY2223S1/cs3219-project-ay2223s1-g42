@@ -37,34 +37,34 @@ export const updateQuestionsSummary = functions
 
 // ****** SEED *****
 // ! COMMENT OUT BEFORE DEPLOYING
-export const seedSummary = functions
-  .region("asia-southeast1")
-  .runWith({
-    timeoutSeconds: 540,
-    memory: "256MB",
-  })
-  .https.onRequest(async (_req, res) => {
-    try {
-      await summaryEntry(process.env.DATABASE_URL ?? "NOT FOUND");
-    } catch (error) {
-      functions.logger.log(error);
-    } finally {
-      res.end();
-    }
-  });
+// export const seedSummary = functions
+//   .region("asia-southeast1")
+//   .runWith({
+//     timeoutSeconds: 540,
+//     memory: "256MB",
+//   })
+//   .https.onRequest(async (_req, res) => {
+//     try {
+//       await summaryEntry(process.env.DATABASE_URL ?? "NOT FOUND");
+//     } catch (error) {
+//       functions.logger.log(error);
+//     } finally {
+//       res.end();
+//     }
+//   });
 
-export const seedContent = functions
-  .region("asia-southeast1")
-  .runWith({
-    timeoutSeconds: 540,
-    memory: "256MB",
-  })
-  .https.onRequest(async (_req, res) => {
-    try {
-      await contentEntry(process.env.DATABASE_URL ?? "NOT FOUND");
-    } catch (error) {
-      functions.logger.log(error);
-    } finally {
-      res.end();
-    }
-  });
+// export const seedContent = functions
+//   .region("asia-southeast1")
+//   .runWith({
+//     timeoutSeconds: 540,
+//     memory: "256MB",
+//   })
+//   .https.onRequest(async (_req, res) => {
+//     try {
+//       await contentEntry(process.env.DATABASE_URL ?? "NOT FOUND");
+//     } catch (error) {
+//       functions.logger.log(error);
+//     } finally {
+//       res.end();
+//     }
+//   });
