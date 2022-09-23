@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 import { Document, YSocketIO } from "y-socket.io/dist/server";
 
 import { CORS_OPTIONS } from "src/config";
-import { DocumentService } from "./document.service";
+import { DocumentService, DOCUMENT_TEXT_NAME } from "./document.service";
 
 @WebSocketGateway({
   cors: CORS_OPTIONS,
@@ -34,16 +34,26 @@ export class DocumentGateway implements OnGatewayInit {
       const [err, delta] = await this.documentService.getDocumentDeltaFromId(
         roomId
       );
-      if (err) {
-        console.error("error loading document: ", err);
+      if (err || !delta) {
+        console.error(
+          "error loading document or document does not exist yet: ",
+          err
+        );
+        return;
       }
-      doc.getText().applyDelta(delta);
+      doc.getText(DOCUMENT_TEXT_NAME).applyDelta(delta);
     });
 
+    // this.ySocketIO.on(
+    //   "document-update",
+    //   async (doc: Document, update: Uint8Array) => {}
+    // );
+    // ysocketio.on('awareness-update', (doc: Document, update: Uint8Array) => console.log(`The awareness of the document ${doc.name} is updated`))
+    // ysocketio.on('document-destroy', async (doc: Document) => console.log(`The document ${doc.name} is being destroyed`))
     this.ySocketIO.on(
-      "document-update",
-      async (doc: Document, update: Uint8Array) => {
-        console.log("update: ", { doc, update });
+      "all-document-connections-closed",
+      async (doc: Document) => {
+        console.log(`All clients of document ${doc.name} are disconected`);
         const [err] = await this.documentService.saveRoomDocument(
           doc.name,
           doc
@@ -53,9 +63,6 @@ export class DocumentGateway implements OnGatewayInit {
         }
       }
     );
-    // ysocketio.on('awareness-update', (doc: Document, update: Uint8Array) => console.log(`The awareness of the document ${doc.name} is updated`))
-    // ysocketio.on('document-destroy', async (doc: Document) => console.log(`The document ${doc.name} is being destroyed`))
-    // ysocketio.on('all-document-connections-closed', async (doc: Document) => console.log(`All clients of document ${doc.name} are disconected`))
 
     // Execute initialize method
     this.ySocketIO.initialize();

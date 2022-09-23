@@ -13,11 +13,13 @@ const Dashboard = () => {
   // store states
   const user = useAuthStore((state) => state.user);
   const socket = useSocketStore((state) => state.socket);
-  const findMatch = useSocketStore((state) => state.findMatch);
+  const isInQueue = useSocketStore((state) => state.isInQueue);
+  const joinQueue = useSocketStore((state) => state.joinQueue);
+  const leaveQueue = useSocketStore((state) => state.leaveQueue);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
-  const handleFindMatch = () => {
+  const handleJoinQueue = () => {
     if (!user) {
       console.error("user not found, cannot find match");
       return;
@@ -27,7 +29,15 @@ const Dashboard = () => {
       difficulties: ["easy", "medium"],
     };
     setIsMatchingDialogOpen(true);
-    findMatch(poolUser);
+    joinQueue(poolUser);
+  };
+
+  const handleLeaveQueue = () => {
+    if (!user) {
+      console.error("user not found, cannot leave match");
+      return;
+    }
+    leaveQueue(user.id);
   };
 
   useEffect(() => {
@@ -46,11 +56,8 @@ const Dashboard = () => {
       </h1>
       <QuestionRadioGroup />
       <div className="flex flex-col">
-        <PrimaryButton onClick={handleFindMatch}>Match</PrimaryButton>
-        <MatchDialog
-          isOpen={isMatchingDialogOpen}
-          onClose={() => setIsMatchingDialogOpen(false)}
-        />
+        <PrimaryButton onClick={handleJoinQueue}>Match</PrimaryButton>
+        <MatchDialog isOpen={isInQueue} onClose={handleLeaveQueue} />
       </div>
     </div>
   );

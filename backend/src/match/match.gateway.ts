@@ -53,13 +53,12 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       timeJoined: Date.now(),
     };
 
-    console.log("joined socket and user: ", { client, poolUser });
+    console.log("joined user: ", { poolUser });
 
     // if user already in room, send existing room id to user
-    const existingRoom = await this.matchService.handleUserAlreadyMatched(
-      poolUser
-    );
-    if (existingRoom) {
+    const [existingRoomErr, existingRoom] =
+      await this.matchService.handleUserAlreadyMatched(poolUser);
+    if (existingRoom || !existingRoomErr) {
       client.emit(
         MATCH_EVENTS.ROOM_EXISTS,
         JSON.stringify({ message: MATCH_MESSAGES.ROOM_EXISTS, existingRoom })
@@ -67,27 +66,31 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
-    // try to match user with another user from queue,
-    // create room if successful otherwise add user to queue
-    const [matchedRoomErr, matchedRoom] = await tryit(
-      this.matchService.handleJoinMatchQueue
+    // find users with matching difficulties
+    const [matchingUsersErr, matchingUsers] = await tryit(
+      this.matchService.handleFindMatchingUsers
     )(poolUser);
 
-    // emit error if error occurred
-    if (matchedRoomErr) {
-      client.emit(
-        MATCH_EVENTS.JOIN_QUEUE_ERROR,
-        JSON.stringify({
-          message: MATCH_MESSAGES.JOIN_QUEUE_ERROR,
-          error: matchedRoomErr,
-        })
-      );
-      return;
-    }
+    // if unable to find any, add to queue
+    if (matchingUsersErr || !matchingUsers || matchingUsers.length === 0) {
+      const [joinQueueErr] = await tryit(
+        this.matchService.handleJoinMatchQueue
+      )(poolUser);
 
-    // if no error but no matched room, user has been added to queue
-    if (!matchedRoom) {
-      console.log("user added to pool...");
+      // emit join queue error if error
+      if (joinQueueErr) {
+        console.log("join queue error: ", joinQueueErr);
+        client.emit(
+          MATCH_EVENTS.JOIN_QUEUE_ERROR,
+          JSON.stringify({
+            message: MATCH_MESSAGES.JOIN_QUEUE_ERROR,
+            error: joinQueueErr,
+          })
+        );
+        return;
+      }
+
+      // emit join queue success
       client.emit(
         MATCH_EVENTS.JOIN_QUEUE_SUCCESS,
         JSON.stringify({ message: MATCH_MESSAGES.JOIN_QUEUE_SUCCESS })
@@ -95,17 +98,23 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
+    // if match found, create room with matched users
+    const [matchedRoomErr, matchedRoom] = await tryit(
+      this.matchService.handleFoundMatches
+    )(poolUser, matchingUsers);
+
     console.log({ matchedRoom });
 
     // if no error and matched room, emit room data to both users
     const notifyAllUsers = matchedRoom.users.map(
       async (user) =>
-        await this.server
-          .to(user.socketId)
-          .emit(
-            MATCH_EVENTS.MATCH_FOUND,
-            JSON.stringify({ message: MATCH_MESSAGES.MATCH_FOUND, matchedRoom })
-          )
+        await this.server.to(user.socketId).emit(
+          MATCH_EVENTS.MATCH_FOUND,
+          JSON.stringify({
+            message: MATCH_MESSAGES.MATCH_FOUND,
+            matchedRoom,
+          })
+        )
     );
 
     // if error occurred trying to notify users, log it
@@ -151,5 +160,11 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
         })
       );
     }
+
+    // emit success if successfully disconnect user from queue
+    client.emit(
+      MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
+      JSON.stringify({ message: MATCH_MESSAGES.LEAVE_QUEUE_SUCCESS })
+    );
   }
 }
