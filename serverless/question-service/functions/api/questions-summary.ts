@@ -130,16 +130,11 @@ export async function getLeetcodeQuestions() {
     if (q.paidOnly) {
       continue;
     }
+    const { topicTags, ...info } = q;
     questionMap[q.titleSlug] = {
-      acRate: q.acRate,
-      difficulty: q.difficulty,
-      hasSolution: q.hasSolution,
-      hasVideoSolution: q.hasVideoSolution,
-      paidOnly: q.paidOnly,
-      title: q.title,
-      titleSlug: q.titleSlug,
-      isDailyQuestion: false, //intialise all qns as false
-      topicTags: q.topicTags.map((t) => t.slug),
+      ...info,
+      topicTags: topicTags.map((topic) => topic.slug),
+      isDailyQuestion: false,
     };
   }
 

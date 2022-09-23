@@ -19,17 +19,3 @@ export async function updateQuestionsSummary(url: string) {
     await prisma.$disconnect();
   }
 }
-
-// (async () => {
-//   const p = new PrismaClient({
-//     datasources: { db: { url: "mysql://root@127.0.0.1:3306/main" } },
-//   });
-//   p.questionSummary
-//     .deleteMany()
-//     .then((v) => console.log({ table: "summary", v }));
-//   p.topicTag.deleteMany().then((v) => console.log({ table: "tag", v }));
-//   p.questionHint.deleteMany().then((v) => console.log({ table: "hint", v }));
-//   p.questionContent
-//     .deleteMany()
-//     .then((v) => console.log({ table: "content", v }));
-// })();
