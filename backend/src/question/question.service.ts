@@ -14,7 +14,7 @@ const QUESTION_SUMMARY_TABLE_FIELDS: Prisma.QuestionSummarySelect = {
   difficulty: true,
   title: true,
   titleSlug: true,
-  topicTags: { select: { name: true } },
+  topicTags: { select: { topicSlug: true } },
   updatedAt: true,
 };
 
@@ -46,8 +46,8 @@ export class QuestionService {
 
     return {
       content: res.content.toString(),
-      hints: res.hints.map((v) => v.hintBuffer.toString()),
-      topicTags: res.summary.topicTags.map((v) => v.name),
+      hints: res.hints.map((v) => v.hint),
+      topicTags: res.summary.topicTags.map((v) => v.topicSlug),
     };
   }
 
@@ -92,7 +92,7 @@ export class QuestionService {
    */
   async getSummariesFromTopicTags(topicTags: string[]) {
     const res = await this.prisma.topicTag.findMany({
-      where: { name: { in: topicTags } },
+      where: { topicSlug: { in: topicTags } },
       select: { questionSummaries: { select: { titleSlug: true } } },
     });
 
