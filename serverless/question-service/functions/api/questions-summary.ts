@@ -75,7 +75,7 @@ export async function upsertQuestionsSummary(
         },
       });
     } catch (error) {
-      logger.error(`unable to upsert ${titleSlug} -- ${error}`);
+      logger.error(`unable to upsert ${titleSlug}`);
     }
   }
   logger.info("successfully updated data questions summary");

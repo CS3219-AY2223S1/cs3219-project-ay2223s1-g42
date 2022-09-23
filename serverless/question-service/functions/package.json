@@ -12,7 +12,7 @@
     "logs": "firebase functions:log",
     "lint": "eslint \"**/*.ts\"",
     "postinstall": "yarn prisma generate",
-    "prisma:studio": "yarn prisma studio"
+    "prisma:studio": "dotenv -e .env.local -- yarn prisma studio"
   },
   "engines": {
     "node": "14"
