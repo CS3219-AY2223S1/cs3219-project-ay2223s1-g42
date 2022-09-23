@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "yarn clean && yarn && tsc",
-    "serve": "yarn build && firebase emulators:start --only functions",
+    "serve": "yarn build && dotenv -e .env.local -- firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "deploy": "yarn build && firebase deploy --only functions",
     "logs": "firebase functions:log",

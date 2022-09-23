@@ -19,7 +19,7 @@ export type QuestionSummaryListType = {
   };
 };
 
-export type QuestionContentType = {
+export type QuestionContentResponse = {
   data: {
     question: {
       content: string;
@@ -38,7 +38,7 @@ export type NormalisedQuestionSummaryType = Omit<
 };
 
 export type NormalisedQuestionContentType = {
-  content: Buffer;
+  content: string;
   hints: QuestionHint[];
   titleSlug: string;
 };
@@ -47,5 +47,5 @@ export type LeetcodeContentType = Omit<
   NormalisedQuestionContentType,
   "hints"
 > & {
-  hints: Buffer[];
+  hints: string[];
 };

@@ -4,13 +4,14 @@ import { logger } from "firebase-functions";
 import { isEmpty } from "lodash";
 
 import {
-  LeetcodeContentType,
-  NormalisedQuestionContentType,
-} from "../constants/graphql.types";
-import {
   getQuestionFromSlug,
   LEETCODE_GRAPHQL_ENDPOINT,
 } from "../constants/graphql.queries";
+import {
+  LeetcodeContentType,
+  NormalisedQuestionContentType,
+  QuestionContentResponse,
+} from "../constants/graphql.types";
 import { processConcurrently } from "../utils/concurrency";
 
 // ***** Prisma ***** //
@@ -29,8 +30,8 @@ export async function getExistingQuestionContents(prisma: PrismaClient) {
   for (const { titleSlug, content, hints } of dbQuestionContent) {
     const hintMap: Record<number, string> = {};
 
-    for (const { hintId, hintBuffer } of hints) {
-      hintMap[hintId] = hintBuffer.toString();
+    for (const { hintId, hint } of hints) {
+      hintMap[hintId] = hint;
     }
 
     contentMap[titleSlug] = {
@@ -49,18 +50,16 @@ export async function insertQuestionContent(
 ) {
   try {
     const lcData = await getLcQuestionContent(newSlugs);
-    // await prisma.questionContent.createMany({ data: Object.values(lcData) });
-
     for (const { content, hints, titleSlug } of Object.values(lcData)) {
       await prisma.questionContent.create({
         data: {
           content,
           hints: {
             create: hints.map((v) => {
-              return { hintBuffer: v };
+              return { hint: v };
             }),
           },
-          titleSlug,
+          titleSlug: titleSlug.toLowerCase(),
         },
       });
     }
@@ -104,15 +103,14 @@ async function getLcQuestionContent(titleSlugs: string[]) {
   for (const titleSlug of titleSlugs) {
     getLcContentFuncs.push(async () => {
       try {
-        const { data } = await axiosInstance.post(
+        const { data } = await axiosInstance.post<QuestionContentResponse>(
           LEETCODE_GRAPHQL_ENDPOINT,
           getQuestionFromSlug(titleSlug)
         );
+        const { content, hints } = data.data.question;
         lcMap[titleSlug] = {
-          content: Buffer.from(data.data.question.content),
-          hints: (data.data.question.hints as string[]).map((v) =>
-            Buffer.from(v)
-          ),
+          content,
+          hints,
           titleSlug,
         };
       } catch (error) {}
@@ -136,11 +134,15 @@ function normaliseLcQuestionContent(
   lcMap: Record<string, LeetcodeContentType>
 ): Record<
   string,
-  Omit<NormalisedQuestionContentType, "hints"> & { hints: Buffer[] }
+  Omit<NormalisedQuestionContentType, "hints"> & {
+    hints: string[];
+  }
 > {
   const normalisedMap: Record<
     string,
-    Omit<NormalisedQuestionContentType, "hints"> & { hints: Buffer[] }
+    Omit<NormalisedQuestionContentType, "hints"> & {
+      hints: string[];
+    }
   > = {};
   for (const [titleSlug, data] of Object.entries(lcMap)) {
     normalisedMap[titleSlug] = {

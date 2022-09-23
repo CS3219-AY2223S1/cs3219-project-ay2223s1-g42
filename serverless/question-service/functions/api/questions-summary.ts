@@ -32,7 +32,7 @@ export async function getExistingQuestionSummary(prisma: PrismaClient) {
     questionsMap[titleSlug] = {
       ...info,
       titleSlug,
-      topicTags: topicTags.map((v) => v.name),
+      topicTags: topicTags.map((v) => v.topicSlug),
     };
   }
 
@@ -54,8 +54,8 @@ export async function upsertQuestionsSummary(
           topicTags: {
             connectOrCreate: topicTags.map((topic) => {
               return {
-                where: { name: topic.toLowerCase() },
-                create: { name: topic.toLowerCase() },
+                where: { topicSlug: topic.toLowerCase() },
+                create: { topicSlug: topic.toLowerCase() },
               };
             }),
           },
@@ -66,8 +66,8 @@ export async function upsertQuestionsSummary(
           topicTags: {
             connectOrCreate: topicTags.map((topic) => {
               return {
-                where: { name: topic.toLowerCase() },
-                create: { name: topic.toLowerCase() },
+                where: { topicSlug: topic.toLowerCase() },
+                create: { topicSlug: topic.toLowerCase() },
               };
             }),
           },
@@ -158,3 +158,17 @@ export async function getDailyQuestion() {
   );
   return data.data.activeDailyCodingChallengeQuestion.question.titleSlug;
 }
+
+(async () => {
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: "mysql://9l2n4ll8v54ba7kvv7rg:pscale_pw_F8jHSRJysRu2caAcr470UtDU97ocE5csjjpX9YKIKKc@ap-southeast.connect.psdb.cloud/main?sslaccept=strict",
+      },
+    },
+  });
+  await prisma.questionHint.deleteMany({}).then((v) => console.log(v));
+  await prisma.questionContent.deleteMany({}).then((v) => console.log(v));
+  await prisma.topicTag.deleteMany({}).then((v) => console.log(v));
+  await prisma.questionSummary.deleteMany({}).then((v) => console.log(v));
+})();
