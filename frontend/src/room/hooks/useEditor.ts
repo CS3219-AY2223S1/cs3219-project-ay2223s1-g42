@@ -6,7 +6,7 @@ import * as monaco from "monaco-editor";
 
 import { useAuthStore } from "src/hooks";
 
-const useEditor = () => {
+const useEditor = (roomId: string) => {
   const [doc, setDoc] = useState<Y.Doc | null>(null);
   const [text, setText] = useState<Y.Text | null>(null);
   const [provider, setProvider] = useState<SocketIOProvider | null>(null);
@@ -57,7 +57,7 @@ const useEditor = () => {
 
     const socketIOProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
-      "testing-doc",
+      roomId,
       doc,
       {
         autoConnect: true,

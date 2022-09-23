@@ -12,29 +12,29 @@ export class DocumentService {
   constructor(private cache: RedisCacheService) {}
 
   async getDocumentDeltaFromId(id: string): Promise<[Error, any]> {
-    const [err, rawStringifyDelta] = await tryit(
-      this.cache.getKeyInNamespace<any>
-    )([NAMESPACES.DOCUMENT], id);
+    const rawStringifyDelta = await this.cache.getKeyInNamespace<any>(
+      [NAMESPACES.DOCUMENT],
+      id
+    );
     const jsonDelta = JSON.parse(rawStringifyDelta);
-    return [err, jsonDelta];
+    return jsonDelta;
   }
 
   async saveRoomDocument(roomId: string, document: Document) {
     const rawDelta = document.getText(DOCUMENT_TEXT_NAME).toDelta();
     const rawStringifyDelta = JSON.stringify(rawDelta);
-    const res = await tryit(this.cache.setKeyInNamespace)(
-      [NAMESPACES.DOCUMENT],
-      roomId,
-      rawStringifyDelta
-    );
-    return res;
+    try {
+      await this.cache.setKeyInNamespace(
+        [NAMESPACES.DOCUMENT],
+        roomId,
+        rawStringifyDelta
+      );
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async deleteDocument(id: string) {
-    const res = await tryit(this.cache.deleteKeyInNamespace)(
-      [NAMESPACES.DOCUMENT],
-      id
-    );
-    return res;
+    await this.cache.deleteKeyInNamespace([NAMESPACES.DOCUMENT], id);
   }
 }

@@ -12,16 +12,22 @@ import {
 const Dashboard = () => {
   // store states
   const user = useAuthStore((state) => state.user);
-  const socket = useSocketStore((state) => state.socket);
-  const isInQueue = useSocketStore((state) => state.isInQueue);
-  const joinQueue = useSocketStore((state) => state.joinQueue);
-  const leaveQueue = useSocketStore((state) => state.leaveQueue);
+  const { isInQueue, socket, joinQueue, leaveQueue } = useSocketStore(
+    (state) => {
+      return {
+        isInQueue: state.isInQueue,
+        socket: state.socket,
+        joinQueue: state.joinQueue,
+        leaveQueue: state.leaveQueue,
+      };
+    }
+  );
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
   const handleJoinQueue = () => {
     if (!user) {
-      console.error("user not found, cannot find match");
+      console.log("user not found, cannot join queue");
       return;
     }
     const poolUser: PoolUser = {
@@ -32,11 +38,16 @@ const Dashboard = () => {
     joinQueue(poolUser);
   };
 
-  const handleLeaveQueue = () => {
-    if (!user) {
-      console.error("user not found, cannot leave match");
+  const handleMatchDialogClose = () => {
+    // if in room, do nothing (user should already be redirected to room)
+    if (!isInQueue) {
       return;
     }
+    if (!user) {
+      return;
+    }
+    console.log("setting matching dialog open to false!!");
+    setIsMatchingDialogOpen(false);
     leaveQueue(user.id);
   };
 
@@ -57,7 +68,10 @@ const Dashboard = () => {
       <QuestionRadioGroup />
       <div className="flex flex-col">
         <PrimaryButton onClick={handleJoinQueue}>Match</PrimaryButton>
-        <MatchDialog isOpen={isInQueue} onClose={handleLeaveQueue} />
+        <MatchDialog
+          isOpen={isMatchingDialogOpen}
+          onClose={handleMatchDialogClose}
+        />
       </div>
     </div>
   );

@@ -1,9 +1,28 @@
 import Editor from "@monaco-editor/react";
+import { useEffect } from "react";
+import { useParams } from "react-router";
 
-import { BaseDropdown, BaseListbox, LoadingLayout } from "src/components";
+import {
+  BaseDropdown,
+  BaseListbox,
+  LoadingLayout,
+  UnauthorizedPage,
+} from "src/components";
+import { useSocketStore } from "src/dashboard";
+import { useAuthStore } from "src/hooks";
 import { RoomTabs, useEditor } from "src/room";
 
 const RoomPage = (): JSX.Element => {
+  const { id } = useParams();
+  const user = useAuthStore((state) => state.user);
+  const { roomSocket, joinRoom, leaveRoom } = useSocketStore((state) => {
+    return {
+      roomSocket: state.roomSocket,
+      joinRoom: state.joinRoom,
+      leaveRoom: state.leaveRoom,
+    };
+  });
+  const roomId = id ?? "default";
   const {
     doc,
     text,
@@ -13,10 +32,28 @@ const RoomPage = (): JSX.Element => {
     input,
     provider,
     handleEditorDidMount,
-  } = useEditor();
+  } = useEditor(roomId);
 
-  if (!provider) {
+  useEffect(() => {
+    // join room on mount
+    if (!user) {
+      return;
+    }
+    joinRoom(user, roomId);
+
+    return () => {
+      // leave room on unmount
+      console.log("leaving room on unmount...");
+      leaveRoom(user, roomId);
+    };
+  }, []);
+
+  if (!provider || !roomSocket) {
     return <LoadingLayout />;
+  }
+
+  if (!user) {
+    return <UnauthorizedPage />;
   }
 
   return (

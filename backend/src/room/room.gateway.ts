@@ -11,14 +11,14 @@ import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { ROOM_EVENTS, ROOM_MESSAGES, ROOM_WS_NAMESPACE } from "./constants";
 import { RoomService } from "./room.service";
 import { PoolUser } from "src/match/match.gateway";
+import { PublicUserInfo } from "src/utils/zod/userInfo";
 
 export type Room = {
   id: string;
   users: PoolUser[];
 };
 
-export type RoomUser = {
-  id: number;
+export type RoomUser = Required<PublicUserInfo> & {
   roomId: string;
 };
 
@@ -35,67 +35,101 @@ export class RoomGateway {
 
   @SubscribeMessage(ROOM_EVENTS.JOIN_ROOM)
   async onJoinRoom(client: Socket, data: any) {
-    // find room of user
-    const roomUser: RoomUser = JSON.parse(data);
-    const [roomIdErr, roomId] = await this.roomService.getRoomIdFromUserId(
-      roomUser.id.toString()
-    );
+    try {
+      // find room of user
+      const roomUser: RoomUser = JSON.parse(data);
+      const roomId = await this.roomService.getRoomIdFromUserId(
+        roomUser.id.toString()
+      );
 
-    // emit error if room id not found or error occurred
-    if (roomIdErr || !roomId) {
-      client.emit(ROOM_EVENTS.INVALID_ROOM, {
-        message: ROOM_MESSAGES.INVALID_ROOM,
-      });
+      console.log("user joined room: ", { roomUser, roomId });
+
+      // emit error if room id not found or error occurred
+      if (!roomId || roomUser.roomId !== roomId) {
+        client.emit(
+          ROOM_EVENTS.INVALID_ROOM,
+          JSON.stringify({
+            message: ROOM_MESSAGES.INVALID_ROOM,
+          })
+        );
+        return;
+      }
+
+      // get room data
+      const room = await this.roomService.getRoomFromId(roomId);
+
+      // get user info
+      const { roomId: _, ...userData } = roomUser;
+
+      // broadcast user has joined to room
+      await client.join(room.id);
+      this.server
+        .to(room.id)
+        .emit(
+          ROOM_EVENTS.NEW_USER_JOINED,
+          JSON.stringify({ room, newUser: userData })
+        );
+    } catch (err) {
+      console.error(err);
+      client.emit(
+        ROOM_EVENTS.JOIN_ROOM_ERROR,
+        JSON.stringify({
+          message: ROOM_MESSAGES.JOIN_ROOM_ERROR,
+        })
+      );
       return;
     }
-
-    // get room data
-    const [, room] = await this.roomService.getRoomFromId(roomId);
-
-    // broadcast user has joined to room
-    client.join(room.id);
-    this.server
-      .to(room.id)
-      .emit(ROOM_MESSAGES.NEW_USER_JOINED, { room, newUserId: roomUser.id });
   }
 
   @SubscribeMessage(ROOM_EVENTS.LEAVE_ROOM)
   async onLeaveRoom(client: Socket, data: any) {
-    // find room of user
-    const roomUser: RoomUser = JSON.parse(data);
-    const [roomIdErr, roomId] = await this.roomService.getRoomIdFromUserId(
-      roomUser.id.toString()
-    );
+    try {
+      // find room of user
+      const roomUser: RoomUser = JSON.parse(data);
+      const roomId = await this.roomService.getRoomIdFromUserId(
+        roomUser.id.toString()
+      );
 
-    // emit error if room id not found or error occurred
-    if (roomIdErr || !roomId) {
-      client.emit(ROOM_EVENTS.INVALID_ROOM, {
-        message: ROOM_MESSAGES.INVALID_ROOM,
-      });
+      // emit error if room id not found or error occurred
+      if (!roomId) {
+        client.emit(
+          ROOM_EVENTS.INVALID_ROOM,
+          JSON.stringify({
+            message: ROOM_MESSAGES.INVALID_ROOM,
+          })
+        );
+        return;
+      }
+
+      // get room data
+      const currentRoom = await this.roomService.getRoomFromId(roomId);
+      console.log("removing user from room: ", { roomUser, currentRoom });
+
+      // remove user from room
+      const room = await this.roomService.removeUserFromRoom(
+        currentRoom,
+        roomUser.id
+      );
+
+      console.log("user left room: ", { roomUser, room });
+
+      // broadcast user has left to room
+      await client.leave(room.id);
+      this.server
+        .to(room.id)
+        .emit(
+          ROOM_EVENTS.OLD_USER_LEFT,
+          JSON.stringify({ room, oldUser: roomUser })
+        );
+    } catch (err) {
+      console.error(err);
+      client.emit(
+        ROOM_EVENTS.LEAVE_ROOM_ERR,
+        JSON.stringify({
+          message: ROOM_MESSAGES.LEAVE_ROOM_ERR,
+        })
+      );
       return;
     }
-
-    // get room data
-    const [, room] = await this.roomService.getRoomFromId(roomId);
-
-    // remove user from room
-    const [removeErr] = await this.roomService.removeUserFromRoom(
-      room,
-      roomUser.id
-    );
-
-    // emit error if error while leaving room
-    if (removeErr) {
-      client.emit(ROOM_EVENTS.LEAVE_ROOM_ERR, {
-        message: ROOM_MESSAGES.LEAVE_ROOM_ERR,
-      });
-      return;
-    }
-
-    // broadcast user has left to room
-    client.leave(room.id);
-    this.server
-      .to(room.id)
-      .emit(ROOM_MESSAGES.OLD_USER_LEFT, { room, oldUserId: roomUser.id });
   }
 }

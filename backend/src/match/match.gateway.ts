@@ -14,7 +14,12 @@ import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { PublicUserInfo } from "../utils/zod/userInfo";
 import { QuestionDifficulty } from "src/utils/zod/question";
 import { MatchService } from "./match.service";
-import { MATCH_EVENTS, MATCH_MESSAGES, MATCH_WS_NAMESPACE } from "./constants";
+import {
+  MATCH_ERRORS,
+  MATCH_EVENTS,
+  MATCH_MESSAGES,
+  MATCH_WS_NAMESPACE,
+} from "./constants";
 
 export type PoolUserData = PublicUserInfo & {
   difficulties: QuestionDifficulty[];
@@ -55,72 +60,69 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     console.log("joined user: ", { poolUser });
 
-    // if user already in room, send existing room id to user
-    const [existingRoomErr, existingRoom] =
-      await this.matchService.handleUserAlreadyMatched(poolUser);
-    if (existingRoom || !existingRoomErr) {
-      client.emit(
-        MATCH_EVENTS.ROOM_EXISTS,
-        JSON.stringify({ message: MATCH_MESSAGES.ROOM_EXISTS, existingRoom })
+    try {
+      const existingRoomId = await this.matchService.handleUserAlreadyMatched(
+        poolUser
       );
-      return;
-    }
 
-    // find users with matching difficulties
-    const [matchingUsersErr, matchingUsers] = await tryit(
-      this.matchService.handleFindMatchingUsers
-    )(poolUser);
-
-    // if unable to find any, add to queue
-    if (matchingUsersErr || !matchingUsers || matchingUsers.length === 0) {
-      const [joinQueueErr] = await tryit(
-        this.matchService.handleJoinMatchQueue
-      )(poolUser);
-
-      // emit join queue error if error
-      if (joinQueueErr) {
-        console.log("join queue error: ", joinQueueErr);
+      if (existingRoomId) {
         client.emit(
-          MATCH_EVENTS.JOIN_QUEUE_ERROR,
+          MATCH_EVENTS.ROOM_EXISTS,
           JSON.stringify({
-            message: MATCH_MESSAGES.JOIN_QUEUE_ERROR,
-            error: joinQueueErr,
+            message: MATCH_MESSAGES.ROOM_EXISTS,
+            existingRoomId,
           })
         );
         return;
       }
 
-      // emit join queue success
+      // find users with matching difficulties
+      const matchingUserIds = await this.matchService.handleFindMatchingUserIds(
+        poolUser
+      );
+
+      // if unable to find any, add to queue
+      if (!matchingUserIds || matchingUserIds.length === 0) {
+        // use normal try catch since radash tryit causes `this.cache is undefined` error
+        await this.matchService.handleJoinMatchQueue(poolUser);
+        // emit join queue success
+        client.emit(
+          MATCH_EVENTS.JOIN_QUEUE_SUCCESS,
+          JSON.stringify({ message: MATCH_MESSAGES.JOIN_QUEUE_SUCCESS })
+        );
+        return;
+      }
+
+      // if match found, create room with matched users
+      const matchedRoom = await this.matchService.handleFoundMatches(
+        poolUser,
+        matchingUserIds
+      );
+
+      console.log({ matchedRoom });
+
+      // if no error and matched room, emit room data to both users
+      const notifyAllUsers = matchedRoom.users.map(
+        async (user) =>
+          await this.server.to(user.socketId).emit(
+            MATCH_EVENTS.MATCH_FOUND,
+            JSON.stringify({
+              message: MATCH_MESSAGES.MATCH_FOUND,
+              matchedRoomId: matchedRoom.id,
+            })
+          )
+      );
+
+      // if error occurred trying to notify users, log it
+      await Promise.all(notifyAllUsers);
+    } catch (err: any) {
       client.emit(
-        MATCH_EVENTS.JOIN_QUEUE_SUCCESS,
-        JSON.stringify({ message: MATCH_MESSAGES.JOIN_QUEUE_SUCCESS })
+        MATCH_EVENTS.JOIN_QUEUE_ERROR,
+        JSON.stringify({
+          error: err,
+        })
       );
       return;
-    }
-
-    // if match found, create room with matched users
-    const [matchedRoomErr, matchedRoom] = await tryit(
-      this.matchService.handleFoundMatches
-    )(poolUser, matchingUsers);
-
-    console.log({ matchedRoom });
-
-    // if no error and matched room, emit room data to both users
-    const notifyAllUsers = matchedRoom.users.map(
-      async (user) =>
-        await this.server.to(user.socketId).emit(
-          MATCH_EVENTS.MATCH_FOUND,
-          JSON.stringify({
-            message: MATCH_MESSAGES.MATCH_FOUND,
-            matchedRoom,
-          })
-        )
-    );
-
-    // if error occurred trying to notify users, log it
-    const [notifyErr] = await tryit(Promise.all)(notifyAllUsers);
-    if (notifyErr) {
-      console.log("error notifying users of match: ", notifyErr);
     }
   }
 
@@ -128,37 +130,20 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onLeaveMatch(client: Socket, data: any) {
     const { id }: { id: number } = JSON.parse(data);
 
-    // get queue user from user id
-    const [noUserErr, user] = await this.matchService.getQueueUserFromId(
-      id.toString()
-    );
-
-    // emit error if user not found in queue
-    if (noUserErr || !user) {
+    try {
+      // get queue user from user id
+      const user = await this.matchService.getQueueUserFromId(id.toString());
+      // disconnect user from queue
+      await this.matchService.disconnectFromMatchQueue(user);
+    } catch (err) {
+      // emit error if user not found in queue
       client.emit(
         MATCH_EVENTS.LEAVE_QUEUE_ERROR,
         JSON.stringify({
-          message: "error occurred, user is not in queue.",
-          error: noUserErr,
+          error: err,
         })
       );
       return;
-    }
-
-    // disconnect user from queue
-    const [disconnectErr] = await tryit(
-      this.matchService.disconnectFromMatchQueue
-    )(user);
-
-    // emit error if failed to disconnect user from queue
-    if (disconnectErr) {
-      client.emit(
-        MATCH_EVENTS.LEAVE_QUEUE_ERROR,
-        JSON.stringify({
-          message: MATCH_MESSAGES.LEAVE_QUEUE_ERROR,
-          error: disconnectErr,
-        })
-      );
     }
 
     // emit success if successfully disconnect user from queue

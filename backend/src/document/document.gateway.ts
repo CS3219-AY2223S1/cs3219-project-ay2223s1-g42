@@ -3,11 +3,13 @@ import {
   WebSocketServer,
   OnGatewayInit,
 } from "@nestjs/websockets";
+import { UseGuards } from "@nestjs/common";
 import { Server } from "socket.io";
 import { Document, YSocketIO } from "y-socket.io/dist/server";
 
 import { CORS_OPTIONS } from "src/config";
 import { DocumentService, DOCUMENT_TEXT_NAME } from "./document.service";
+import { WsJwtAccessGuard } from "src/auth/guard/ws.access.guard";
 
 @WebSocketGateway({
   cors: CORS_OPTIONS,
@@ -24,43 +26,51 @@ export class DocumentGateway implements OnGatewayInit {
     //       for other logic, these do not match the regular expression, this could cause unwanted problems.
     // TIP: You can export a new instance from another file to manage as singleton and access documents from all app.
     this.ySocketIO = new YSocketIO(server, {
-      // authenticate: (auth) => auth.token === 'valid-token',
+      authenticate: (auth) => {
+        console.log({ auth });
+        return true;
+      },
       // levelPersistenceDir: './storage-location',
       // gcEnabled: true,
     });
 
     this.ySocketIO.on("document-loaded", async (doc: Document) => {
       const roomId = doc.name;
-      const [err, delta] = await this.documentService.getDocumentDeltaFromId(
-        roomId
-      );
-      if (err || !delta) {
+      try {
+        const delta = await this.documentService.getDocumentDeltaFromId(roomId);
+        doc.getText(DOCUMENT_TEXT_NAME).applyDelta(delta);
+      } catch (err) {
         console.error(
           "error loading document or document does not exist yet: ",
           err
         );
-        return;
       }
-      doc.getText(DOCUMENT_TEXT_NAME).applyDelta(delta);
     });
 
     // this.ySocketIO.on(
     //   "document-update",
     //   async (doc: Document, update: Uint8Array) => {}
     // );
-    // ysocketio.on('awareness-update', (doc: Document, update: Uint8Array) => console.log(`The awareness of the document ${doc.name} is updated`))
-    // ysocketio.on('document-destroy', async (doc: Document) => console.log(`The document ${doc.name} is being destroyed`))
+    // this.ySocketIO.on("awareness-update", (doc: Document, update: Uint8Array) =>
+    //   console.log(
+    //     `The awareness of the document ${doc.name} is updated with: ${update}`
+    //   )
+    // );
+
+    this.ySocketIO.on("document-destroy", async (doc: Document) => {
+      console.log(`The document ${doc.name} is being destroyed`);
+      try {
+        await this.documentService.deleteDocument(doc.name);
+      } catch (err) {
+        console.error("error deleting document: ", err);
+      }
+    });
+
     this.ySocketIO.on(
       "all-document-connections-closed",
       async (doc: Document) => {
         console.log(`All clients of document ${doc.name} are disconected`);
-        const [err] = await this.documentService.saveRoomDocument(
-          doc.name,
-          doc
-        );
-        if (err) {
-          console.error("error saving document: ", err);
-        }
+        await this.documentService.saveRoomDocument(doc.name, doc);
       }
     );
 

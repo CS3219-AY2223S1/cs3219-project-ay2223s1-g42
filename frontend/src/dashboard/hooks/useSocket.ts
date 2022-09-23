@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import { io, Socket } from "socket.io-client";
 import Peer from "simple-peer";
@@ -38,10 +39,31 @@ enum MATCH_EVENTS {
   ROOM_EXISTS = "matched",
 }
 
+enum ROOM_EVENTS {
+  JOIN_ROOM = "join-room",
+  JOIN_ROOM_ERROR = "join-room-error",
+  LEAVE_ROOM = "leave-room",
+  LEAVE_ROOM_ERR = "leave-room-error",
+  INVALID_ROOM = "invalid-room",
+  NEW_USER_JOINED = "new-user-joined",
+  OLD_USER_LEFT = "old-user-left",
+}
+
 type SocketStore = {
-  isInQueue: boolean;
-  room: Room | undefined;
   socket: Socket | undefined;
+  // queue data
+  roomId: string | undefined;
+  isInQueue: boolean;
+  joinQueue: (user: PoolUser) => void;
+  leaveQueue: (id: number) => void;
+  // room data
+  roomSocket: Socket | undefined;
+  room: Room | undefined;
+  newUser: User | undefined;
+  oldUser: User | undefined;
+  joinRoom: (user: User, roomId: string) => void;
+  leaveRoom: (user: User, roomId: string) => void;
+  // video data
   callAccepted: boolean;
   callEnded: boolean;
   stream: MediaStream | undefined;
@@ -55,8 +77,6 @@ type SocketStore = {
   callUser: (from: User, id: number) => void;
   leaveCall: () => void;
   setupVideo: () => void;
-  joinQueue: (user: PoolUser) => void;
-  leaveQueue: (id: number) => void;
 };
 
 type SocketValues = Omit<
@@ -85,10 +105,10 @@ const SocketStoreValues = (
 
   // handle already matched
   socket.on(MATCH_EVENTS.ROOM_EXISTS, (data) => {
-    const { existingRoom }: { message: string; existingRoom: Room } =
+    const { existingRoomId }: { message: string; existingRoomId: string } =
       JSON.parse(data);
-    console.log("existing room: ", { existingRoom });
-    setState({ isInQueue: false, room: existingRoom });
+    console.log("existing room: ", { existingRoomId });
+    setState({ isInQueue: false, roomId: existingRoomId });
   });
 
   // handle joined queue (no match found)
@@ -100,15 +120,16 @@ const SocketStoreValues = (
 
   // handle match found
   socket.on(MATCH_EVENTS.MATCH_FOUND, (data) => {
-    const { matchedRoom }: { message: string; matchedRoom: Room } =
+    const { matchedRoomId }: { message: string; matchedRoomId: string } =
       JSON.parse(data);
-    console.log("matched room: ", { matchedRoom });
-    setState({ isInQueue: false, room: matchedRoom });
+    console.log("matched room: ", { matchedRoomId });
+    // join room
+    setState({ isInQueue: false, roomId: matchedRoomId });
   });
 
   // handle join queue error
   socket.on(MATCH_EVENTS.JOIN_QUEUE_ERROR, (data) => {
-    const error: { message: string; error: Error } = JSON.parse(data);
+    const error: { error: Error } = JSON.parse(data);
     console.error("error joining queue: ", error);
     setState({ isInQueue: false });
   });
@@ -122,7 +143,7 @@ const SocketStoreValues = (
 
   // handle leave queue error
   socket.on(MATCH_EVENTS.LEAVE_QUEUE_ERROR, (data) => {
-    const error: { message: string; error: Error } = JSON.parse(data);
+    const error: { error: Error } = JSON.parse(data);
     console.error("error leaving queue: ", error);
   });
 
@@ -266,17 +287,85 @@ const SocketStoreValues = (
   };
 
   const joinQueue = (user: PoolUser) => {
-    getState().socket?.emit("join", JSON.stringify(user));
+    const socket = getState().socket;
+    if (!socket) {
+      console.log("socket not set, cannot join queue");
+      return;
+    }
+    socket.emit(MATCH_EVENTS.JOIN_QUEUE, JSON.stringify(user));
   };
 
   const leaveQueue = (id: number) => {
-    getState().socket?.emit("leave", JSON.stringify({ id }));
+    const socket = getState().socket;
+    if (!socket) {
+      console.log("socket not set, cannot join queue");
+      return;
+    }
+    const payload = JSON.stringify({ id });
+    socket.emit(MATCH_EVENTS.LEAVE_QUEUE, payload);
+  };
+
+  const joinRoom = (user: User, roomId: string) => {
+    const roomSocket = io(`${import.meta.env.VITE_API_URL}/room`, {
+      withCredentials: true,
+      transports: ["websocket"],
+      autoConnect: true,
+    });
+
+    roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
+      const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
+      console.log("new user joined: ", { room, newUser });
+      setState({ room, newUser });
+    });
+
+    roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
+      const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
+      console.log("old user left: ", { room, oldUser });
+      setState({ room, oldUser });
+    });
+
+    roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_ERR, (data) => {
+      const { message }: { message: string } = JSON.parse(data);
+      console.log("error leaving room: ", message);
+    });
+
+    roomSocket.on(ROOM_EVENTS.INVALID_ROOM, (data) => {
+      const { message }: { message: string } = JSON.parse(data);
+      console.log("invalid room: ", message);
+    });
+
+    const payload = JSON.stringify({ ...user, roomId });
+    roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
+    console.log("setting room socket: ", roomSocket);
+    setState({ roomSocket });
+  };
+
+  const leaveRoom = (user: User, roomId: string) => {
+    const roomSocket = getState().roomSocket;
+    if (!roomSocket) {
+      console.log("room socket not set, cannot leave room");
+      return;
+    }
+    const payload = JSON.stringify({ ...user, roomId });
+    console.log("leave room payload: ", payload);
+    roomSocket.emit(ROOM_EVENTS.LEAVE_ROOM, payload);
   };
 
   return {
-    isInQueue: false,
-    room: undefined,
     socket,
+    // queue data
+    roomId: undefined,
+    isInQueue: false,
+    joinQueue,
+    leaveQueue,
+    // room data
+    roomSocket: undefined,
+    room: undefined,
+    newUser: undefined,
+    oldUser: undefined,
+    joinRoom,
+    leaveRoom,
+    // video data
     callAccepted: false,
     callEnded: false,
     stream: undefined,
@@ -290,8 +379,6 @@ const SocketStoreValues = (
     callUser,
     leaveCall,
     setupVideo,
-    joinQueue,
-    leaveQueue,
   };
 };
 

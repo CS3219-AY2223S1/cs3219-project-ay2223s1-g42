@@ -5,7 +5,7 @@ export enum ROOM_EVENTS {
   LEAVE_ROOM_ERR = "leave-room-error",
   INVALID_ROOM = "invalid-room",
   NEW_USER_JOINED = "new-user-joined",
-  OLD_USER_JOINED = "old-user-left",
+  OLD_USER_LEFT = "old-user-left",
 }
 
 export enum ROOM_MESSAGES {
