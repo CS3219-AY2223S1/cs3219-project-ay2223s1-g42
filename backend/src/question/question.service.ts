@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { QuestionSummary, Prisma } from "@prisma/client";
-import _ from "lodash";
 
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -96,23 +95,28 @@ export class QuestionService {
       select: { questionSummaries: { select: { titleSlug: true } } },
     });
 
-    const slugArrays = [];
+    const slugArrays: string[][] = [];
     for (const { questionSummaries } of res) {
       slugArrays.push(questionSummaries.map((slug) => slug.titleSlug));
     }
 
-    return await this.getSummaryFromSlug(_.intersection(...slugArrays));
+    // Gets intersection of arrays (AND filter)
+    const intersect = slugArrays.reduce((prev, curr) =>
+      curr.filter(Set.prototype.has, new Set(prev))
+    );
+
+    return await this.getSummaryFromSlug(intersect);
   }
 
   private toQuestionSummaryTableType(res: any) {
     return [
       ...res.map((v) => {
         const { topicTags, ...info } = v as QuestionSummaryTableType & {
-          topicTags: { name: string }[];
+          topicTags: { topicSlug: string }[];
         };
         return {
           ...info,
-          topicTags: [...topicTags.map((v) => v.name)],
+          topicTags: [...topicTags.map((v) => v.topicSlug)],
         };
       }),
     ];
