@@ -31,7 +31,6 @@ This is based of what LeetCode returns, for the actual schema that was applied, 
 | `createdAt`        | `timestamp` | When the question was seeded                  |
 | `updatedAt`        | `timestamp` | When the question was last updated            |
 
-
 ##### Question Details
 
 | Column Name | Data Type   | Description                                |
@@ -41,7 +40,6 @@ This is based of what LeetCode returns, for the actual schema that was applied, 
 | `topicTags` | `string[]`  | Topics that are associated to the question |
 | `createdAt` | `timestamp` | When the question was seeded               |
 | `updatedAt` | `timestamp` | When the question was last updated         |
-
 
 #### GraphQL Queries
 

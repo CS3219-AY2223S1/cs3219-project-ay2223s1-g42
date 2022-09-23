@@ -50,6 +50,15 @@ export class QuestionService {
     };
   }
 
+  async getDailyQuestionContent() {
+    const dailySlug = await this.prisma.questionSummary.findFirstOrThrow({
+      where: { isDailyQuestion: true },
+      select: { titleSlug: true },
+    });
+
+    return await this.getContentFromSlug(dailySlug.titleSlug);
+  }
+
   /**
    * Gets all the question summaries with the following fields:
    * acRate, difficulty, title, titleSlug, topicTags and updatedAt
@@ -68,18 +77,26 @@ export class QuestionService {
    *
    * @param   {string} titleSlugs  title slugs associated to the questions
    *
-   * @return  {QuestionSummary} Corresponding QuestionSummary to the title slug
+   * @return  Corresponding QuestionSummary to the title slug
    * @throws  NotFoundError
    */
   async getSummaryFromSlug(titleSlugs: string[]) {
     const res = await this.prisma.questionSummary.findMany({
-      where: {
-        titleSlug: { in: titleSlugs },
-      },
+      where: { titleSlug: { in: titleSlugs } },
       select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
     });
 
     return this.toQuestionSummaryTableType(res);
+  }
+
+  async getDailyQuestionSummary() {
+    // Cron job ensures that there's only 1 QOTD at a time
+    const dailySummary = await this.prisma.questionSummary.findMany({
+      where: { isDailyQuestion: true },
+      select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
+    });
+
+    return this.toQuestionSummaryTableType(dailySummary);
   }
 
   /**

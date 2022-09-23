@@ -8,11 +8,20 @@ export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @PublicRoute()
+  @Get("/content/daily")
+  async getContentForDailyQuestion() {
+    const dailyContent = await this.questionService.getDailyQuestionContent();
+
+    return dailyContent;
+  }
+
+  @PublicRoute()
   @Get("/content/:titleSlug")
   async getContentFromSlug(@Param("titleSlug") titleSlug: string) {
     const questionContent = await this.questionService.getContentFromSlug(
       titleSlug
     );
+
     return questionContent;
   }
 
@@ -20,7 +29,16 @@ export class QuestionController {
   @Get("/summaries/all")
   async getSummeries() {
     const questionSummaries = await this.questionService.getSummaries();
+
     return questionSummaries;
+  }
+
+  @PublicRoute()
+  @Get("/summaries/daily")
+  async getSummaryForDailyQuestion() {
+    const dailySummary = await this.questionService.getDailyQuestionSummary();
+
+    return dailySummary;
   }
 
   @PublicRoute()
