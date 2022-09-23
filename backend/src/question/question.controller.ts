@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Param } from "@nestjs/common";
 
 import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
@@ -23,26 +23,31 @@ export class QuestionController {
     return questionSummaries;
   }
 
-  //TODO: Ensure that the routes below work
-  //TODO: Ensure that string[] is being passed, currently if string[].length == 1,
-  //TODO:  NodeJS takes it as a char[].
-
   @PublicRoute()
-  @Get("/summaries")
-  async getSummariesFromSlug(@Query() titleSlugs: { titleSlug: string[] }) {
+  @Get("/summaries/titleSlugs/:titleSlugs")
+  async getSummariesFromSlug(@Param("titleSlugs") titleSlugs: string) {
     const filteredSummaries = await this.questionService.getSummaryFromSlug(
-      titleSlugs
+      this.sanitizeParams(titleSlugs)
     );
 
     return filteredSummaries;
   }
 
   @PublicRoute()
-  @Get("/summaries")
-  async getSummariesFromTopicTags(@Query() topics: { topic: string[] }) {
+  @Get("/summaries/topicTags/:topicTags")
+  async getSummariesFromTopicTags(@Param("topicTags") topicTags: string) {
     const filteredSummaries =
-      await this.questionService.getSummariesFromTopicTags(topics);
+      await this.questionService.getSummariesFromTopicTags(
+        this.sanitizeParams(topicTags)
+      );
 
     return filteredSummaries;
+  }
+
+  private sanitizeParams(param: string) {
+    return param
+      .split(",")
+      .map((v) => v.trim())
+      .map((v) => v.toLowerCase());
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { QuestionSummary, Prisma } from "@prisma/client";
+import _ from "lodash";
 
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -7,10 +8,6 @@ type QuestionSummaryTableType = Pick<
   QuestionSummary,
   "acRate" | "difficulty" | "title" | "titleSlug" | "updatedAt"
 >;
-
-// type TitleSlugsQueryType = {
-//   titleSlug: string[];
-// };
 
 const QUESTION_SUMMARY_TABLE_FIELDS: Prisma.QuestionSummarySelect = {
   acRate: true,
@@ -70,14 +67,16 @@ export class QuestionService {
   /**
    * Gets a summary that matches the unique title slug
    *
-   * @param   {string} titleSlug  title slug associated to the question
+   * @param   {string} titleSlugs  title slugs associated to the questions
    *
    * @return  {QuestionSummary} Corresponding QuestionSummary to the title slug
    * @throws  NotFoundError
    */
-  async getSummaryFromSlug(titleSlugs: { titleSlug: string[] }) {
+  async getSummaryFromSlug(titleSlugs: string[]) {
     const res = await this.prisma.questionSummary.findMany({
-      where: { titleSlug: { in: titleSlugs.titleSlug } },
+      where: {
+        titleSlug: { in: titleSlugs },
+      },
       select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
     });
 
@@ -91,9 +90,18 @@ export class QuestionService {
    *
    * @return Array of QuestionSummaries that matches all of the given tags.
    */
-  async getSummariesFromTopicTags(topics: { topic: string[] }) {
-    // Prisma doesnt allow application of multiple filters on the same key
-    // const slugMap: Record<string, number> = {};
+  async getSummariesFromTopicTags(topicTags: string[]) {
+    const res = await this.prisma.topicTag.findMany({
+      where: { name: { in: topicTags } },
+      select: { questionSummaries: { select: { titleSlug: true } } },
+    });
+
+    const slugArrays = [];
+    for (const { questionSummaries } of res) {
+      slugArrays.push(questionSummaries.map((slug) => slug.titleSlug));
+    }
+
+    return await this.getSummaryFromSlug(_.intersection(...slugArrays));
   }
 
   private toQuestionSummaryTableType(res: any) {
