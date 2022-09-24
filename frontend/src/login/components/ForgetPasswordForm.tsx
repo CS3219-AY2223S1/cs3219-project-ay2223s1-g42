@@ -6,6 +6,7 @@ import {
   ErrorAlert,
   TextInput,
   PrimaryButton,
+  NormalHeading,
 } from "src/components";
 import { useAuthStore } from "src/hooks";
 import { ForgetPasswordInfo, ForgetPasswordInfoSchema } from "../types";
@@ -48,9 +49,9 @@ const ForgetPasswordForm = () => {
           message="Failed to send reset instructions."
         />
       ) : (
-        <h4 className="leading-tight text-neutral-800 flex flex-col text-center mb-4">
+        <NormalHeading className="mb-4 text-sm font-normal">
           Please enter your account email address
-        </h4>
+        </NormalHeading>
       )}
       <form className="flex flex-col gap-8" onSubmit={onSubmit}>
         <TextInput

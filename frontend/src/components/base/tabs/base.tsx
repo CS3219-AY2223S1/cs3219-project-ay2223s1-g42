@@ -1,9 +1,8 @@
 import { Tab } from "@headlessui/react";
 import cx from "classnames";
-import { ReactNode } from "react";
 
 type BaseProp = {
-  values: Record<string, ReactNode>;
+  values: Record<string, JSX.Element>;
 };
 
 const BaseTabs = ({ values }: BaseProp) => {

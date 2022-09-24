@@ -7,6 +7,7 @@ import {
   PrimaryLink,
   TextInput,
   PrimaryButton,
+  NormalHeading,
 } from "src/components";
 import { useAuthStore } from "src/hooks";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
@@ -53,9 +54,9 @@ const ResetPasswordForm = ({ token }: Props) => {
           <SuccessAlert title="Password reset successful!" />
         </>
       ) : (
-        <h4 className="leading-tight text-neutral-800 flex flex-col text-center mb-4">
+        <NormalHeading className="mb-4">
           Please enter your new password
-        </h4>
+        </NormalHeading>
       )}
       <form className="flex flex-col gap-8" onSubmit={onSubmit}>
         <TextInput

@@ -62,13 +62,14 @@ export class RoomGateway {
       const { roomId: _, ...userData } = roomUser;
 
       // broadcast user has joined to room
-      await client.join(room.id);
+      client.emit(ROOM_EVENTS.JOIN_ROOM_SUCCESS, JSON.stringify({ room }));
       this.server
         .to(room.id)
         .emit(
           ROOM_EVENTS.NEW_USER_JOINED,
           JSON.stringify({ room, newUser: userData })
         );
+      await client.join(room.id);
     } catch (err) {
       console.error(err);
       client.emit(

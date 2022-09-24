@@ -28,7 +28,7 @@ type Room = {
   difficulty?: QuestionDifficulty;
 };
 
-enum MATCH_EVENTS {
+export enum MATCH_EVENTS {
   JOIN_QUEUE = "join",
   JOIN_QUEUE_SUCCESS = "join-success",
   JOIN_QUEUE_ERROR = "join-failed",
@@ -39,18 +39,33 @@ enum MATCH_EVENTS {
   ROOM_EXISTS = "matched",
 }
 
-enum ROOM_EVENTS {
+export enum ROOM_EVENTS {
   JOIN_ROOM = "join-room",
+  JOIN_ROOM_SUCCESS = "join-room-success",
   JOIN_ROOM_ERROR = "join-room-error",
   LEAVE_ROOM = "leave-room",
+  LEAVE_ROOM_SUCCESS = "leave-room-success",
   LEAVE_ROOM_ERR = "leave-room-error",
   INVALID_ROOM = "invalid-room",
   NEW_USER_JOINED = "new-user-joined",
   OLD_USER_LEFT = "old-user-left",
 }
 
+export enum StatusType {
+  SUCCESS = "Success",
+  ERROR = "Error",
+  INFO = "Info",
+}
+
+type Status = {
+  status: StatusType;
+  event: ROOM_EVENTS | MATCH_EVENTS;
+  message: string;
+};
+
 type SocketStore = {
   socket: Socket | undefined;
+  status: Status | undefined;
   // queue data
   roomId: string | undefined;
   isInQueue: boolean;
@@ -105,46 +120,81 @@ const SocketStoreValues = (
 
   // handle already matched
   socket.on(MATCH_EVENTS.ROOM_EXISTS, (data) => {
-    const { existingRoomId }: { message: string; existingRoomId: string } =
-      JSON.parse(data);
-    console.log("existing room: ", { existingRoomId });
-    setState({ isInQueue: false, roomId: existingRoomId });
+    const {
+      message,
+      existingRoomId,
+    }: { message: string; existingRoomId: string } = JSON.parse(data);
+    const queueStatusMsg = `You are already in room ${existingRoomId}. Leave the room before trying to join another match!`;
+    const queueStatus: Status = {
+      status: StatusType.ERROR,
+      event: MATCH_EVENTS.ROOM_EXISTS,
+      message: queueStatusMsg,
+    };
+    console.error(message);
+    setState({ isInQueue: false, roomId: existingRoomId, status: queueStatus });
   });
 
   // handle joined queue (no match found)
   socket.on(MATCH_EVENTS.JOIN_QUEUE_SUCCESS, (data) => {
     const { message }: { message: string } = JSON.parse(data);
-    console.log("successfully joined queue: ", { message });
-    setState({ isInQueue: true });
+    const queueStatus: Status = {
+      status: StatusType.SUCCESS,
+      event: MATCH_EVENTS.JOIN_QUEUE_SUCCESS,
+      message,
+    };
+    setState({ isInQueue: true, status: queueStatus });
   });
 
   // handle match found
   socket.on(MATCH_EVENTS.MATCH_FOUND, (data) => {
     const { matchedRoomId }: { message: string; matchedRoomId: string } =
       JSON.parse(data);
-    console.log("matched room: ", { matchedRoomId });
+    const queueStatusMsg = `Match found! Joining room ${matchedRoomId}...`;
+    const queueStatus: Status = {
+      status: StatusType.SUCCESS,
+      event: MATCH_EVENTS.MATCH_FOUND,
+      message: queueStatusMsg,
+    };
     // join room
-    setState({ isInQueue: false, roomId: matchedRoomId });
+    setState({ isInQueue: false, roomId: matchedRoomId, status: queueStatus });
   });
 
   // handle join queue error
   socket.on(MATCH_EVENTS.JOIN_QUEUE_ERROR, (data) => {
-    const error: { error: Error } = JSON.parse(data);
-    console.error("error joining queue: ", error);
-    setState({ isInQueue: false });
+    const { message }: { message: string } = JSON.parse(data);
+    const queueStatusMsg = "Error joining queue. Try again later!";
+    const queueStatus: Status = {
+      status: StatusType.ERROR,
+      event: MATCH_EVENTS.JOIN_QUEUE_ERROR,
+      message: queueStatusMsg,
+    };
+    console.error(message);
+    setState({ isInQueue: false, status: queueStatus });
   });
 
   // handle leave queue success
   socket.on(MATCH_EVENTS.LEAVE_QUEUE_SUCCESS, (data) => {
     const { message }: { message: string } = JSON.parse(data);
-    console.log("successfully left queue: ", message);
-    setState({ isInQueue: false });
+    const queueStatusMsg = "Left queue successfully!";
+    const queueStatus: Status = {
+      status: StatusType.SUCCESS,
+      event: MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
+      message: queueStatusMsg,
+    };
+    setState({ isInQueue: false, status: queueStatus });
   });
 
   // handle leave queue error
   socket.on(MATCH_EVENTS.LEAVE_QUEUE_ERROR, (data) => {
-    const error: { error: Error } = JSON.parse(data);
-    console.error("error leaving queue: ", error);
+    const { message }: { message: string } = JSON.parse(data);
+    const queueStatusMsg = "Error leaving queue. Try again later!";
+    const queueStatus: Status = {
+      status: StatusType.ERROR,
+      event: MATCH_EVENTS.LEAVE_QUEUE_ERROR,
+      message: queueStatusMsg,
+    };
+    console.error(message);
+    setState({ status: queueStatus });
   });
 
   const setupVideo = async () => {
@@ -312,26 +362,82 @@ const SocketStoreValues = (
       autoConnect: true,
     });
 
-    roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
-      const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
-      console.log("new user joined: ", { room, newUser });
-      setState({ room, newUser });
+    roomSocket.on(ROOM_EVENTS.JOIN_ROOM_SUCCESS, (data) => {
+      const { room }: { room: Room } = JSON.parse(data);
+      console.log("successfully joined room: ", { room });
+      const roomStatusMsg = `Successfully joined room ${room.id}.`;
+      const roomStatus: Status = {
+        status: StatusType.SUCCESS,
+        event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
+        message: roomStatusMsg,
+      };
+      setState({ room, status: roomStatus });
     });
 
-    roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
-      const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
-      console.log("old user left: ", { room, oldUser });
-      setState({ room, oldUser });
+    roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
+      const { message }: { message: string } = JSON.parse(data);
+      const roomStatusMsg = `Error occurred while joining room.`;
+      const roomStatus: Status = {
+        status: StatusType.ERROR,
+        event: ROOM_EVENTS.JOIN_ROOM_ERROR,
+        message: roomStatusMsg,
+      };
+      setState({ status: roomStatus });
+    });
+
+    roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_SUCCESS, (data) => {
+      const { message }: { message: string } = JSON.parse(data);
+      const roomStatusMsg = `Successfully left room.`;
+      const roomStatus: Status = {
+        status: StatusType.SUCCESS,
+        event: ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
+        message: roomStatusMsg,
+      };
+      setState({ room: undefined, roomId: undefined, status: roomStatus });
     });
 
     roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_ERR, (data) => {
       const { message }: { message: string } = JSON.parse(data);
-      console.log("error leaving room: ", message);
+      const roomStatusMsg = `Error occurred while leaving room.`;
+      const roomStatus: Status = {
+        status: StatusType.ERROR,
+        event: ROOM_EVENTS.LEAVE_ROOM_ERR,
+        message: roomStatusMsg,
+      };
+      setState({ status: roomStatus });
     });
 
     roomSocket.on(ROOM_EVENTS.INVALID_ROOM, (data) => {
       const { message }: { message: string } = JSON.parse(data);
-      console.log("invalid room: ", message);
+      const roomStatusMsg = `Room provided is invalid. Please try searching for another match.`;
+      const roomStatus: Status = {
+        status: StatusType.ERROR,
+        event: ROOM_EVENTS.INVALID_ROOM,
+        message: roomStatusMsg,
+      };
+      setState({ status: roomStatus });
+    });
+
+    roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
+      const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
+      const roomStatusMsg = `${newUser.username} has joined the room.`;
+      const roomStatus: Status = {
+        status: StatusType.INFO,
+        event: ROOM_EVENTS.NEW_USER_JOINED,
+        message: roomStatusMsg,
+      };
+      setState({ room, newUser, status: roomStatus });
+    });
+
+    roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
+      const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
+      const roomStatusMsg = `${oldUser.username} has left the room.`;
+      const roomStatus: Status = {
+        status: StatusType.INFO,
+        event: ROOM_EVENTS.OLD_USER_LEFT,
+        message: roomStatusMsg,
+      };
+      setState({ room, oldUser, status: roomStatus });
     });
 
     const payload = JSON.stringify({ ...user, roomId });
@@ -353,6 +459,7 @@ const SocketStoreValues = (
 
   return {
     socket,
+    status: undefined,
     // queue data
     roomId: undefined,
     isInQueue: false,

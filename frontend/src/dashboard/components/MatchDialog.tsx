@@ -1,8 +1,7 @@
 import { useEffect } from "react";
-import { Navigate, useNavigate } from "react-router";
-import { PrimaryButton, RedButton } from "src/components/base";
-import { PrimaryDialog } from "src/components/base/dialog";
-import { useAuthStore } from "src/hooks";
+import { useNavigate } from "react-router";
+
+import { RedButton, PrimaryDialog } from "src/components";
 import { useSocketStore } from "../hooks";
 
 type Props = {
@@ -12,7 +11,6 @@ type Props = {
 
 export function MatchDialog({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
   const { isInQueue, roomId } = useSocketStore((state) => {
     return {
       isInQueue: state.isInQueue,
@@ -25,11 +23,25 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
 
+  // redirect to room if matched room ID set
   useEffect(() => {
     if (roomId) {
       navigate(`/room/${roomId}`);
     }
   }, [navigate, roomId]);
+
+  // disconnect from queue after 30s
+  useEffect(() => {
+    if (!isInQueue) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      onClose();
+    }, 30000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isInQueue, onClose]);
 
   return (
     <PrimaryDialog

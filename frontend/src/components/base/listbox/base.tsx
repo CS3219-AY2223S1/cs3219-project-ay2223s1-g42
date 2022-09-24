@@ -1,22 +1,23 @@
 import { Listbox, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import cx from "classnames";
 
 import { CheckIcon, ChevronDownIcon } from "src/components";
 
-enum LANGUAGE {
-  TS = "typescript",
-  JS = "javascript",
-  PY = "python",
-  CPP = "c++",
-}
+type Props<T> = {
+  value: T;
+  setValue: Dispatch<SetStateAction<T>>;
+  values: T[];
+};
 
-const BaseListbox = () => {
-  const [selected, setSelected] = useState(LANGUAGE.TS);
-
+const BaseListbox = <T extends string>({
+  value,
+  setValue,
+  values,
+}: Props<T>) => {
   return (
     <div className="w-48 z-10 border-r-[1px] border-neutral-900">
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={value} onChange={setValue}>
         {({ open }) => (
           <div className="relative">
             <Listbox.Button
@@ -25,7 +26,7 @@ const BaseListbox = () => {
               focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2
               focus-visible:ring-offset-orange-300 sm:text-sm"
             >
-              <span className="block truncate capitalize">{selected}</span>
+              <span className="block truncate capitalize">{value}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-50">
                 <ChevronDownIcon
                   className={cx(
@@ -50,7 +51,7 @@ const BaseListbox = () => {
             bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5
             focus:outline-none sm:text-sm border-t-[1px] border-t-neutral-900"
               >
-                {Object.values(LANGUAGE).map((lang, i) => (
+                {values.map((lang, i) => (
                   <Listbox.Option
                     key={i}
                     className={({ active }) =>

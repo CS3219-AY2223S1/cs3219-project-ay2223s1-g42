@@ -10,7 +10,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./styles/globals.css";
 import routes from "~react-pages";
 import { useAuthStore } from "./hooks";
-import { LoadingLayout, AppLayout } from "./components";
+import { LoadingLayout, AppLayout, ErrorPage } from "./components";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -20,15 +20,22 @@ const queryClient = new QueryClient({
 const App = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
+
+  const allRoutes = useRoutes(routes);
+
   // useEffect(() => {
   //   if (!user) {
   //     navigate(`/login`);
   //   }
   // }, []);
+
+  if (!allRoutes) {
+    return <ErrorPage />;
+  }
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<LoadingLayout />}>
-        <AppLayout>{useRoutes(routes)}</AppLayout>
+        <AppLayout>{allRoutes}</AppLayout>
       </Suspense>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

@@ -1,12 +1,13 @@
+import { BigHeading } from "src/components";
 import { SignupForm } from "../login/components";
 
-export default function signup() {
+const SignupPage = () => {
   return (
     <div className="w-full px-4 flex flex-col text-center mx-auto">
-      <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
-        Welcome.
-      </h1>
+      <BigHeading className="mt-4 mb-12">Welcome.</BigHeading>
       <SignupForm />
     </div>
   );
-}
+};
+
+export default SignupPage;

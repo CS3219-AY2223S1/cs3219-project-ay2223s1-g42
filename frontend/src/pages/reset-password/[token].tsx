@@ -1,15 +1,19 @@
 import { useParams } from "react-router";
+import { BigHeading } from "src/components";
+import { BaseHeading } from "src/components/base/heading/base";
 
 import { ResetPasswordForm } from "src/login/components";
+import ErrorPage from "../[...all]";
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
+  if (!token) {
+    return <ErrorPage />;
+  }
   return (
     <div className="w-full px-4 flex flex-col gap-8 text-center">
-      <h4 className="font-display font-bold leading-tight text-4xl text-neutral-800">
-        Reset Password
-      </h4>
-      <ResetPasswordForm token={typeof token === "string" ? token : ""} />
+      <BigHeading>Reset Password</BigHeading>
+      <ResetPasswordForm token={token} />
     </div>
   );
 };

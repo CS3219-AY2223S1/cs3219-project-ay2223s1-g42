@@ -6,10 +6,20 @@ import * as monaco from "monaco-editor";
 
 import { useAuthStore } from "src/hooks";
 
+export enum LANGUAGE {
+  TS = "typescript",
+  JS = "javascript",
+  PY = "python",
+  CPP = "cpp",
+}
+
 const useEditor = (roomId: string) => {
-  const [doc, setDoc] = useState<Y.Doc | null>(null);
-  const [text, setText] = useState<Y.Text | null>(null);
-  const [provider, setProvider] = useState<SocketIOProvider | null>(null);
+  const [doc, setDoc] = useState<Y.Doc | undefined>(undefined);
+  const [text, setText] = useState<Y.Text | undefined>(undefined);
+  const [language, setLanguage] = useState<LANGUAGE>(LANGUAGE.TS);
+  const [provider, setProvider] = useState<SocketIOProvider | undefined>(
+    undefined
+  );
   const [connected, setConnected] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const [clients, setClients] = useState<string[]>([]);
@@ -89,7 +99,7 @@ const useEditor = (roomId: string) => {
     });
     setText(docText);
     setProvider(socketIOProvider);
-  }, [doc, provider, user?.id, user?.username]);
+  }, [doc, provider, roomId, user?.id, user?.username]);
 
   // set up monaco binding
   useEffect(() => {
@@ -114,11 +124,13 @@ const useEditor = (roomId: string) => {
   return {
     doc,
     text,
+    language,
     provider,
     connected,
     input,
     clients,
     binding,
+    setLanguage,
     handleEditorDidMount,
   };
 };

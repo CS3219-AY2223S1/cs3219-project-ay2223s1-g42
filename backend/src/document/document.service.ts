@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { tryit } from "radash";
 import { Document } from "y-socket.io/dist/server";
 
 import { NAMESPACES } from "src/cache/constants";

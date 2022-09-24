@@ -3,15 +3,21 @@ import { useLocation } from "react-router";
 import { useAuthStore } from "src/hooks";
 import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
+import { TheToast } from "./TheToast";
 
 type Props = {
-  children: React.ReactNode;
+  children: JSX.Element;
 };
 
 const AppLayout = ({ children }: Props) => {
   // fetch me query
-  const user = useAuthStore((state) => state.user);
-  const useGetMe = useAuthStore((state) => state.useGetMe);
+  const { user, useGetMe } = useAuthStore((state) => {
+    return {
+      user: state.user,
+      useGetMe: state.useGetMe,
+    };
+  });
+
   useGetMe();
 
   // current pathname
@@ -21,9 +27,10 @@ const AppLayout = ({ children }: Props) => {
   // layout for room page
   if (user && pathname.startsWith("/room")) {
     return (
-      <div className="justify-between flex flex-col h-[150vh] lg:h-screen lg:max-h-screen max-w-[100vw]">
+      <div className="justify-between flex flex-col h-[150vh] lg:h-screen lg:max-h-screen max-w-[100vw] px-4">
         <TheNavbar />
         <div className="pt-[76px] md:pt-16 h-full">{children}</div>
+        <TheToast />
       </div>
     );
   }
@@ -34,6 +41,7 @@ const AppLayout = ({ children }: Props) => {
       <div className="justify-between h-[10000px] min-h-screen bg-neutral-100">
         <TheNavbar />
         <Container>{children}</Container>
+        <TheToast />
       </div>
     );
   }

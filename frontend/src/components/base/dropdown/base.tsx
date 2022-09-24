@@ -6,7 +6,7 @@ import { CheckFilledIcon, CheckIcon, ChevronDownIcon } from "src/components";
 
 type DropdownItem = {
   label: string;
-  icon?: React.ReactNode;
+  icon?: JSX.Element;
 };
 
 type Props = {

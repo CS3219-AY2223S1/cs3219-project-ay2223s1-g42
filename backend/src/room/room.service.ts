@@ -5,7 +5,6 @@ import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "src/match/match.gateway";
 import { Room } from "./room.gateway";
-import { tryit } from "radash";
 
 @Injectable()
 export class RoomService {

@@ -7,7 +7,6 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { tryit } from "radash";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
@@ -119,7 +118,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit(
         MATCH_EVENTS.JOIN_QUEUE_ERROR,
         JSON.stringify({
-          error: err,
+          message: MATCH_MESSAGES.JOIN_QUEUE_ERROR,
         })
       );
       return;
@@ -135,12 +134,14 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user = await this.matchService.getQueueUserFromId(id.toString());
       // disconnect user from queue
       await this.matchService.disconnectFromMatchQueue(user);
+
+      console.log("left queue: ", { user });
     } catch (err) {
-      // emit error if user not found in queue
+      // emit error message if user not found in queue
       client.emit(
         MATCH_EVENTS.LEAVE_QUEUE_ERROR,
         JSON.stringify({
-          error: err,
+          message: MATCH_MESSAGES.LEAVE_QUEUE_ERROR,
         })
       );
       return;
