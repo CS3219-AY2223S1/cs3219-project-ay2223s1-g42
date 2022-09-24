@@ -38,6 +38,8 @@ export const ChangePasswordInfoSchema = z.object({
   newPassword: passwordZodString,
 });
 
+export const DeleteAccountInfoSchema = SignupSchema.pick({ password: true });
+
 export class SignupCredentialsDto extends createZodDto(SignupSchema) {}
 export class SigninCredentialsDto extends createZodDto(SigninSchema) {}
 export class EditableCredentialsDto extends createZodDto(EditableSchema) {}
@@ -46,4 +48,10 @@ export class ForgetPasswordCredentialsDto extends createZodDto(
 ) {}
 export class ResetPasswordCredentialsDto extends createZodDto(
   ResetPasswordSchema
+) {}
+export class ChangePasswordInfoDto extends createZodDto(
+  ChangePasswordInfoSchema
+) {}
+export class DeleteAccountInfoDto extends createZodDto(
+  DeleteAccountInfoSchema
 ) {}
