@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import {
+  FlattenedQuestionContent,
   FlattenedQuestionSummary,
   QuestionSummaryFromDb,
   questionSummarySelect,
@@ -19,7 +20,9 @@ export class QuestionService {
    * @return  Corresponding QuestionSummary to the title slug
    * @throws  NotFoundError
    */
-  async getContentFromSlug(titleSlug: string) {
+  async getContentFromSlug(
+    titleSlug: string
+  ): Promise<FlattenedQuestionContent> {
     const res = await this.prisma.questionContent.findUniqueOrThrow({
       where: { titleSlug },
       select: {
@@ -34,7 +37,7 @@ export class QuestionService {
     });
 
     return {
-      content: res.content.toString(),
+      content: res.content,
       hints: res.hints.map((v) => v.hint),
       topicTags: res.summary.topicTags.map((v) => v.topicSlug),
     };
