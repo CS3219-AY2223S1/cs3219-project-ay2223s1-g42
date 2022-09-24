@@ -13,9 +13,18 @@ import {
   SignUpCredentials,
   ForgetPasswordInfo,
   ResetPasswordInfo,
+<<<<<<< HEAD:frontend/src/store/createAuthSlice.ts
 } from "src/login";
 import { Axios } from "src/services";
 import type { GlobalStore } from "./useGlobalStore";
+=======
+} from "../login/types";
+import {
+  ChangePasswordInfo,
+  DeleteAccountInfo,
+  EditableCredentials,
+} from "src/user/types";
+>>>>>>> feat: complete delete account frontend:frontend/src/hooks/useAuth.ts
 
 type Options = {
   onSuccess?: () => Promise<void> | void | undefined;
@@ -50,6 +59,9 @@ export type AuthSlice = {
     id: number,
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, EditableCredentials, unknown>;
+  useDeleteAccountMutation: (
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, DeleteAccountInfo, unknown>;
 };
 
 const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
@@ -169,7 +181,9 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
   const useEditCredentialsMutation = (id: number, options?: Options) =>
     useMutation(
       (params: EditableCredentials) =>
-        Axios.post<ApiResponse>(`/users/${id}`, params).then((res) => res.data),
+        Axios.patch<ApiResponse>(`/users/${id}`, params).then(
+          (res) => res.data
+        ),
       {
         onSuccess: () => {
           if (options?.onSuccess) {
@@ -185,7 +199,25 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
   const useChangePasswordMutation = (options?: Options) =>
     useMutation(
       (params: ChangePasswordInfo) =>
-        Axios.post<ApiResponse>(`/users/change-password`, params).then(
+        Axios.post<ApiResponse>(`/auth/change-password`, params).then(
+          (res) => res.data
+        ),
+      {
+        onSuccess: () => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
+
+  const useDeleteAccountMutation = (options?: Options) =>
+    useMutation(
+      (params: DeleteAccountInfo) =>
+        Axios.post<ApiResponse>(`/auth/delete-account`, params).then(
           (res) => res.data
         ),
       {
@@ -210,6 +242,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
     useResetPasswordMutation,
     useChangePasswordMutation,
     useEditCredentialsMutation,
+    useDeleteAccountMutation,
   };
 };
 

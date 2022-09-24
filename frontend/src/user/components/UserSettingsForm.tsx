@@ -1,8 +1,21 @@
 import { Divider, RedButton } from "src/components";
 import { UserProps } from "src/user/types";
 import { ChangePasswordForm, EditCredentialsForm } from "src/user/components";
+import { useState } from "react";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 
 const UserSettingsForm = ({ user }: UserProps) => {
+  const [isDeleteAccountDialogOpen, setIsDeleteAccountDialogOpen] =
+    useState<boolean>(false);
+
+  const handleDeleteAccountButtonClick = () => {
+    setIsDeleteAccountDialogOpen(true);
+  };
+
+  const handleDeleteAccountDialogClose = () => {
+    setIsDeleteAccountDialogOpen(false);
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col">
@@ -15,7 +28,13 @@ const UserSettingsForm = ({ user }: UserProps) => {
       </div>
       <div className="flex flex-col">
         <Divider label="Delete Account" />
-        <RedButton type="submit">Delete account</RedButton>
+        <RedButton onClick={handleDeleteAccountButtonClick}>
+          Delete account
+        </RedButton>
+        <DeleteAccountDialog
+          isOpen={isDeleteAccountDialogOpen}
+          onClose={handleDeleteAccountDialogClose}
+        />
       </div>
     </div>
   );
