@@ -69,7 +69,7 @@ const EditCredentialsForm = ({ user }: UserProps) => {
           type="submit"
           isLoading={editCredentialsMutation.isLoading}
         >
-          Save Changes
+          Save changes
         </PrimaryButton>
       </form>
     </div>

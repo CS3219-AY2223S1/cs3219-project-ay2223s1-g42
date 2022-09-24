@@ -15,7 +15,7 @@ const UserSettingsForm = ({ user }: UserProps) => {
       </div>
       <div className="flex flex-col">
         <Divider label="Delete Account" />
-        <RedButton type="submit">Delete Account</RedButton>
+        <RedButton type="submit">Delete account</RedButton>
       </div>
     </div>
   );

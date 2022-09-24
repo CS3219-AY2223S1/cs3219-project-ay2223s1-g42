@@ -44,9 +44,7 @@ const ChangePasswordForm = () => {
           message={"Please check your current password again!"}
         />
       ) : changePasswordMutation.isSuccess ? (
-        <>
-          <SuccessAlert title="Password changed!" />
-        </>
+        <SuccessAlert title="Password changed!" />
       ) : (
         <></>
       )}
@@ -74,7 +72,7 @@ const ChangePasswordForm = () => {
           type="submit"
           isLoading={changePasswordMutation.isLoading}
         >
-          Change Password
+          Change password
         </PrimaryButton>
       </form>
     </div>
