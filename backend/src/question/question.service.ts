@@ -1,16 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { QuestionSummary, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
+import {
+  NormalisedSummaryType,
+  QuestionSummaryTableType,
+} from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
-
-type QuestionSummaryTableType = Pick<
-  QuestionSummary,
-  "acRate" | "difficulty" | "title" | "titleSlug" | "updatedAt"
-> & { topicTags: { topicSlug: string }[] };
-
-type NormalisedSummaryType = Omit<QuestionSummaryTableType, "topicTags"> & {
-  topicTags: string[];
-};
 
 const QUESTION_SUMMARY_TABLE_FIELDS: Prisma.QuestionSummarySelect = {
   acRate: true,
@@ -149,6 +144,16 @@ export class QuestionService {
 
     return await this.getSummariesFromSlug(intersect);
   }
+
+  async getAllTopics() {
+    const res = await this.prisma.topicTag.findMany({
+      select: { topicSlug: true },
+    });
+
+    return res.map((slug) => slug.topicSlug);
+  }
+
+  // ***** HELPER FUNCTIONS ***** //
 
   /**
    * Helper method to shape QuestionSummaryTableType into a consumer-friendly formay.

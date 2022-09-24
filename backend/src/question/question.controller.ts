@@ -1,11 +1,62 @@
-import { Controller, Get, Param, ParseArrayPipe, Query } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 
 import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
+import { NormalisedSummaryType } from "./question.type";
 
 @Controller("question")
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
+
+  @PublicRoute()
+  @Get(["", "/summary"])
+  async getSummeries(
+    @Query("titleSlugs") titleSlugs: string | string[] | undefined,
+    @Query("topicTags") topicTags: string | string[] | undefined
+  ) {
+    // if nether are specified
+    if (!titleSlugs && !topicTags) {
+      const summaries = await this.questionService.getSummaries();
+      return summaries;
+    }
+
+    const summaries: Record<string, NormalisedSummaryType> = {};
+    if (titleSlugs) {
+      const res = await this.questionService.getSummariesFromSlug(
+        this.sanitizeQuery(titleSlugs)
+      );
+      res.forEach((v) => (summaries[v.titleSlug] = v));
+    }
+
+    if (topicTags) {
+      const res = await this.questionService.getSummariesFromTopicTags(
+        this.sanitizeQuery(topicTags)
+      );
+      res.forEach((v) => {
+        if (!summaries[v.titleSlug]) {
+          summaries[v.titleSlug] = v;
+        }
+      });
+    }
+
+    return Object.values(summaries);
+  }
+
+  @PublicRoute()
+  @Get("/summary/daily")
+  async getSummaryForDailyQuestion() {
+    const dailySummary = await this.questionService.getDailyQuestionSummary();
+
+    return dailySummary;
+  }
+
+  @PublicRoute()
+  @Get("/topics")
+  async getAllTopics() {
+    const topics = await this.questionService.getAllTopics();
+
+    return topics;
+  }
 
   @PublicRoute()
   @Get("/content/daily")
@@ -25,50 +76,17 @@ export class QuestionController {
     return questionContent;
   }
 
-  @PublicRoute()
-  @Get("/summaries/all")
-  async getSummeries() {
-    const questionSummaries = await this.questionService.getSummaries();
+  // ***** HELPER FUNCTION ***** //
+  // Can possibly replace this using a DTO
+  private sanitizeQuery(query: string | string[], separator = ",") {
+    const splitQuery: string[] = [];
+    if (!Array.isArray(query)) {
+      splitQuery.push(...query.split(separator));
+    } else {
+      splitQuery.push(...query.flatMap((v) => v.split(",")));
+    }
 
-    return questionSummaries;
-  }
-
-  @PublicRoute()
-  @Get("/summaries/daily")
-  async getSummaryForDailyQuestion() {
-    const dailySummary = await this.questionService.getDailyQuestionSummary();
-
-    return dailySummary;
-  }
-
-  @PublicRoute()
-  @Get("/summaries/title/")
-  async getSummariesFromTitleSlug(
-    @Query("slugs", new ParseArrayPipe({ items: String, separator: "," }))
-    slugs: string[]
-  ) {
-    const summaries = this.questionService.getSummariesFromSlug(
-      this.sanitizeQuery(slugs)
-    );
-
-    return summaries;
-  }
-
-  @PublicRoute()
-  @Get("/summaries/topic/")
-  async getSummariesFromTopicTags(
-    @Query("tags", new ParseArrayPipe({ items: String, separator: "," }))
-    tags: string[]
-  ) {
-    const summaries = this.questionService.getSummariesFromTopicTags(
-      this.sanitizeQuery(tags)
-    );
-
-    return summaries;
-  }
-
-  private sanitizeQuery(query: string[]) {
-    return query.reduce((prev: string[], curr) => {
+    return splitQuery.reduce((prev: string[], curr) => {
       if (curr.trim()) {
         prev.push(curr.trim().toLowerCase());
       }
