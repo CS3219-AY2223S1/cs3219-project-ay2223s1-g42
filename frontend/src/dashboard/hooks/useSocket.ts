@@ -5,6 +5,7 @@ import Peer from "simple-peer";
 import create from "zustand";
 
 import { User } from "src/login";
+import toast from "react-hot-toast";
 
 type QuestionDifficulty = "easy" | "medium" | "hard";
 
@@ -67,7 +68,7 @@ type SocketStore = {
   socket: Socket | undefined;
   status: Status | undefined;
   // queue data
-  roomId: string | undefined;
+  queueRoomId: string | undefined;
   isInQueue: boolean;
   joinQueue: (user: PoolUser) => void;
   leaveQueue: (id: number) => void;
@@ -130,8 +131,13 @@ const SocketStoreValues = (
       event: MATCH_EVENTS.ROOM_EXISTS,
       message: queueStatusMsg,
     };
+    toast(queueStatusMsg);
     console.error(message);
-    setState({ isInQueue: false, roomId: existingRoomId, status: queueStatus });
+    setState({
+      isInQueue: false,
+      queueRoomId: existingRoomId,
+      status: queueStatus,
+    });
   });
 
   // handle joined queue (no match found)
@@ -155,8 +161,13 @@ const SocketStoreValues = (
       event: MATCH_EVENTS.MATCH_FOUND,
       message: queueStatusMsg,
     };
+    toast(queueStatusMsg);
     // join room
-    setState({ isInQueue: false, roomId: matchedRoomId, status: queueStatus });
+    setState({
+      isInQueue: false,
+      queueRoomId: matchedRoomId,
+      status: queueStatus,
+    });
   });
 
   // handle join queue error
@@ -168,6 +179,7 @@ const SocketStoreValues = (
       event: MATCH_EVENTS.JOIN_QUEUE_ERROR,
       message: queueStatusMsg,
     };
+    toast(queueStatusMsg);
     console.error(message);
     setState({ isInQueue: false, status: queueStatus });
   });
@@ -181,6 +193,7 @@ const SocketStoreValues = (
       event: MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
       message: queueStatusMsg,
     };
+    toast(queueStatusMsg);
     setState({ isInQueue: false, status: queueStatus });
   });
 
@@ -193,6 +206,7 @@ const SocketStoreValues = (
       event: MATCH_EVENTS.LEAVE_QUEUE_ERROR,
       message: queueStatusMsg,
     };
+    toast(queueStatusMsg);
     console.error(message);
     setState({ status: queueStatus });
   });
@@ -382,6 +396,7 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.JOIN_ROOM_ERROR,
         message: roomStatusMsg,
       };
+      toast(roomStatusMsg);
       setState({ status: roomStatus });
     });
 
@@ -393,7 +408,8 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
         message: roomStatusMsg,
       };
-      setState({ room: undefined, roomId: undefined, status: roomStatus });
+      toast(roomStatusMsg);
+      setState({ room: undefined, queueRoomId: undefined, status: roomStatus });
     });
 
     roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_ERR, (data) => {
@@ -404,6 +420,7 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.LEAVE_ROOM_ERR,
         message: roomStatusMsg,
       };
+      toast(roomStatusMsg);
       setState({ status: roomStatus });
     });
 
@@ -415,6 +432,7 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.INVALID_ROOM,
         message: roomStatusMsg,
       };
+      toast(roomStatusMsg);
       setState({ status: roomStatus });
     });
 
@@ -426,6 +444,7 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.NEW_USER_JOINED,
         message: roomStatusMsg,
       };
+      toast(roomStatusMsg);
       setState({ room, newUser, status: roomStatus });
     });
 
@@ -437,6 +456,7 @@ const SocketStoreValues = (
         event: ROOM_EVENTS.OLD_USER_LEFT,
         message: roomStatusMsg,
       };
+      toast(roomStatusMsg);
       setState({ room, oldUser, status: roomStatus });
     });
 
@@ -461,7 +481,7 @@ const SocketStoreValues = (
     socket,
     status: undefined,
     // queue data
-    roomId: undefined,
+    queueRoomId: undefined,
     isInQueue: false,
     joinQueue,
     leaveQueue,

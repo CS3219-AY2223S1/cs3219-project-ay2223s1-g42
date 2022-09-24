@@ -1,11 +1,11 @@
 import Editor from "@monaco-editor/react";
 import { useEffect } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import {
-  BaseDropdown,
   BaseListbox,
   LoadingLayout,
+  RedButton,
   UnauthorizedPage,
 } from "src/components";
 import { ROOM_EVENTS, useSocketStore } from "src/dashboard";
@@ -14,19 +14,21 @@ import { LANGUAGE, RoomTabs, useEditor } from "src/room";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const { room, roomSocket, status, joinRoom, leaveRoom } = useSocketStore(
-    (state) => {
+  const { queueRoomId, room, roomSocket, status, joinRoom, leaveRoom } =
+    useSocketStore((state) => {
       return {
+        queueRoomId: state.queueRoomId,
         room: state.room,
         roomSocket: state.roomSocket,
         status: state.status,
         joinRoom: state.joinRoom,
         leaveRoom: state.leaveRoom,
       };
-    }
-  );
-  const roomId = id ?? "default";
+    });
+  const pageRoomId = id ?? "default";
+  const isValidRoom = pageRoomId === queueRoomId;
   const {
     doc,
     language,
@@ -38,34 +40,50 @@ const RoomPage = (): JSX.Element => {
     input,
     provider,
     handleEditorDidMount,
-  } = useEditor(roomId);
+  } = useEditor(pageRoomId);
 
   useEffect(() => {
     // join room on mount
     if (!user) {
       return;
     }
-    joinRoom(user, roomId);
+    if (!isValidRoom) {
+      return;
+    }
+    joinRoom(user, queueRoomId);
 
     return () => {
-      // leave room on unmount
-      console.log("leaving room on unmount...");
-      leaveRoom(user, roomId);
+      if (room) {
+        // leave room on unmount
+        console.log("leaving room on unmount...");
+        leaveRoom(user, room.id);
+      }
     };
   }, []);
 
-  if (!provider || !roomSocket) {
-    return <LoadingLayout />;
-  }
+  useEffect(() => {
+    console.log({ status });
+    if (status?.event === ROOM_EVENTS.LEAVE_ROOM_SUCCESS) {
+      navigate("/");
+    }
+  }, [navigate, status]);
 
   if (!user) {
     return <UnauthorizedPage />;
   }
 
-  if (status?.event === ROOM_EVENTS.INVALID_ROOM) {
+  if (
+    status?.event === ROOM_EVENTS.INVALID_ROOM ||
+    (queueRoomId && !isValidRoom)
+  ) {
+    provider?.disconnect();
     return (
       <UnauthorizedPage title="Invalid room. Head to the home page and try finding another match!" />
     );
+  }
+
+  if (!provider || !roomSocket) {
+    return <LoadingLayout />;
   }
 
   if (room) {
@@ -75,12 +93,28 @@ const RoomPage = (): JSX.Element => {
           <RoomTabs />
         </div>
 
-        <div className="flex flex-col w-full h-full border-neutral-900 border-[1px] bg-blue-500">
-          <BaseListbox
-            value={language}
-            setValue={setLanguage}
-            values={Object.values(LANGUAGE)}
-          />
+        <div className="flex flex-col w-full h-full border-neutral-900 border-[1px]">
+          <div className="flex flex-row items-center justify-between w-full">
+            <BaseListbox
+              value={language}
+              setValue={setLanguage}
+              values={Object.values(LANGUAGE)}
+            />
+            <div>
+              <RedButton
+                className="py-2 text-sm"
+                onClick={() => {
+                  if (!queueRoomId) {
+                    console.error("no queue room id, cannot leave room");
+                    return;
+                  }
+                  leaveRoom(user, queueRoomId);
+                }}
+              >
+                disconnect
+              </RedButton>
+            </div>
+          </div>
           {!!doc ? (
             <>
               <Editor

@@ -1,5 +1,5 @@
+import { Dispatch, Fragment, SetStateAction } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { Dispatch, Fragment, SetStateAction, useState } from "react";
 import cx from "classnames";
 
 import { CheckIcon, ChevronDownIcon } from "src/components";
@@ -16,7 +16,7 @@ const BaseListbox = <T extends string>({
   values,
 }: Props<T>) => {
   return (
-    <div className="w-48 z-10 border-r-[1px] border-neutral-900">
+    <div className="w-48 z-10 border-r-[1px] border-b-[1px] border-neutral-900">
       <Listbox value={value} onChange={setValue}>
         {({ open }) => (
           <div className="relative">
@@ -48,8 +48,8 @@ const BaseListbox = <T extends string>({
             >
               <Listbox.Options
                 className="absolute max-h-60 w-full overflow-auto
-            bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5
-            focus:outline-none sm:text-sm border-t-[1px] border-t-neutral-900"
+              bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5
+                focus:outline-none sm:text-sm border-t-[1px] border-t-neutral-900"
               >
                 {values.map((lang, i) => (
                   <Listbox.Option

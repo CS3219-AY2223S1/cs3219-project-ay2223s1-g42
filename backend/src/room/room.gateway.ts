@@ -112,16 +112,29 @@ export class RoomGateway {
         roomUser.id
       );
 
-      console.log("user left room: ", { roomUser, room });
+      // remove user as room user
+      await this.roomService.removeUserAsRoomUser(roomUser.id.toString());
 
       // broadcast user has left to room
       await client.leave(room.id);
-      this.server
-        .to(room.id)
-        .emit(
-          ROOM_EVENTS.OLD_USER_LEFT,
-          JSON.stringify({ room, oldUser: roomUser })
-        );
+      client.emit(
+        ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
+        JSON.stringify({ message: ROOM_MESSAGES.LEAVE_ROOM_SUCCESS })
+      );
+
+      // if room not empty, notify other users that user has left room
+      if (room.users.length > 0) {
+        this.server
+          .to(room.id)
+          .emit(
+            ROOM_EVENTS.OLD_USER_LEFT,
+            JSON.stringify({ room, oldUser: roomUser })
+          );
+        return;
+      }
+
+      // if room empty, delete room
+      await this.roomService.deleteRoom(room.id);
     } catch (err) {
       console.error(err);
       client.emit(

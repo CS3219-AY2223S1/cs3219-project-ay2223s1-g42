@@ -11,24 +11,24 @@ type Props = {
 
 export function MatchDialog({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
-  const { isInQueue, roomId } = useSocketStore((state) => {
+  const { isInQueue, queueRoomId } = useSocketStore((state) => {
     return {
       isInQueue: state.isInQueue,
-      roomId: state.roomId,
+      queueRoomId: state.queueRoomId,
     };
   });
 
-  const dialogTitle = roomId ? "Match Found" : "Matching you now...";
-  const dialogDescription = roomId
+  const dialogTitle = queueRoomId ? "Match Found" : "Matching you now...";
+  const dialogDescription = queueRoomId
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
 
   // redirect to room if matched room ID set
   useEffect(() => {
-    if (roomId) {
-      navigate(`/room/${roomId}`);
+    if (queueRoomId) {
+      navigate(`/room/${queueRoomId}`);
     }
-  }, [navigate, roomId]);
+  }, [navigate, queueRoomId]);
 
   // disconnect from queue after 30s
   useEffect(() => {

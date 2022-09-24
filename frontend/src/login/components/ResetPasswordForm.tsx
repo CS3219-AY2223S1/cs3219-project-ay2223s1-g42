@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ErrorAlert,
   SuccessAlert,
-  PrimaryLink,
   TextInput,
   PrimaryButton,
   NormalHeading,

@@ -40,11 +40,7 @@ export class RoomService {
           key: user.id.toString(),
           value: room.id,
         });
-        await this.cache.setKeyInNamespace(
-          [NAMESPACES.ROOM, NAMESPACES.USERS],
-          user.id.toString(),
-          room.id
-        );
+        await this.addUserAsRoomUser(room.id, user.id.toString());
       });
 
       // throw if error occurred while adding room users
@@ -55,6 +51,21 @@ export class RoomService {
       console.error(err);
       return;
     }
+  }
+
+  async addUserAsRoomUser(roomId: string, userId: string) {
+    await this.cache.setKeyInNamespace(
+      [NAMESPACES.ROOM, NAMESPACES.USERS],
+      userId,
+      roomId
+    );
+  }
+
+  async removeUserAsRoomUser(userId: string) {
+    await this.cache.deleteKeyInNamespace(
+      [NAMESPACES.ROOM, NAMESPACES.USERS],
+      userId
+    );
   }
 
   async addUserToRoom(room: Room, user: PoolUser): Promise<Room> {

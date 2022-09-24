@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { PrimaryButton, LoadingLayout } from "src/components";
-import { BaseHeading } from "src/components/base/heading/base";
+import { PrimaryButton, LoadingLayout, NormalHeading } from "src/components";
 import { ApiResponse } from "src/login";
 import { Axios } from "src/services";
 
@@ -35,11 +34,11 @@ const VerifyEmailPage = () => {
         <LoadingLayout />
       ) : (
         <div className="px-4 flex flex-col text-center gap-8">
-          <BaseHeading>
+          <NormalHeading>
             {isSuccess
               ? "Email verification is successful!"
               : "Email verification failed! Please sign up again"}
-          </BaseHeading>
+          </NormalHeading>
           <PrimaryButton
             onClick={() => (isSuccess ? navigate("/") : navigate("/signup"))}
           >
