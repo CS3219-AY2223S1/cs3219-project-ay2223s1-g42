@@ -51,6 +51,8 @@
     "argon2": "^0.29.1",
     "cache-manager": "^4.1.0",
     "cache-manager-ioredis": "^2.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "csurf": "^1.11.0",
     "handlebars": "^4.7.7",

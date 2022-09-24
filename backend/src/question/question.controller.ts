@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, ParseArrayPipe, Query } from "@nestjs/common";
 
 import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
@@ -42,30 +42,37 @@ export class QuestionController {
   }
 
   @PublicRoute()
-  @Get("/summaries/titleSlugs/:titleSlugs")
-  async getSummariesFromSlug(@Param("titleSlugs") titleSlugs: string) {
-    const filteredSummaries = await this.questionService.getSummaryFromSlug(
-      this.sanitizeParams(titleSlugs)
+  @Get("/summaries/title/")
+  async getSummariesFromTitleSlug(
+    @Query("slugs", new ParseArrayPipe({ items: String, separator: "," }))
+    slugs: string[]
+  ) {
+    const summaries = this.questionService.getSummariesFromSlug(
+      this.sanitizeQuery(slugs)
     );
 
-    return filteredSummaries;
+    return summaries;
   }
 
   @PublicRoute()
-  @Get("/summaries/topicTags/:topicTags")
-  async getSummariesFromTopicTags(@Param("topicTags") topicTags: string) {
-    const filteredSummaries =
-      await this.questionService.getSummariesFromTopicTags(
-        this.sanitizeParams(topicTags)
-      );
+  @Get("/summaries/topic/")
+  async getSummariesFromTopicTags(
+    @Query("tags", new ParseArrayPipe({ items: String, separator: "," }))
+    tags: string[]
+  ) {
+    const summaries = this.questionService.getSummariesFromTopicTags(
+      this.sanitizeQuery(tags)
+    );
 
-    return filteredSummaries;
+    return summaries;
   }
 
-  private sanitizeParams(param: string) {
-    return param
-      .split(",")
-      .map((v) => v.trim())
-      .map((v) => v.toLowerCase());
+  private sanitizeQuery(query: string[]) {
+    return query.reduce((prev: string[], curr) => {
+      if (curr.trim()) {
+        prev.push(curr.trim().toLowerCase());
+      }
+      return prev;
+    }, []);
   }
 }

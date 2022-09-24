@@ -6,7 +6,11 @@ import { PrismaService } from "../prisma/prisma.service";
 type QuestionSummaryTableType = Pick<
   QuestionSummary,
   "acRate" | "difficulty" | "title" | "titleSlug" | "updatedAt"
->;
+> & { topicTags: { topicSlug: string }[] };
+
+type NormalisedSummaryType = Omit<QuestionSummaryTableType, "topicTags"> & {
+  topicTags: string[];
+};
 
 const QUESTION_SUMMARY_TABLE_FIELDS: Prisma.QuestionSummarySelect = {
   acRate: true,
@@ -50,6 +54,9 @@ export class QuestionService {
     };
   }
 
+  /**
+   * @return  The content of the Daily Question
+   */
   async getDailyQuestionContent() {
     const dailySlug = await this.prisma.questionSummary.findFirstOrThrow({
       where: { isDailyQuestion: true },
@@ -69,7 +76,8 @@ export class QuestionService {
     const res = await this.prisma.questionSummary.findMany({
       select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
     });
-    return this.toQuestionSummaryTableType(res);
+
+    return this.toQuestionSummaryTableType(res as QuestionSummaryTableType[]);
   }
 
   /**
@@ -80,15 +88,18 @@ export class QuestionService {
    * @return  Corresponding QuestionSummary to the title slug
    * @throws  NotFoundError
    */
-  async getSummaryFromSlug(titleSlugs: string[]) {
+  async getSummariesFromSlug(titleSlugs: string[]) {
     const res = await this.prisma.questionSummary.findMany({
       where: { titleSlug: { in: titleSlugs } },
       select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
     });
 
-    return this.toQuestionSummaryTableType(res);
+    return this.toQuestionSummaryTableType(res as QuestionSummaryTableType[]);
   }
 
+  /**
+   * @return  {QuestionSummary}  Summary of Daily Question
+   */
   async getDailyQuestionSummary() {
     // Cron job ensures that there's only 1 QOTD at a time
     const dailySummary = await this.prisma.questionSummary.findMany({
@@ -96,25 +107,39 @@ export class QuestionService {
       select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
     });
 
-    return this.toQuestionSummaryTableType(dailySummary);
+    return this.toQuestionSummaryTableType(
+      dailySummary as QuestionSummaryTableType[]
+    );
   }
 
   /**
-   * Gets all the summaries that matches all the given the topic tags.
+   * Gets a list of summaries that matches the given topics iff all of them are valid
+   * and intersect. Else, return an empty array.
    *
-   * @param {string[]} topicTags Array of topics to match
+   * @param   {string[]}  topicTags  Array of topics to match
    *
-   * @return Array of QuestionSummaries that matches all of the given tags.
+   * @return  {QuestionSummary[]}  Array of matching QuestionSummary.
    */
-  async getSummariesFromTopicTags(topicTags: string[]) {
+  async getSummariesFromTopicTags(
+    topicTags: string[]
+  ): Promise<NormalisedSummaryType[]> {
     const res = await this.prisma.topicTag.findMany({
       where: { topicSlug: { in: topicTags } },
       select: { questionSummaries: { select: { titleSlug: true } } },
     });
 
+    // consist of at least one invalid tag
+    if (topicTags.length != res.length) {
+      return [];
+    }
+
     const slugArrays: string[][] = [];
     for (const { questionSummaries } of res) {
       slugArrays.push(questionSummaries.map((slug) => slug.titleSlug));
+    }
+
+    if (slugArrays.length === 1) {
+      return await this.getSummariesFromSlug(slugArrays.flat());
     }
 
     // Gets intersection of arrays (AND filter)
@@ -122,20 +147,30 @@ export class QuestionService {
       curr.filter(Set.prototype.has, new Set(prev))
     );
 
-    return await this.getSummaryFromSlug(intersect);
+    return await this.getSummariesFromSlug(intersect);
   }
 
-  private toQuestionSummaryTableType(res: any) {
-    return [
-      ...res.map((v) => {
-        const { topicTags, ...info } = v as QuestionSummaryTableType & {
-          topicTags: { topicSlug: string }[];
-        };
+  /**
+   * Helper method to shape QuestionSummaryTableType into a consumer-friendly formay.
+   *
+   * @param   {QuestionSummaryTableType[]}  data Raw data formatted by Prisma
+   *
+   * @return  {NormalisedSummaryType[]}  "Flattened" QuestionSummaryTableType
+   */
+  private toQuestionSummaryTableType(
+    data: QuestionSummaryTableType[]
+  ): NormalisedSummaryType[] {
+    const normData = [
+      ...data.map((summary) => {
+        const { topicTags, updatedAt, ...info } = summary;
         return {
           ...info,
-          topicTags: [...topicTags.map((v) => v.topicSlug)],
+          topicTags: topicTags.map((tag) => tag.topicSlug),
+          updatedAt,
         };
       }),
     ];
+
+    return normData;
   }
 }
