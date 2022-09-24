@@ -1,20 +1,15 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 
-import { Axios } from "src/services";
 import {
   ErrorAlert,
   SuccessAlert,
   TextInput,
   PrimaryButton,
 } from "src/components";
-import {
-  ApiResponse,
-  EditableCredentials,
-  EditableCredentialsSchema,
-} from "src/user/types";
+import { EditableCredentials, EditableCredentialsSchema } from "src/user/types";
 import { UserProps } from "src/user/types";
+import { useAuthStore } from "src/hooks";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const { id, email, username } = user;
@@ -29,16 +24,14 @@ const EditCredentialsForm = ({ user }: UserProps) => {
     defaultValues: { username },
   });
 
-  const editCredentialsMutation = useMutation(
-    (params: EditableCredentials) =>
-      Axios.post<ApiResponse>(`/users/${id}`, params).then((res) => res.data),
-    {
-      onError: (error) => {
-        reset();
-        console.log({ error });
-      },
-    }
+  const useEditCredentialsMutation = useAuthStore(
+    (state) => state.useEditCredentialsMutation
   );
+  const editCredentialsMutation = useEditCredentialsMutation(id, {
+    onSuccess: () => {
+      reset();
+    },
+  });
 
   // submit function
   const handleResetPassword = async (credentials: EditableCredentials) => {
@@ -51,13 +44,11 @@ const EditCredentialsForm = ({ user }: UserProps) => {
       {editCredentialsMutation.isError ? (
         <ErrorAlert title={"Username taken!"} message={"Please try again"} />
       ) : editCredentialsMutation.isSuccess ? (
-        <>
-          <SuccessAlert title="Username changed!" />
-        </>
+        <SuccessAlert title="Username changed!" />
       ) : (
         <></>
       )}
-      <form className="flex flex-col gap-4 mb-6" onSubmit={onSubmit}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <TextInput
           label="Email"
           defaultValue={email}

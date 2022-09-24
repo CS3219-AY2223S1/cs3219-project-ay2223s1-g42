@@ -1,10 +1,6 @@
 import { User } from "src/login";
 import { z } from "zod";
 
-export type ApiResponse = {
-  message: string;
-};
-
 // schemas
 export const ChangePasswordInfoSchema = z
   .object({

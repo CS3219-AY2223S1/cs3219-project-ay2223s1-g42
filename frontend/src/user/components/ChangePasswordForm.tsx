@@ -1,19 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 
-import { Axios } from "src/services";
 import {
   ErrorAlert,
   SuccessAlert,
   TextInput,
   PrimaryButton,
 } from "src/components";
-import {
-  ApiResponse,
-  ChangePasswordInfo,
-  ChangePasswordInfoSchema,
-} from "src/user/types";
+import { ChangePasswordInfo, ChangePasswordInfoSchema } from "src/user/types";
+import { useAuthStore } from "src/hooks";
 
 const ChangePasswordForm = () => {
   // form setup
@@ -26,22 +21,18 @@ const ChangePasswordForm = () => {
     resolver: zodResolver(ChangePasswordInfoSchema),
   });
 
-  const changePasswordMutation = useMutation(
-    (params: ChangePasswordInfo) =>
-      Axios.post<ApiResponse>(`/users/change-password`, params).then(
-        (res) => res.data
-      ),
-    {
-      onError: (error) => {
-        console.log({ error });
-      },
-    }
+  const useChangePasswordMutation = useAuthStore(
+    (state) => state.useChangePasswordMutation
   );
+  const changePasswordMutation = useChangePasswordMutation({
+    onSuccess: () => {
+      reset();
+    },
+  });
 
   // submit function
   const handleResetPassword = async (credentials: ChangePasswordInfo) => {
     changePasswordMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleResetPassword);
 
@@ -59,7 +50,7 @@ const ChangePasswordForm = () => {
       ) : (
         <></>
       )}
-      <form className="flex flex-col gap-4 mb-6" onSubmit={onSubmit}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
         <TextInput
           label="Current Password"
           type="password"

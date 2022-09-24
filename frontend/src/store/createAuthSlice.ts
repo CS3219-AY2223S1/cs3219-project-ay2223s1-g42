@@ -43,6 +43,13 @@ export type AuthSlice = {
   useResetPasswordMutation: (
     options?: Options
   ) => UseMutationResult<ApiResponse, unknown, ResetPasswordInfo, unknown>;
+  useChangePasswordMutation: (
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, ChangePasswordInfo, unknown>;
+  useEditCredentialsMutation: (
+    id: number,
+    options?: Options
+  ) => UseMutationResult<ApiResponse, unknown, EditableCredentials, unknown>;
 };
 
 const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
@@ -158,6 +165,40 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
       }
     );
   };
+
+  const useEditCredentialsMutation = (id: number, options?: Options) =>
+    useMutation(
+      (params: EditableCredentials) =>
+        Axios.post<ApiResponse>(`/users/${id}`, params).then((res) => res.data),
+      {
+        onSuccess: () => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
+
+  const useChangePasswordMutation = (options?: Options) =>
+    useMutation(
+      (params: ChangePasswordInfo) =>
+        Axios.post<ApiResponse>(`/users/change-password`, params).then(
+          (res) => res.data
+        ),
+      {
+        onSuccess: () => {
+          if (options?.onSuccess) {
+            options.onSuccess();
+          }
+        },
+        onError: (error) => {
+          console.log({ error });
+        },
+      }
+    );
   return {
     user: undefined,
     useGetMe,
@@ -167,6 +208,8 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
     useSignoutMutation,
     useForgetPasswordMutation,
     useResetPasswordMutation,
+    useChangePasswordMutation,
+    useEditCredentialsMutation,
   };
 };
 
