@@ -1,8 +1,8 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 
 import { QuestionService } from "./question.service";
+import { FlattenedQuestionSummary } from "./question.type";
 import { PublicRoute } from "../utils/decorator";
-import { NormalisedSummaryType } from "./question.type";
 
 @Controller("question")
 export class QuestionController {
@@ -20,7 +20,7 @@ export class QuestionController {
       return summaries;
     }
 
-    const summaries: Record<string, NormalisedSummaryType> = {};
+    const summaries: Record<string, FlattenedQuestionSummary> = {};
     if (titleSlugs) {
       const res = await this.questionService.getSummariesFromSlug(
         this.sanitizeQuery(titleSlugs)

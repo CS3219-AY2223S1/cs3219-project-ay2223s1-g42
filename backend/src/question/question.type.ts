@@ -1,13 +1,20 @@
-import { QuestionSummary } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-export type QuestionSummaryTableType = Pick<
-  QuestionSummary,
-  "acRate" | "difficulty" | "title" | "titleSlug" | "updatedAt"
-> & { topicTags: { topicSlug: string }[] };
+export const questionSummarySelect =
+  Prisma.validator<Prisma.QuestionSummarySelect>()({
+    acRate: true,
+    difficulty: true,
+    title: true,
+    titleSlug: true,
+    topicTags: { select: { topicSlug: true } },
+    updatedAt: true,
+  });
 
-export type NormalisedSummaryType = Omit<
-  QuestionSummaryTableType,
+export type QuestionSummaryFromDb = Prisma.QuestionSummaryGetPayload<{
+  select: typeof questionSummarySelect;
+}>;
+
+export type FlattenedQuestionSummary = Omit<
+  QuestionSummaryFromDb,
   "topicTags"
-> & {
-  topicTags: string[];
-};
+> & { topicTags: string[] };

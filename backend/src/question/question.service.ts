@@ -1,20 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 
 import {
-  NormalisedSummaryType,
-  QuestionSummaryTableType,
+  FlattenedQuestionSummary,
+  QuestionSummaryFromDb,
+  questionSummarySelect,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
-
-const QUESTION_SUMMARY_TABLE_FIELDS: Prisma.QuestionSummarySelect = {
-  acRate: true,
-  difficulty: true,
-  title: true,
-  titleSlug: true,
-  topicTags: { select: { topicSlug: true } },
-  updatedAt: true,
-};
 
 @Injectable()
 export class QuestionService {
@@ -68,11 +59,12 @@ export class QuestionService {
    * @return  Array of QuestionSummary with the relevant fields
    */
   async getSummaries() {
-    const res = await this.prisma.questionSummary.findMany({
-      select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
-    });
+    const res: QuestionSummaryFromDb[] =
+      await this.prisma.questionSummary.findMany({
+        select: { ...questionSummarySelect },
+      });
 
-    return this.toQuestionSummaryTableType(res as QuestionSummaryTableType[]);
+    return this.toQuestionSummaryTableType(res);
   }
 
   /**
@@ -84,12 +76,13 @@ export class QuestionService {
    * @throws  NotFoundError
    */
   async getSummariesFromSlug(titleSlugs: string[]) {
-    const res = await this.prisma.questionSummary.findMany({
-      where: { titleSlug: { in: titleSlugs } },
-      select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
-    });
+    const res: QuestionSummaryFromDb[] =
+      await this.prisma.questionSummary.findMany({
+        where: { titleSlug: { in: titleSlugs } },
+        select: { ...questionSummarySelect },
+      });
 
-    return this.toQuestionSummaryTableType(res as QuestionSummaryTableType[]);
+    return this.toQuestionSummaryTableType(res);
   }
 
   /**
@@ -97,14 +90,13 @@ export class QuestionService {
    */
   async getDailyQuestionSummary() {
     // Cron job ensures that there's only 1 QOTD at a time
-    const dailySummary = await this.prisma.questionSummary.findMany({
-      where: { isDailyQuestion: true },
-      select: { ...QUESTION_SUMMARY_TABLE_FIELDS },
-    });
+    const dailySummary: QuestionSummaryFromDb[] =
+      await this.prisma.questionSummary.findMany({
+        where: { isDailyQuestion: true },
+        select: { ...questionSummarySelect },
+      });
 
-    return this.toQuestionSummaryTableType(
-      dailySummary as QuestionSummaryTableType[]
-    );
+    return this.toQuestionSummaryTableType(dailySummary);
   }
 
   /**
@@ -113,11 +105,11 @@ export class QuestionService {
    *
    * @param   {string[]}  topicTags  Array of topics to match
    *
-   * @return  {QuestionSummary[]}  Array of matching QuestionSummary.
+   * @return  Array of matching, flattened QuestionSummary
    */
   async getSummariesFromTopicTags(
     topicTags: string[]
-  ): Promise<NormalisedSummaryType[]> {
+  ): Promise<FlattenedQuestionSummary[]> {
     const res = await this.prisma.topicTag.findMany({
       where: { topicSlug: { in: topicTags } },
       select: { questionSummaries: { select: { titleSlug: true } } },
@@ -158,13 +150,13 @@ export class QuestionService {
   /**
    * Helper method to shape QuestionSummaryTableType into a consumer-friendly formay.
    *
-   * @param   {QuestionSummaryTableType[]}  data Raw data formatted by Prisma
+   * @param   {QuestionSummaryFromDb[]}  data Raw data formatted by Prisma
    *
-   * @return  {NormalisedSummaryType[]}  "Flattened" QuestionSummaryTableType
+   * @return  {FlattenedQuestionSummary[]}  "Flattened" QuestionSummaryTableType
    */
   private toQuestionSummaryTableType(
-    data: QuestionSummaryTableType[]
-  ): NormalisedSummaryType[] {
+    data: QuestionSummaryFromDb[]
+  ): FlattenedQuestionSummary[] {
     const normData = [
       ...data.map((summary) => {
         const { topicTags, updatedAt, ...info } = summary;
