@@ -1,9 +1,9 @@
 import { Socket } from "socket.io";
 
-import { NAMESPACES } from "src/cache/constants";
-import { RedisCacheService } from "src/cache/redisCache.service";
+import { NAMESPACES } from "../cache/constants";
+import { RedisCacheService } from "../cache/redisCache.service";
 import { PoolUser } from "./match.gateway";
-import { RoomService } from "src/room/room.service";
+import { RoomService } from "../room/room.service";
 import { Injectable, Inject, forwardRef } from "@nestjs/common";
 
 @Injectable()

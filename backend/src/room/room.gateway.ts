@@ -12,7 +12,7 @@ import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { ROOM_MESSAGES, ROOM_WS_NAMESPACE } from "./constants";
 import { RoomService } from "./room.service";
-import { PoolUser } from "src/match/match.gateway";
+import { PoolUser } from "../match/match.gateway";
 
 export type Room = {
   users: PoolUser[];

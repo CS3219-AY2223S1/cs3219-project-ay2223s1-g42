@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { PrismaClient } from "@prisma/client";
-import { mockDeep, DeepMockProxy } from "jest-mock-extended";
 import { v4 } from "uuid";
 
 import { AppModule } from "../src/app.module";
@@ -12,51 +11,29 @@ import { AuthService } from "../src/auth/auth.service";
 import { UserController } from "../src/user/user.controller";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { RedisCacheService } from "../src/cache/redisCache.service";
+import { doesNotMatch } from "assert";
 
 describe("AuthController (e2e)", () => {
   let app: INestApplication;
   let authService: AuthService;
   let userService: UserService;
-  let prisma: DeepMockProxy<PrismaClient>;
   let redis: RedisCacheService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
       providers: [],
     }).compile();
-
-    const userServiceProvider: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        PrismaService,
-        {
-          provide: RedisCacheService,
-          useValue: {
-            get: () => jest.fn(),
-            set: () => jest.fn(),
-            delete: () => jest.fn(),
-          },
-        },
-      ],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
-      .compile();
-
-    userService = userServiceProvider.get(UserService);
-    prisma = userServiceProvider.get(PrismaService);
-    redis = userServiceProvider.get(RedisCacheService);
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
   describe(`Test @POST("/auth/local/signup)`, () => {
-    it("Should return status code 201 if sign up is successful", async () => {
+    test("Should return status code 201 if sign up is successful", async () => {
       const signUpDTO = {
-        email: "test1@example.com",
-        username: "testuser1",
+        email: "test123@example.com",
+        username: "testuser123",
         password: "testpassword",
       };
 
@@ -68,6 +45,8 @@ describe("AuthController (e2e)", () => {
       expect(res.body.message).toBe("success");
     });
   });
+
+  /*
 
   //Todo
   describe(`Test @POST("/auth/local/signin)`, () => {
@@ -192,8 +171,9 @@ describe("AuthController (e2e)", () => {
       expect(res.body.message).toBe("success");
     });
   });
-
+  */
   afterAll(async () => {
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)); // avoid jest open handle error
     await app.close();
   });
 });

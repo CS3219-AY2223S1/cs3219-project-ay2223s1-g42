@@ -10,7 +10,7 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
-import { NAMESPACES } from "src/cache/constants";
+import { NAMESPACES } from "../cache/constants";
 
 export type JwtPayload = {
   sub: number;

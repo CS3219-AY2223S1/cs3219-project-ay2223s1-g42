@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { RedisCacheModule } from "src/cache/redisCache.module";
+import { RedisCacheModule } from "../cache/redisCache.module";
 
 import { RoomGateway } from "./room.gateway";
 import { RoomServiceModule } from "./room.service.module";

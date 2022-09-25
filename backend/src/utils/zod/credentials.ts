@@ -1,7 +1,7 @@
 import * as z from "nestjs-zod/z";
 import { createZodDto } from "nestjs-zod/dto";
 
-import { UserModel } from "src/zod";
+import { UserModel } from "../../zod/user";
 
 export const SignupSchema = UserModel.pick({
   email: true,

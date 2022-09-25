@@ -16,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
@@ -40,7 +41,7 @@ export class AuthController {
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
   })
@@ -159,7 +160,7 @@ export class AuthController {
   @Post("/forget-password")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
   })
