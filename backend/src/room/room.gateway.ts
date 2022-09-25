@@ -92,7 +92,7 @@ export class RoomGateway {
       );
 
       // emit error if room id not found or error occurred
-      if (!roomId) {
+      if (!roomId || roomUser.roomId !== roomId) {
         client.emit(
           ROOM_EVENTS.INVALID_ROOM,
           JSON.stringify({
@@ -115,7 +115,8 @@ export class RoomGateway {
       // remove user as room user
       await this.roomService.removeUserAsRoomUser(roomUser.id.toString());
 
-      // broadcast user has left to room
+      // remove user from room and notify user has left room
+      console.log({ currentRoomId: currentRoom.id, roomId: room.id });
       await client.leave(room.id);
       client.emit(
         ROOM_EVENTS.LEAVE_ROOM_SUCCESS,

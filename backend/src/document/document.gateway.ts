@@ -27,7 +27,6 @@ export class DocumentGateway implements OnGatewayInit {
     // TIP: You can export a new instance from another file to manage as singleton and access documents from all app.
     this.ySocketIO = new YSocketIO(server, {
       authenticate: (auth) => {
-        console.log({ auth });
         return true;
       },
       // levelPersistenceDir: './storage-location',
