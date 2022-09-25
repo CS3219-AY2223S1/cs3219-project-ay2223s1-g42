@@ -7,7 +7,7 @@ export enum AUTH_ERROR {
   UNVERIFIED_EMAIL = "User account is not created/verified",
   INVALID_EMAIL_VERIFY_EMAIL_TOKEN = "Email verification token is invalid",
   RESET_EMAIL_ALREADY_SENT = "Password reset email has already been sent",
-  UPDATE_ERROR = "Unable to reset password",
+  UPDATE_ERROR = "Update failed",
 }
 
 export const VERIFY_EMAIL_OPTIONS = {
@@ -23,10 +23,12 @@ export enum API_OPERATIONS {
   VERIFY_SIGN_UP_SUMMARY = "User verifies their email address for sign up",
   FORGET_PASSWORD_SUMMARY = "User requests to change existing password",
   RESET_PASSWORD_SUMMARY = "User enters new password to change their existing password",
+  CHANGE_PASSWORD_SUMMARY = "Changes password of authenicated users",
   JWT_VERIFICATION_TOKEN_SUMMARY = "Verifies that JWT token passed in request is valid",
   RETURN_USER_INFO_WITH_ID_SUMMARY = "Returns info of user with the given id",
   EDIT_USER_INFO_SUMMARY = "Edit data of specified user",
   DELETE_USER_SUMMARY = "Delete data of specified user",
+  DELETE_ACCOUNT_SUMMARY = "Deletes user account after verifying the specified password",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
@@ -38,9 +40,11 @@ export enum API_RESPONSES_DESCRIPTION {
   UNAUTHORIZED_SIGN_OUT_DESCRIPTION = "Unauthorized Request: User is not logged in",
   REFRESH_DESCRIPTION = "Successfully refreshed JWT tokens",
   FORBIDDEN_DESCRIPTION = "Client does not have access rights to the requested content",
-  SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION = "Successfully sent a forget password verification email to the email provided",
+  SUCCESSFUL_FORGET_PASSWORD_EMAIL_SENT_DESCRIPTION = "Successfully sent a forget password verification email to the email provided",
   BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION = "Client provided no credentials or invalid credentials",
   SUCCESSFUL_RESET_PASSWORD_DESCRIPTION = "Successfully reset password",
+  SUCCESSFUL_CHANGE_PASSWORD_DESCRIPTION = "Successfully changed password",
+  SUCCESSFUL_DELETE_ACCOUNT_DESCRIPTION = "Successfully deleted account",
   UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION = "Unauthorized Request: User is not logged in",
   NOT_FOUND_DESCRIPTION = "Not Found: Resource not found",
   SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION = "The resource was returned successfully",

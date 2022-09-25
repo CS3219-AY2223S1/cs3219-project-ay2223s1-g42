@@ -329,4 +329,57 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
     }
   }
+
+  async changePassword(id: number, oldPassword: string, newPassword: string) {
+    // find user via id provided
+    const [err, user] = await this.users.find({ id, includeHash: true });
+
+    ThrowKnownPrismaErrors(err);
+
+    // if user doesn't exist, throw exception
+    if (!user) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // if old password incorrect, throw exception
+    const isPasswordCorrect = await argon2.verify(user.hash, oldPassword);
+    if (!isPasswordCorrect) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // update new password in the database
+    const hashedNewPassword = await argon2.hash(newPassword);
+    const [error, userToChangePassword] = await this.users.update(id, {
+      hash: hashedNewPassword,
+    });
+
+    if (error || !userToChangePassword) {
+      throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
+    }
+  }
+
+  async deleteAccount(id: number, password: string) {
+    // find user via id provided
+    const [err, user] = await this.users.find({ id, includeHash: true });
+
+    ThrowKnownPrismaErrors(err);
+
+    // if user doesn't exist, throw exception
+    if (!user) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // if password incorrect, throw exception
+    const isPasswordCorrect = await argon2.verify(user.hash, password);
+    if (!isPasswordCorrect) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // delete user
+    const [error, userToDelete] = await this.users.delete(id);
+
+    if (error || !userToDelete) {
+      throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
+    }
+  }
 }
