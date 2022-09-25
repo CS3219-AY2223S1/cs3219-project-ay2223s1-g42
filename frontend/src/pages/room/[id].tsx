@@ -114,7 +114,7 @@ const RoomPage = (): JSX.Element => {
     );
   }
 
-  if (room) {
+  if (roomSocket) {
     return (
       <div className="flex flex-col lg:flex-row gap-3 w-full h-full py-3">
         <div className="w-full h-full max-h-full border-[1px] border-neutral-800">

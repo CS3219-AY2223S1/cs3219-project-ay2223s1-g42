@@ -39,6 +39,17 @@ const EditorStoreValues = (
 ): EditorStore => {
   const setLanguage = (language: LANGUAGE) => {
     setState({ language });
+    const binding = getState().binding;
+    binding?.ytext.setAttribute("language", language);
+    if (!binding) {
+      return;
+    }
+    const awareness = binding.awareness;
+    if (!awareness) {
+      return;
+    }
+    console.log("emitting language: ", { language });
+    awareness.emit("language", [language]);
   };
 
   const setup = (
@@ -77,10 +88,10 @@ const EditorStoreValues = (
     );
     const docText = doc.getText("monaco");
     socketIOProvider.awareness.on("change", () => {
-      const clients = Array.from(
-        socketIOProvider.awareness.getStates().keys()
-      ).map((key) => `${key}`);
-      setState({ clients });
+      const clients = socketIOProvider.awareness.getStates();
+      const clientIds = Array.from(clients).map((key) => `${key}`);
+      console.log({ clients });
+      setState({ clients: clientIds });
     });
     socketIOProvider.awareness.setLocalState({
       id: user?.id,
@@ -92,6 +103,10 @@ const EditorStoreValues = (
     socketIOProvider.on("status", ({ status }: { status: string }) => {
       const connected = status === "connected";
       setState({ connected });
+    });
+    socketIOProvider.awareness.on("language", (language: any) => {
+      console.log("language updated: ", { language });
+      // setState({ language });
     });
 
     // set up binding
@@ -106,6 +121,11 @@ const EditorStoreValues = (
       new Set([editor]),
       socketIOProvider.awareness
     );
+    // observe document language changes
+    monacoBinding?.ytext.observe((event) => {
+      const language = event.target.getAttribute("language");
+      setState({ language });
+    });
     setState({
       doc,
       provider: socketIOProvider,
