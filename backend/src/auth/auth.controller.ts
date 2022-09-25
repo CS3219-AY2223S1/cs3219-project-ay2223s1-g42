@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -232,7 +231,6 @@ export class AuthController {
    * Change password of user after verifying the current password
    * @param changePasswordInfo info of user needed for password change
    */
-  @PublicRoute()
   @Post("/change-password")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: API_OPERATIONS.CHANGE_PASSWORD_SUMMARY })
@@ -259,9 +257,6 @@ export class AuthController {
     @GetUser() user: User,
     @Body() changePasswordInfo: ChangePasswordInfoDto
   ) {
-    if (!user) {
-      throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
-    }
     const { newPassword, currentPassword } = changePasswordInfo;
     await this.authService.changePassword(
       user.id,
@@ -275,7 +270,6 @@ export class AuthController {
    * Deletes user account after verifying the specified password
    * @param deleteAccountInfo info of user needed for account deletion
    */
-  @PublicRoute()
   @Post("/delete-account")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY })
@@ -302,9 +296,6 @@ export class AuthController {
     @GetUser() user: User,
     @Body() { password }: DeleteAccountInfoDto
   ) {
-    if (!user) {
-      throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
-    }
     await this.authService.deleteAccount(user.id, password);
     return { message: "success" };
   }
