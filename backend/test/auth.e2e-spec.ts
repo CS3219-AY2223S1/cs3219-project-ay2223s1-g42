@@ -1,8 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
+import { CACHE_MANAGER, INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { PrismaClient } from "@prisma/client";
 import { v4 } from "uuid";
+import * as randomstring from "randomstring";
+import { Cache } from "cache-manager";
 
 import { AppModule } from "../src/app.module";
 import { AuthController } from "../src/auth/auth.controller";
@@ -11,7 +13,22 @@ import { AuthService } from "../src/auth/auth.service";
 import { UserController } from "../src/user/user.controller";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { RedisCacheService } from "../src/cache/redisCache.service";
-import { doesNotMatch } from "assert";
+import { NAMESPACES } from "../src/cache/constants";
+import { AuthModule } from "../src/auth/auth.module";
+import { UserModule } from "../src/user/user.module";
+import { RedisCacheModule } from "../src/cache/redisCache.module";
+
+type CacheableUserFields = {
+  email: string;
+  username: string;
+  hash: string;
+};
+
+type CacheableResetEmail = {
+  userId: number;
+  username: string;
+  email: string;
+};
 
 describe("AuthController (e2e)", () => {
   let app: INestApplication;
@@ -21,20 +38,27 @@ describe("AuthController (e2e)", () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-      providers: [],
+      imports: [AppModule, AuthModule, UserModule, RedisCacheModule],
+      providers: [UserService, UserService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    userService = moduleFixture.get(UserService);
+    redis = moduleFixture.get(RedisCacheService);
+    authService = moduleFixture.get(AuthService);
     await app.init();
   });
 
   describe(`Test @POST("/auth/local/signup)`, () => {
     test("Should return status code 201 if sign up is successful", async () => {
       const signUpDTO = {
-        email: "test123@example.com",
-        username: "testuser123",
-        password: "testpassword",
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
       };
 
       const res = await request(app.getHttpServer())
@@ -46,15 +70,16 @@ describe("AuthController (e2e)", () => {
     });
   });
 
-  /*
-
-  //Todo
   describe(`Test @POST("/auth/local/signin)`, () => {
     it("Should return status code 200 if sign in is successful", async () => {
       const newUser = {
-        email: "newuser1@example.com",
-        username: "newuser1",
-        password: "newUser420",
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
       };
 
       //User is added into the database
@@ -64,11 +89,26 @@ describe("AuthController (e2e)", () => {
         newUser.password
       );
 
-      const spyRedisSet = jest.spyOn(redis, "set");
       const verificationToken = v4();
-      redis.set(newUser.email, verificationToken);
+      await redis.setKeyInNamespace<CacheableUserFields>(
+        [NAMESPACES.AUTH],
+        verificationToken,
+        {
+          email: newUser.email,
+          username: newUser.username,
+          hash: newUser.password,
+        }
+      );
 
-      //Need to mock the auth service to be able to read redis
+      await redis.setKeyInNamespace<string>(
+        [NAMESPACES.AUTH],
+        newUser.email,
+        verificationToken
+      );
+
+      await redis.deleteKeyInNamespace([NAMESPACES.AUTH], verificationToken);
+      await redis.deleteKeyInNamespace([NAMESPACES.AUTH], newUser.email);
+
       const res = await request(app.getHttpServer())
         .post("/auth/local/signin")
         .send({
@@ -78,10 +118,12 @@ describe("AuthController (e2e)", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("success");
-      expect(user).toBe(newUser);
+      expect(user.email).toBe(newUser.email);
+      expect(user.username).toBe(newUser.username);
     });
   });
 
+  /*
   //Todo
   describe(`Test @POST("/auth/signout)`, () => {
     it("Should return status code 200 if signout is successful", async () => {
@@ -172,8 +214,4 @@ describe("AuthController (e2e)", () => {
     });
   });
   */
-  afterAll(async () => {
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)); // avoid jest open handle error
-    await app.close();
-  });
 });

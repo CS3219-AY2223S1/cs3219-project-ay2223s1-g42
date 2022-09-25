@@ -20,6 +20,7 @@ import {
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
+import * as randomstring from "randomstring";
 
 import { AuthService, Tokens } from "./auth.service";
 import {
