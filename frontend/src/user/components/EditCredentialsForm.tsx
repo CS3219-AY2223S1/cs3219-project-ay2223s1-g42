@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   ErrorAlert,
@@ -12,6 +13,7 @@ import { UserProps } from "src/user/types";
 import { useAuthStore } from "src/hooks";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
+  const queryClient = useQueryClient();
   const { id, email, username } = user;
   // form setup
   const {
@@ -29,6 +31,9 @@ const EditCredentialsForm = ({ user }: UserProps) => {
   );
   const editCredentialsMutation = useEditCredentialsMutation(id, {
     onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
+    },
+    onError: () => {
       reset();
     },
   });

@@ -222,6 +222,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
         ),
       {
         onSuccess: () => {
+          setState({ user: undefined });
           if (options?.onSuccess) {
             options.onSuccess();
           }
