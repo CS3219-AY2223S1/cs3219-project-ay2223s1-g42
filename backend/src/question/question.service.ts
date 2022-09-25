@@ -4,7 +4,7 @@ import {
   FlattenedQuestionContent,
   FlattenedQuestionSummary,
   QuestionSummaryFromDb,
-  questionSummarySelect,
+  QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -38,6 +38,7 @@ export class QuestionService {
 
     return {
       content: res.content,
+      discussionLink: this.getDiscussionLink(titleSlug),
       hints: res.hints.map((v) => v.hint),
       topicTags: res.summary.topicTags.map((v) => v.topicSlug),
     };
@@ -64,7 +65,7 @@ export class QuestionService {
   async getSummaries() {
     const res: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
-        select: { ...questionSummarySelect },
+        select: { ...QUESTION_SUMMARY_SELECT },
       });
 
     return this.toQuestionSummaryTableType(res);
@@ -82,7 +83,7 @@ export class QuestionService {
     const res: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { titleSlug: { in: titleSlugs } },
-        select: { ...questionSummarySelect },
+        select: { ...QUESTION_SUMMARY_SELECT },
       });
 
     return this.toQuestionSummaryTableType(res);
@@ -96,7 +97,7 @@ export class QuestionService {
     const dailySummary: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { isDailyQuestion: true },
-        select: { ...questionSummarySelect },
+        select: { ...QUESTION_SUMMARY_SELECT },
       });
 
     return this.toQuestionSummaryTableType(dailySummary);
@@ -162,15 +163,24 @@ export class QuestionService {
   ): FlattenedQuestionSummary[] {
     const normData = [
       ...data.map((summary) => {
-        const { topicTags, updatedAt, ...info } = summary;
+        const { topicTags, updatedAt, titleSlug, ...info } = summary;
         return {
           ...info,
+          discussionLink: this.getDiscussionLink(titleSlug),
           topicTags: topicTags.map((tag) => tag.topicSlug),
+          titleSlug,
           updatedAt,
         };
       }),
     ];
 
     return normData;
+  }
+
+  private getDiscussionLink(titleSlug: string) {
+    return (
+      `https://leetcode.com/problems/${titleSlug}` +
+      `/discuss/?currentPage=1&orderBy=most_votes&query=`
+    );
   }
 }

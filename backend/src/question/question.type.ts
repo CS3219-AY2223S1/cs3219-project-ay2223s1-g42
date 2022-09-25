@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 
 // * Based on available data
 
-export const questionSummarySelect =
+export const QUESTION_SUMMARY_SELECT =
   Prisma.validator<Prisma.QuestionSummarySelect>()({
     acRate: true,
     difficulty: true,
@@ -12,17 +12,22 @@ export const questionSummarySelect =
     updatedAt: true,
   });
 
+type ExtraFields = {
+  topicTags: string[];
+  discussionLink: string;
+};
+
 export type FlattenedQuestionContent = {
   content: string;
   hints: string[];
-  topicTags: string[];
-};
+} & ExtraFields;
 
 export type QuestionSummaryFromDb = Prisma.QuestionSummaryGetPayload<{
-  select: typeof questionSummarySelect;
+  select: typeof QUESTION_SUMMARY_SELECT;
 }>;
 
 export type FlattenedQuestionSummary = Omit<
   QuestionSummaryFromDb,
   "topicTags"
-> & { topicTags: string[] };
+> &
+  ExtraFields;
