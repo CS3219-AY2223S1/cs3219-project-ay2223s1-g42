@@ -38,18 +38,11 @@ const EditorStoreValues = (
   getState: () => EditorStore
 ): EditorStore => {
   const setLanguage = (language: LANGUAGE) => {
-    setState({ language });
     const binding = getState().binding;
-    binding?.ytext.setAttribute("language", language);
-    if (!binding) {
-      return;
+    if (binding) {
+      binding.ytext.setAttribute("language", language);
     }
-    const awareness = binding.awareness;
-    if (!awareness) {
-      return;
-    }
-    console.log("emitting language: ", { language });
-    awareness.emit("language", [language]);
+    setState({ language });
   };
 
   const setup = (
