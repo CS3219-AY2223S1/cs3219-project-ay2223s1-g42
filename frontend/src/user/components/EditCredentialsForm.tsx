@@ -11,6 +11,7 @@ import {
 import { EditableCredentials, EditableCredentialsSchema } from "src/user/types";
 import { UserProps } from "src/user/types";
 import { useAuthStore } from "src/hooks";
+import { useEffect } from "react";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();
@@ -25,6 +26,12 @@ const EditCredentialsForm = ({ user }: UserProps) => {
     resolver: zodResolver(EditableCredentialsSchema),
     defaultValues: { username },
   });
+
+  useEffect(() => {
+    if (user) {
+      reset({ username: user.username });
+    }
+  }, [user, reset]);
 
   const useEditCredentialsMutation = useAuthStore(
     (state) => state.useEditCredentialsMutation
