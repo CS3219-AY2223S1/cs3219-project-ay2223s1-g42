@@ -461,8 +461,9 @@ const SocketStoreValues = (
     });
 
     const payload = JSON.stringify({ ...user, roomId });
-    roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
+    console.log("joining room: ", { payload });
     console.log("setting room socket: ", roomSocket);
+    roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
     setState({ roomSocket });
   };
 

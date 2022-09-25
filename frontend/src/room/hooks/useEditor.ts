@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { createRef } from "react";
 import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
 import * as monaco from "monaco-editor";
+import create from "zustand";
 
-import { useAuthStore } from "src/hooks";
+import { User } from "src/login";
 
 export enum LANGUAGE {
   TS = "typescript",
@@ -13,58 +14,57 @@ export enum LANGUAGE {
   CPP = "cpp",
 }
 
-const useEditor = (roomId: string) => {
-  const [doc, setDoc] = useState<Y.Doc | undefined>(undefined);
-  const [text, setText] = useState<Y.Text | undefined>(undefined);
-  const [language, setLanguage] = useState<LANGUAGE>(LANGUAGE.TS);
-  const [provider, setProvider] = useState<SocketIOProvider | undefined>(
-    undefined
-  );
-  const [connected, setConnected] = useState<boolean>(false);
-  const [input, setInput] = useState<string>("");
-  const [clients, setClients] = useState<string[]>([]);
-  const [binding, setBinding] = useState<MonacoBinding>();
-  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor>();
-  const user = useAuthStore((state) => state.user);
+type EditorStore = {
+  doc: Y.Doc | undefined;
+  text: Y.Text | undefined;
+  language: LANGUAGE;
+  provider: SocketIOProvider | undefined;
+  connected: boolean;
+  input: string | undefined;
+  clients: string[] | undefined;
+  binding: MonacoBinding | undefined;
+  editor: monaco.editor.IStandaloneCodeEditor | undefined;
+  setLanguage: (language: LANGUAGE) => void;
+  setup: (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    user: User,
+    roomId: string
+  ) => void;
+  cleanup: () => void;
+};
 
-  function handleEditorDidMount(editor: monaco.editor.IStandaloneCodeEditor) {
-    // here is the editor instance
-    // you can store it in `useRef` for further usage
-    // we store in `useState` since we want to re-run
-    // the effect when the editor instance changes
-    setEditor(editor);
-  }
+const EditorStoreValues = (
+  setState: (values: Partial<EditorStore>) => void,
+  getState: () => EditorStore
+): EditorStore => {
+  const setLanguage = (language: LANGUAGE) => {
+    setState({ language });
+  };
 
-  // set up document
-  useEffect(() => {
-    if (!!doc) {
+  const setup = (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    user: User,
+    roomId: string
+  ) => {
+    // set up doc
+    const _doc = getState().doc;
+    if (!!_doc) {
       // break if doc is already initialized
+      console.error("doc is already initialized, aborting setup...");
       return;
     }
-    const _doc = new Y.Doc();
-    const yMap = _doc.getMap("data");
+    const doc = new Y.Doc();
+    const yMap = doc.getMap("data");
     if (!yMap.has("input")) {
       yMap.set("input", "");
       yMap.observe((event, transaction) => {
         console.log({ event, transaction });
-        setInput(yMap.get("input") as string);
+        const updatedInput: string = yMap.get("input") as string;
+        setState({ input: updatedInput });
       });
     }
-    setDoc(_doc);
-  }, [doc]);
 
-  // set up provider
-  useEffect(() => {
-    if (provider) {
-      // break if provider is already initialized
-      return;
-    }
-
-    if (!doc) {
-      // break if doc not set
-      return;
-    }
-
+    // set up provider
     const socketIOProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
       roomId,
@@ -76,13 +76,12 @@ const useEditor = (roomId: string) => {
       }
     );
     const docText = doc.getText("monaco");
-    socketIOProvider.awareness.on("change", () =>
-      setClients(
-        Array.from(socketIOProvider.awareness.getStates().keys()).map(
-          (key) => `${key}`
-        )
-      )
-    );
+    socketIOProvider.awareness.on("change", () => {
+      const clients = Array.from(
+        socketIOProvider.awareness.getStates().keys()
+      ).map((key) => `${key}`);
+      setState({ clients });
+    });
     socketIOProvider.awareness.setLocalState({
       id: user?.id,
       name: user?.username,
@@ -91,48 +90,64 @@ const useEditor = (roomId: string) => {
       console.log("websocket sync", status)
     );
     socketIOProvider.on("status", ({ status }: { status: string }) => {
-      if (status === "connected") {
-        setConnected(true);
-      } else {
-        setConnected(false);
-      }
+      const connected = status === "connected";
+      setState({ connected });
     });
-    setText(docText);
-    setProvider(socketIOProvider);
-  }, [doc, provider, roomId, user?.id, user?.username]);
 
-  // set up monaco binding
-  useEffect(() => {
-    if (!editor) {
-      console.error("editor not set, breaking...");
-      return;
-    }
+    // set up binding
     const model = editor.getModel();
-    if (!model || !text || !provider) {
-      console.error("model/text/provider not set, breaking...");
+    if (!model) {
+      console.error("editor model is undefined, fail to set up binding");
       return;
     }
     const monacoBinding = new MonacoBinding(
-      text,
+      docText,
       /** @type {monaco.editor.ITextModel} */ model,
       new Set([editor]),
-      provider.awareness
+      socketIOProvider.awareness
     );
-    setBinding(monacoBinding);
-  }, [editor, text, provider]);
+    setState({
+      doc,
+      provider: socketIOProvider,
+      text: docText,
+      binding: monacoBinding,
+    });
+  };
+
+  const cleanup = () => {
+    const doc = getState().doc;
+    if (!doc) {
+      return;
+    }
+    const provider = getState().provider;
+    if (!provider) {
+      return;
+    }
+    const binding = getState().binding;
+    if (!binding) {
+      return;
+    }
+    doc.destroy();
+    provider.disconnect();
+    provider.destroy();
+    binding.destroy();
+    setState({ doc: undefined, provider: undefined, binding: undefined });
+  };
 
   return {
-    doc,
-    text,
-    language,
-    provider,
-    connected,
-    input,
-    clients,
-    binding,
+    doc: undefined,
+    text: undefined,
+    language: LANGUAGE.TS,
+    provider: undefined,
+    connected: false,
+    input: undefined,
+    clients: undefined,
+    binding: undefined,
+    editor: undefined,
+    setup,
     setLanguage,
-    handleEditorDidMount,
+    cleanup,
   };
 };
 
-export { useEditor };
+export const useEditorStore = create<EditorStore>(EditorStoreValues);
