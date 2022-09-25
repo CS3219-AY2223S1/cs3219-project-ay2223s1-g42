@@ -18,8 +18,6 @@ export const ALL_QUESTIONS_QUERY = JSON.stringify({
       topicTags {
         slug
       }
-      hasSolution
-      hasVideoSolution
     }
   }
 }`,
@@ -38,8 +36,6 @@ export const QUESTION_OF_THE_DAY_QUERY = JSON.stringify({
             topicTags {
                 slug
             }
-            hasSolution
-            hasVideoSolution
         }
     }
 }`,

@@ -47,19 +47,17 @@ model User {
 }
 
 model QuestionSummary {
-  id               Int              @id @unique @default(autoincrement())
-  acRate           Float
-  difficulty       String
-  paidOnly         Boolean
-  title            String
-  titleSlug        String           @unique
-  hasSolution      Boolean
-  hasVideoSolution Boolean
-  isDailyQuestion  Boolean          @default(false)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  topicTags        TopicTag[]
-  QuestionContent  QuestionContent?
+  id              Int              @id @unique @default(autoincrement())
+  acRate          Float
+  difficulty      String
+  paidOnly        Boolean
+  title           String
+  titleSlug       String           @unique
+  isDailyQuestion Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  topicTags       TopicTag[]
+  QuestionContent QuestionContent?
 
   @@index([titleSlug])
 }
@@ -86,7 +84,7 @@ model QuestionContent {
 
 model QuestionHint {
   hintId            Int             @id @unique @default(autoincrement())
-  hint              String          @db.LongText
+  hint              String?         @db.LongText
   QuestionContent   QuestionContent @relation(fields: [questionContentId], references: [id])
   questionContentId Int
 }

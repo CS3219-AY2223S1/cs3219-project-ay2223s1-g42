@@ -31,7 +31,9 @@ export async function getExistingQuestionContents(prisma: PrismaClient) {
     const hintMap: Record<number, string> = {};
 
     for (const { hintId, hint } of hints) {
-      hintMap[hintId] = hint;
+      if (hint) {
+        hintMap[hintId] = hint;
+      }
     }
 
     contentMap[titleSlug] = {

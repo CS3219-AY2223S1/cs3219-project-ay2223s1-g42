@@ -66,9 +66,14 @@ yarn serve
 
 ### Local Environemnt
 
-[This write-up](https://planetscale.com/docs/tutorials/prisma-quickstart) goes over how to develop with a local instance of PlanetScale.
+There are 2 ways to go about this, 
+
+1. Use a local instance of MySQL, implement the necessary configuraitons as seen in the [Prisma documentation here](https://www.prisma.io/docs/guides/database/using-prisma-with-planetscale#how-to-enable-emulation-of-referential-integrity) -- the quick and dirty way.
+2. Follow [this tutorial](https://planetscale.com/docs/tutorials/prisma-quickstart) which goes over how to develop with a local instance of PlanetScale.
 
 ## Seeding the Database
+
+See discussion in `tech-details.md`'s "Detailed Design" section on why we chose to store it in a database, and how we did it.
 
 LeetCode's endpoint rate-limits the number of queries it can respond to at a given time. In an attempt to circumvent this, `seed.sh` was added to help populate the database.
 

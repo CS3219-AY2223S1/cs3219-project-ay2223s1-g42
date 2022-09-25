@@ -7,8 +7,6 @@ export type QuestionSummaryType = {
   title: string;
   titleSlug: string;
   topicTags: { slug: string }[];
-  hasSolution: boolean;
-  hasVideoSolution: boolean;
 };
 
 export type QuestionSummaryListType = {

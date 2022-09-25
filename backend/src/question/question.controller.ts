@@ -10,7 +10,7 @@ export class QuestionController {
 
   @PublicRoute()
   @Get(["", "/summary"])
-  async getSummeries(
+  async getSummaries(
     @Query("titleSlugs") titleSlugs: string | string[] | undefined,
     @Query("topicTags") topicTags: string | string[] | undefined
   ) {
