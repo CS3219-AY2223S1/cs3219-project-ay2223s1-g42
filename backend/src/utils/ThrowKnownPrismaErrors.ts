@@ -1,14 +1,13 @@
 import { Prisma } from "@prisma/client";
 import {
   PrismaClientInitializationError,
-  PrismaClientKnownRequestError,
   PrismaClientRustPanicError,
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
-export default function PrismaKnownErrorHandling(e: Error) {
+export default function ThrowKnownPrismaErrors(e: Error) {
   if (
     e instanceof PrismaClientUnknownRequestError ||
     e instanceof PrismaClientRustPanicError ||
@@ -23,5 +22,5 @@ export default function PrismaKnownErrorHandling(e: Error) {
     throw new HttpException("Bad Request", HttpStatus.BAD_REQUEST);
   } else if (e instanceof Prisma.NotFoundError) {
     throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
-  } 
+  }
 }

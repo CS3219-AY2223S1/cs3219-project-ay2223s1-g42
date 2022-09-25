@@ -30,7 +30,7 @@ export class MatchService {
   /**
    * Attempts to matche user with other user(s) in the difficulty
    * queues selected by the user, if no other users found, will add
-   * the user to the difficulty queues selected.
+   * the user to the difficulty queues selected + queue users channel.
    * @param user new user attempting to join the queue
    * @returns (optional) room data if user was matched, otherwise undefined
    */

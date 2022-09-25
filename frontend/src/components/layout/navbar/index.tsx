@@ -86,7 +86,18 @@ const TheNavbar = () => {
   const scrollDirection = useScrollDirection();
 
   return (
-    <nav className="font-display px-4 py-3 md:p-4 bg-neutral-100 md:bg-transparent fixed w-full z-50 top-0 left-0">
+    <nav
+      className={cx(
+        "font-display pl-4 pr-2 py-3 md:p-4 fixed w-full z-50 top-0 left-0",
+        "bg-neutral-100/[0.97] backdrop-blur-sm transition ease-out",
+        {
+          "translate-y-0": scrollDirection !== ScrollDir.DOWN,
+          "-translate-y-20": scrollDirection === ScrollDir.DOWN,
+          "-translate-y-60":
+            scrollDirection === ScrollDir.DOWN && isDropdownOpen,
+        }
+      )}
+    >
       <div className="max-w-5xl flex flex-wrap justify-between items-center mx-auto">
         <BaseLink href="/" className="flex items-center h-full">
           {/* <img
@@ -108,7 +119,7 @@ const TheNavbar = () => {
             className="inline-flex items-center p-2 text-sm text-neutral-800
             md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200
             hover:bg-transparent hover:text-neutral-800"
-            onClick={() => setIsOpen((open) => !open)}
+            onClick={() => setIsDropdownOpen((open) => !open)}
           >
             <span className="sr-only">Open main menu</span>
             <BurgerMenuIcon className="h-7 w-7" />

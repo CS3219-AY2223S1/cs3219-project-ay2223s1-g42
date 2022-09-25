@@ -26,7 +26,7 @@ import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
-import PrismaKnownErrorHandling from "../utils/prisma-error-handling";
+import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
 
 @Controller("users")
 export class UserController {
@@ -83,7 +83,7 @@ export class UserController {
   })
   async getUser(@Param("id") id: string) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
-    PrismaKnownErrorHandling(err);
+    ThrowKnownPrismaErrors(err);
     return user;
   }
 
@@ -127,11 +127,11 @@ export class UserController {
   ) {
     if (parseInt(id) === user.id) {
       const { email, username } = userInfo;
-      const newUser = await this.userService.update(user.id, {
+      const [err, newUser] = await this.userService.update(user.id, {
         email,
         username,
       });
-      //PrismaKnownErrorHandling(err);
+      ThrowKnownPrismaErrors(err);
       return newUser;
     }
     throw new BadRequestException("Failed to update user.");
@@ -164,7 +164,7 @@ export class UserController {
   async deleteUser(@GetUser() user: User, @Param("id") id: string) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
-      PrismaKnownErrorHandling(err);
+      ThrowKnownPrismaErrors(err);
       return deletedUser;
     }
     throw new BadRequestException("Failed to delete user.");

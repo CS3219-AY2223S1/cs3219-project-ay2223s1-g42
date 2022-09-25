@@ -13,7 +13,9 @@ type Props = {
 
 const ResetPasswordForm = ({ token }: Props) => {
   // forget password mutation
-  const useResetPasswordMutation = useAuthStore((state) => state.resetPassword);
+  const useResetPasswordMutation = useAuthStore(
+    (state) => state.useResetPasswordMutation
+  );
   const resetPasswordMutation = useResetPasswordMutation();
 
   // form setup

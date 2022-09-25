@@ -9,7 +9,7 @@ import { useAuthStore } from "src/hooks";
 const ForgetPasswordForm = () => {
   // forget password mutation
   const useForgetPasswordMutation = useAuthStore(
-    (state) => state.forgetPassword
+    (state) => state.useForgetPasswordMutation
   );
   const forgetPasswordMutation = useForgetPasswordMutation();
 
