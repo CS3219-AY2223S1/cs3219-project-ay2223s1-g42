@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CACHE_MANAGER, INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { PrismaClient } from "@prisma/client";
 import { v4 } from "uuid";
@@ -35,6 +35,7 @@ describe("AuthController (e2e)", () => {
   let authService: AuthService;
   let userService: UserService;
   let redis: RedisCacheService;
+  let authController: AuthController;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -49,7 +50,8 @@ describe("AuthController (e2e)", () => {
     await app.init();
   });
 
-  describe(`Test @POST("/auth/local/signup)`, () => {
+  //Valid Sign up
+  describe(`Test @POST("/auth/local/signup for valid input)`, () => {
     test("Should return status code 201 if sign up is successful", async () => {
       const signUpDTO = {
         email:
@@ -70,8 +72,47 @@ describe("AuthController (e2e)", () => {
     });
   });
 
-  describe(`Test @POST("/auth/local/signin)`, () => {
-    it("Should return status code 200 if sign in is successful", async () => {
+  //Invalid Sign up
+  describe(`Test @POST("/auth/local/signup for invalid Input)`, () => {
+    test("Should return status code 403 if sign up is unsuccessful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      //User is added into the database
+      const [err, user] = await userService.create(
+        newUser.email,
+        newUser.username,
+        newUser.password
+      );
+
+      //Verify that user is created
+      const [errFind, findUser] = await userService.findByEmail(user.email);
+
+      //expect user to be created
+      expect(findUser.email).toBe(newUser.email);
+      expect(findUser.username).toBe(newUser.username);
+
+      const res = await request(app.getHttpServer())
+        .post("/auth/local/signup")
+        .send(newUser);
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body.message).toBe("Email already in use");
+
+      //Clean up
+      userService.delete(user.id);
+    });
+  });
+
+  describe(`Test @POST("/auth/local/signin) for valid input`, () => {
+    test("Should return status code 200 if sign in is successful", async () => {
       const newUser = {
         email:
           randomstring.generate({
@@ -120,29 +161,147 @@ describe("AuthController (e2e)", () => {
       expect(res.body.message).toBe("success");
       expect(user.email).toBe(newUser.email);
       expect(user.username).toBe(newUser.username);
+
+      //Clean up
+      userService.delete(user.id);
+    });
+  });
+
+  //Test status code 400 bad request invalid input for signin page
+  describe(`Test @POST("/auth/local/signin) for invalid input`, () => {
+    test("Should return status code 400 if sign in is unsuccessful", async () => {
+      const user = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      const missingPassword = await request(app.getHttpServer())
+        .post("/auth/local/signin")
+        .send({
+          email: user.email,
+        });
+
+      expect(missingPassword.statusCode).toBe(400);
+      expect(missingPassword.body.message).toBe("Validation failed");
+
+      const missingEmail = await request(app.getHttpServer())
+        .post("/auth/local/signin")
+        .send({
+          password: user.password,
+        });
+
+      expect(missingEmail.statusCode).toBe(400);
+      expect(missingEmail.body.message).toBe("Validation failed");
+    });
+  });
+
+  //Test 403 invalid credentials for existing users for the signin page
+  describe(`Test @POST("/auth/local/signin) for invalid input`, () => {
+    test("Should return status code 403 if sign in is unsuccessful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      //User is added into the database
+      const [err, user] = await userService.create(
+        newUser.email,
+        newUser.username,
+        newUser.password
+      );
+
+      //Verify that user is created
+      const [errFind, findUser] = await userService.findByEmail(user.email);
+
+      //expect user to be created
+      expect(findUser.email).toBe(newUser.email);
+      expect(findUser.username).toBe(newUser.username);
+
+      const invalidPassword = await request(app.getHttpServer())
+        .post("/auth/local/signin")
+        .send({
+          email: user.email,
+          password: randomstring.generate(8),
+        });
+
+      expect(invalidPassword.statusCode).toBe(403);
+      expect(invalidPassword.body.message).toBe("Invalid credentials");
+
+      const invalidEmail = await request(app.getHttpServer())
+        .post("/auth/local/signin")
+        .send({
+          email: randomstring.generate(8) + "@example.com",
+          password: newUser.password,
+        });
+
+      expect(invalidEmail.statusCode).toBe(403);
+      expect(invalidEmail.body.message).toBe("Forbidden");
+
+      //Clean up
+      userService.delete(user.id);
+    });
+  });
+
+  //Valid signout
+  describe(`Test @POST("/auth/signout) for logged in users`, () => {
+    test("Should return status code 200 if signout is successful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      //User is added into the database
+      const [err, user] = await userService.create(
+        newUser.email,
+        newUser.username,
+        newUser.password
+      );
+
+      //Verify that user is created
+      const [errFind, findUser] = await userService.findByEmail(user.email);
+
+      //expect user to be created
+      expect(findUser.email).toBe(newUser.email);
+      expect(findUser.username).toBe(newUser.username);
+
+      //jest.spyOn(authController, "setCookies").mockResolvedValue.();
+
+      const res = await request(app.getHttpServer()).post("/auth/signout");
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toBe("success");
+
+      //Clean up
+      userService.delete(user.id);
+    });
+  });
+
+  //Invalid signout
+  describe(`Test @POST("/auth/signout) for users who are not logged in`, () => {
+    test("Should return status code 401 if signout is unsuccessful", async () => {
+      const res = await request(app.getHttpServer()).post("/auth/signout");
+
+      expect(res.body.statusCode).toBe(401);
+      expect(res.body.message).toBe("Unauthorized");
     });
   });
 
   /*
-  //Todo
-  describe(`Test @POST("/auth/signout)`, () => {
-    it("Should return status code 200 if signout is successful", async () => {
-      //Need to signin first
-      const signInDTO = {
-        email: "test1@example.com",
-        username: "testuser1",
-        password: "testpassword",
-      };
-
-      const res = await request(app.getHttpServer())
-        .post("/auth/local/signin")
-        .send(signInDTO);
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body.message).toBe("success");
-    });
-  });
-
   //Todo
   describe(`Test @GET("/auth/refresh)`, () => {
     it("Should return status code 200 if refresh is successful", async () => {
@@ -180,10 +339,11 @@ describe("AuthController (e2e)", () => {
       expect(res.body.message).toBe("success");
     });
   });
+  */
 
-  //Todo
-  describe(`Test @POST("/auth/forget-paassword)`, () => {
-    it("Should return status code 200 if forget-password is successful", async () => {
+  //Valid forget-password request, no invalid test case
+  describe(`Test @POST("/auth/forget-password)`, () => {
+    test("Should return status code 201 if forget-password is successful", async () => {
       const forgetPasswordDTO = {
         email: "test1@example.com",
       };
@@ -192,17 +352,53 @@ describe("AuthController (e2e)", () => {
         .post("/auth/forget-password")
         .send(forgetPasswordDTO);
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(201);
       expect(res.body.message).toBe("success");
     });
   });
 
-  //Todo
-  describe(`Test @POST("/auth/reset-paassword)`, () => {
-    it("Should return status code 200 if reset-password is successful", async () => {
+  //Valid reset-password
+  describe(`Test @POST("/auth/reset-password)`, () => {
+    test("Should return status code 200 if reset-password is successful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      const forgetPasswordDTO = {
+        email: newUser.email,
+      };
+
+      const [err, user] = await userService.create(
+        newUser.email,
+        newUser.username,
+        newUser.password
+      );
+
+      const username = user.username;
+      const userId = user.id;
+      const email = user.email;
+
+      //Reset password
+      const resetPasswordVerificationToken = v4();
+      await redis.setKeyInNamespace<CacheableResetEmail>(
+        [NAMESPACES.AUTH],
+        resetPasswordVerificationToken,
+        {
+          userId,
+          username,
+          email,
+        }
+      );
+
       const resetPasswordDTO = {
-        token: "placeholder",
-        password: "newPassword",
+        password: newUser.password,
+        token: resetPasswordVerificationToken,
       };
 
       const res = await request(app.getHttpServer())
@@ -211,7 +407,51 @@ describe("AuthController (e2e)", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("success");
+
+      //Clean up
+      userService.delete(user.id);
     });
   });
-  */
+
+  //Invalid reset-password: Invalid credentials status code 400 or missing credentials
+  describe(`Test @POST("/auth/reset-password) for invalid credentials`, () => {
+    test("Should return status code 400 if reset-password is unsuccessful", async () => {
+      const invalidFields = {
+        test: "test",
+      };
+
+      const noCredentials = await request(app.getHttpServer()).post(
+        "/auth/reset-password"
+      );
+
+      expect(noCredentials.statusCode).toBe(400);
+      expect(noCredentials.body.message).toBe("Validation failed");
+
+      const invalidCredentials = await request(app.getHttpServer())
+        .post("/auth/reset-password")
+        .send(invalidFields);
+
+      expect(invalidCredentials.statusCode).toBe(400);
+      expect(invalidCredentials.body.message).toBe("Validation failed");
+    });
+  });
+
+  //Invalid reset-password: Invalid token status code 403
+  describe(`Test @POST("/auth/reset-password) for invalid credentials`, () => {
+    test("Should return status code 403 if reset-password is unsuccessful", async () => {
+      const invalidFields = {
+        password: "testgsrewijstse",
+        token: "test",
+      };
+
+      const invalidCredentials = await request(app.getHttpServer())
+        .post("/auth/reset-password")
+        .send(invalidFields);
+
+      expect(invalidCredentials.statusCode).toBe(403);
+      expect(invalidCredentials.body.message).toBe(
+        "Email verification token is invalid"
+      );
+    });
+  });
 });
