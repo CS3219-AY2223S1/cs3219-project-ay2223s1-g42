@@ -2,19 +2,18 @@ import { useEffect } from "react";
 import { useParams } from "react-router";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
-import { LoadedRoom, useSocketStore } from "src/dashboard";
+import { LoadedRoom, ROOM_EVENTS, useSocketStore } from "src/dashboard";
 import { useAuthStore } from "src/hooks";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
   const user = useAuthStore((state) => state.user);
-  const { queueRoomId, room, joinRoom } = useSocketStore((state) => {
+  const { queueRoomId, room, status, joinRoom } = useSocketStore((state) => {
     return {
       queueRoomId: state.queueRoomId,
       room: state.room,
       status: state.status,
       joinRoom: state.joinRoom,
-      leaveRoom: state.leaveRoom,
     };
   });
 
@@ -36,6 +35,15 @@ const RoomPage = (): JSX.Element => {
       joinRoom(user, pageRoomId);
     }
   }, []);
+
+  if (
+    status?.event === ROOM_EVENTS.INVALID_ROOM ||
+    (queueRoomId && !isValidRoom)
+  ) {
+    return (
+      <UnauthorizedPage title="Unauthorized room. Try finding another match instead!" />
+    );
+  }
 
   if (!user) {
     return <UnauthorizedPage />;

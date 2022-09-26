@@ -12,16 +12,14 @@ import {
 const Dashboard = () => {
   // store states
   const user = useAuthStore((state) => state.user);
-  const { isInQueue, socket, joinQueue, leaveQueue } = useSocketStore(
-    (state) => {
-      return {
-        isInQueue: state.isInQueue,
-        socket: state.socket,
-        joinQueue: state.joinQueue,
-        leaveQueue: state.leaveQueue,
-      };
-    }
-  );
+  const { socket, joinQueue, leaveQueue } = useSocketStore((state) => {
+    return {
+      isInQueue: state.isInQueue,
+      socket: state.socket,
+      joinQueue: state.joinQueue,
+      leaveQueue: state.leaveQueue,
+    };
+  });
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
@@ -39,10 +37,6 @@ const Dashboard = () => {
   };
 
   const handleMatchDialogClose = () => {
-    // if in room, do nothing (user should already be redirected to room)
-    if (!isInQueue) {
-      return;
-    }
     if (!user) {
       return;
     }

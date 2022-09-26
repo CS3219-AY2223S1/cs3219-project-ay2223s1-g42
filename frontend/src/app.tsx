@@ -18,6 +18,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  console.log("app re-render!");
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 

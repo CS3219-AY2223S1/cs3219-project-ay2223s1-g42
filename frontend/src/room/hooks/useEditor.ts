@@ -114,6 +114,7 @@ const EditorStoreValues = (
       const language = event.target.getAttribute("language");
       setState({ language });
     });
+    monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
     setState({
       doc,
       provider: socketIOProvider,

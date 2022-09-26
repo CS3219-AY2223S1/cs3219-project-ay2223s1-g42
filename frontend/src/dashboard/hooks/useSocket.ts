@@ -195,7 +195,7 @@ const SocketStoreValues = (
       message: queueStatusMsg,
     };
     toast(queueStatusMsg);
-    setState({ isInQueue: false, status: queueStatus });
+    setState({ isInQueue: false, queueRoomId: undefined, status: queueStatus });
   });
 
   // handle leave queue error

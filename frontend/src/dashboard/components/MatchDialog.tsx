@@ -51,35 +51,28 @@ export function MatchDialog({ isOpen, onClose }: Props) {
       description={dialogDescription}
     >
       <div className="flex flex-col gap-6">
-        {/* {!isInQueue ? (
-          <div>Not in queue!</div>
-        ) : (
-          <>
-            <div className="flex flex-col gap-1">
-              <p>Room ID: {roomId}</p>
-            </div>
-            <div className="flex flex-col justify-center gap-2">
-              {roomId ? (
-                <PrimaryButton className="w-full">Enter room now</PrimaryButton>
-              ) : (
-                <></>
-              )}
-            </div>
-          </>
-        )} */}
         {queueRoomId ? (
-          <PrimaryButton
-            className="w-full"
-            onClick={() => navigate(`/room/${queueRoomId}`)}
-          >
-            Join room
-          </PrimaryButton>
+          <div className="flex flex-col gap-1">
+            <p>Room ID: {queueRoomId}</p>
+          </div>
         ) : (
           <></>
         )}
-        <RedButton className="w-full" onClick={onClose}>
-          Disconnect
-        </RedButton>
+        <div className="flex flex-col gap-3">
+          {queueRoomId ? (
+            <PrimaryButton
+              className="w-full"
+              onClick={() => navigate(`/room/${queueRoomId}`)}
+            >
+              Join room
+            </PrimaryButton>
+          ) : (
+            <></>
+          )}
+          <RedButton className="w-full" onClick={onClose}>
+            Disconnect
+          </RedButton>
+        </div>
       </div>
     </PrimaryDialog>
   );
