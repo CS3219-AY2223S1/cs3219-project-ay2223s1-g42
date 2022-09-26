@@ -17,6 +17,9 @@ import { NAMESPACES } from "../src/cache/constants";
 import { AuthModule } from "../src/auth/auth.module";
 import { UserModule } from "../src/user/user.module";
 import { RedisCacheModule } from "../src/cache/redisCache.module";
+import { COOKIE_OPTIONS } from "../src/config";
+import { Response } from "express";
+import { sign } from "crypto";
 
 type CacheableUserFields = {
   email: string;
@@ -265,6 +268,11 @@ describe("AuthController (e2e)", () => {
         password: randomstring.generate(8),
       };
 
+      const signInDTO = {
+        email: newUser.email,
+        password: newUser.password,
+      };
+
       //User is added into the database
       const [err, user] = await userService.create(
         newUser.email,
@@ -279,8 +287,14 @@ describe("AuthController (e2e)", () => {
       expect(findUser.email).toBe(newUser.email);
       expect(findUser.username).toBe(newUser.username);
 
-      //jest.spyOn(authController, "setCookies").mockResolvedValue.();
+      const tokens = await authService.signin(signInDTO);
 
+      const signIn = await request(app.getHttpServer())
+        .post("/auth/local/signin")
+        .send(signInDTO);
+
+      expect(signIn.body.message).toBe("success");
+      //expect(await request(app.getHttpServer).get("me")).not.toBe("null");
       const res = await request(app.getHttpServer()).post("/auth/signout");
 
       expect(res.statusCode).toBe(200);
@@ -301,45 +315,109 @@ describe("AuthController (e2e)", () => {
     });
   });
 
-  /*
-  //Todo
   describe(`Test @GET("/auth/refresh)`, () => {
-    it("Should return status code 200 if refresh is successful", async () => {
-      //Need to signin first
-      const signInDTO = {
-        email: "test1@example.com",
-        username: "testuser1",
-        password: "testpassword",
+    test("Should return status code 200 if refresh is successful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
       };
 
-      const res = await request(app.getHttpServer())
+      const signInDTO = {
+        email: newUser.email,
+        password: newUser.password,
+      };
+
+      //User is added into the database
+      const [err, user] = await userService.create(
+        newUser.email,
+        newUser.username,
+        newUser.password
+      );
+
+      //Verify that user is created
+      const [errFind, findUser] = await userService.findByEmail(user.email);
+
+      //expect user to be created
+      expect(findUser.email).toBe(newUser.email);
+      expect(findUser.username).toBe(newUser.username);
+
+      const signIn = await request(app.getHttpServer())
         .post("/auth/local/signin")
         .send(signInDTO);
 
+      expect(signIn.body.message).toBe("success");
+      const res = await request(app.getHttpServer()).get("/auth/refresh");
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("success");
     });
   });
 
-  //Todo
+  //valid token
   describe(`Test @POST("/verify/:token)`, () => {
-    it("Should return status code 200 if refresh is successful", async () => {
-      //Need to signin first
-      const signInDTO = {
-        email: "test1@example.com",
-        username: "testuser1",
-        password: "testpassword",
+    test("Should return status code 200 if verify is successful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
       };
 
+      const verificationToken = v4();
+      await redis.setKeyInNamespace<CacheableUserFields>(
+        [NAMESPACES.AUTH],
+        verificationToken,
+        {
+          email: newUser.email,
+          username: newUser.username,
+          hash: newUser.password,
+        }
+      );
+
+      await redis.setKeyInNamespace<string>(
+        [NAMESPACES.AUTH],
+        newUser.email,
+        verificationToken
+      );
+
       const res = await request(app.getHttpServer())
-        .post("/auth/local/signin")
-        .send(signInDTO);
+        .post(`/auth/verify/${verificationToken}`)
+        .send(verificationToken);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("success");
     });
   });
-  */
+
+  //Invalid Token
+  describe(`Test @POST("/verify/:token)`, () => {
+    test("Should return status code 200 if verify is successful", async () => {
+      const newUser = {
+        email:
+          randomstring.generate({
+            length: 8,
+            charset: "alphabetic",
+          }) + "@example.com",
+        username: randomstring.generate(8),
+        password: randomstring.generate(8),
+      };
+
+      const verificationToken = v4();
+      const res = await request(app.getHttpServer())
+        .post(`/auth/verify/${verificationToken}`)
+        .send(verificationToken);
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body.message).toBe("Email verification token is invalid");
+    });
+  });
 
   //Valid forget-password request, no invalid test case
   describe(`Test @POST("/auth/forget-password)`, () => {
