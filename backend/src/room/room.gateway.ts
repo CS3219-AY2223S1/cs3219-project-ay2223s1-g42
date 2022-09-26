@@ -35,9 +35,10 @@ export class RoomGateway {
 
   @SubscribeMessage(ROOM_EVENTS.JOIN_ROOM)
   async onJoinRoom(client: Socket, data: any) {
+    const roomUser: RoomUser = JSON.parse(data);
+    console.log("received JOIN_ROOM event: ", { roomUser });
     try {
       // find room of user
-      const roomUser: RoomUser = JSON.parse(data);
       const roomId = await this.roomService.getRoomIdFromUserId(
         roomUser.id.toString()
       );

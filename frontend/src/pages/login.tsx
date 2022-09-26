@@ -8,11 +8,11 @@ import { LoginForm } from "../login";
 const LoginPage = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate("/");
+  //   }
+  // }, [user, navigate]);
   return (
     <>
       {user ? (

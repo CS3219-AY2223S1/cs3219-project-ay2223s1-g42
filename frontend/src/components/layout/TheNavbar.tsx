@@ -93,7 +93,6 @@ const DesktopNavItems = () => {
 
 const TheNavbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
   const scrollDirection = useScrollDirection();
   const isMobile = useMobile();
 
@@ -111,7 +110,7 @@ const TheNavbar = () => {
       )}
     >
       <div className="max-w-5xl flex flex-wrap justify-between items-center mx-auto w-full h-[72px]">
-        <BaseLink to={{ pathname: "/" }} className="flex items-center h-full">
+        <BaseLink to={".."} className="flex items-center h-full">
           {/* <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="mr-3 h-6 sm:h-9"

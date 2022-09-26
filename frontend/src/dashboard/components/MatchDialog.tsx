@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
-import { RedButton, PrimaryDialog } from "src/components";
+import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
 import { useSocketStore } from "../hooks";
 
 type Props = {
@@ -24,11 +24,11 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     : "Please hold while we search for a compatible match...";
 
   // redirect to room if matched room ID set
-  useEffect(() => {
-    if (queueRoomId) {
-      navigate(`/room/${queueRoomId}`);
-    }
-  }, [navigate, queueRoomId]);
+  // useEffect(() => {
+  //   if (queueRoomId) {
+  //     navigate(`/room/${queueRoomId}`);
+  //   }
+  // }, [navigate, queueRoomId]);
 
   // disconnect from queue after 30s
   useEffect(() => {
@@ -67,6 +67,16 @@ export function MatchDialog({ isOpen, onClose }: Props) {
             </div>
           </>
         )} */}
+        {queueRoomId ? (
+          <PrimaryButton
+            className="w-full"
+            onClick={() => navigate(`/room/${queueRoomId}`)}
+          >
+            Join room
+          </PrimaryButton>
+        ) : (
+          <></>
+        )}
         <RedButton className="w-full" onClick={onClose}>
           Disconnect
         </RedButton>

@@ -45,6 +45,19 @@ const EditorStoreValues = (
     setState({ language });
   };
 
+  const setupDoc = () => {
+    const doc = new Y.Doc();
+    const yMap = doc.getMap("data");
+    if (!yMap.has("input")) {
+      yMap.set("input", "");
+      yMap.observe(() => {
+        const updatedInput: string = yMap.get("input") as string;
+        setState({ input: updatedInput });
+      });
+    }
+    return doc;
+  };
+
   const setup = (
     editor: monaco.editor.IStandaloneCodeEditor,
     user: User,
@@ -52,21 +65,7 @@ const EditorStoreValues = (
   ) => {
     // set up doc
     const _doc = getState().doc;
-    if (!!_doc) {
-      // break if doc is already initialized
-      console.error("doc is already initialized, aborting setup...");
-      return;
-    }
-    const doc = new Y.Doc();
-    const yMap = doc.getMap("data");
-    if (!yMap.has("input")) {
-      yMap.set("input", "");
-      yMap.observe((event, transaction) => {
-        console.log({ event, transaction });
-        const updatedInput: string = yMap.get("input") as string;
-        setState({ input: updatedInput });
-      });
-    }
+    const doc = !!_doc ? _doc : setupDoc();
 
     // set up provider
     const socketIOProvider = new SocketIOProvider(
@@ -97,10 +96,6 @@ const EditorStoreValues = (
       const connected = status === "connected";
       setState({ connected });
     });
-    socketIOProvider.awareness.on("language", (language: any) => {
-      console.log("language updated: ", { language });
-      // setState({ language });
-    });
 
     // set up binding
     const model = editor.getModel();
@@ -129,21 +124,18 @@ const EditorStoreValues = (
 
   const cleanup = () => {
     const doc = getState().doc;
-    if (!doc) {
-      return;
+    if (doc) {
+      doc.destroy();
     }
     const provider = getState().provider;
-    if (!provider) {
-      return;
+    if (provider) {
+      provider.disconnect();
+      provider.destroy();
     }
     const binding = getState().binding;
-    if (!binding) {
-      return;
+    if (binding) {
+      binding.destroy();
     }
-    doc.destroy();
-    provider.disconnect();
-    provider.destroy();
-    binding.destroy();
     setState({ doc: undefined, provider: undefined, binding: undefined });
   };
 

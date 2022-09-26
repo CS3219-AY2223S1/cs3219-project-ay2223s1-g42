@@ -10,6 +10,7 @@ type Props = {
 };
 
 const AppLayout = ({ children }: Props) => {
+  console.log("app layout re-render!");
   // fetch me query
   const { user, useGetMe } = useAuthStore((state) => {
     return {

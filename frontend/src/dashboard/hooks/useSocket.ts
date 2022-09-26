@@ -111,11 +111,12 @@ const SocketStoreValues = (
   });
 
   socket.on("connect", () => {
-    console.log("connected to websocket server :)");
+    console.log("connected to /match ws server :)");
     setState({ connected: true });
   });
+
   socket.on("disconnect", () => {
-    console.log("disconnected from ws server :(");
+    console.log("disconnected from /match ws server :(");
     setState({ connected: false });
   });
 
@@ -369,113 +370,128 @@ const SocketStoreValues = (
     socket.emit(MATCH_EVENTS.LEAVE_QUEUE, payload);
   };
 
+  const roomSocket = io(`${import.meta.env.VITE_API_URL}/room`, {
+    withCredentials: true,
+    transports: ["websocket"],
+    autoConnect: true,
+    forceNew: true,
+  });
+
+  roomSocket.on("connect", () => {
+    console.log("connected to /room ws server :)");
+  });
+
+  roomSocket.on("disconnect", () => {
+    console.log("disconnected from /room ws server :(");
+  });
+
+  roomSocket.on(ROOM_EVENTS.JOIN_ROOM_SUCCESS, (data) => {
+    const { room }: { room: Room } = JSON.parse(data);
+    console.log("successfully joined room: ", { room });
+    const roomStatusMsg = `Successfully joined room ${room.id}.`;
+    const roomStatus: Status = {
+      status: StatusType.SUCCESS,
+      event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
+      message: roomStatusMsg,
+    };
+    setState({ room, status: roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const roomStatusMsg = `Error occurred while joining room.`;
+    const roomStatus: Status = {
+      status: StatusType.ERROR,
+      event: ROOM_EVENTS.JOIN_ROOM_ERROR,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({ status: roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_SUCCESS, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const roomStatusMsg = `Successfully left room.`;
+    const roomStatus: Status = {
+      status: StatusType.SUCCESS,
+      event: ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({
+      room: undefined,
+      queueRoomId: undefined,
+      status: roomStatus,
+    });
+  });
+
+  roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_ERR, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const roomStatusMsg = `Error occurred while leaving room.`;
+    const roomStatus: Status = {
+      status: StatusType.ERROR,
+      event: ROOM_EVENTS.LEAVE_ROOM_ERR,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({ status: roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.INVALID_ROOM, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const roomStatusMsg = `Room provided is invalid. Please try searching for another match.`;
+    const roomStatus: Status = {
+      status: StatusType.ERROR,
+      event: ROOM_EVENTS.INVALID_ROOM,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({ status: roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
+    const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
+    const roomStatusMsg = `${newUser.username} has joined the room.`;
+    const roomStatus: Status = {
+      status: StatusType.INFO,
+      event: ROOM_EVENTS.NEW_USER_JOINED,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({ room, newUser, status: roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
+    const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
+    const roomStatusMsg = `${oldUser.username} has left the room.`;
+    const roomStatus: Status = {
+      status: StatusType.INFO,
+      event: ROOM_EVENTS.OLD_USER_LEFT,
+      message: roomStatusMsg,
+    };
+    toast(roomStatusMsg);
+    setState({ room, oldUser, status: roomStatus });
+  });
+
   const joinRoom = (user: User, roomId: string) => {
-    const roomSocket = io(`${import.meta.env.VITE_API_URL}/room`, {
-      withCredentials: true,
-      transports: ["websocket"],
-      autoConnect: true,
-    });
-
-    roomSocket.on(ROOM_EVENTS.JOIN_ROOM_SUCCESS, (data) => {
-      const { room }: { room: Room } = JSON.parse(data);
-      console.log("successfully joined room: ", { room });
-      const roomStatusMsg = `Successfully joined room ${room.id}.`;
-      const roomStatus: Status = {
-        status: StatusType.SUCCESS,
-        event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
-        message: roomStatusMsg,
-      };
-      setState({ room, status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
-      const { message }: { message: string } = JSON.parse(data);
-      const roomStatusMsg = `Error occurred while joining room.`;
-      const roomStatus: Status = {
-        status: StatusType.ERROR,
-        event: ROOM_EVENTS.JOIN_ROOM_ERROR,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_SUCCESS, (data) => {
-      const { message }: { message: string } = JSON.parse(data);
-      const roomStatusMsg = `Successfully left room.`;
-      const roomStatus: Status = {
-        status: StatusType.SUCCESS,
-        event: ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ room: undefined, queueRoomId: undefined, status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.LEAVE_ROOM_ERR, (data) => {
-      const { message }: { message: string } = JSON.parse(data);
-      const roomStatusMsg = `Error occurred while leaving room.`;
-      const roomStatus: Status = {
-        status: StatusType.ERROR,
-        event: ROOM_EVENTS.LEAVE_ROOM_ERR,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.INVALID_ROOM, (data) => {
-      const { message }: { message: string } = JSON.parse(data);
-      const roomStatusMsg = `Room provided is invalid. Please try searching for another match.`;
-      const roomStatus: Status = {
-        status: StatusType.ERROR,
-        event: ROOM_EVENTS.INVALID_ROOM,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
-      const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
-      const roomStatusMsg = `${newUser.username} has joined the room.`;
-      const roomStatus: Status = {
-        status: StatusType.INFO,
-        event: ROOM_EVENTS.NEW_USER_JOINED,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ room, newUser, status: roomStatus });
-    });
-
-    roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
-      const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
-      const roomStatusMsg = `${oldUser.username} has left the room.`;
-      const roomStatus: Status = {
-        status: StatusType.INFO,
-        event: ROOM_EVENTS.OLD_USER_LEFT,
-        message: roomStatusMsg,
-      };
-      toast(roomStatusMsg);
-      setState({ room, oldUser, status: roomStatus });
-    });
-
+    if (!roomSocket.connected) {
+      console.error(
+        "failed to emit JOIN_ROOM event, room socket not connected"
+      );
+      return;
+    }
+    // roomSocket.connect();
     const payload = JSON.stringify({ ...user, roomId });
     console.log("joining room: ", { payload });
-    console.log("setting room socket: ", roomSocket);
     roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
-    setState({ roomSocket });
   };
 
   const leaveRoom = (user: User, roomId: string) => {
-    const roomSocket = getState().roomSocket;
-    if (!roomSocket) {
-      console.log("room socket not set, cannot leave room");
-      return;
-    }
     const payload = JSON.stringify({ ...user, roomId });
     console.log("leave room payload: ", payload);
     roomSocket.emit(ROOM_EVENTS.LEAVE_ROOM, payload);
+    // kill room socket
+    // roomSocket.disconnect();
   };
 
   return {
@@ -487,7 +503,7 @@ const SocketStoreValues = (
     joinQueue,
     leaveQueue,
     // room data
-    roomSocket: undefined,
+    roomSocket,
     room: undefined,
     newUser: undefined,
     oldUser: undefined,

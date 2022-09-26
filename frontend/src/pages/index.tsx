@@ -55,7 +55,7 @@ const Dashboard = () => {
     if (user) {
       socket?.connect();
     }
-  }, [socket, user]);
+  }, []);
 
   if (!user) {
     return <SpinnerIcon className="h-12 w-12" />;
