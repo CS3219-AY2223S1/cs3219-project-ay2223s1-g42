@@ -145,7 +145,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     if (!roomSocket.connected) {
       roomSocket.connect();
     }
-    const payload = JSON.stringify({ ...user, roomId });
+    const payload = JSON.stringify({ id: user.id, roomId });
     console.log("joining room: ", { payload });
     roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
   };
@@ -157,16 +157,15 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       return;
     }
     const room = getState().room;
-    if (!room) {
-      console.error("failed to leave room, user not in a room!");
-      return;
+    const queueRoomId = getState().queueRoomId;
+    const roomId = room?.id ?? queueRoomId;
+    if (!roomId) {
+      console.error("failed to leave room, no room id found!");
     }
     if (!roomSocket.connected) {
-      console.error("failed to leave room, room socket not connected");
-      return;
+      roomSocket.connect();
     }
-    const roomId = room.id;
-    const payload = JSON.stringify({ ...user, roomId });
+    const payload = JSON.stringify({ id: user.id, roomId });
     console.log("leave room payload: ", payload);
     roomSocket.emit(ROOM_EVENTS.LEAVE_ROOM, payload);
     // kill room socket

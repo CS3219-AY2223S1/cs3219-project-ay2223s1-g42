@@ -15,6 +15,8 @@ export type PoolUser = User & {
 export type MatchSlice = {
   matchSocket: Socket | undefined;
   matchSocketConnected: boolean;
+  matchDifficulties: QuestionDifficulty[];
+  setMatchDifficulties: (difficulties: QuestionDifficulty[]) => void;
   queueStatus: Status | undefined;
   isInQueue: boolean;
   queueRoomId: string | undefined;
@@ -26,6 +28,10 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
   setState,
   getState
 ) => {
+  const setMatchDifficulties = (difficulties: QuestionDifficulty[]) => {
+    setState({ matchDifficulties: difficulties });
+  };
+
   const matchSocket = io(`${import.meta.env.VITE_API_URL}/match`, {
     withCredentials: true,
     transports: ["websocket"],
@@ -175,6 +181,8 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
   return {
     matchSocket,
     matchSocketConnected: false,
+    matchDifficulties: ["easy"],
+    setMatchDifficulties,
     queueStatus: undefined,
     isInQueue: false,
     queueRoomId: undefined,

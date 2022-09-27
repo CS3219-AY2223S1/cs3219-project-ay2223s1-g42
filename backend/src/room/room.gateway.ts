@@ -10,16 +10,20 @@ import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { ROOM_EVENTS, ROOM_MESSAGES, ROOM_WS_NAMESPACE } from "./constants";
 import { RoomService } from "./room.service";
-import { PoolUser } from "src/match/match.gateway";
-import { PublicUserInfo } from "src/utils/zod/userInfo";
+import { PoolUser, PoolUserData } from "src/match/match.gateway";
 
 export type Room = {
   id: string;
-  users: PoolUser[];
+  users: RoomUser[];
 };
 
-export type RoomUser = Required<PublicUserInfo> & {
+export type PendingRoomUser = {
+  id: number;
   roomId: string;
+};
+
+export type RoomUser = PoolUser & {
+  connected: boolean;
 };
 
 @UseGuards(WsJwtAccessGuard)
@@ -35,18 +39,24 @@ export class RoomGateway {
 
   @SubscribeMessage(ROOM_EVENTS.JOIN_ROOM)
   async onJoinRoom(client: Socket, data: any) {
-    const roomUser: RoomUser = JSON.parse(data);
-    console.log("received JOIN_ROOM event: ", { roomUser });
+    const { id: pendingUserId, roomId: pendingRoomId }: PendingRoomUser =
+      JSON.parse(data);
+    console.log("received JOIN_ROOM event: ", { pendingUserId, pendingRoomId });
     try {
       // find room of user
       const roomId = await this.roomService.getRoomIdFromUserId(
-        roomUser.id.toString()
+        pendingUserId.toString()
       );
 
-      console.log("current room ID of user: ", { roomId });
+      // get room data
+      const room = await this.roomService.getRoomFromId(roomId);
 
-      // emit error if room id not found or error occurred
-      if (!roomId || roomUser.roomId !== roomId) {
+      // get user info
+      const roomUser = room.users.find((user) => user.id === pendingUserId);
+
+      // emit error if room id not found, room id doesnt
+      // provided room id or user not found in room
+      if (!roomId || pendingRoomId !== roomId || !roomUser) {
         client.emit(
           ROOM_EVENTS.INVALID_ROOM,
           JSON.stringify({
@@ -56,11 +66,13 @@ export class RoomGateway {
         return;
       }
 
-      // get room data
-      const room = await this.roomService.getRoomFromId(roomId);
+      const updatedRoomUser: RoomUser = {
+        ...roomUser,
+        connected: true,
+      };
 
-      // get user info
-      const { roomId: _, ...userData } = roomUser;
+      // add user to room
+      this.roomService.addUserToRoom(room, updatedRoomUser);
 
       // broadcast user has joined to room
       client.emit(ROOM_EVENTS.JOIN_ROOM_SUCCESS, JSON.stringify({ room }));
@@ -68,8 +80,9 @@ export class RoomGateway {
         .to(room.id)
         .emit(
           ROOM_EVENTS.NEW_USER_JOINED,
-          JSON.stringify({ room, newUser: userData })
+          JSON.stringify({ room, newUser: roomUser })
         );
+      // add user to room socket channel AFTER broadcast
       await client.join(room.id);
     } catch (err) {
       console.error(err);
@@ -87,13 +100,20 @@ export class RoomGateway {
   async onLeaveRoom(client: Socket, data: any) {
     try {
       // find room of user
-      const roomUser: RoomUser = JSON.parse(data);
+      const { id: pendingUserId, roomId: pendingUserRoomId }: PendingRoomUser =
+        JSON.parse(data);
       const roomId = await this.roomService.getRoomIdFromUserId(
-        roomUser.id.toString()
+        pendingUserId.toString()
+      );
+
+      // get room data
+      const currentRoom = await this.roomService.getRoomFromId(roomId);
+      const pendingUserData = currentRoom.users.find(
+        (user) => user.id === pendingUserId
       );
 
       // emit error if room id not found or error occurred
-      if (!roomId || roomUser.roomId !== roomId) {
+      if (!roomId || pendingUserRoomId !== roomId || !pendingUserData) {
         client.emit(
           ROOM_EVENTS.INVALID_ROOM,
           JSON.stringify({
@@ -103,20 +123,18 @@ export class RoomGateway {
         return;
       }
 
-      // get room data
-      const currentRoom = await this.roomService.getRoomFromId(roomId);
-      console.log("removing user from room: ", { roomUser, currentRoom });
+      console.log("removing user id from room: ", {
+        pendingUserData,
+        currentRoom,
+      });
 
       // remove user from room
       const room = await this.roomService.removeUserFromRoom(
         currentRoom,
-        roomUser.id
+        pendingUserId
       );
 
-      // remove user as room user
-      await this.roomService.removeUserAsRoomUser(roomUser.id.toString());
-
-      // remove user from room and notify user has left room
+      // remove user from room socket channel and notify channel user has left room
       console.log({ currentRoomId: currentRoom.id, roomId: room.id });
       await client.leave(room.id);
       client.emit(
@@ -126,11 +144,12 @@ export class RoomGateway {
 
       // if room not empty, notify other users that user has left room
       if (room.users.length > 0) {
+        const { id, username, email } = pendingUserData;
         this.server
           .to(room.id)
           .emit(
             ROOM_EVENTS.OLD_USER_LEFT,
-            JSON.stringify({ room, oldUser: roomUser })
+            JSON.stringify({ room, oldUser: { id, username, email } })
           );
         return;
       }

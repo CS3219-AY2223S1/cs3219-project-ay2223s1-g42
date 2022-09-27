@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 import {
   BigHeading,
@@ -34,34 +35,56 @@ const DEFAULT_DIFFICULTY: RadioGroupValue<QuestionDifficulty> =
   difficultyMap.easy;
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // store states
-  const { user, roomSocket, matchSocket, joinQueue, leaveQueue } =
-    useGlobalStore((state) => {
-      return {
-        user: state.user,
-        roomSocket: state.roomSocket,
-        matchSocket: state.matchSocket,
-        joinQueue: state.joinQueue,
-        leaveQueue: state.leaveQueue,
-      };
-    });
+  const {
+    user,
+    isInQueue,
+    roomSocket,
+    matchSocket,
+    setMatchDifficulties,
+    joinQueue,
+    leaveQueue,
+    leaveRoom,
+  } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      isInQueue: state.isInQueue,
+      roomSocket: state.roomSocket,
+      matchSocket: state.matchSocket,
+      setMatchDifficulties: state.setMatchDifficulties,
+      joinQueue: state.joinQueue,
+      leaveQueue: state.leaveQueue,
+      leaveRoom: state.leaveRoom,
+    };
+  });
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const [difficulty, setDifficulty] =
     useState<RadioGroupValue<QuestionDifficulty>>(DEFAULT_DIFFICULTY);
 
+  // handle set difficulty
+  const handleSetDifficulty = (value: RadioGroupValue<QuestionDifficulty>) => {
+    setDifficulty(value);
+    setMatchDifficulties([value.title]);
+  };
+
+  // handle join match queue
   const handleJoinQueue = () => {
     setIsMatchingDialogOpen(true);
     joinQueue([difficulty.title]);
   };
 
+  // handle leave match qeueue
   const handleMatchDialogClose = () => {
-    if (!user) {
+    setIsMatchingDialogOpen(false);
+    // if not matched, leave queue
+    if (isInQueue) {
+      leaveQueue();
       return;
     }
-    console.log("setting matching dialog open to false!!");
-    setIsMatchingDialogOpen(false);
-    leaveQueue();
+    // if matched, leave room
+    leaveRoom();
   };
 
   // connects to match and room socket servers
@@ -84,17 +107,26 @@ const Dashboard = () => {
     }
     matchSocket.connect();
     roomSocket.connect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!user) {
     return <SpinnerIcon className="h-12 w-12" />;
   }
+
   return (
     <div className="m-auto space-y-8">
       <BigHeading>Welcome to PeerPrep</BigHeading>
       <QuestionRadioGroup
         difficulty={difficulty}
-        setDifficulty={setDifficulty}
+        setDifficulty={handleSetDifficulty}
         difficulties={Object.values(difficultyMap)}
       />
       <div className="flex flex-col">

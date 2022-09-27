@@ -1,4 +1,3 @@
-import type { SetStateAction, Dispatch } from "react";
 import { RadioGroup } from "@headlessui/react";
 import cx from "classnames";
 
@@ -11,7 +10,7 @@ export type RadioGroupValue<Title extends string> = {
 
 type Props<T> = {
   value: T;
-  setValue: Dispatch<SetStateAction<T>>;
+  setValue: (value: T) => void;
   values: T[];
 };
 

@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
 import { PoolUser } from "src/match/match.gateway";
-import { Room } from "./room.gateway";
+import { Room, RoomUser } from "./room.gateway";
 
 @Injectable()
 export class RoomService {
@@ -26,9 +26,12 @@ export class RoomService {
   async createRoom(users: PoolUser[]): Promise<Room> {
     // create room
     const roomId = v4();
+    const roomUsers: RoomUser[] = users.map((user) => {
+      return { ...user, connected: false };
+    });
     const room: Room = {
-      users,
       id: roomId,
+      users: roomUsers,
     };
 
     try {
@@ -53,6 +56,36 @@ export class RoomService {
     }
   }
 
+  async addUserToRoom(room: Room, user: RoomUser): Promise<Room> {
+    // update users in room
+    const newUsers = room.users
+      .filter((roomUser) => roomUser.id !== user.id)
+      .concat(user);
+    const newRoom: Room = {
+      ...room,
+      users: newUsers,
+    };
+    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
+
+    // add user to room users (store room id of each user in a room)
+    await this.addUserAsRoomUser(room.id, user.id.toString());
+    return newRoom;
+  }
+
+  async removeUserFromRoom(room: Room, userId: number): Promise<Room> {
+    // update users in room
+    const newUsers = room.users.filter((user) => user.id !== userId);
+    const newRoom: Room = {
+      ...room,
+      users: newUsers,
+    };
+    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
+
+    // remove user from room users
+    await this.removeUserAsRoomUser(userId.toString());
+    return newRoom;
+  }
+
   async addUserAsRoomUser(roomId: string, userId: string) {
     await this.cache.setKeyInNamespace(
       [NAMESPACES.ROOM, NAMESPACES.USERS],
@@ -66,26 +99,6 @@ export class RoomService {
       [NAMESPACES.ROOM, NAMESPACES.USERS],
       userId
     );
-  }
-
-  async addUserToRoom(room: Room, user: PoolUser): Promise<Room> {
-    const newUsers = room.users.concat(user);
-    const newRoom: Room = {
-      ...room,
-      users: newUsers,
-    };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
-    return newRoom;
-  }
-
-  async removeUserFromRoom(room: Room, userId: number): Promise<Room> {
-    const newUsers = room.users.filter((user) => user.id !== userId);
-    const newRoom: Room = {
-      ...room,
-      users: newUsers,
-    };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
-    return newRoom;
   }
 
   /**

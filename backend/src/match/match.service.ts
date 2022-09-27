@@ -53,14 +53,14 @@ export class MatchService {
   }
 
   async handleFoundMatches(user: PoolUser, matchingUserIds: string[]) {
+    // no matching user ids found, break
     if (matchingUserIds.length === 0) {
-      // no matching user ids found, break
       return;
     }
 
+    // if any other users are found, return and match user
+    // w the first user returned
     try {
-      // if any other users are found, return and match user w the first user returned
-      // get user to be matched with
       const matchedUserId = matchingUserIds[0];
       const matchedUser = await this.cache.getKeyInNamespace<PoolUser>(
         [NAMESPACES.MATCH, NAMESPACES.USERS],

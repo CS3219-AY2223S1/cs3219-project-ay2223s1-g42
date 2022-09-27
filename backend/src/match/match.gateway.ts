@@ -20,7 +20,7 @@ import {
   MATCH_WS_NAMESPACE,
 } from "./constants";
 
-export type PoolUserData = PublicUserInfo & {
+export type PoolUserData = Required<PublicUserInfo> & {
   difficulties: QuestionDifficulty[];
 };
 

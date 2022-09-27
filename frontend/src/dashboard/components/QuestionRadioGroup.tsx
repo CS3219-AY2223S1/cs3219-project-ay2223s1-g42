@@ -1,11 +1,9 @@
-import { Dispatch, SetStateAction } from "react";
-
 import { BaseRadioGroup, RadioGroupValue } from "src/components";
 import { QuestionDifficulty } from "src/store";
 
 type Props = {
   difficulty: RadioGroupValue<QuestionDifficulty>;
-  setDifficulty: Dispatch<SetStateAction<RadioGroupValue<QuestionDifficulty>>>;
+  setDifficulty: (value: RadioGroupValue<QuestionDifficulty>) => void;
   difficulties: RadioGroupValue<QuestionDifficulty>[];
 };
 
