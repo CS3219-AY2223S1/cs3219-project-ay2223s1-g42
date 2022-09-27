@@ -4,8 +4,8 @@ import cx from "classnames";
 
 import { CheckFilledIcon } from "src/components";
 
-type RadioGroupValue = {
-  title: string;
+export type RadioGroupValue<Title extends string> = {
+  title: Title;
   description: string;
 };
 
@@ -15,7 +15,10 @@ type Props<T> = {
   values: T[];
 };
 
-const BaseRadioGroup = <T extends RadioGroupValue>({
+const BaseRadioGroup = <
+  RadioGroupTitle extends string,
+  T extends RadioGroupValue<RadioGroupTitle>
+>({
   value,
   setValue,
   values,

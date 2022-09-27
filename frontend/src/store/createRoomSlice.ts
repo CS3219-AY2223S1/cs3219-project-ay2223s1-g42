@@ -145,7 +145,6 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     if (!roomSocket.connected) {
       roomSocket.connect();
     }
-    // roomSocket.connect();
     const payload = JSON.stringify({ ...user, roomId });
     console.log("joining room: ", { payload });
     roomSocket.emit(ROOM_EVENTS.JOIN_ROOM, payload);
