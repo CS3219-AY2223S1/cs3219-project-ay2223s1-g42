@@ -33,10 +33,8 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
 
   useEffect(() => {
     return () => {
-      if (binding) {
-        console.log("cleaning up editor...");
-        cleanup();
-      }
+      console.log("cleaning up editor...");
+      cleanup();
     };
   }, []);
 
