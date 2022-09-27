@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
-import { useSocketStore } from "../hooks";
+import { useGlobalStore } from "src/store";
 
 type Props = {
   isOpen: boolean;
@@ -11,7 +11,7 @@ type Props = {
 
 export function MatchDialog({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
-  const { isInQueue, queueRoomId } = useSocketStore((state) => {
+  const { isInQueue, queueRoomId } = useGlobalStore((state) => {
     return {
       isInQueue: state.isInQueue,
       queueRoomId: state.queueRoomId,

@@ -1,11 +1,11 @@
 import { BaseListbox } from "src/components";
-import { LANGUAGE, useEditorStore } from "src/room";
+import { LANGUAGE, useGlobalStore } from "src/store";
 
 const RoomListBox = () => {
-  const { language, setLanguage } = useEditorStore((state) => {
+  const { language, setLanguage } = useGlobalStore((state) => {
     return {
-      language: state.language,
-      setLanguage: state.setLanguage,
+      language: state.editorLanguage,
+      setLanguage: state.setEditorLanguage,
     };
   });
   return (

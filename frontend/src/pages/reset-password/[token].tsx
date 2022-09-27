@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 
 import { BigHeading, ErrorPage } from "src/components";
-import { ResetPasswordForm } from "src/login/components";
+import { ResetPasswordForm } from "src/login";
 
 const ResetPasswordPage = () => {
   const { token } = useParams();

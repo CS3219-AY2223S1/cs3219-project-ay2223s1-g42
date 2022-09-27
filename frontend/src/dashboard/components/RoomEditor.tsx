@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { useEffect } from "react";
 
+import { SpinnerIcon } from "src/components";
 import { User } from "src/login";
-import { LANGUAGE, useEditorStore } from "src/room";
+import { LANGUAGE, useGlobalStore } from "src/store";
 
 type EditorProps = {
   user: User;
@@ -11,14 +12,14 @@ type EditorProps = {
 };
 
 const RoomEditor = ({ user, roomId }: EditorProps) => {
-  const { input, language, binding, setup, cleanup } = useEditorStore(
+  const { input, language, binding, setup, cleanup } = useGlobalStore(
     (state) => {
       return {
-        input: state.input,
-        language: state.language,
-        binding: state.binding,
-        setup: state.setup,
-        cleanup: state.cleanup,
+        input: state.editorInput,
+        language: state.editorLanguage,
+        binding: state.editorBinding,
+        setup: state.setupEditor,
+        cleanup: state.cleanupEditor,
       };
     }
   );
@@ -55,6 +56,7 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
       }}
       // onChange={handleEditorChange}
       onMount={handleEditorDidMount}
+      loading={<SpinnerIcon />}
     />
   );
 };

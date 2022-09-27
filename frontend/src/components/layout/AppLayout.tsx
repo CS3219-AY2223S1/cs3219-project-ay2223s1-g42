@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
 
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
@@ -19,7 +19,7 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-  const { user, useGetMe } = useAuthStore((state) => {
+  const { user, useGetMe } = useGlobalStore((state) => {
     return {
       user: state.user,
       useGetMe: state.useGetMe,

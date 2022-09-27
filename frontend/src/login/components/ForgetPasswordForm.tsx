@@ -8,8 +8,8 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { useAuthStore } from "src/hooks";
 import { ForgetPasswordInfo, ForgetPasswordInfoSchema } from "../types";
+import { useGlobalStore } from "src/store";
 
 const ForgetPasswordForm = () => {
   // form setup
@@ -23,7 +23,7 @@ const ForgetPasswordForm = () => {
   });
 
   // forget password mutation
-  const useForgetPasswordMutation = useAuthStore(
+  const useForgetPasswordMutation = useGlobalStore(
     (state) => state.useForgetPasswordMutation
   );
   const forgetPasswordMutation = useForgetPasswordMutation({

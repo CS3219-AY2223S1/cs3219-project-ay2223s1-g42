@@ -13,8 +13,8 @@ import {
   PrimaryButton,
   PrimaryLink,
 } from "src/components";
-import { useAuthStore } from "src/hooks";
 import { SignInCredentials, SigninCredentialsSchema } from "../types";
+import { useGlobalStore } from "src/store";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const LoginForm = () => {
   });
 
   // sign in mutations
-  const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
+  const useSignInMutation = useGlobalStore((state) => state.useSigninMutation);
   const signinMutation = useSignInMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(["me"]);

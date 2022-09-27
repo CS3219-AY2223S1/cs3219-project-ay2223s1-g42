@@ -4,6 +4,7 @@ export * from "./dialog";
 export * from "./link";
 export * from "./alert";
 export * from "./tabs";
+export * from "./radiogroup";
 export * from "./checkgroup";
 export * from "./listbox";
 export * from "./dropdown";

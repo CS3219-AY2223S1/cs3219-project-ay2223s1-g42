@@ -2,28 +2,30 @@ import { useEffect } from "react";
 import { useParams } from "react-router";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
-import { LoadedRoom, ROOM_EVENTS, useSocketStore } from "src/dashboard";
-import { useAuthStore } from "src/hooks";
+import { LoadedRoom } from "src/dashboard";
+import { ROOM_EVENTS, useGlobalStore } from "src/store";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
-  const user = useAuthStore((state) => state.user);
-  const { queueRoomId, room, status, joinRoom } = useSocketStore((state) => {
-    return {
-      queueRoomId: state.queueRoomId,
-      room: state.room,
-      status: state.status,
-      joinRoom: state.joinRoom,
-    };
-  });
+  const { user, queueRoomId, room, roomStatus, joinRoom } = useGlobalStore(
+    (state) => {
+      return {
+        user: state.user,
+        queueRoomId: state.queueRoomId,
+        room: state.room,
+        roomStatus: state.roomStatus,
+        joinRoom: state.joinRoom,
+      };
+    }
+  );
 
   console.log("rendering main room page!");
 
   const pageRoomId = id ?? "default";
   const isValidRoom = pageRoomId === queueRoomId;
 
+  // join room on mount
   useEffect(() => {
-    // join room on mount
     if (!user) {
       return;
     }
@@ -32,12 +34,12 @@ const RoomPage = (): JSX.Element => {
     }
     if (!room) {
       console.log("joing room: ", { user, pageRoomId });
-      joinRoom(user, pageRoomId);
+      joinRoom(pageRoomId);
     }
   }, []);
 
   if (
-    status?.event === ROOM_EVENTS.INVALID_ROOM ||
+    roomStatus?.event === ROOM_EVENTS.INVALID_ROOM ||
     (queueRoomId && !isValidRoom)
   ) {
     return (
@@ -48,15 +50,6 @@ const RoomPage = (): JSX.Element => {
   if (!user) {
     return <UnauthorizedPage />;
   }
-
-  // if (
-  //   status?.event === ROOM_EVENTS.INVALID_ROOM ||
-  //   (queueRoomId && !isValidRoom)
-  // ) {
-  //   return (
-  //     <UnauthorizedPage title="Invalid room. Head to the home page and try finding another match!" />
-  //   );
-  // }
 
   if (room) {
     return <LoadedRoom roomId={pageRoomId} user={user} />;

@@ -8,8 +8,8 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { useAuthStore } from "src/hooks";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
+import { useGlobalStore } from "src/store";
 
 type Props = {
   token: string;
@@ -27,7 +27,7 @@ const ResetPasswordForm = ({ token }: Props) => {
   });
 
   // forget password mutation
-  const useResetPasswordMutation = useAuthStore(
+  const useResetPasswordMutation = useGlobalStore(
     (state) => state.useResetPasswordMutation
   );
   const resetPasswordMutation = useResetPasswordMutation({

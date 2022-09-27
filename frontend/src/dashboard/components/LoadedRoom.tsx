@@ -1,12 +1,37 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
+import { RedButton } from "src/components";
 import { User } from "src/login";
 import { RoomTabs } from "src/room";
-import { useSocketStore } from "../hooks";
-import { LeaveRoomButton } from "./LeaveRoomButton";
+import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
+
+const LeaveRoomButton = () => {
+  const navigate = useNavigate();
+  const { user, leaveRoom } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      leaveRoom: state.leaveRoom,
+    };
+  });
+  return (
+    <RedButton
+      className="py-2.5 md:py-2 text-sm"
+      onClick={() => {
+        if (!user) {
+          console.error("user not logged in, cannot leave room");
+          return;
+        }
+        leaveRoom();
+        navigate("/");
+      }}
+    >
+      disconnect
+    </RedButton>
+  );
+};
 
 type LoadedRoomProps = {
   roomId: string;
@@ -15,7 +40,7 @@ type LoadedRoomProps = {
 
 const LoadedRoom = ({ roomId, user }: LoadedRoomProps) => {
   const location = useLocation();
-  const leaveRoom = useSocketStore((state) => state.leaveRoom);
+  const leaveRoom = useGlobalStore((state) => state.leaveRoom);
 
   useEffect(() => {
     return () => {
@@ -29,7 +54,7 @@ const LoadedRoom = ({ roomId, user }: LoadedRoomProps) => {
       console.log("location pathname unmount: ", location.pathname);
       if (!location.pathname.includes(roomId)) {
         console.log("leaving room on loaded room unmount");
-        leaveRoom(user, roomId);
+        leaveRoom();
       }
     };
   }, []);

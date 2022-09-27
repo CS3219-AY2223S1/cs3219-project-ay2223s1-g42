@@ -1,12 +1,11 @@
+import { StateCreator } from "zustand";
 import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
   UseQueryResult,
+  UseMutationResult,
+  useMutation,
+  useQuery,
 } from "@tanstack/react-query";
-import create from "zustand";
 
-import { Axios } from "src/services";
 import {
   User,
   ApiResponse,
@@ -14,14 +13,16 @@ import {
   SignUpCredentials,
   ForgetPasswordInfo,
   ResetPasswordInfo,
-} from "../login/types";
+} from "src/login";
+import { Axios } from "src/services";
+import type { GlobalStore } from "./useGlobalStore";
 
 type Options = {
   onSuccess?: () => Promise<void> | void | undefined;
   onError?: () => Promise<void> | void;
 };
 
-type AuthStore = {
+export type AuthSlice = {
   user: User | undefined;
   useGetMe: (options?: Options) => UseQueryResult<User, unknown>;
   useRefreshMutation: (
@@ -44,8 +45,8 @@ type AuthStore = {
   ) => UseMutationResult<ApiResponse, unknown, ResetPasswordInfo, unknown>;
 };
 
-const AuthStoreValues = (
-  setState: ({ user }: { user: User | undefined }) => void
+const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
+  setState
 ) => {
   const useGetMe = (options?: Options) => {
     return useQuery(
@@ -169,4 +170,4 @@ const AuthStoreValues = (
   };
 };
 
-export const useAuthStore = create<AuthStore>(AuthStoreValues);
+export { createAuthSlice };

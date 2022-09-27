@@ -9,8 +9,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./styles/globals.css";
 import routes from "~react-pages";
-import { useAuthStore } from "./hooks";
 import { LoadingLayout, AppLayout, ErrorPage } from "./components";
+import { useGlobalStore } from "./store";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   console.log("app re-render!");
-  const user = useAuthStore((state) => state.user);
+  const user = useGlobalStore((state) => state.user);
   const navigate = useNavigate();
 
   const allRoutes = useRoutes(routes);

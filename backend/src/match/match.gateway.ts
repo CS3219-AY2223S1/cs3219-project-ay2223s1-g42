@@ -130,6 +130,7 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { id }: { id: number } = JSON.parse(data);
 
     try {
+      console.log("leaving queue for user id: ", id);
       // get queue user from user id
       const user = await this.matchService.getQueueUserFromId(id.toString());
       // disconnect user from queue

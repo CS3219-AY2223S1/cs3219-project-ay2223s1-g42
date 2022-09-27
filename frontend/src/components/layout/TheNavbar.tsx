@@ -1,6 +1,5 @@
 import { useState } from "react";
 import cx from "classnames";
-import { useNavigate } from "react-router";
 
 import {
   BaseLink,

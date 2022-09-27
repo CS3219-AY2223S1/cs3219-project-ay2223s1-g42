@@ -1,39 +1,28 @@
 import { useEffect, useState } from "react";
 
 import { BigHeading, PrimaryButton, SpinnerIcon } from "src/components";
-import { useAuthStore } from "src/hooks";
-import {
-  useSocketStore,
-  PoolUser,
-  MatchDialog,
-  QuestionRadioGroup,
-} from "src/dashboard";
+import { MatchDialog, QuestionRadioGroup } from "src/dashboard";
+import { useGlobalStore } from "src/store";
 
 const Dashboard = () => {
   // store states
-  const user = useAuthStore((state) => state.user);
-  const { socket, joinQueue, leaveQueue } = useSocketStore((state) => {
-    return {
-      isInQueue: state.isInQueue,
-      socket: state.socket,
-      joinQueue: state.joinQueue,
-      leaveQueue: state.leaveQueue,
-    };
-  });
+  const user = useGlobalStore((state) => state.user);
+  const { roomSocket, matchSocket, joinQueue, leaveQueue } = useGlobalStore(
+    (state) => {
+      return {
+        roomSocket: state.roomSocket,
+        matchSocket: state.matchSocket,
+        joinQueue: state.joinQueue,
+        leaveQueue: state.leaveQueue,
+      };
+    }
+  );
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
   const handleJoinQueue = () => {
-    if (!user) {
-      console.log("user not found, cannot join queue");
-      return;
-    }
-    const poolUser: PoolUser = {
-      ...user,
-      difficulties: ["easy", "medium"],
-    };
     setIsMatchingDialogOpen(true);
-    joinQueue(poolUser);
+    joinQueue(["easy", "medium"]);
   };
 
   const handleMatchDialogClose = () => {
@@ -42,13 +31,28 @@ const Dashboard = () => {
     }
     console.log("setting matching dialog open to false!!");
     setIsMatchingDialogOpen(false);
-    leaveQueue(user.id);
+    leaveQueue();
   };
 
   useEffect(() => {
-    if (user) {
-      socket?.connect();
+    if (!matchSocket) {
+      console.error(
+        "failed to connect to match socket server, match socket not set"
+      );
+      return;
     }
+    if (!roomSocket) {
+      console.error(
+        "failed to connect to room socket server, room socket not set"
+      );
+      return;
+    }
+    if (!user) {
+      console.error("failed to connect to socket servers, user not logged in");
+      return;
+    }
+    matchSocket.connect();
+    roomSocket.connect();
   }, []);
 
   if (!user) {

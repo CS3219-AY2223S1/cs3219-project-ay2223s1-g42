@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { BigHeading, SpinnerIcon } from "src/components";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 import { LoginForm } from "../login";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+  const user = useGlobalStore((state) => state.user);
   // useEffect(() => {
   //   if (user) {
   //     navigate("/");

@@ -43,7 +43,7 @@ export class RoomGateway {
         roomUser.id.toString()
       );
 
-      console.log("user joined room: ", { roomUser, roomId });
+      console.log("current room ID of user: ", { roomId });
 
       // emit error if room id not found or error occurred
       if (!roomId || roomUser.roomId !== roomId) {

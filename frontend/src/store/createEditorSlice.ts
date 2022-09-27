@@ -1,48 +1,42 @@
+import { StateCreator } from "zustand";
 import { createRef } from "react";
 import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
 import * as monaco from "monaco-editor";
-import create from "zustand";
 
+import type { GlobalStore } from "./useGlobalStore";
 import { User } from "src/login";
+import { LANGUAGE } from "./enums";
 
-export enum LANGUAGE {
-  TS = "typescript",
-  JS = "javascript",
-  PY = "python",
-  CPP = "cpp",
-}
-
-type EditorStore = {
+export type EditorSlice = {
   doc: Y.Doc | undefined;
   text: Y.Text | undefined;
-  language: LANGUAGE;
-  provider: SocketIOProvider | undefined;
-  connected: boolean;
-  input: string | undefined;
-  clients: string[] | undefined;
-  binding: MonacoBinding | undefined;
-  editor: monaco.editor.IStandaloneCodeEditor | undefined;
-  setLanguage: (language: LANGUAGE) => void;
-  setup: (
+  editorLanguage: LANGUAGE;
+  editorProvider: SocketIOProvider | undefined;
+  isEditorProviderConnected: boolean;
+  editorInput: string | undefined;
+  editorClients: string[] | undefined;
+  editorBinding: MonacoBinding | undefined;
+  setEditorLanguage: (language: LANGUAGE) => void;
+  setupEditor: (
     editor: monaco.editor.IStandaloneCodeEditor,
     user: User,
     roomId: string
   ) => void;
-  cleanup: () => void;
+  cleanupEditor: () => void;
 };
 
-const EditorStoreValues = (
-  setState: (values: Partial<EditorStore>) => void,
-  getState: () => EditorStore
-): EditorStore => {
-  const setLanguage = (language: LANGUAGE) => {
-    const binding = getState().binding;
+const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
+  setState,
+  getState
+) => {
+  const setEditorLanguage = (language: LANGUAGE) => {
+    const binding = getState().editorBinding;
     if (binding) {
       binding.ytext.setAttribute("language", language);
     }
-    setState({ language });
+    setState({ editorLanguage: language });
   };
 
   const setupDoc = () => {
@@ -52,13 +46,13 @@ const EditorStoreValues = (
       yMap.set("input", "");
       yMap.observe(() => {
         const updatedInput: string = yMap.get("input") as string;
-        setState({ input: updatedInput });
+        setState({ editorInput: updatedInput });
       });
     }
     return doc;
   };
 
-  const setup = (
+  const setupEditor = (
     editor: monaco.editor.IStandaloneCodeEditor,
     user: User,
     roomId: string
@@ -79,22 +73,26 @@ const EditorStoreValues = (
       }
     );
     const docText = doc.getText("monaco");
+
+    // set up socket io provider awareness
     socketIOProvider.awareness.on("change", () => {
       const clients = socketIOProvider.awareness.getStates();
       const clientIds = Array.from(clients).map((key) => `${key}`);
       console.log({ clients });
-      setState({ clients: clientIds });
+      setState({ editorClients: clientIds });
     });
     socketIOProvider.awareness.setLocalState({
       id: user?.id,
       name: user?.username,
     });
+
+    // set up socket io provider events
     socketIOProvider.on("sync", (status: boolean) =>
       console.log("websocket sync", status)
     );
     socketIOProvider.on("status", ({ status }: { status: string }) => {
       const connected = status === "connected";
-      setState({ connected });
+      setState({ isEditorProviderConnected: connected });
     });
 
     // set up binding
@@ -109,51 +107,57 @@ const EditorStoreValues = (
       new Set([editor]),
       socketIOProvider.awareness
     );
+
     // observe document language changes
     monacoBinding?.ytext.observe((event) => {
       const language = event.target.getAttribute("language");
-      setState({ language });
+      setState({ editorLanguage: language });
     });
     monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
+
     setState({
       doc,
-      provider: socketIOProvider,
+      editorProvider: socketIOProvider,
       text: docText,
-      binding: monacoBinding,
+      editorBinding: monacoBinding,
     });
   };
 
-  const cleanup = () => {
+  // clean up editor
+  const cleanupEditor = () => {
     const doc = getState().doc;
     if (doc) {
       doc.destroy();
     }
-    const provider = getState().provider;
+    const provider = getState().editorProvider;
     if (provider) {
       provider.disconnect();
       provider.destroy();
     }
-    const binding = getState().binding;
+    const binding = getState().editorBinding;
     if (binding) {
       binding.destroy();
     }
-    setState({ doc: undefined, provider: undefined, binding: undefined });
+    setState({
+      doc: undefined,
+      editorProvider: undefined,
+      editorBinding: undefined,
+    });
   };
 
   return {
     doc: undefined,
     text: undefined,
-    language: LANGUAGE.TS,
-    provider: undefined,
-    connected: false,
-    input: undefined,
-    clients: undefined,
-    binding: undefined,
-    editor: undefined,
-    setup,
-    setLanguage,
-    cleanup,
+    editorLanguage: LANGUAGE.TS,
+    editorProvider: undefined,
+    isEditorProviderConnected: false,
+    editorInput: undefined,
+    editorClients: undefined,
+    editorBinding: undefined,
+    setupEditor,
+    setEditorLanguage,
+    cleanupEditor,
   };
 };
 
-export const useEditorStore = create<EditorStore>(EditorStoreValues);
+export { createEditorSlice };

@@ -12,7 +12,7 @@ import {
   SuccessAlert,
 } from "src/components";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
@@ -28,7 +28,7 @@ const SignupForm = () => {
   });
 
   // sign in mutations
-  const useSignUpMutation = useAuthStore((state) => state.useSignupMutation);
+  const useSignUpMutation = useGlobalStore((state) => state.useSignupMutation);
   const signupMutation = useSignUpMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(["me"]);
