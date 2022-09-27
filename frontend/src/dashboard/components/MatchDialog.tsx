@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
@@ -36,6 +37,7 @@ export function MatchDialog({ isOpen, onClose }: Props) {
       return;
     }
     const timeout = setTimeout(() => {
+      toast("Timed out from queue :( Please try again!");
       onClose();
     }, 30000);
     return () => {
