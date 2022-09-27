@@ -24,13 +24,6 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
 
-  // redirect to room if matched room ID set
-  // useEffect(() => {
-  //   if (queueRoomId) {
-  //     navigate(`/room/${queueRoomId}`);
-  //   }
-  // }, [navigate, queueRoomId]);
-
   // disconnect from queue after 30s
   useEffect(() => {
     if (!isInQueue) {
@@ -43,7 +36,23 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [isInQueue, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // disconnect from matched room after 10s
+  useEffect(() => {
+    if (!queueRoomId) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      toast("Timed out from matched room :( Please try again!");
+      onClose();
+    }, 10000);
+    return () => {
+      clearTimeout(timeout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queueRoomId]);
 
   return (
     <PrimaryDialog
