@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
 import {
+  Divider,
   ErrorAlert,
   SuccessAlert,
   BlueButton,
@@ -65,13 +66,7 @@ const LoginForm = () => {
           </div>
           Sign in with Google
         </BlueButton>
-        <div className="flex py-5 items-center">
-          <div className="flex-grow border-t border-neutral-400"></div>
-          <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
-            Or, sign in with your email
-          </span>
-          <div className="flex-grow border-t border-neutral-400"></div>
-        </div>
+        <Divider label="Or, sign in with your email" />
         <form className="flex flex-col gap-8 mb-3" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
             <TextInput

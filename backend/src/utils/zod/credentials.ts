@@ -3,13 +3,15 @@ import { createZodDto } from "nestjs-zod/dto";
 
 import { UserModel } from "src/zod";
 
+const passwordZodString = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" });
+
 export const SignupSchema = UserModel.pick({
   email: true,
   username: true,
 }).extend({
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
+  password: passwordZodString,
 });
 
 export const SigninSchema = SignupSchema.pick({
@@ -31,6 +33,13 @@ export const EditableSchema = UserModel.pick({
   hashRt: true,
 }).partial();
 
+export const ChangePasswordInfoSchema = z.object({
+  currentPassword: passwordZodString,
+  newPassword: passwordZodString,
+});
+
+export const DeleteAccountInfoSchema = SignupSchema.pick({ password: true });
+
 export class SignupCredentialsDto extends createZodDto(SignupSchema) {}
 export class SigninCredentialsDto extends createZodDto(SigninSchema) {}
 export class EditableCredentialsDto extends createZodDto(EditableSchema) {}
@@ -39,4 +48,10 @@ export class ForgetPasswordCredentialsDto extends createZodDto(
 ) {}
 export class ResetPasswordCredentialsDto extends createZodDto(
   ResetPasswordSchema
+) {}
+export class ChangePasswordInfoDto extends createZodDto(
+  ChangePasswordInfoSchema
+) {}
+export class DeleteAccountInfoDto extends createZodDto(
+  DeleteAccountInfoSchema
 ) {}

@@ -9,3 +9,4 @@ export * from "./checkgroup";
 export * from "./listbox";
 export * from "./dropdown";
 export * from "./heading";
+export * from "./divider";

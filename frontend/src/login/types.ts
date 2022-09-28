@@ -22,10 +22,6 @@ export const SigninCredentialsSchema = SignupCredentialsSchema.pick({
   email: true,
   password: true,
 });
-export const EditableCredentialsSchema = UserSchema.pick({
-  email: true,
-  username: true,
-}).partial();
 export const ForgetPasswordInfoSchema = UserSchema.pick({ email: true });
 export const ResetPasswordInfoSchema = SignupCredentialsSchema.pick({
   password: true,
@@ -35,7 +31,6 @@ export const ResetPasswordInfoSchema = SignupCredentialsSchema.pick({
 export type User = z.infer<typeof UserSchema>;
 export type SignUpCredentials = z.infer<typeof SignupCredentialsSchema>;
 export type SignInCredentials = z.infer<typeof SigninCredentialsSchema>;
-export type EditableCredentials = z.infer<typeof EditableCredentialsSchema>;
 export type ForgetPasswordInfo = z.infer<typeof ForgetPasswordInfoSchema>;
 export type ResetPasswordInfo = z.infer<typeof ResetPasswordInfoSchema>;
 

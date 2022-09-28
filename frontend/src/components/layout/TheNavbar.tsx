@@ -17,17 +17,10 @@ type NavItem = {
 };
 
 const LINKS = [
+  { label: "dashboard", href: "/" },
   {
-    label: "login",
-    href: "/login",
-  },
-  {
-    label: "sign up",
-    href: "/signup",
-  },
-  {
-    label: "reset",
-    href: "/reset-password/123123",
+    label: "settings",
+    href: "/user/settings",
   },
 ];
 

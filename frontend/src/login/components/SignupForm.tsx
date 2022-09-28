@@ -10,6 +10,7 @@ import {
   GoogleIcon,
   PrimaryLink,
   SuccessAlert,
+  Divider,
 } from "src/components";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
 import { useGlobalStore } from "src/store";
@@ -64,13 +65,7 @@ const SignupForm = () => {
           </div>
           Sign up with Google
         </BlueButton>
-        <div className="relative flex py-5 items-center">
-          <div className="flex-grow border-t border-neutral-400"></div>
-          <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
-            Or, sign up with your email
-          </span>
-          <div className="flex-grow border-t border-neutral-400"></div>
-        </div>
+        <Divider label="Or, sign up with your email" />
         <form
           className="flex flex-col gap-8 space-y-8 mb-3"
           onSubmit={onSubmit}

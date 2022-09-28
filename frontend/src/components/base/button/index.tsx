@@ -1,5 +1,5 @@
 export * from "./primary";
-export * from "./seconday";
+export * from "./secondary";
 export * from "./blue";
 export * from "./red";
 export * from "./link";
