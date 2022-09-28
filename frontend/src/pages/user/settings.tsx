@@ -1,9 +1,9 @@
 import { ErrorPage } from "src/components";
-import { useAuthStore } from "src/hooks";
-import { UserSettingsForm } from "src/user/components";
+import { useGlobalStore } from "src/store";
+import { UserSettingsForm } from "src/user";
 
 const ProfileSettingsPage = () => {
-  const user = useAuthStore((state) => state.user);
+  const user = useGlobalStore((state) => state.user);
   return (
     <>
       {!user ? (
