@@ -13,18 +13,14 @@ import {
   SignUpCredentials,
   ForgetPasswordInfo,
   ResetPasswordInfo,
-<<<<<<< HEAD:frontend/src/store/createAuthSlice.ts
 } from "src/login";
 import { Axios } from "src/services";
 import type { GlobalStore } from "./useGlobalStore";
-=======
-} from "../login/types";
 import {
   ChangePasswordInfo,
   DeleteAccountInfo,
   EditableCredentials,
-} from "src/user/types";
->>>>>>> feat: complete delete account frontend:frontend/src/hooks/useAuth.ts
+} from "src/user";
 
 type Options = {
   onSuccess?: () => Promise<void> | void | undefined;
