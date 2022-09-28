@@ -7,8 +7,8 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import { ChangePasswordInfo, ChangePasswordInfoSchema } from "src/user/types";
-import { useAuthStore } from "src/hooks";
+import { ChangePasswordInfo, ChangePasswordInfoSchema } from "src/user";
+import { useGlobalStore } from "src/store";
 
 const ChangePasswordForm = () => {
   // form setup
@@ -21,7 +21,7 @@ const ChangePasswordForm = () => {
     resolver: zodResolver(ChangePasswordInfoSchema),
   });
 
-  const useChangePasswordMutation = useAuthStore(
+  const useChangePasswordMutation = useGlobalStore(
     (state) => state.useChangePasswordMutation
   );
   const changePasswordMutation = useChangePasswordMutation({

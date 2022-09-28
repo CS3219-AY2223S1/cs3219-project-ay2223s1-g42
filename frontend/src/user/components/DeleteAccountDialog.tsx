@@ -7,10 +7,10 @@ import {
   RedButton,
   SecondaryButton,
   TextInput,
-} from "src/components/base";
-import { PrimaryDialog } from "src/components/base/dialog";
-import { useAuthStore } from "src/hooks";
-import { DeleteAccountInfo, DeleteAccountInfoSchema } from "src/user/types";
+  PrimaryDialog,
+} from "src/components";
+import { useGlobalStore } from "src/store";
+import { DeleteAccountInfo, DeleteAccountInfoSchema } from "src/user";
 
 type Props = {
   isOpen: boolean;
@@ -36,7 +36,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose }: Props) => {
     resolver: zodResolver(DeleteAccountInfoSchema),
   });
 
-  const useDeleteAccountMutation = useAuthStore(
+  const useDeleteAccountMutation = useGlobalStore(
     (state) => state.useDeleteAccountMutation
   );
   const deleteAccountMutation = useDeleteAccountMutation({

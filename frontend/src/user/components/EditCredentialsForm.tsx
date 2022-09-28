@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,10 +9,12 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import { EditableCredentials, EditableCredentialsSchema } from "src/user/types";
-import { UserProps } from "src/user/types";
-import { useAuthStore } from "src/hooks";
-import { useEffect } from "react";
+import {
+  UserProps,
+  EditableCredentials,
+  EditableCredentialsSchema,
+} from "src/user";
+import { useGlobalStore } from "src/store";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();
@@ -33,7 +36,7 @@ const EditCredentialsForm = ({ user }: UserProps) => {
     }
   }, [user, reset]);
 
-  const useEditCredentialsMutation = useAuthStore(
+  const useEditCredentialsMutation = useGlobalStore(
     (state) => state.useEditCredentialsMutation
   );
   const editCredentialsMutation = useEditCredentialsMutation(id, {
