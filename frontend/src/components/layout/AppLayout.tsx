@@ -50,8 +50,6 @@ const AppContainer = ({ children }: PropsWithChildren) => {
 };
 
 const AppLayout = ({ children }: PropsWithChildren) => {
-  console.log("app layout re-render!");
-
   return (
     <>
       <TheNavbar />

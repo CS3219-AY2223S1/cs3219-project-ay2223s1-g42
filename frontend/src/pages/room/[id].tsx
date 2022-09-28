@@ -19,8 +19,6 @@ const RoomPage = (): JSX.Element => {
     }
   );
 
-  console.log("rendering main room page!");
-
   const pageRoomId = id ?? "default";
   const isValidRoom = pageRoomId === queueRoomId;
 

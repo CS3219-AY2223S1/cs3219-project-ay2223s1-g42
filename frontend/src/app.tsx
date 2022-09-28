@@ -18,7 +18,6 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  console.log("app re-render!");
   const user = useGlobalStore((state) => state.user);
   const navigate = useNavigate();
 

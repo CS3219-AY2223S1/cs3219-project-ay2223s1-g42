@@ -89,7 +89,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
           }
         },
         onError: (error) => {
-          console.log({ error });
+          console.error({ error });
         },
       }
     );
@@ -135,7 +135,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
           }
         },
         onError: (error) => {
-          console.log({ error });
+          console.error({ error });
         },
       }
     );
@@ -153,7 +153,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
           }
         },
         onError: (error) => {
-          console.log({ error });
+          console.error({ error });
         },
       }
     );

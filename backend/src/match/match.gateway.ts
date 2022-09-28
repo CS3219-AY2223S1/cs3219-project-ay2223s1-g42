@@ -34,18 +34,11 @@ export type PoolUser = PoolUserData & {
   cors: CORS_OPTIONS,
   namespace: MATCH_WS_NAMESPACE,
 })
-export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class MatchGateway {
   @WebSocketServer()
   server: Server;
 
   constructor(private matchService: MatchService) {}
-
-  async handleConnection() {
-    console.log("client has connected");
-  }
-  async handleDisconnect() {
-    console.log("client has disconnected");
-  }
 
   @SubscribeMessage(MATCH_EVENTS.JOIN_QUEUE)
   async onJoinMatch(client: Socket, data: any) {
@@ -130,7 +123,6 @@ export class MatchGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { id }: { id: number } = JSON.parse(data);
 
     try {
-      console.log("leaving queue for user id: ", id);
       // get queue user from user id
       const user = await this.matchService.getQueueUserFromId(id.toString());
       // disconnect user from queue

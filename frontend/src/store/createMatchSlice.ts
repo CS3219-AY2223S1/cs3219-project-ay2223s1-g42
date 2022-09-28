@@ -148,7 +148,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     }
     const socket = getState().matchSocket;
     if (!socket) {
-      console.log("socket not set, cannot join queue!");
+      console.error("socket not set, cannot join queue!");
       return;
     }
     const poolUser: PoolUser = {

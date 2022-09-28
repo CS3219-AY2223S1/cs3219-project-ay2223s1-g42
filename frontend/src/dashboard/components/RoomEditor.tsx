@@ -24,13 +24,11 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
   const handleEditorDidMount = (
     editor: monaco.editor.IStandaloneCodeEditor
   ) => {
-    console.log("setting up editor...");
     setup(editor, user, roomId);
   };
 
   useEffect(() => {
     return () => {
-      console.log("cleaning up editor...");
       cleanup();
     };
   }, []);
