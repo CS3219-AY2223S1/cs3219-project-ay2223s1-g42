@@ -47,13 +47,13 @@ export class DocumentGateway implements OnGatewayInit {
       }
     });
 
-    this.ySocketIO.on(
-      "document-update",
-      async (doc: Document, update: Uint8Array) => {
-        console.log("document on update");
-        // await this.documentService.saveRoomDocument(doc.name, doc);
-      }
-    );
+    // this.ySocketIO.on(
+    //   "document-update",
+    //   async (doc: Document, update: Uint8Array) => {
+    //     console.log("document on update");
+    //     // await this.documentService.saveRoomDocument(doc.name, doc);
+    //   }
+    // );
     // this.ySocketIO.on(
     //   "awareness-update",
     //   async (doc: Document, update: Uint8Array) => {

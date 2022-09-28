@@ -10,7 +10,7 @@ import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { ROOM_EVENTS, ROOM_MESSAGES, ROOM_WS_NAMESPACE } from "./constants";
 import { RoomService } from "./room.service";
-import { PoolUser, PoolUserData } from "src/match/match.gateway";
+import { PoolUser } from "src/match/match.gateway";
 
 export type Room = {
   id: string;
@@ -41,7 +41,8 @@ export class RoomGateway {
   async onJoinRoom(client: Socket, data: any) {
     const { id: pendingUserId, roomId: pendingRoomId }: PendingRoomUser =
       JSON.parse(data);
-    console.log("received JOIN_ROOM event: ", { pendingUserId, pendingRoomId });
+    console.log("joining room: ", { pendingUserId, pendingRoomId });
+
     try {
       // find room of user
       const roomId = await this.roomService.getRoomIdFromUserId(
@@ -123,19 +124,12 @@ export class RoomGateway {
         return;
       }
 
-      console.log("removing user id from room: ", {
-        pendingUserData,
-        currentRoom,
-      });
-
       // remove user from room
       const room = await this.roomService.removeUserFromRoom(
         currentRoom,
         pendingUserId
       );
 
-      // remove user from room socket channel and notify channel user has left room
-      console.log({ currentRoomId: currentRoom.id, roomId: room.id });
       await client.leave(room.id);
       client.emit(
         ROOM_EVENTS.LEAVE_ROOM_SUCCESS,

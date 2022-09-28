@@ -36,14 +36,9 @@ export class RoomService {
 
     try {
       await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
-      console.log("created room: ", { room });
 
       // add user to room users (store room id of each user in a room)
       const addRoomedUsers = room.users.map(async (user) => {
-        console.log("setting room user values: ", {
-          key: user.id.toString(),
-          value: room.id,
-        });
         await this.addUserAsRoomUser(room.id, user.id.toString());
       });
 
@@ -80,6 +75,7 @@ export class RoomService {
       ...room,
       users: newUsers,
     };
+    console.log({ oldUsers: room.users, newUsers });
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
 
     // remove user from room users

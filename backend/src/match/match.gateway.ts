@@ -50,7 +50,7 @@ export class MatchGateway {
       timeJoined: Date.now(),
     };
 
-    console.log("joined user: ", { poolUser });
+    console.log("joined queue: ", { poolUser });
 
     try {
       const existingRoomId = await this.matchService.handleUserAlreadyMatched(
