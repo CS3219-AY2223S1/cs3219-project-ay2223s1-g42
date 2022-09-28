@@ -30,9 +30,23 @@ const AppContainer = ({ children }: PropsWithChildren) => {
   // current pathname
   const location = useLocation();
   const pathname = location.pathname;
-  const isRoomPage = user && pathname.startsWith("/room/");
-  const isAuthenticatedPage =
-    user && !pathname.includes("verify") && !pathname.includes("reset");
+
+  // error page is any nonexistent catch all page
+  const isErrorPage =
+    !pathname.includes("reset-password") &&
+    !pathname.includes("room") &&
+    !pathname.includes("verify") &&
+    !pathname.includes("forget-password") &&
+    !pathname.includes("login") &&
+    !pathname.includes("signup") &&
+    !pathname.includes("user");
+
+  // authenticated page is any page with user
+  // logged in and is not an error page
+  const isAuthenticatedPage = user && !isErrorPage;
+
+  // room page is any authenticated page that starts with /room
+  const isRoomPage = isAuthenticatedPage && pathname.startsWith("/room/");
 
   return (
     <>
@@ -40,8 +54,10 @@ const AppContainer = ({ children }: PropsWithChildren) => {
         <RoomContainer>{children}</RoomContainer>
       ) : isAuthenticatedPage ? (
         <div className="justify-between min-h-screen bg-neutral-100">
-          <Container>{children}</Container>
+          <Container hasTopPadding={true}>{children}</Container>
         </div>
+      ) : isErrorPage ? (
+        <Container hasTopPadding={false}>{children}</Container>
       ) : (
         <Container>{children}</Container>
       )}
