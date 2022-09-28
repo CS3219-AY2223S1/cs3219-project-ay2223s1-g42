@@ -69,7 +69,7 @@ const BaseRadioGroup = <
                     {value.description}
                   </RadioGroup.Description>
                 </div>
-                <div className="shrink-0 text-neutral-50 h-10 w-10 ml-12 mr-4">
+                <div className="shrink-0 text-neutral-50 h-10 w-10 ml-4 md:ml-8 mr-4">
                   {checked ? (
                     <CheckFilledIcon className="w-full h-full" />
                   ) : (

@@ -115,8 +115,8 @@ const TheNavbar = () => {
             className="mr-3 h-6 sm:h-9"
             alt="Flowbite Logo"
           /> */}
-          <span className="font-display self-center text-2xl font-semibold whitespace-nowrap text-neutral-800">
-            PussyPrep
+          <span className="font-sans self-center text-xl font-semibold whitespace-nowrap text-neutral-800">
+            {"<PeerPrep />"}
           </span>
         </BaseLink>
         <div className="flex flex-row gap-2 md:gap-4">

@@ -17,17 +17,15 @@ const difficultyMap: Record<
   easy: {
     title: "easy",
     description:
-      "Easy questions include simple data structures and concepts such as arrays, strings, and linked lists",
+      "Simple data structures and concepts such as arrays, strings, and linked lists",
   },
   medium: {
     title: "medium",
-    description:
-      "Medium questions include somwhat difficult questions such as trees, graphs, and some dynamic programming",
+    description: "Trees, graphs, and some dynamic programming",
   },
   hard: {
     title: "hard",
-    description:
-      "Hard questions include more complex algorithms such as binary search, dynamic programming, and graph traversal",
+    description: "Binary search, dynamic programming, and graph traversal",
   },
 };
 
