@@ -18,7 +18,7 @@ const MatchCountdownTimer = ({ isPlaying, duration, onComplete }: Props) => {
       onComplete={onComplete}
     >
       {({ remainingTime }) => (
-        <span className="font-sans text-2xl">{remainingTime}</span>
+        <span className="font-sans text-4xl font-medium">{remainingTime}</span>
       )}
     </CountdownCircleTimer>
   );
