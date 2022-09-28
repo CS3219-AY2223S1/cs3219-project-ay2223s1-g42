@@ -6,10 +6,10 @@ import { ApiResponse } from "src/login";
 import { Axios } from "src/services";
 
 const VerifyEmailPage = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [verifyRes, setVerifyRes] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const { token } = useParams();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [verifyRes, setVerifyRes] = useState<string | undefined>(undefined);
 
   const isSuccess = verifyRes === "success";
 

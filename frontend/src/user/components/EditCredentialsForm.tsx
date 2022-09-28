@@ -10,15 +10,16 @@ import {
   PrimaryButton,
 } from "src/components";
 import {
-  UserProps,
   EditableCredentials,
   EditableCredentialsSchema,
+  UserProps,
 } from "src/user";
 import { useGlobalStore } from "src/store";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();
   const { id, email, username } = user;
+
   // form setup
   const {
     register,
@@ -30,12 +31,7 @@ const EditCredentialsForm = ({ user }: UserProps) => {
     defaultValues: { username },
   });
 
-  useEffect(() => {
-    if (user) {
-      reset({ username: user.username });
-    }
-  }, [user, reset]);
-
+  // edit credentials mutation
   const useEditCredentialsMutation = useGlobalStore(
     (state) => state.useEditCredentialsMutation
   );
@@ -53,6 +49,14 @@ const EditCredentialsForm = ({ user }: UserProps) => {
     editCredentialsMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleResetPassword);
+
+  // reset form username if username updated
+  useEffect(() => {
+    if (!username) {
+      return;
+    }
+    reset({ username });
+  }, [username, reset]);
 
   return (
     <div>
