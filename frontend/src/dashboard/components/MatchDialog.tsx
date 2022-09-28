@@ -4,13 +4,17 @@ import { useNavigate } from "react-router";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
 import { useGlobalStore } from "src/store";
+import { MatchCountdownTimer } from "./MatchCountdownTimer";
+
+const MATCH_QUEUE_DURATION = 30;
+const MATCH_FOUND_DURATION = 10;
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export function MatchDialog({ isOpen, onClose }: Props) {
+const MatchDialog = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
   const { isInQueue, queueRoomId, leaveRoom } = useGlobalStore((state) => {
     return {
@@ -32,37 +36,6 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     }
   };
 
-  // disconnect from queue after 30s
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      toast("Timed out from queue :( Please try again!");
-      if (!isInQueue) {
-        return;
-      }
-      onClose();
-    }, 30000);
-    return () => {
-      clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // disconnect from matched room after 10s
-  useEffect(() => {
-    if (!queueRoomId) {
-      return;
-    }
-    const timeout = setTimeout(() => {
-      toast("Timed out from matched room :( Please try again!");
-      leaveRoom();
-      onClose();
-    }, 10000);
-    return () => {
-      clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queueRoomId]);
-
   return (
     <PrimaryDialog
       isOpen={isOpen}
@@ -71,6 +44,26 @@ export function MatchDialog({ isOpen, onClose }: Props) {
       description={dialogDescription}
     >
       <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-center w-full">
+          {queueRoomId ? (
+            <MatchCountdownTimer
+              duration={MATCH_FOUND_DURATION}
+              isPlaying={!!queueRoomId}
+              key={"match-found-timer"}
+              onComplete={handleDisconnect}
+            />
+          ) : isInQueue ? (
+            <MatchCountdownTimer
+              duration={MATCH_QUEUE_DURATION}
+              isPlaying={isInQueue}
+              key={"match-queue-timer"}
+              onComplete={handleDisconnect}
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+
         {queueRoomId ? (
           <div className="flex flex-col gap-1">
             <p>Room ID: {queueRoomId}</p>
@@ -96,4 +89,6 @@ export function MatchDialog({ isOpen, onClose }: Props) {
       </div>
     </PrimaryDialog>
   );
-}
+};
+
+export { MatchDialog };

@@ -7,11 +7,11 @@ type Props = {
   difficulties: RadioGroupValue<QuestionDifficulty>[];
 };
 
-export function QuestionRadioGroup({
+const QuestionRadioGroup = ({
   difficulty,
   setDifficulty,
   difficulties,
-}: Props) {
+}: Props) => {
   return (
     <BaseRadioGroup
       value={difficulty}
@@ -19,4 +19,6 @@ export function QuestionRadioGroup({
       values={difficulties}
     />
   );
-}
+};
+
+export { QuestionRadioGroup };
