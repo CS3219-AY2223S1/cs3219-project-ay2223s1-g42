@@ -1,5 +1,4 @@
 import { StateCreator } from "zustand";
-import { createRef } from "react";
 import { MonacoBinding } from "y-monaco";
 import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
@@ -72,7 +71,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     // set up socket io provider awareness
     socketIOProvider.awareness.on("change", () => {
       const clients = socketIOProvider.awareness.getStates();
-      console.log({ clients });
       const clientIds = Array.from(clients).map((key) => `${key}`);
       setState({ editorClients: clientIds });
     });

@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 import { RedButton } from "src/components";
 import { User } from "src/login";
@@ -39,26 +38,6 @@ type LoadedRoomProps = {
 };
 
 const LoadedRoom = ({ roomId, user }: LoadedRoomProps) => {
-  const location = useLocation();
-  const leaveRoom = useGlobalStore((state) => state.leaveRoom);
-
-  useEffect(() => {
-    return () => {
-      console.log("unmounting loaded room !");
-      if (!user) {
-        return;
-      }
-      // if (queueRoomId && !isValidRoom) {
-      //   return;
-      // }
-      console.log("location pathname unmount: ", location.pathname);
-      if (!location.pathname.includes(roomId)) {
-        console.log("leaving room on loaded room unmount");
-        leaveRoom();
-      }
-    };
-  }, []);
-
   return (
     <div className="flex flex-col lg:flex-row gap-3 w-full h-full py-3">
       <div className="w-full h-full max-h-full border-[1px] border-neutral-800">

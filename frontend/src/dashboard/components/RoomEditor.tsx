@@ -27,12 +27,6 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
     setup(editor, user, roomId);
   };
 
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, []);
-
   return (
     <Editor
       key={roomId}
