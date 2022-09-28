@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,14 +7,17 @@ import { useGlobalStore } from "src/store";
 import { LoginForm } from "../login";
 
 const LoginPage = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const user = useGlobalStore((state) => state.user);
 
   useEffect(() => {
+    queryClient.refetchQueries(["me"]);
     if (user) {
-      navigate("..");
+      navigate("/");
     }
-  }, [user, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   return (
     <>

@@ -18,7 +18,6 @@ import { SignInCredentials, SigninCredentialsSchema } from "../types";
 import { useGlobalStore } from "src/store";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // form setup
@@ -35,9 +34,9 @@ const LoginForm = () => {
   const useSignInMutation = useGlobalStore((state) => state.useSigninMutation);
   const signinMutation = useSignInMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
+      console.log("invalidating ME query!");
+      queryClient.refetchQueries(["me"]);
       reset();
-      navigate("/");
     },
   });
 

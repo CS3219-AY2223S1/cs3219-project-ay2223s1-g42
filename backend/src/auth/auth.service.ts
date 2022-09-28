@@ -169,6 +169,8 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
+    console.log("cached user: ", { cachedUser });
+
     const { username, email, hash } = cachedUser;
     const [err, user] = await this.users.createWithHash(email, username, hash);
 
@@ -188,6 +190,9 @@ export class AuthService {
 
     // generate tokens for new user
     const tokens = await this.signTokens(user.id, user.email);
+
+    console.log("new tokens: ", { tokens });
+
     // update refresh token hash for new user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
 
@@ -244,6 +249,7 @@ export class AuthService {
     const [err] = await this.users.update(id, { hashRt });
     // throw if err updating refresh token hash
     if (err) {
+      console.log("error occurred while refreshing token hash!");
       ThrowKnownPrismaErrors(err);
     }
     return;

@@ -74,7 +74,7 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
             options.onSuccess();
           }
         },
-        retryDelay: 10000,
+        retry: false,
       }
     );
   };

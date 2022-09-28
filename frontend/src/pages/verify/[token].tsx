@@ -9,42 +9,42 @@ const VerifyEmailPage = () => {
   const navigate = useNavigate();
   const { token } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
-  const [verifyRes, setVerifyRes] = useState<string | undefined>(undefined);
 
-  const isSuccess = verifyRes === "success";
-
+  // navigate to dashboard if verify successful
   useEffect(() => {
     const fetchVerify = async () => {
       try {
         const res = await Axios.post<ApiResponse>(
           `${import.meta.env.VITE_API_URL}/auth/verify/${token}`
         ).then((resp) => resp.data);
-        setVerifyRes(res.message);
+        if (res.message === "success") {
+          navigate("/");
+        }
       } catch (e) {
         console.error(e);
       }
       setLoading(false);
     };
+    if (!token) {
+      console.error(`invalid token value ${token}`);
+      return;
+    }
     fetchVerify();
-  }, [token]);
+  }, []);
 
   return (
     <>
-      {loading ? (
-        <LoadingLayout />
-      ) : (
+      {!loading ? (
         <div className="px-4 flex flex-col text-center gap-8">
           <NormalHeading>
-            {isSuccess
-              ? "Email verification is successful!"
-              : "Email verification failed! Please sign up again"}
+            Email verification failed! Please sign up again
           </NormalHeading>
-          <PrimaryButton
-            onClick={() => (isSuccess ? navigate("/") : navigate("/signup"))}
-          >
-            {isSuccess ? "Log in" : "Sign up"}
+          <PrimaryButton onClick={() => navigate("/signup")}>
+            Sign up
           </PrimaryButton>
         </div>
+      ) : (
+        <LoadingLayout />
       )}
     </>
   );

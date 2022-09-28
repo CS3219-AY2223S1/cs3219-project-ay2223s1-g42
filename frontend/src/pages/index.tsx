@@ -43,7 +43,6 @@ const Dashboard = () => {
     setMatchDifficulties,
     joinQueue,
     leaveQueue,
-    leaveRoom,
   } = useGlobalStore((state) => {
     return {
       user: state.user,
@@ -53,7 +52,6 @@ const Dashboard = () => {
       setMatchDifficulties: state.setMatchDifficulties,
       joinQueue: state.joinQueue,
       leaveQueue: state.leaveQueue,
-      leaveRoom: state.leaveRoom,
     };
   });
   // page states
@@ -104,14 +102,14 @@ const Dashboard = () => {
     matchSocket.connect();
     roomSocket.connect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   if (!user) {
     return <SpinnerIcon className="h-12 w-12" />;
