@@ -50,6 +50,7 @@ export class RoomGateway {
 
       // get room data
       const room = await this.roomService.getRoomFromId(roomId);
+      console.log({ room });
 
       // get user info
       const roomUser = room.users.find((user) => user.id === pendingUserId);

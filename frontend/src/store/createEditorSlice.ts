@@ -40,15 +40,8 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
   };
 
   const setupDoc = () => {
-    const doc = new Y.Doc();
-    const yMap = doc.getMap("data");
-    if (!yMap.has("input")) {
-      yMap.set("input", "");
-      yMap.observe(() => {
-        const updatedInput: string = yMap.get("input") as string;
-        setState({ editorInput: updatedInput });
-      });
-    }
+    const _doc = getState().doc;
+    const doc = !!_doc ? _doc : new Y.Doc();
     return doc;
   };
 
@@ -58,8 +51,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     roomId: string
   ) => {
     // set up doc
-    const _doc = getState().doc;
-    const doc = !!_doc ? _doc : setupDoc();
+    const doc = setupDoc();
 
     // set up provider
     const socketIOProvider = new SocketIOProvider(
@@ -68,17 +60,19 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       doc,
       {
         autoConnect: true,
+        resyncInterval: 100,
         // disableBc: true,
         // auth: { token: 'valid-token' },
       }
     );
+
+    // set up monaco editor doc text
     const docText = doc.getText("monaco");
 
     // set up socket io provider awareness
     socketIOProvider.awareness.on("change", () => {
       const clients = socketIOProvider.awareness.getStates();
       const clientIds = Array.from(clients).map((key) => `${key}`);
-      console.log({ clients });
       setState({ editorClients: clientIds });
     });
     socketIOProvider.awareness.setLocalState({
@@ -108,11 +102,14 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       socketIOProvider.awareness
     );
 
-    // observe document language changes
-    monacoBinding?.ytext.observe((event) => {
+    // observe document language + editor document text changes
+    monacoBinding?.ytext.observe((event, transaction) => {
+      const updatedInput = transaction.doc.getText("monaco").toJSON();
       const language = event.target.getAttribute("language");
-      setState({ editorLanguage: language });
+      setState({ editorLanguage: language, editorInput: updatedInput });
     });
+
+    // set default language to typescript
     monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
 
     setState({

@@ -77,12 +77,10 @@ const Dashboard = () => {
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
     // if not matched, leave queue
-    if (isInQueue) {
-      leaveQueue();
+    if (!isInQueue) {
       return;
     }
-    // if matched, leave room
-    leaveRoom();
+    leaveQueue();
   };
 
   // connects to match and room socket servers

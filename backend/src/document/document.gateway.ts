@@ -37,6 +37,7 @@ export class DocumentGateway implements OnGatewayInit {
       const roomId = doc.name;
       try {
         const delta = await this.documentService.getDocumentDeltaFromId(roomId);
+        console.log("updating document with saved delta", { delta });
         doc.getText(DOCUMENT_TEXT_NAME).applyDelta(delta);
       } catch (err) {
         console.error(
@@ -46,14 +47,22 @@ export class DocumentGateway implements OnGatewayInit {
       }
     });
 
+    this.ySocketIO.on(
+      "document-update",
+      async (doc: Document, update: Uint8Array) => {
+        console.log("document on update");
+        // await this.documentService.saveRoomDocument(doc.name, doc);
+      }
+    );
     // this.ySocketIO.on(
-    //   "document-update",
-    //   async (doc: Document, update: Uint8Array) => {}
-    // );
-    // this.ySocketIO.on("awareness-update", (doc: Document, update: Uint8Array) =>
-    //   console.log(
-    //     `The awareness of the document ${doc.name} is updated with: ${update}`
-    //   )
+    //   "awareness-update",
+    //   async (doc: Document, update: Uint8Array) => {
+    //     console.log(
+    //       `The awareness of the document ${doc.name} is updated with: ${update}`
+    //     );
+    //     console.log("saving document on update");
+    //     await this.documentService.saveRoomDocument(doc.name, doc);
+    //   }
     // );
 
     this.ySocketIO.on("document-destroy", async (doc: Document) => {

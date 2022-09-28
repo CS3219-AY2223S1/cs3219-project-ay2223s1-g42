@@ -12,17 +12,14 @@ type EditorProps = {
 };
 
 const RoomEditor = ({ user, roomId }: EditorProps) => {
-  const { input, language, binding, setup, cleanup } = useGlobalStore(
-    (state) => {
-      return {
-        input: state.editorInput,
-        language: state.editorLanguage,
-        binding: state.editorBinding,
-        setup: state.setupEditor,
-        cleanup: state.cleanupEditor,
-      };
-    }
-  );
+  const { input, language, setup, cleanup } = useGlobalStore((state) => {
+    return {
+      input: state.editorInput,
+      language: state.editorLanguage,
+      setup: state.setupEditor,
+      cleanup: state.cleanupEditor,
+    };
+  });
 
   const handleEditorDidMount = (
     editor: monaco.editor.IStandaloneCodeEditor

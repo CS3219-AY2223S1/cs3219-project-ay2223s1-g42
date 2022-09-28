@@ -12,10 +12,11 @@ type Props = {
 
 export function MatchDialog({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
-  const { isInQueue, queueRoomId } = useGlobalStore((state) => {
+  const { isInQueue, queueRoomId, leaveRoom } = useGlobalStore((state) => {
     return {
       isInQueue: state.isInQueue,
       queueRoomId: state.queueRoomId,
+      leaveRoom: state.leaveRoom,
     };
   });
 
@@ -24,13 +25,20 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
 
+  const handleDisconnect = () => {
+    onClose();
+    if (!isInQueue) {
+      leaveRoom();
+    }
+  };
+
   // disconnect from queue after 30s
   useEffect(() => {
-    if (!isInQueue) {
-      return;
-    }
     const timeout = setTimeout(() => {
       toast("Timed out from queue :( Please try again!");
+      if (!isInQueue) {
+        return;
+      }
       onClose();
     }, 30000);
     return () => {
@@ -46,6 +54,7 @@ export function MatchDialog({ isOpen, onClose }: Props) {
     }
     const timeout = setTimeout(() => {
       toast("Timed out from matched room :( Please try again!");
+      leaveRoom();
       onClose();
     }, 10000);
     return () => {
@@ -80,7 +89,7 @@ export function MatchDialog({ isOpen, onClose }: Props) {
           ) : (
             <></>
           )}
-          <RedButton className="w-full" onClick={onClose}>
+          <RedButton className="w-full" onClick={handleDisconnect}>
             Disconnect
           </RedButton>
         </div>
