@@ -71,4 +71,16 @@
   body {
     @apply font-sans bg-neutral-100;
   }
+
+  .yRemoteSelection {
+    @apply bg-green-500;
+  }
+
+  .yRemoteSelectionHead {
+    @apply absolute border-l-2 border-y-2 border-green-500 h-full box-border;
+  }
+
+  .yRemoteSelectionHead::after {
+    @apply absolute content-["_"] border-green-500 border-[3px] rounded-[4px] -left-1 -top-[5px];
+  }
 }

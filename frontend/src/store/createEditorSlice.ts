@@ -72,12 +72,14 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     // set up socket io provider awareness
     socketIOProvider.awareness.on("change", () => {
       const clients = socketIOProvider.awareness.getStates();
+      console.log({ clients });
       const clientIds = Array.from(clients).map((key) => `${key}`);
       setState({ editorClients: clientIds });
     });
     socketIOProvider.awareness.setLocalState({
       id: user?.id,
       name: user?.username,
+      color: "#ff9900",
     });
 
     // set up socket io provider events
