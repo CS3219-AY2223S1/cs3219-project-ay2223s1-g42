@@ -9,7 +9,7 @@ export type Props = React.DetailedHTMLProps<
 const BaseHeading = ({ className, children, ...other }: Props) => {
   return (
     <h1
-      className={`font-display font-bold leading-tight text-center ${className}`}
+      className={`text-center font-display font-bold leading-tight ${className}`}
       {...other}
     >
       {children}

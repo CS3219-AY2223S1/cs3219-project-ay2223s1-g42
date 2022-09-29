@@ -17,7 +17,7 @@ const LeaveRoomButton = () => {
   });
   return (
     <RedButton
-      className="py-2.5 md:py-2 text-sm"
+      className="py-2.5 text-sm md:py-2"
       onClick={() => {
         if (!user) {
           console.error("user not logged in, cannot leave room");
@@ -39,12 +39,12 @@ type LoadedRoomProps = {
 
 const LoadedRoom = ({ roomId, user }: LoadedRoomProps) => {
   return (
-    <div className="flex flex-col lg:flex-row gap-3 w-full h-full py-3">
-      <div className="w-full h-full max-h-full border-[1px] border-neutral-800">
+    <div className="flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
+      <div className="h-full max-h-full w-full border-[1px] border-neutral-800">
         <RoomTabs />
       </div>
-      <div className="flex flex-col w-full h-full border-neutral-900 border-[1px]">
-        <div className="flex flex-row items-center justify-between w-full">
+      <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
+        <div className="flex w-full flex-row items-center justify-between">
           <RoomListBox />
           <LeaveRoomButton />
         </div>

@@ -9,7 +9,7 @@ const ResetPasswordPage = () => {
     return <ErrorPage />;
   }
   return (
-    <div className="w-full px-4 flex flex-col gap-8 text-center">
+    <div className="flex w-full flex-col gap-8 px-4 text-center">
       <BigHeading>Reset Password</BigHeading>
       <ResetPasswordForm token={token} />
     </div>

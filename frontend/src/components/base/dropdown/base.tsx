@@ -16,11 +16,11 @@ type Props = {
 const SAMPLE_MENU_ITEMS = [
   {
     label: "Edit",
-    icon: <CheckIcon className="h-5 w-5 stroke-[2px] mr-2" />,
+    icon: <CheckIcon className="mr-2 h-5 w-5 stroke-[2px]" />,
   },
   {
     label: "Duplicate",
-    icon: <CheckFilledIcon className="h-5 w-5 stroke-[2px] mr-2" />,
+    icon: <CheckFilledIcon className="mr-2 h-5 w-5 stroke-[2px]" />,
   },
   {
     label: "Archive",
@@ -34,12 +34,12 @@ const SAMPLE_MENU_ITEMS = [
 
 const BaseDropdown = ({ items = SAMPLE_MENU_ITEMS }: Props) => {
   return (
-    <Menu as="div" className="text-left z-10 relative">
+    <Menu as="div" className="relative z-10 text-left">
       <Menu.Button
-        className="flex w-full justify-center py-3 px-4 items-center
-          focus:outline-none border-neutral-900 bg-white text-sm
-          text-neutral-900 hover:bg-neutral-900 hover:text-neutral-50
-          transition duration-300 ease-out border-[1px]"
+        className="flex w-full items-center justify-center border-[1px] border-neutral-900
+          bg-white py-3 px-4 text-sm
+          text-neutral-900 transition duration-300
+          ease-out hover:bg-neutral-900 hover:text-neutral-50 focus:outline-none"
       >
         Options
         <ChevronDownIcon
@@ -57,7 +57,7 @@ const BaseDropdown = ({ items = SAMPLE_MENU_ITEMS }: Props) => {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className="absolute mt-1 w-36 right-0 origin-top-right
+          className="absolute right-0 mt-1 w-36 origin-top-right
           border-[1px] border-neutral-900 bg-white focus:outline-none"
         >
           <div>
@@ -66,7 +66,7 @@ const BaseDropdown = ({ items = SAMPLE_MENU_ITEMS }: Props) => {
                 {({ active }) => (
                   <button
                     className={cx(
-                      "group flex w-full items-center text-sm p-3",
+                      "group flex w-full items-center p-3 text-sm",
                       {
                         "bg-neutral-800 text-neutral-50": active,
                         "text-neutral-900": !active,

@@ -14,11 +14,11 @@ const BaseTabs = ({ values }: BaseProp) => {
             key={tab}
             className={({ selected }) =>
               cx(
-                "w-full py-2 text-sm font-medium leading-5 border-b-[1px] border-b-neutral-900",
-                "focus:outline-none rounded-none ",
+                "w-full border-b-[1px] border-b-neutral-900 py-2 text-sm font-medium leading-5",
+                "rounded-none focus:outline-none ",
                 {
                   "bg-neutral-800 text-neutral-50": selected,
-                  "text-neutral-800 hover:bg-neutral-300 bg-white": !selected,
+                  "bg-white text-neutral-800 hover:bg-neutral-300": !selected,
                 }
               )
             }
@@ -27,7 +27,7 @@ const BaseTabs = ({ values }: BaseProp) => {
           </Tab>
         ))}
       </Tab.List>
-      <Tab.Panels className="w-full max-h-[75vh] lg:max-h-full h-full lg:h-[calc(100%-42px)] overflow-y-scroll">
+      <Tab.Panels className="h-full max-h-[75vh] w-full overflow-y-scroll lg:h-[calc(100%-42px)] lg:max-h-full">
         {Object.values(values).map((value, i) => (
           <Tab.Panel key={i} className={cx("p-3 ")}>
             {value}

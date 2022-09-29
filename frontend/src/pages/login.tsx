@@ -24,7 +24,7 @@ const LoginPage = () => {
       {user ? (
         <SpinnerIcon className="h-12 w-12" />
       ) : (
-        <div className="w-full px-4 flex flex-col text-center mx-auto">
+        <div className="mx-auto flex w-full flex-col px-4 text-center">
           <BigHeading className="mt-4 mb-12">Welcome.</BigHeading>
           <LoginForm />
         </div>

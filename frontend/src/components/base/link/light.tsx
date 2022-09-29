@@ -11,8 +11,8 @@ const LightLink = ({
   return (
     <BaseLink
       to={to}
-      className={`transition duration-300 ease-out border-b-[1px] text-neutral-400
-      border-transparent hover:border-neutral-400  ${className}`}
+      className={`border-b-[1px] border-transparent text-neutral-400 transition duration-300
+      ease-out hover:border-neutral-400  ${className}`}
       {...other}
     >
       {children}

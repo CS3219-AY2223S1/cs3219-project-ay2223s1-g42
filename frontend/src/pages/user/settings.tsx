@@ -9,7 +9,7 @@ const ProfileSettingsPage = () => {
       {!user ? (
         <ErrorPage />
       ) : (
-        <div className="w-full px-4 flex flex-col text-center mx-auto">
+        <div className="mx-auto flex w-full flex-col px-4 text-center">
           <BigHeading>Settings</BigHeading>
           <UserSettingsForm user={user} />
         </div>

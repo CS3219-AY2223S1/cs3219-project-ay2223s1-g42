@@ -35,7 +35,7 @@ const BaseRadioGroup = <
           className={({ checked }) =>
             cx(
               "relative flex cursor-pointer font-sans font-medium transition duration-300",
-              "p-4 ease-out border-[1px] border-neutral-900 justify-center items-center",
+              "items-center justify-center border-[1px] border-neutral-900 p-4 ease-out",
               {
                 "bg-neutral-900": checked,
                 "bg-white hover:bg-neutral-300": !checked,
@@ -50,7 +50,7 @@ const BaseRadioGroup = <
                   <RadioGroup.Label
                     as="p"
                     className={cx(
-                      "font-display font-semibold text-lg capitalize mb-2",
+                      "mb-2 font-display text-lg font-semibold capitalize",
                       {
                         "text-neutral-50": checked,
                         "text-neutral-900": !checked,
@@ -69,9 +69,9 @@ const BaseRadioGroup = <
                     {value.description}
                   </RadioGroup.Description>
                 </div>
-                <div className="shrink-0 text-neutral-50 h-10 w-10 ml-4 md:ml-8 mr-4">
+                <div className="ml-4 mr-4 h-10 w-10 shrink-0 text-neutral-50 md:ml-8">
                   {checked ? (
-                    <CheckFilledIcon className="w-full h-full" />
+                    <CheckFilledIcon className="h-full w-full" />
                   ) : (
                     <></>
                   )}

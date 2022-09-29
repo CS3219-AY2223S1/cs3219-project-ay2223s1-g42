@@ -59,15 +59,15 @@ const SignupForm = () => {
         <></>
       )}
       <div>
-        <BlueButton className="w-full flex items-center justify-center relative">
-          <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
+        <BlueButton className="relative flex w-full items-center justify-center">
+          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
             <GoogleIcon className="h-5 w-5 text-red-500" />
           </div>
           Sign up with Google
         </BlueButton>
         <Divider label="Or, sign up with your email" />
         <form
-          className="flex flex-col gap-8 space-y-8 mb-3"
+          className="mb-3 flex flex-col gap-8 space-y-8"
           onSubmit={onSubmit}
         >
           <div className="flex flex-col gap-5">

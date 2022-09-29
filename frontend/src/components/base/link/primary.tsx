@@ -11,8 +11,8 @@ const PrimaryLink = ({
   return (
     <BaseLink
       to={to}
-      className={`transition duration-300 ease-out border-b-[1px]
-        border-transparent hover:border-neutral-800 ${className}`}
+      className={`border-b-[1px] border-transparent transition duration-300
+        ease-out hover:border-neutral-800 ${className}`}
       {...other}
     >
       {children}

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
@@ -12,7 +11,7 @@ type EditorProps = {
 };
 
 const RoomEditor = ({ user, roomId }: EditorProps) => {
-  const { input, language, setup, cleanup } = useGlobalStore((state) => {
+  const { input, language, setup } = useGlobalStore((state) => {
     return {
       input: state.editorInput,
       language: state.editorLanguage,

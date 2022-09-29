@@ -14,7 +14,7 @@ const Container = ({
   return (
     <div
       className={cx(
-        "flex max-w-xl justify-center items-center px-4",
+        "flex max-w-xl items-center justify-center px-4",
         `mx-auto min-h-screen ${className}`,
         { "pt-0": !hasTopPadding, "pt-[76px] md:pt-16": hasTopPadding }
       )}

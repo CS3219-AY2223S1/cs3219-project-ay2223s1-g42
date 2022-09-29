@@ -9,10 +9,10 @@ import { TheToast } from "./TheToast";
 const RoomContainer = ({ children }: PropsWithChildren) => {
   return (
     <div
-      className="px-4 flex flex-col justify-between min-h-screen
-      bg-neutral-100 h-[150vh] lg:h-screen lg:max-h-screen max-w-[100vw]"
+      className="flex h-[150vh] min-h-screen max-w-[100vw] flex-col
+      justify-between bg-neutral-100 px-4 lg:h-screen lg:max-h-screen"
     >
-      <div className="pt-[76px] md:pt-16 h-full">{children}</div>
+      <div className="h-full pt-[76px] md:pt-16">{children}</div>
     </div>
   );
 };
@@ -53,7 +53,7 @@ const AppContainer = ({ children }: PropsWithChildren) => {
       {isRoomPage ? (
         <RoomContainer>{children}</RoomContainer>
       ) : isAuthenticatedPage ? (
-        <div className="justify-between min-h-screen bg-neutral-100">
+        <div className="min-h-screen justify-between bg-neutral-100">
           <Container hasTopPadding={true}>{children}</Container>
         </div>
       ) : isErrorPage ? (

@@ -35,7 +35,7 @@ const VerifyEmailPage = () => {
   return (
     <>
       {!loading ? (
-        <div className="px-4 flex flex-col text-center gap-8">
+        <div className="flex flex-col gap-8 px-4 text-center">
           <NormalHeading>
             Email verification failed! Please sign up again
           </NormalHeading>

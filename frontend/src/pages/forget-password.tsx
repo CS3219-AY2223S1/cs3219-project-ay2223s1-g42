@@ -3,7 +3,7 @@ import { ForgetPasswordForm } from "../login/components";
 
 const ForgetPasswordPage = () => {
   return (
-    <div className="w-full px-4 flex flex-col gap-8 text-center">
+    <div className="flex w-full flex-col gap-8 px-4 text-center">
       <BigHeading>Forget Password</BigHeading>
       <ForgetPasswordForm />
     </div>

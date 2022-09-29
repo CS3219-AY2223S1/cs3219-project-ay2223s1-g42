@@ -96,7 +96,7 @@ const options: HTMLReactParserOptions = {
       domNode.name === "pre"
     ) {
       return (
-        <pre className="whitespace-pre-line space-y-2">
+        <pre className="space-y-2 whitespace-pre-line">
           {domToReact(domNode.children, options)}
         </pre>
       );
@@ -108,7 +108,7 @@ const QuestionPanel = () => {
   const rawHtmlContent = QUESTION_DATA.data.question.content;
   const cleanHtmlContent = sanitizeHtml(rawHtmlContent);
   return (
-    <div className="flex flex-col w-auto h-full lg:max-w-[50vw]">
+    <div className="flex h-full w-auto flex-col lg:max-w-[50vw]">
       {parse(cleanHtmlContent, options)}
     </div>
   );

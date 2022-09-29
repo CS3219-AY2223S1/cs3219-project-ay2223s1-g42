@@ -42,7 +42,7 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
       description={dialogDescription}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-center w-full">
+        <div className="flex w-full items-center justify-center">
           {queueRoomId ? (
             <MatchCountdownTimer
               duration={MATCH_FOUND_DURATION}
