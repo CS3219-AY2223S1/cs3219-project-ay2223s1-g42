@@ -1,11 +1,12 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+
 import { Container } from "src/components/layout";
 
 export type BaseProps = {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
+  children: JSX.Element;
 };
 
 export function BaseDialog({ isOpen, onClose, children }: BaseProps) {

@@ -1,19 +1,17 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
+import { useParams } from "react-router";
 
-import { ResetPasswordForm } from "src/login/components";
+import { BigHeading, ErrorPage } from "src/components";
+import { ResetPasswordForm } from "src/login";
 
-const ResetPasswordPage: NextPage = () => {
-  const router = useRouter();
-
+const ResetPasswordPage = () => {
+  const { token } = useParams();
+  if (!token) {
+    return <ErrorPage />;
+  }
   return (
-    <div className="w-full px-4 flex flex-col text-center mx-auto">
-      <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
-        Reset Password
-      </h1>
-      <ResetPasswordForm
-        token={typeof router.query.token === "string" ? router.query.token : ""}
-      />
+    <div className="flex w-full flex-col gap-8 px-4 text-center">
+      <BigHeading>Reset Password</BigHeading>
+      <ResetPasswordForm token={token} />
     </div>
   );
 };

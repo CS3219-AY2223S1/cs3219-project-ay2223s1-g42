@@ -1,28 +1,31 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Spinner } from "src/components/icons";
-import { useAuthStore } from "src/hooks";
+import { BigHeading, SpinnerIcon } from "src/components";
+import { useGlobalStore } from "src/store";
 import { LoginForm } from "../login";
 
-const LoginPage: NextPage = () => {
-  const router = useRouter();
-  const user = useAuthStore((state) => state.user);
+const LoginPage = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const user = useGlobalStore((state) => state.user);
+
   useEffect(() => {
+    queryClient.refetchQueries(["me"]);
     if (user) {
-      router.push("/");
+      navigate("/");
     }
-  }, [user, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   return (
     <>
       {user ? (
-        <Spinner className="h-12 w-12" />
+        <SpinnerIcon className="h-12 w-12" />
       ) : (
-        <div className="w-full px-4 flex flex-col text-center mx-auto">
-          <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
-            Welcome.
-          </h1>
+        <div className="mx-auto flex w-full flex-col px-4 text-center">
+          <BigHeading className="mt-4 mb-12">Welcome.</BigHeading>
           <LoginForm />
         </div>
       )}

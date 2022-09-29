@@ -1,23 +1,21 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import {
+  ErrorAlert,
+  SuccessAlert,
+  TextInput,
+  PrimaryButton,
+  NormalHeading,
+} from "src/components";
 import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
-import { PrimaryButton, TextInput } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { PrimaryLink } from "src/components/base/link";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 type Props = {
   token: string;
 };
 
 const ResetPasswordForm = ({ token }: Props) => {
-  // forget password mutation
-  const useResetPasswordMutation = useAuthStore(
-    (state) => state.useResetPasswordMutation
-  );
-  const resetPasswordMutation = useResetPasswordMutation();
-
   // form setup
   const {
     register,
@@ -28,16 +26,23 @@ const ResetPasswordForm = ({ token }: Props) => {
     resolver: zodResolver(ResetPasswordInfoSchema),
   });
 
+  // forget password mutation
+  const useResetPasswordMutation = useGlobalStore(
+    (state) => state.useResetPasswordMutation
+  );
+  const resetPasswordMutation = useResetPasswordMutation({
+    onSuccess: reset,
+  });
+
   // submit function
   const handleResetPassword = async (credentials: ResetPasswordInfo) => {
     const resetData = { ...credentials, token };
     resetPasswordMutation.mutate(resetData);
-    reset();
   };
   const onSubmit = handleSubmit(handleResetPassword);
 
   return (
-    <>
+    <div>
       {resetPasswordMutation.isError ? (
         <ErrorAlert
           title={"Password reset failed!"}
@@ -46,12 +51,11 @@ const ResetPasswordForm = ({ token }: Props) => {
       ) : resetPasswordMutation.isSuccess ? (
         <>
           <SuccessAlert title="Password reset successful!" />
-          <PrimaryLink href="/login">Sign in here</PrimaryLink>
         </>
       ) : (
-        <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">
+        <NormalHeading className="mb-4">
           Please enter your new password
-        </h4>
+        </NormalHeading>
       )}
       <form className="flex flex-col gap-8" onSubmit={onSubmit}>
         <TextInput
@@ -71,7 +75,7 @@ const ResetPasswordForm = ({ token }: Props) => {
           Reset password
         </PrimaryButton>
       </form>
-    </>
+    </div>
   );
 };
 

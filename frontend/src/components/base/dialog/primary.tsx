@@ -17,12 +17,12 @@ export function PrimaryDialog({
   return (
     <BaseDialog isOpen={isOpen} onClose={onClose}>
       <Dialog.Panel
-        className="w-full max-w-md transform overflow-hidden bg-neutral-50 p-4
-        text-left align-middle transition-all border-[1px] border-neutral-900"
+        className="w-full max-w-md transform overflow-hidden border-[1px] border-neutral-900
+        bg-neutral-100 p-4 text-center align-middle transition-all"
       >
         <Dialog.Title
           as="h3"
-          className="text-2xl font-display font-semibold text-neutral-900 mb-4"
+          className="mb-4 font-display text-2xl font-semibold text-neutral-900"
         >
           {title}
         </Dialog.Title>

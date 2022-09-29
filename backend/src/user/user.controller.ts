@@ -124,12 +124,12 @@ export class UserController {
   ) {
     if (parseInt(id) === user.id) {
       const { email, username } = userInfo;
-      const [err, newUser] = await this.userService.update(user.id, {
+      const [err] = await this.userService.update(user.id, {
         email,
         username,
       });
       ThrowKnownPrismaErrors(err);
-      return newUser;
+      return { message: "success" };
     }
     throw new BadRequestException("Failed to update user.");
   }

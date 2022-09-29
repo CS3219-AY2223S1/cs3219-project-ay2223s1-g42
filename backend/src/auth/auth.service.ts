@@ -58,12 +58,10 @@ export class AuthService {
     const { email, username, password } = credentials;
 
     // check if user's email and username in db
-    const [err, user] = await this.users.findFirstByEitherUniqueFields(
+    const [, user] = await this.users.findFirstByEitherUniqueFields(
       email,
       username
     );
-
-    ThrowKnownPrismaErrors(err);
 
     if (user) {
       if (user.email == email) {
@@ -114,7 +112,7 @@ export class AuthService {
         console.log(success);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         throw new HttpException(
           "Internal Server Error",
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -171,6 +169,8 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_EMAIL_VERIFY_EMAIL_TOKEN);
     }
 
+    console.log("cached user: ", { cachedUser });
+
     const { username, email, hash } = cachedUser;
     const [err, user] = await this.users.createWithHash(email, username, hash);
 
@@ -190,6 +190,9 @@ export class AuthService {
 
     // generate tokens for new user
     const tokens = await this.signTokens(user.id, user.email);
+
+    console.log("new tokens: ", { tokens });
+
     // update refresh token hash for new user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
 
@@ -246,6 +249,7 @@ export class AuthService {
     const [err] = await this.users.update(id, { hashRt });
     // throw if err updating refresh token hash
     if (err) {
+      console.log("error occurred while refreshing token hash!");
       ThrowKnownPrismaErrors(err);
     }
     return;
@@ -328,6 +332,59 @@ export class AuthService {
     });
 
     if (error || !userToReset) {
+      throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
+    }
+  }
+
+  async changePassword(id: number, oldPassword: string, newPassword: string) {
+    // find user via id provided
+    const [err, user] = await this.users.find({ id, includeHash: true });
+
+    ThrowKnownPrismaErrors(err);
+
+    // if user doesn't exist, throw exception
+    if (!user) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // if old password incorrect, throw exception
+    const isPasswordCorrect = await argon2.verify(user.hash, oldPassword);
+    if (!isPasswordCorrect) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // update new password in the database
+    const hashedNewPassword = await argon2.hash(newPassword);
+    const [error, userToChangePassword] = await this.users.update(id, {
+      hash: hashedNewPassword,
+    });
+
+    if (error || !userToChangePassword) {
+      throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
+    }
+  }
+
+  async deleteAccount(id: number, password: string) {
+    // find user via id provided
+    const [err, user] = await this.users.find({ id, includeHash: true });
+
+    ThrowKnownPrismaErrors(err);
+
+    // if user doesn't exist, throw exception
+    if (!user) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // if password incorrect, throw exception
+    const isPasswordCorrect = await argon2.verify(user.hash, password);
+    if (!isPasswordCorrect) {
+      throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
+    }
+
+    // delete user
+    const [error, userToDelete] = await this.users.delete(id);
+
+    if (error || !userToDelete) {
       throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
     }
   }

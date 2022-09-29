@@ -1,17 +1,19 @@
-type Props = {
-  className?: string;
-};
+import { Props } from "./types";
 
-const CheckIcon = (props: Props) => {
+const CheckIcon = ({ className }: Props) => {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={props.className}>
-      <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+      className={className}
+    >
       <path
-        d="M7 13l3 3 7-7"
-        stroke="#fff"
-        strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
+        d="M4.5 12.75l6 6 9-13.5"
       />
     </svg>
   );
