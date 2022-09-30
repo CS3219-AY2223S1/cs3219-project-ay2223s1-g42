@@ -19,17 +19,12 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-<<<<<<< HEAD
   const { user, useGetMe } = useGlobalStore((state) => {
     return {
       user: state.user,
       useGetMe: state.useGetMe,
     };
   });
-=======
-  const user = useAuthStore((state) => state.user);
-  const useGetMe = useAuthStore((state) => state.useGetMe);
->>>>>>> feat: add root package script, add env examples for frontend and backend (#58)
   useGetMe();
 
   // current pathname
