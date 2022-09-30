@@ -8,7 +8,6 @@ import { ScheduleModule } from "@nestjs/schedule";
 
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
-import { QuestionModule } from "./question/question.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { validate, configuration } from "./config";
 import { JwtAccessGuard } from "./auth/guard";
@@ -17,6 +16,7 @@ import { generateEmailFromField } from "./utils/mail";
 import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
 import { DocumentModule } from "./document/document.module";
+import { QuestionModule } from "./question/question.module";
 
 @Module({
   imports: [
