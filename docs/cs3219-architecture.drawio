@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" scale="1" border="20">
     <diagram id="1ZyP8dzgdM-rQ9ULVGPr" name="architecture">
-        <mxGraphModel dx="1711" dy="2531" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="962" dy="1466" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -27,8 +27,8 @@
                 <mxCell id="3" value="&lt;b&gt;Users&lt;/b&gt;" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="160" y="285" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="&lt;u style=&quot;font-size: 24px&quot;&gt;&lt;b style=&quot;font-size: 24px;&quot;&gt;Architecture &lt;br style=&quot;font-size: 24px;&quot;&gt;Diagram&lt;/b&gt;&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;" parent="1" vertex="1">
-                    <mxGeometry x="747" y="85" width="160" height="60" as="geometry"/>
+                <mxCell id="4" value="&lt;u style=&quot;font-size: 24px&quot;&gt;&lt;b style=&quot;font-size: 24px&quot;&gt;PeerPrep — Architecture Diagram&lt;/b&gt;&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;" parent="1" vertex="1">
+                    <mxGeometry x="627" y="90" width="400" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="" style="edgeStyle=elbowEdgeStyle;html=1;fontSize=12;startArrow=none;startFill=0;elbow=vertical;" parent="1" source="5" target="23" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -66,7 +66,7 @@
                 <mxCell id="23" value="&lt;u&gt;Matching Service&lt;/u&gt;" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;horizontal=1;spacingLeft=5;spacingTop=2;fontStyle=1;fillColor=#F4F8FC;strokeColor=#6c8ebf;" parent="1" vertex="1">
                     <mxGeometry x="650" y="200" width="210" height="250" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" value="&lt;u&gt;Room Service&lt;/u&gt;" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;horizontal=1;spacingLeft=5;spacingTop=2;fontStyle=1;fillColor=#FFE6CC;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="25" value="&lt;u&gt;Room Service&lt;/u&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-weight: normal&quot;&gt;Display question content&lt;/span&gt;" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;horizontal=1;spacingLeft=5;spacingTop=2;fontStyle=1;fillColor=#FFE6CC;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="940" y="200" width="250" height="510" as="geometry"/>
                 </mxCell>
                 <mxCell id="32" value="&lt;span style=&quot;font-size: 12px&quot;&gt;Difficulty match&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontSize=12;" parent="1" vertex="1">
@@ -77,18 +77,6 @@
                 </mxCell>
                 <mxCell id="34" value="AND / OR" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=4" parent="1" vertex="1">
                     <mxGeometry x="725" y="310" width="60" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="37" value="Collaboration Service" style="rounded=0;whiteSpace=wrap;html=1;fontSize=12;fontStyle=5;align=left;verticalAlign=top;spacingLeft=5;spacingTop=2;fillColor=#E6FFCC;strokeColor=#4D9900;" parent="1" vertex="1">
-                    <mxGeometry x="975" y="242.5" width="180" height="190" as="geometry"/>
-                </mxCell>
-                <mxCell id="38" value="&lt;span style=&quot;font-size: 12px&quot;&gt;Realtime editor&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontSize=12;" parent="1" vertex="1">
-                    <mxGeometry x="1005" y="307.5" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="39" value="Communication Service" style="rounded=0;whiteSpace=wrap;html=1;fontSize=12;fontStyle=5;align=left;verticalAlign=top;spacingLeft=5;spacingTop=2;fillColor=#FFFFCC;strokeColor=#999900;" parent="1" vertex="1">
-                    <mxGeometry x="975" y="477.5" width="180" height="190" as="geometry"/>
-                </mxCell>
-                <mxCell id="40" value="&lt;span style=&quot;font-size: 12px;&quot;&gt;Voice/video communication&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontSize=12;verticalAlign=middle;labelBackgroundColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="1005" y="542.5" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="42" value="&lt;u&gt;History Service&lt;/u&gt;" style="whiteSpace=wrap;html=1;align=left;verticalAlign=top;horizontal=1;spacingLeft=5;spacingTop=2;fontStyle=1;fillColor=#F8EBFF;strokeColor=#9673a6;" parent="1" vertex="1">
                     <mxGeometry x="1270" y="200" width="210" height="250" as="geometry"/>
@@ -184,7 +172,7 @@
                 <mxCell id="67" value="&lt;b&gt;Redis&lt;br&gt;&lt;/b&gt;(Question summary and content)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fontSize=12;" parent="1" vertex="1">
                     <mxGeometry x="627" y="570" width="120" height="100" as="geometry"/>
                 </mxCell>
-                <mxCell id="91" value="Save into &lt;br&gt;PlanetScale" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.855;entryY=1;entryDx=0;entryDy=-4.35;entryPerimeter=0;endFill=1;" edge="1" parent="1" target="9">
+                <mxCell id="91" value="Save into &lt;br&gt;PlanetScale" style="endArrow=classic;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.855;entryY=1;entryDx=0;entryDy=-4.35;entryPerimeter=0;endFill=1;" parent="1" target="9" edge="1">
                     <mxGeometry x="-0.0563" width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="1230" y="340" as="sourcePoint"/>
                         <mxPoint x="530" y="1030" as="targetPoint"/>
@@ -194,6 +182,38 @@
                         </Array>
                         <mxPoint as="offset"/>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="92" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="975" y="490" width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="94" value="" style="group" vertex="1" connectable="0" parent="92">
+                    <mxGeometry width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="Communication Service" style="rounded=0;whiteSpace=wrap;html=1;fontSize=12;fontStyle=5;align=left;verticalAlign=top;spacingLeft=5;spacingTop=2;fillColor=#FFFFCC;strokeColor=#999900;" parent="94" vertex="1">
+                    <mxGeometry width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="&lt;span style=&quot;font-size: 12px;&quot;&gt;Voice/video communication&lt;br style=&quot;font-size: 12px;&quot;&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontSize=12;verticalAlign=middle;labelBackgroundColor=none;" parent="94" vertex="1">
+                    <mxGeometry x="30" y="65" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="" style="group" vertex="1" connectable="0" parent="1">
+                    <mxGeometry x="975" y="280" width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="Collaboration Service" style="rounded=0;whiteSpace=wrap;html=1;fontSize=12;fontStyle=5;align=left;verticalAlign=top;spacingLeft=5;spacingTop=2;fillColor=#E6FFCC;strokeColor=#4D9900;" parent="93" vertex="1">
+                    <mxGeometry width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="&lt;span style=&quot;font-size: 12px&quot;&gt;Realtime editor&lt;/span&gt;" style="whiteSpace=wrap;html=1;fontSize=12;" parent="93" vertex="1">
+                    <mxGeometry x="30" y="65" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="oDMbh92-PtcjfYrn53Tg" name="architecture-v2">
+        <mxGraphModel dx="962" dy="1466" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="tDVvSmextYM0Kb6gsicG-0"/>
+                <mxCell id="tDVvSmextYM0Kb6gsicG-1" parent="tDVvSmextYM0Kb6gsicG-0"/>
+                <mxCell id="6hfEDVDJeJjuyxJpI2Rb-5" value="&lt;u style=&quot;font-size: 24px&quot;&gt;&lt;b style=&quot;font-size: 24px&quot;&gt;PeerPrep — Architecture Diagram&lt;/b&gt;&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;" vertex="1" parent="tDVvSmextYM0Kb6gsicG-1">
+                    <mxGeometry x="627" y="90" width="400" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
