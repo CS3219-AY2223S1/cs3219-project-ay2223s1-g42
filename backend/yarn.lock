@@ -951,6 +951,13 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
+"@swc/helpers@^0.4.11":
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.11.tgz#db23a376761b3d31c26502122f349a21b592c8de"
+  integrity sha512-rEUrBSGIoSFuYxwBYtlUFMlE2CwGhmW+w9355/5oduSw8e5h2+Tj4UrAGNNgP9915++wj5vkQo0UuOBqOAq4nw==
+  dependencies:
+    tslib "^2.4.0"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -965,6 +972,21 @@
     minimatch "^3.0.4"
     mkdirp "^1.0.4"
     path-browserify "^1.0.1"
+
+"@ts-rest/core@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@ts-rest/core/-/core-3.5.0.tgz#841cbeb53f1309a47dca81b4570f0cdfe3b61de9"
+  integrity sha512-O6eNq8PV87MWr52Bn6hVPLCps7olwELWRpFLVQVLeDRSkWFq7EQdaNplk1mYvhgcV27zf3jgK4/9LgRn3B9IDA==
+
+"@ts-rest/nest@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@ts-rest/nest/-/nest-3.5.0.tgz#99a79ae4445560e9001830209427e2d5ae19916f"
+  integrity sha512-B05NVtwVI5BmGCFBRzDcZjCMOemj5Kb2wzWviClcUcz7+V6DYpSmxQ55uz9ZYiFJLJ9bWsjsQ9sy66kQEgGhOw==
+
+"@ts-rest/open-api@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@ts-rest/open-api/-/open-api-3.5.0.tgz#096987d4c8a1a503c1c8510db39c2372f6fe1074"
+  integrity sha512-H3XsxJiy9w4efUT65On+u/lw7S+0a2CR+J8PhjpsqP6MHUB5WWFl/kRTHcDMYGFtPUaFUp7KXWNN/fcXyJ8P0g==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
@@ -7373,7 +7395,7 @@ tsconfig-paths@4.1.0, tsconfig-paths@^4.0.0:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@2.4.0, tslib@^2.0.1, tslib@^2.1.0, tslib@^2.2.0:
+tslib@2.4.0, tslib@^2.0.1, tslib@^2.1.0, tslib@^2.2.0, tslib@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
@@ -7849,12 +7871,17 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
+zod-to-json-schema@^3.18.1:
+  version "3.18.1"
+  resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.18.1.tgz#ba6aa9ca4a53c0ed18ad6c0d4f85b957d9500c11"
+  integrity sha512-YFP4dAZR2GHDkTOZL7E7p2E3/yoUZeB5RD797JEpJTyh/L+9WvIK/tEMuF+MhzDPhQWXlkSugxmO8nbdXjJKYA==
+
 zod@3.14.3:
   version "3.14.3"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.14.3.tgz#60e86341c05883c281fe96a0e79acea48a09f123"
   integrity sha512-OzwRCSXB1+/8F6w6HkYHdbuWysYWnAF4fkRgKDcSFc54CE+Sv0rHXKfeNUReGCrHukm1LNpi6AYeXotznhYJbQ==
 
-zod@^3.17.3:
+zod@^3.17.3, zod@^3.19.1:
   version "3.19.1"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.19.1.tgz#112f074a97b50bfc4772d4ad1576814bd8ac4473"
   integrity sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==

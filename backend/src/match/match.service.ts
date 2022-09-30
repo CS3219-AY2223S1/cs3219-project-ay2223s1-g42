@@ -2,9 +2,8 @@ import { Injectable, Inject, forwardRef } from "@nestjs/common";
 
 import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
-import { PoolUser } from "./match.gateway";
 import { RoomService } from "src/room/room.service";
-import { MATCH_ERRORS } from "./constants";
+import { PoolUser, MATCH_ERRORS } from "shared/api";
 
 @Injectable()
 export class MatchService {

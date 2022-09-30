@@ -1,4 +1,12 @@
-import { UserModel } from "src/types";
+import { z } from "zod";
+
+import { UserModel } from "../../types";
+
+const UserInfoSchema = UserModel.pick({
+  id: true,
+  email: true,
+  username: true,
+});
 
 const EditableSchema = UserModel.pick({
   email: true,
@@ -6,4 +14,6 @@ const EditableSchema = UserModel.pick({
   hashRt: true,
 }).partial();
 
-export { EditableSchema };
+export type UserInfo = z.infer<typeof UserInfoSchema>;
+
+export { EditableSchema, UserInfoSchema };

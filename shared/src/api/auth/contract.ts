@@ -14,7 +14,7 @@ const c = initContract();
 const AuthContract = c.router({
   signup: {
     method: "POST",
-    path: "/local/signup",
+    path: "/auth/local/signup",
     summary: "Creates a new user with the provided credentials",
     responses: {
       201: c.response<{ message: string }>(),
@@ -26,7 +26,7 @@ const AuthContract = c.router({
   },
   signin: {
     method: "POST",
-    path: "/local/signin",
+    path: "/auth/local/signin",
     summary: "Successfully signed in and received JWT token cookies",
     responses: {
       200: c.response<{ message: string }>(),
@@ -38,7 +38,7 @@ const AuthContract = c.router({
   },
   signout: {
     method: "POST",
-    path: "/signout",
+    path: "/auth/signout",
     summary: "Signs the user out",
     responses: {
       200: c.response<{ message: string }>(),
@@ -49,7 +49,7 @@ const AuthContract = c.router({
   },
   refresh: {
     method: "GET",
-    path: "/refresh",
+    path: "/auth/refresh",
     summary: "Refresh JWT token cookies",
     responses: {
       200: c.response<{ message: string }>(),
@@ -60,7 +60,7 @@ const AuthContract = c.router({
   },
   verify: {
     method: "POST",
-    path: "/verify/:token",
+    path: "/auth/verify/:token",
     summary: "Verifies that JWT token passed in request is valid",
     responses: {
       200: c.response<{ message: string }>(),
@@ -71,7 +71,7 @@ const AuthContract = c.router({
   },
   forgetPassword: {
     method: "POST",
-    path: "/forget-password",
+    path: "/auth/forget-password",
     summary: "User requests to change existing password",
     responses: {
       201: c.response<{ message: string }>(),
@@ -82,7 +82,7 @@ const AuthContract = c.router({
   },
   resetPassword: {
     method: "POST",
-    path: "/reset-password",
+    path: "/auth/reset-password",
     summary: "User enters new password to change their existing password",
     responses: {
       200: c.response<{ message: string }>(),
@@ -94,7 +94,7 @@ const AuthContract = c.router({
   },
   changePassword: {
     method: "POST",
-    path: "/change-password",
+    path: "/auth/change-password",
     summary: "Changes password of authenicated users",
     responses: {
       200: c.response<{ message: string }>(),
@@ -107,7 +107,7 @@ const AuthContract = c.router({
   },
   deleteAccount: {
     method: "POST",
-    path: "/delete-account",
+    path: "/auth/delete-account",
     summary: "Deletes user account after verifying the specified password",
     responses: {
       200: c.response<{ message: string }>(),

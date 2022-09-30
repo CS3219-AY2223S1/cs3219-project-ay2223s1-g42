@@ -13,10 +13,10 @@ import { v4 } from "uuid";
 
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
-import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
 import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
 import { NAMESPACES } from "src/cache/constants";
+import { SigninData, SignupData } from "shared/api";
 
 export type JwtPayload = {
   sub: number;
@@ -54,7 +54,7 @@ export class AuthService {
    * Creates a new user object in the cache and send an verification email
    * @param credentials credentials validated by zod schema
    */
-  async signup(credentials: SignupCredentialsDto) {
+  async signup(credentials: SignupData) {
     const { email, username, password } = credentials;
 
     // check if user's email and username in db
@@ -125,7 +125,7 @@ export class AuthService {
    * @param credentials credentials validated by zod schema
    * @returns jwt token associated with the authenticated user
    */
-  async signin(credentials: SigninCredentialsDto): Promise<Tokens> {
+  async signin(credentials: SigninData): Promise<Tokens> {
     const { email, password } = credentials;
 
     // check if email is unverified

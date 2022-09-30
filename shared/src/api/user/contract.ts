@@ -1,16 +1,16 @@
 import { initContract } from "@ts-rest/core";
 
-import { EditableSchema } from "./schema";
+import { EditableSchema, UserInfo } from "./schema";
 
 const c = initContract();
 
 const UserContract = c.router({
   me: {
     method: "GET",
-    path: "/me",
+    path: "/users/me",
     summary: "Verifies that JWT token passed in request is valid",
     responses: {
-      201: c.response<{ message: string }>(),
+      201: c.response<UserInfo>(),
       401: c.response<{ message: string }>(),
       404: c.response<{ message: string }>(),
       500: c.response<{ message: string }>(),
@@ -18,19 +18,19 @@ const UserContract = c.router({
   },
   getUser: {
     method: "GET",
-    path: "/:id",
+    path: "/users/:id",
     summary: "Returns info of user with the given id",
     responses: {
-      201: c.response<{ message: string }>(),
+      201: c.response<UserInfo>(),
       401: c.response<{ message: string }>(),
       403: c.response<{ message: string }>(),
       404: c.response<{ message: string }>(),
       500: c.response<{ message: string }>(),
     },
   },
-  updateUser: {
+  editUser: {
     method: "PATCH",
-    path: "/:id",
+    path: "/users/:id",
     summary: "Edit data of specified user",
     body: EditableSchema,
     responses: {
@@ -43,11 +43,11 @@ const UserContract = c.router({
   },
   deleteUser: {
     method: "DELETE",
-    path: "/:id",
+    path: "/users/:id",
     summary: "Delete data of specified user",
     body: null,
     responses: {
-      200: c.response<{ message: string }>(),
+      200: c.response<UserInfo>(),
       400: c.response<{ message: string }>(),
       403: c.response<{ message: string }>(),
       404: c.response<{ message: string }>(),

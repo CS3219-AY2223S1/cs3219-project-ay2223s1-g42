@@ -1,160 +1,131 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Res,
-  UseGuards,
-} from "@nestjs/common";
-import {
-  ApiOperation,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
-  ApiInternalServerErrorResponse,
-  ApiCreatedResponse,
-} from "@nestjs/swagger";
+import { Controller, Res, UseGuards } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { Response } from "express";
+import { initNestServer, Api, ApiDecorator } from "@ts-rest/nest";
 
 import { AuthService, Tokens } from "./auth.service";
-import {
-  SigninCredentialsDto,
-  SignupCredentialsDto,
-  ForgetPasswordCredentialsDto,
-  ResetPasswordCredentialsDto,
-  ChangePasswordInfoDto,
-  DeleteAccountInfoDto,
-} from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
-import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import { AuthContract } from "shared/api";
 
-@Controller("auth")
-export class AuthController {
+const authServer = initNestServer(AuthContract);
+type AuthControllerShape = typeof authServer.controllerShape;
+type AuthRouteShape = typeof authServer.routeShapes;
+
+@Controller()
+export class AuthController implements AuthControllerShape {
   constructor(private authService: AuthService) {}
 
   @PublicRoute()
-  @Post("/local/signup")
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY })
-  @ApiCreatedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
-  })
-  @ApiCreatedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNUP_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async signup(@Body() credentials: SignupCredentialsDto) {
-    await this.authService.signup(credentials);
-    return { message: "success" };
+  @Api(authServer.route.signup)
+  async signup(@ApiDecorator() { body }: AuthRouteShape["signup"]) {
+    await this.authService.signup(body);
+    return { status: 200 as const, body: { message: "success" } };
   }
 
   @PublicRoute()
-  @Post("/local/signin")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.SIGN_IN_SUMMARY })
-  @ApiOkResponse({
-    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
+  @Api(authServer.route.signin)
   async signin(
-    @Body() credentials: SigninCredentialsDto,
+    @ApiDecorator() { body }: AuthRouteShape["signin"],
     @Res({ passthrough: true }) res: Response
   ) {
-    const tokens = await this.authService.signin(credentials);
+    const tokens = await this.authService.signin(body);
     this.setCookies(res, tokens);
-    return { message: "success" };
+    return { status: 200 as const, body: { message: "success" } };
   }
 
-  @Post("/signout")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.SIGN_OUT_SUMMARY })
-  @ApiOkResponse({
-    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNOUT_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_SIGN_OUT_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
+  @Api(authServer.route.signout)
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
   ) {
     await this.authService.signout(user.id);
     this.clearCookies(res);
-    return { message: "success" };
+    return { status: 200 as const, body: { message: "success" } };
   }
 
   @PublicRoute()
   @UseGuards(JwtRefreshGuard)
-  @Get("/refresh")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
-  @ApiOkResponse({
-    description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
+  @Api(authServer.route.refresh)
   async refresh(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.refreshTokens(user.id, user.email);
     this.setCookies(res, tokens);
-    return { message: "success" };
+    return { status: 200 as const, body: { message: "success" } };
   }
 
   @PublicRoute()
-  @Post("/verify/:token")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.VERIFY_SIGN_UP_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGN_UP_VERIFY_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async verifyEmail(
-    @Param("token") token: string,
+  @Api(authServer.route.verify)
+  async verify(
+    @ApiDecorator() { params: { token } }: AuthRouteShape["verify"],
     @Res({ passthrough: true }) res: Response
   ) {
     const tokens = await this.authService.verifyEmail(token);
     this.setCookies(res, tokens);
-    return { message: "success" };
+    return { status: 200 as const, body: { message: "success" } };
+  }
+
+  /**
+   * Sends the provided email an link to reset password
+   * @param forgetPasswordInfo contains email needed to reset password
+   */
+  @PublicRoute()
+  @Api(authServer.route.forgetPassword)
+  async forgetPassword(
+    @ApiDecorator() { body }: AuthRouteShape["forgetPassword"]
+  ) {
+    const { email } = body;
+    await this.authService.resetPassword(email);
+    return { status: 200 as const, body: { message: "success" } };
+  }
+
+  /**
+   * Reset password of user that is stored in the specified token
+   * @param resetPasswordInfo info of user needed for password reset
+   */
+  @PublicRoute()
+  @Api(authServer.route.resetPassword)
+  async resetPassword(
+    @ApiDecorator() { body }: AuthRouteShape["resetPassword"]
+  ) {
+    const { token, password } = body;
+    await this.authService.verifyResetEmail(token, password);
+    return { status: 200 as const, body: { message: "success" } };
+  }
+
+  /**
+   * Change password of user after verifying the current password
+   * @param changePasswordInfo info of user needed for password change
+   */
+  @Api(authServer.route.changePassword)
+  async changePassword(
+    @GetUser() user: User,
+    @ApiDecorator() { body }: AuthRouteShape["changePassword"]
+  ) {
+    const { newPassword, currentPassword } = body;
+    await this.authService.changePassword(
+      user.id,
+      currentPassword,
+      newPassword
+    );
+    return { status: 200 as const, body: { message: "success" } };
+  }
+
+  /**
+   * Deletes user account after verifying the specified password
+   * @param deleteAccountInfo info of user needed for account deletion
+   */
+  @Api(authServer.route.deleteAccount)
+  async deleteAccount(
+    @GetUser() user: User,
+    @ApiDecorator() { body }: AuthRouteShape["deleteAccount"]
+  ) {
+    const { password } = body;
+    await this.authService.deleteAccount(user.id, password);
+    return { status: 200 as const, body: { message: "success" } };
   }
 
   setCookies(res: Response, tokens: Tokens) {
@@ -165,138 +136,5 @@ export class AuthController {
   clearCookies(res: Response) {
     res.clearCookie("refresh_token", COOKIE_OPTIONS);
     res.clearCookie("access_token", COOKIE_OPTIONS);
-  }
-
-  /**
-   * Sends the provided email an link to reset password
-   * @param forgetPasswordInfo contains email needed to reset password
-   */
-  @PublicRoute()
-  @Post("/forget-password")
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGET_PASSWORD_EMAIL_SENT_DESCRIPTION,
-  })
-  @ApiCreatedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGET_PASSWORD_EMAIL_SENT_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async forgetPassword(
-    @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
-  ) {
-    const { email } = forgetPasswordInfo;
-    await this.authService.resetPassword(email);
-    return { message: "success" };
-  }
-
-  /**
-   * Reset password of user that is stored in the specified token
-   * @param resetPasswordInfo info of user needed for password reset
-   */
-  @PublicRoute()
-  @Post("/reset-password")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.RESET_PASSWORD_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RESET_PASSWORD_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_TOKEN_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
-    const { token, password } = resetPasswordInfo;
-    await this.authService.verifyResetEmail(token, password);
-    return { message: "success" };
-  }
-
-  /**
-   * Change password of user after verifying the current password
-   * @param changePasswordInfo info of user needed for password change
-   */
-  @Post("/change-password")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.CHANGE_PASSWORD_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_CHANGE_PASSWORD_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async changePassword(
-    @GetUser() user: User,
-    @Body() changePasswordInfo: ChangePasswordInfoDto
-  ) {
-    const { newPassword, currentPassword } = changePasswordInfo;
-    await this.authService.changePassword(
-      user.id,
-      currentPassword,
-      newPassword
-    );
-    return { message: "success" };
-  }
-
-  /**
-   * Deletes user account after verifying the specified password
-   * @param deleteAccountInfo info of user needed for account deletion
-   */
-  @Post("/delete-account")
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_DELETE_ACCOUNT_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async deleteAccount(
-    @GetUser() user: User,
-    @Body() { password }: DeleteAccountInfoDto
-  ) {
-    await this.authService.deleteAccount(user.id, password);
-    return { message: "success" };
   }
 }

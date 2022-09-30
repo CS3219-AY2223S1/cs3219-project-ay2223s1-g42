@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const UserModel = z.object({
   id: z.number().int(),
@@ -9,3 +9,5 @@ export const UserModel = z.object({
   hash: z.string(),
   hashRt: z.string().nullish(),
 });
+
+export type User = z.infer<typeof UserModel>;

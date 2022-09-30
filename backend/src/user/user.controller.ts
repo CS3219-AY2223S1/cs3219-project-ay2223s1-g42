@@ -1,32 +1,18 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-} from "@nestjs/common";
-import {
-  ApiOkResponse,
-  ApiNotFoundResponse,
-  ApiForbiddenResponse,
-  ApiUnprocessableEntityResponse,
-  ApiOperation,
-  ApiUnauthorizedResponse,
-  ApiBadRequestResponse,
-  ApiInternalServerErrorResponse,
-} from "@nestjs/swagger";
+import { BadRequestException, Controller } from "@nestjs/common";
 import { User } from "@prisma/client";
+import { Api, ApiDecorator, initNestServer } from "@ts-rest/nest";
 
-import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
-import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
 import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
+import { UserContract, UserInfo } from "shared/api";
 
-@Controller("users")
-export class UserController {
+const userServer = initNestServer(UserContract);
+type UserControllerShape = typeof userServer.controllerShape;
+type UserRouteShape = typeof userServer.routeShapes;
+
+@Controller()
+export class UserController implements UserControllerShape {
   constructor(private userService: UserService) {}
 
   /**
@@ -34,24 +20,12 @@ export class UserController {
    * @param user user object obtained from email included in JWT token
    * @returns user object
    */
-  @Get("me")
-  @ApiOperation({ summary: API_OPERATIONS.JWT_VERIFICATION_TOKEN_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
-  })
-  @ApiNotFoundResponse({
-    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  getMe(@GetUser() user: User) {
-    return user;
+  @Api(userServer.route.me)
+  async me(@GetUser() user: User) {
+    if (!user) {
+      return { status: 401 as const, body: { message: "Unauthorized" } };
+    }
+    return { status: 201 as const, body: user };
   }
 
   /**
@@ -60,28 +34,11 @@ export class UserController {
    * @returns user object of the user with the given id
    */
   @PublicRoute()
-  @Get(":id")
-  @ApiOperation({ summary: API_OPERATIONS.RETURN_USER_INFO_WITH_ID_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_RETRIEVAL_OF_USER_INFORMATION_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
-  })
-  @ApiNotFoundResponse({
-    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async getUser(@Param("id") id: string) {
+  @Api(userServer.route.getUser)
+  async getUser(@ApiDecorator() { params: { id } }: UserRouteShape["getUser"]) {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
     ThrowKnownPrismaErrors(err);
-    return user;
+    return { status: 200 as const, body: user as UserInfo };
   }
 
   /**
@@ -91,45 +48,19 @@ export class UserController {
    * @param userInfo info of user to be edited
    * @returns user object of the edited user
    */
-  @Patch(":id")
-  @ApiOperation({ summary: API_OPERATIONS.EDIT_USER_INFO_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION,
-  })
-  @ApiNotFoundResponse({
-    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
-  })
-  @ApiUnauthorizedResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
-  })
-  @ApiUnprocessableEntityResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.UNABLE_TO_PROCESS_INSTRUCTION_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
+  @Api(userServer.route.editUser)
   async editUser(
     @GetUser() user: User,
-    @Param("id") id: string,
-    @Body() userInfo: EditableCredentialsDto
+    @ApiDecorator() { params: { id }, body }: UserRouteShape["editUser"]
   ) {
     if (parseInt(id) === user.id) {
-      const { email, username } = userInfo;
+      const { email, username } = body;
       const [err] = await this.userService.update(user.id, {
         email,
         username,
       });
       ThrowKnownPrismaErrors(err);
-      return { message: "success" };
+      return { status: 200 as const, body: { message: "success" } };
     }
     throw new BadRequestException("Failed to update user.");
   }
@@ -140,29 +71,15 @@ export class UserController {
    * @param id id of user to be deleted
    * @returns deleted user object
    */
-  @Delete(":id")
-  @ApiOperation({ summary: API_OPERATIONS.DELETE_USER_SUMMARY })
-  @ApiOkResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_UPDATE_USER_INFORMATION_DESCRIPTION,
-  })
-  @ApiForbiddenResponse({
-    description: API_RESPONSES_DESCRIPTION.UNAUTHORIZED_ACCESS_DESCRIPTION,
-  })
-  @ApiNotFoundResponse({
-    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
-  })
-  @ApiBadRequestResponse({
-    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_ID_DESCRIPTION,
-  })
-  @ApiInternalServerErrorResponse({
-    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
-  })
-  async deleteUser(@GetUser() user: User, @Param("id") id: string) {
+  @Api(userServer.route.deleteUser)
+  async deleteUser(
+    @GetUser() user: User,
+    @ApiDecorator() { params: { id } }: UserRouteShape["deleteUser"]
+  ) {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
       ThrowKnownPrismaErrors(err);
-      return deletedUser;
+      return { status: 200 as const, body: deletedUser as UserInfo };
     }
     throw new BadRequestException("Failed to delete user.");
   }
