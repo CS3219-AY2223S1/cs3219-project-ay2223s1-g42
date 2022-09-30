@@ -1,16 +1,6 @@
 import * as z from "zod";
 
-import { initContract } from "@ts-rest/core";
-
-export const UserModel = z.object({
-  id: z.number().int(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  username: z.string().min(4).max(20),
-  email: z.string().email({ message: "Invalid email address" }),
-  hash: z.string(),
-  hashRt: z.string().nullish(),
-});
+import { UserModel } from "src/types";
 
 const passwordZodString = z
   .string()
@@ -36,26 +26,20 @@ const ResetPasswordSchema = SignupSchema.pick({
   password: true,
 }).extend({ token: z.string() });
 
-const EditableSchema = UserModel.pick({
-  email: true,
-  username: true,
-  hashRt: true,
-}).partial();
-
 const ChangePasswordInfoSchema = z.object({
   currentPassword: passwordZodString,
   newPassword: passwordZodString,
 });
 
-const a = initContract();
-
-const authContract = a.router({
-  signup: {
-    method: "POST",
-    path: "/local/signup",
-    responses: {
-      201: a.response<{ message: string }>(),
-    },
-    body: {},
-  },
+const DeletePasswordSchema = SignupSchema.pick({
+  password: true,
 });
+
+export {
+  SignupSchema,
+  SigninSchema,
+  ForgetPasswordSchema,
+  ResetPasswordSchema,
+  ChangePasswordInfoSchema,
+  DeletePasswordSchema,
+};
