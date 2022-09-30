@@ -20,7 +20,7 @@
     "backend:studio": "yarn --cwd backend prisma:dev:studio",
     "build": "next build",
     "start": "next start",
-    "lint": "npm-run-all --parallel frontend:lint backend:lint",
+    "lint": "npm-run-all -s frontend:lint backend:lint",
     "frontend:lint": "yarn --cwd frontend install && yarn --cwd frontend lint",
     "backend:lint": "yarn --cwd backend install && yarn --cwd backend lint"
   },
