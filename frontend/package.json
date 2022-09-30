@@ -1,30 +1,23 @@
 {
   "name": "vital",
   "version": "1.0.0",
-  "description": "Starter template for Vite with React (TypeScript). Supports Tailwind with CSS-Modules. Jest and @react/testing-library configured and ready to go. Also ESLint, Prettier, Husky, Commit-lint and Atomic Design for components.",
-  "homepage": "https://github.com/jvidalv/vital#readme",
+  "description": "3219 G420 Project",
+  "homepage": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jvidalv/vital.git"
+    "url": "git+https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42.git"
   },
-  "author": "Josep Vidal <josepvidalvidal@gmail.com>",
+  "author": "Ryan Aidan <aidan@u.nus.edu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jvidalv/vital/issues"
+    "url": "https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/issues"
   },
   "keywords": [
     "react",
     "vite",
     "typescript",
     "jest",
-    "tailwind",
-    "template",
-    "starter",
-    "css-modules",
-    "eslint",
-    "prettier",
-    "husky",
-    "commit-lint"
+    "tailwind"
   ],
   "browserslist": [
     ">0.2%",
@@ -39,7 +32,8 @@
     "start": "vite",
     "dev": "vite dev",
     "build": "vite build",
-    "test": "jest"
+    "test": "jest",
+    "lint": "prettier \"src/**/*.{ts,tsx}\" --write && eslint \"src/**/*.{ts,tsx}\" --fix"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.1",
@@ -95,7 +89,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^28.1.1",
     "jest-environment-jsdom": "^28.1.1",
-    "lint-staged": "^11.2.6",
     "postcss": "^8.4.14",
     "postcss-import": "^15.0.0",
     "prettier": "^2.7.1",

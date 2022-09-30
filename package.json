@@ -20,22 +20,12 @@
     "backend:studio": "yarn --cwd backend prisma:dev:studio",
     "build": "next build",
     "start": "next start",
-    "prepare": "husky install",
-    "lint": "npm-run-all --parallel frontend:lint backend:lint",
-    "lint-staged": "npm-run-all --parallel frontend:lint-staged backend:lint-staged",
-    "frontend:lint": "yarn --cwd frontend lint",
-    "frontend:lint-staged": "yarn --cwd frontend lint-staged",
-    "backend:lint": "yarn --cwd backend lint",
-    "backend:lint-staged": "yarn --cwd backend lint-staged"
+    "lint": "npm-run-all -s frontend:lint backend:lint",
+    "frontend:lint": "yarn --cwd frontend install && yarn --cwd frontend lint",
+    "backend:lint": "yarn --cwd backend install && yarn --cwd backend lint"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
-    "husky": "^8.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1"
-  },
-  "dependencies": {
-    "commitlint": "^17.1.2"
   }
 }
