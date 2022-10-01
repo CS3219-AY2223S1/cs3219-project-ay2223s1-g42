@@ -1,5 +1,5 @@
 import { BaseRadioGroup, RadioGroupValue } from "src/components";
-import { QuestionDifficulty } from "src/store";
+import { QuestionDifficulty } from "shared/api";
 
 type Props = {
   difficulty: RadioGroupValue<QuestionDifficulty>;

@@ -7,7 +7,7 @@ import {
   RadioGroupValue,
   SpinnerIcon,
 } from "src/components";
-import { MatchDialog, QuestionRadioGroup } from "src/dashboard";
+import { MatchDialog, QuestionRadioGroup } from "src/features";
 import { useGlobalStore } from "src/store";
 import { QuestionDifficulty } from "shared/api";
 

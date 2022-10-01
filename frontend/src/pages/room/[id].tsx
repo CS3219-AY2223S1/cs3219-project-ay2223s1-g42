@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
-import { LoadedRoom } from "src/dashboard";
+import { LoadedRoom } from "src/features";
 import { useGlobalStore } from "src/store";
 import { ROOM_EVENTS } from "shared/api";
 

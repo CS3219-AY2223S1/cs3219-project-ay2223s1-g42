@@ -8,7 +8,7 @@ import {
 
 import { Axios } from "src/services";
 import type { GlobalStore } from "./useGlobalStore";
-import { ApiResponse } from "src/login";
+import { ApiResponse } from "src/features";
 import {
   UserInfo,
   SigninData,

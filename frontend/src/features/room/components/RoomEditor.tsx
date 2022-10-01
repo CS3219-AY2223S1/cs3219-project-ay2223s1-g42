@@ -2,11 +2,11 @@ import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
 import { SpinnerIcon } from "src/components";
-import { User } from "src/login";
 import { LANGUAGE, useGlobalStore } from "src/store";
+import { UserInfo } from "shared/api";
 
 type EditorProps = {
-  user: User;
+  user: UserInfo;
   roomId: string;
 };
 
@@ -16,7 +16,6 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
       input: state.editorInput,
       language: state.editorLanguage,
       setup: state.setupEditor,
-      cleanup: state.cleanupEditor,
     };
   });
 

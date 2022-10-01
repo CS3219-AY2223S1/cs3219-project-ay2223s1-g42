@@ -9,7 +9,7 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import { UserProps } from "src/user";
+import { UserProps } from "src/features";
 import { useGlobalStore } from "src/store";
 import { EditableCredentials, EditableCredentialsSchema } from "shared/api";
 

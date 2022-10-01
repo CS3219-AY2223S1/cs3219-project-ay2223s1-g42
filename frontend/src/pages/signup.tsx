@@ -1,5 +1,5 @@
 import { BigHeading } from "src/components";
-import { SignupForm } from "../login/components";
+import { SignupForm } from "../features/login";
 
 const SignupPage = () => {
   return (

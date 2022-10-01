@@ -1,6 +1,6 @@
 import { BigHeading, ErrorPage } from "src/components";
 import { useGlobalStore } from "src/store";
-import { UserSettingsForm } from "src/user";
+import { UserSettingsForm } from "src/features";
 
 const ProfileSettingsPage = () => {
   const user = useGlobalStore((state) => state.user);

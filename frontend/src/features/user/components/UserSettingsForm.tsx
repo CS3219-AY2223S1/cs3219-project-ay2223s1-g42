@@ -1,7 +1,11 @@
 import { useState } from "react";
 
 import { Divider, RedButton } from "src/components";
-import { ChangePasswordForm, EditCredentialsForm, UserProps } from "src/user";
+import {
+  ChangePasswordForm,
+  EditCredentialsForm,
+  UserProps,
+} from "src/features";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 
 const UserSettingsForm = ({ user }: UserProps) => {
