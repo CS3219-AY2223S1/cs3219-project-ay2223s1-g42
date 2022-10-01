@@ -5,18 +5,10 @@
   },
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended"],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "warn",
     "no-use-before-define": "error",
-    "react/prop-types": "error",
-    "react/no-unescaped-entities": "error",
-    "react/display-name": "error",
-    "react/react-in-jsx-scope": "off",
     "no-empty": [
       "error",
       {
