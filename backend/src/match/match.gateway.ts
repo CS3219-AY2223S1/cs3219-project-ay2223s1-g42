@@ -1,7 +1,5 @@
 import { UseGuards } from "@nestjs/common";
 import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -10,24 +8,14 @@ import { Server, Socket } from "socket.io";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
-import { PublicUserInfo } from "../utils/zod/userInfo";
-import { QuestionDifficulty } from "src/utils/zod/question";
 import { MatchService } from "./match.service";
 import {
-  MATCH_ERRORS,
-  MATCH_EVENTS,
-  MATCH_MESSAGES,
   MATCH_WS_NAMESPACE,
-} from "./constants";
-
-export type PoolUserData = Required<PublicUserInfo> & {
-  difficulties: QuestionDifficulty[];
-};
-
-export type PoolUser = PoolUserData & {
-  socketId: string;
-  timeJoined: number;
-};
+  MATCH_EVENTS,
+  PoolUserData,
+  PoolUser,
+  MATCH_MESSAGES,
+} from "shared/api";
 
 @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({

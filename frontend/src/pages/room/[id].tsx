@@ -3,7 +3,8 @@ import { useParams } from "react-router";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
 import { LoadedRoom } from "src/dashboard";
-import { ROOM_EVENTS, useGlobalStore } from "src/store";
+import { useGlobalStore } from "src/store";
+import { ROOM_EVENTS } from "shared/api";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();

@@ -9,7 +9,7 @@ import * as cookieParser from "cookie-parser";
 
 import { AppModule } from "./app.module";
 import { CORS_OPTIONS } from "./config";
-import { patchNestJsSwagger } from "nestjs-zod";
+import { patchNestjsSwagger } from "@anatine/zod-nestjs";
 
 // const HTTPS_OPTIONS = {
 //   key: fs.readFileSync(path.join(__dirname, "../ssl/key.pem")),
@@ -23,12 +23,12 @@ async function bootstrap() {
   // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
   const port = app.get(ConfigService).get("PORT");
 
-  patchNestJsSwagger();
   const swaggerConfig = new DocumentBuilder()
     .setTitle("G420 PeerPussies API")
     .setDescription("The REST interface for querying the G420 PeerPussies API")
     .setVersion("1.0")
     .build();
+  patchNestjsSwagger();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api", app, document);
 

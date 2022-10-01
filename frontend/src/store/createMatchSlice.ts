@@ -2,15 +2,9 @@ import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
 
-import { User } from "src/login";
 import type { GlobalStore, Status } from "./useGlobalStore";
-import { MATCH_EVENTS, StatusType } from "./enums";
-
-export type QuestionDifficulty = "easy" | "medium" | "hard";
-
-export type PoolUser = User & {
-  difficulties: QuestionDifficulty[];
-};
+import { StatusType } from "./enums";
+import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
 
 export type MatchSlice = {
   matchSocket: Socket | undefined;
@@ -151,7 +145,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       console.error("socket not set, cannot join queue!");
       return;
     }
-    const poolUser: PoolUser = {
+    const poolUser: PoolUserData = {
       ...user,
       difficulties,
     };

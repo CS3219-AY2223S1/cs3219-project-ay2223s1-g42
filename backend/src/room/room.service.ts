@@ -1,10 +1,8 @@
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 
-import { NAMESPACES } from "src/cache/constants";
 import { RedisCacheService } from "src/cache/redisCache.service";
-import { PoolUser } from "src/match/match.gateway";
-import { Room, RoomUser } from "./room.gateway";
+import { NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
 
 @Injectable()
 export class RoomService {

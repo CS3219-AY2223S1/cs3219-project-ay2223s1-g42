@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router";
 
-import { UserInfo } from "shared/api";
 import { RedButton } from "src/components";
 import { RoomTabs } from "src/room";
 import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
+import { UserInfo } from "shared/api";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const LeaveRoomButton = () => {
   });
   return (
     <RedButton
-      className="py-2.5 text-sm md:py-2"
+      className="border-[1px] border-l-neutral-900 py-2.5 text-sm md:py-2"
       onClick={() => {
         if (!user) {
           console.error("user not logged in, cannot leave room");

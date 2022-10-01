@@ -19,11 +19,10 @@ import {
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 
-import { EditableCredentialsDto } from "../utils/zod";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
-import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
+import { EditableCredentialsDto, ThrowKnownPrismaErrors } from "src/utils";
 
 @Controller("users")
 export class UserController {

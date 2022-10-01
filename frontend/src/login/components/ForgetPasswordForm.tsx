@@ -8,8 +8,8 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { ForgetPasswordInfo, ForgetPasswordInfoSchema } from "../types";
 import { useGlobalStore } from "src/store";
+import { ForgetPasswordData, ForgetPasswordSchema } from "shared/api";
 
 const ForgetPasswordForm = () => {
   // form setup
@@ -18,8 +18,8 @@ const ForgetPasswordForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ForgetPasswordInfo>({
-    resolver: zodResolver(ForgetPasswordInfoSchema),
+  } = useForm<ForgetPasswordData>({
+    resolver: zodResolver(ForgetPasswordSchema),
   });
 
   // forget password mutation
@@ -31,7 +31,7 @@ const ForgetPasswordForm = () => {
   });
 
   // submit function
-  const handleSignin = async (credentials: ForgetPasswordInfo) => {
+  const handleSignin = async (credentials: ForgetPasswordData) => {
     forgetPasswordMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignin);
@@ -59,7 +59,7 @@ const ForgetPasswordForm = () => {
           type="email"
           placeholder="name@company.com"
           isError={!!errors.email?.message}
-          error={errors.email?.message}
+          error={errors.email?.message?.toString()}
           {...register("email", { required: true })}
         />
         <PrimaryButton

@@ -12,8 +12,8 @@ import {
   SuccessAlert,
   Divider,
 } from "src/components";
-import { SignUpCredentials, SignupCredentialsSchema } from "../types";
 import { useGlobalStore } from "src/store";
+import { SignupData, SignupSchema } from "shared/api";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
@@ -24,8 +24,8 @@ const SignupForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<SignUpCredentials>({
-    resolver: zodResolver(SignupCredentialsSchema),
+  } = useForm<SignupData>({
+    resolver: zodResolver(SignupSchema),
   });
 
   // sign in mutations
@@ -38,7 +38,7 @@ const SignupForm = () => {
   });
 
   // submit function
-  const handleSignup = async (credentials: SignUpCredentials) => {
+  const handleSignup = async (credentials: SignupData) => {
     signupMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignup);
@@ -76,7 +76,7 @@ const SignupForm = () => {
               type="email"
               placeholder="name@company.com"
               isError={!!errors.email?.message}
-              error={errors.email?.message}
+              error={errors.email?.message?.toString()}
               autoComplete="email"
               {...register("email", { required: true })}
             />
@@ -85,7 +85,9 @@ const SignupForm = () => {
               type="text"
               placeholder="Username123"
               isError={!!errors.username?.message}
-              error={errors.username?.message?.replace("String", "Username")}
+              error={errors.username?.message
+                ?.toString()
+                .replace("String", "Username")}
               autoComplete="username"
               {...register("username", { required: true })}
             />

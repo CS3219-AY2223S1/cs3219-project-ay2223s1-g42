@@ -14,8 +14,8 @@ import {
   PrimaryButton,
   PrimaryLink,
 } from "src/components";
-import { SignInCredentials, SigninCredentialsSchema } from "../types";
 import { useGlobalStore } from "src/store";
+import { SigninData, SigninSchema } from "shared/api";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
@@ -26,8 +26,8 @@ const LoginForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<SignInCredentials>({
-    resolver: zodResolver(SigninCredentialsSchema),
+  } = useForm<SigninData>({
+    resolver: zodResolver(SigninSchema),
   });
 
   // sign in mutations
@@ -41,7 +41,7 @@ const LoginForm = () => {
   });
 
   // submit function
-  const handleSignin = async (credentials: SignInCredentials) => {
+  const handleSignin = async (credentials: SigninData) => {
     signinMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignin);
@@ -73,7 +73,7 @@ const LoginForm = () => {
               type="email"
               placeholder="name@company.com"
               isError={!!errors.email?.message}
-              error={errors.email?.message}
+              error={errors.email?.message?.toString()}
               autoComplete="email"
               {...register("email", { required: true })}
             />

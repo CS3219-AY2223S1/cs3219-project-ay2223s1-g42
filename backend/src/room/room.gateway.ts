@@ -8,23 +8,14 @@ import { Server, Socket } from "socket.io";
 
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
-import { ROOM_EVENTS, ROOM_MESSAGES, ROOM_WS_NAMESPACE } from "./constants";
 import { RoomService } from "./room.service";
-import { PoolUser } from "src/match/match.gateway";
-
-export type Room = {
-  id: string;
-  users: RoomUser[];
-};
-
-export type PendingRoomUser = {
-  id: number;
-  roomId: string;
-};
-
-export type RoomUser = PoolUser & {
-  connected: boolean;
-};
+import {
+  ROOM_WS_NAMESPACE,
+  ROOM_EVENTS,
+  ROOM_MESSAGES,
+  PendingRoomUser,
+  RoomUser,
+} from "shared/api";
 
 @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({

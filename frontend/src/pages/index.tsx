@@ -8,7 +8,8 @@ import {
   SpinnerIcon,
 } from "src/components";
 import { MatchDialog, QuestionRadioGroup } from "src/dashboard";
-import { QuestionDifficulty, useGlobalStore } from "src/store";
+import { useGlobalStore } from "src/store";
+import { QuestionDifficulty } from "shared/api";
 
 const difficultyMap: Record<
   QuestionDifficulty,

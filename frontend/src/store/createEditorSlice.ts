@@ -5,8 +5,8 @@ import * as Y from "yjs";
 import * as monaco from "monaco-editor";
 
 import type { GlobalStore } from "./useGlobalStore";
-import { User } from "src/login";
 import { LANGUAGE } from "./enums";
+import { UserInfo } from "shared/api";
 
 export type EditorSlice = {
   doc: Y.Doc | undefined;
@@ -20,7 +20,7 @@ export type EditorSlice = {
   setEditorLanguage: (language: LANGUAGE) => void;
   setupEditor: (
     editor: monaco.editor.IStandaloneCodeEditor,
-    user: User,
+    user: UserInfo,
     roomId: string
   ) => void;
   cleanupEditor: () => void;
@@ -46,7 +46,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
   const setupEditor = (
     editor: monaco.editor.IStandaloneCodeEditor,
-    user: User,
+    user: UserInfo,
     roomId: string
   ) => {
     // set up doc

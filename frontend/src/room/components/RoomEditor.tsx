@@ -16,7 +16,6 @@ const RoomEditor = ({ user, roomId }: EditorProps) => {
       input: state.editorInput,
       language: state.editorLanguage,
       setup: state.setupEditor,
-      cleanup: state.cleanupEditor,
     };
   });
 

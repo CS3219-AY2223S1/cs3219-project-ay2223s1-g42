@@ -7,8 +7,8 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import { ChangePasswordInfo, ChangePasswordInfoSchema } from "src/user";
 import { useGlobalStore } from "src/store";
+import { ChangePasswordData, ChangePasswordInfoSchema } from "shared/api";
 
 const ChangePasswordForm = () => {
   // form setup
@@ -17,7 +17,7 @@ const ChangePasswordForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ChangePasswordInfo>({
+  } = useForm<ChangePasswordData>({
     resolver: zodResolver(ChangePasswordInfoSchema),
   });
 
@@ -31,7 +31,7 @@ const ChangePasswordForm = () => {
   });
 
   // submit function
-  const handleResetPassword = async (credentials: ChangePasswordInfo) => {
+  const handleResetPassword = async (credentials: ChangePasswordData) => {
     changePasswordMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleResetPassword);

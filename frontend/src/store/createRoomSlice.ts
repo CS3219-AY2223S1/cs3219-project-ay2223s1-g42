@@ -2,10 +2,14 @@ import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast from "react-hot-toast";
 
-import { User } from "src/login";
 import type { Status, GlobalStore } from "./useGlobalStore";
-import { PoolUser, QuestionDifficulty } from "./createMatchSlice";
-import { ROOM_EVENTS, StatusType } from "./enums";
+import { StatusType } from "./enums";
+import {
+  PoolUser,
+  QuestionDifficulty,
+  ROOM_EVENTS,
+  UserInfo,
+} from "shared/api";
 
 export type RoomUser = PoolUser & {
   socketId: string;
@@ -23,8 +27,8 @@ export type RoomSlice = {
   roomSocket: Socket | undefined;
   roomStatus: Status | undefined;
   room: Room | undefined;
-  newRoomUser: User | undefined;
-  oldRoomUser: User | undefined;
+  newRoomUser: UserInfo | undefined;
+  oldRoomUser: UserInfo | undefined;
   joinRoom: (roomId: string) => void;
   leaveRoom: () => void;
 };
@@ -113,7 +117,8 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   });
 
   roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
-    const { room, newUser }: { room: Room; newUser: User } = JSON.parse(data);
+    const { room, newUser }: { room: Room; newUser: UserInfo } =
+      JSON.parse(data);
     const roomStatusMsg = `${newUser.username} has joined the room.`;
     const roomStatus: Status = {
       status: StatusType.INFO,
@@ -125,7 +130,8 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   });
 
   roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
-    const { room, oldUser }: { room: Room; oldUser: User } = JSON.parse(data);
+    const { room, oldUser }: { room: Room; oldUser: UserInfo } =
+      JSON.parse(data);
     const roomStatusMsg = `${oldUser.username} has left the room.`;
     const roomStatus: Status = {
       status: StatusType.INFO,

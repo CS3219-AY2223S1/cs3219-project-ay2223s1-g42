@@ -16,15 +16,14 @@ const BaseListbox = <T extends string>({
   values,
 }: Props<T>) => {
   return (
-    <div className="z-10 w-48 border-r-[1px] border-b-[1px] border-neutral-900">
+    <div className="z-10 h-full w-48 border-r-[1px] border-b-[1px] border-neutral-900">
       <Listbox value={value} onChange={setValue}>
         {({ open }) => (
-          <div className="relative">
+          <div className="relative h-full">
             <Listbox.Button
-              className="relative w-full cursor-pointer bg-white py-2 px-4 pr-10 text-left
-              shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2
-              focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2
-              focus-visible:ring-offset-orange-300 sm:text-sm"
+              className="relative h-full w-full cursor-pointer bg-white px-4 pr-10 text-left shadow-md
+              focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white
+              focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300"
             >
               <span className="block truncate capitalize">{value}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-50">

@@ -10,6 +10,20 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@anatine/zod-nestjs@^1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@anatine/zod-nestjs/-/zod-nestjs-1.7.4.tgz#ebcad6402f0bad7227b39504065239c2b45abd62"
+  integrity sha512-V7EOj3oWQkXrpxM2BdWdWoq+8GNYkEdIB3fqtcGq1djN1OJRWrLt6js0yeEqR8QvZSdPA8WocYCgTZsHj8RxlQ==
+  dependencies:
+    "@anatine/zod-openapi" "^1.9.7"
+
+"@anatine/zod-openapi@^1.9.7", "@anatine/zod-openapi@^1.9.8":
+  version "1.9.8"
+  resolved "https://registry.yarnpkg.com/@anatine/zod-openapi/-/zod-openapi-1.9.8.tgz#630e3ae2ccb8d663004a32eff9b39a6d56496371"
+  integrity sha512-V+ab/WMArh39vjUQBLtU7DWdBdF/BvHQ6P+moW/WfrPy4XYmAr+e2creKZTZWkGAiX+Ygcik2P5pQ0Jg3FcF5g==
+  dependencies:
+    ts-deepmerge "^2.0.4"
+
 "@angular-devkit/core@14.2.1":
   version "14.2.1"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-14.2.1.tgz#7ce14efdb5fce687bb4f13bef03d4b67e971b22e"
@@ -5864,6 +5878,13 @@ open@7:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
+openapi3-ts@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-3.0.2.tgz#f32b852de33e26e4edf85be8be9c9110332b5e3d"
+  integrity sha512-KF/06OkQPFSr9A+oadYYC3cIj8TZlzonREkQYFqx8i+wLllAxm6Bp8Fizo3jWXeIxZj/7V5LKtuNN/GxueWtcw==
+  dependencies:
+    yaml "^2.1.1"
+
 optionator@^0.8.1:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/optionator/-/optionator-0.8.3.tgz#84fa1d036fe9d3c7e21d99884b601167ec8fb495"
@@ -7304,6 +7325,11 @@ tree-kill@1.2.2:
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
   integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
 
+ts-deepmerge@^2.0.4:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/ts-deepmerge/-/ts-deepmerge-2.0.7.tgz#36786a9a10b5f3a6f5154007cf17bfba7251e0a7"
+  integrity sha512-3phiGcxPSSR47RBubQxPoZ+pqXsEsozLo4G4AlSrsMKTFg9TA3l+3he5BqpUi9wiuDbaHWXH/amlzQ49uEdXtg==
+
 ts-jest@28.0.8:
   version "28.0.8"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-28.0.8.tgz#cd204b8e7a2f78da32cf6c95c9a6165c5b99cc73"
@@ -7854,7 +7880,7 @@ zod@3.14.3:
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.14.3.tgz#60e86341c05883c281fe96a0e79acea48a09f123"
   integrity sha512-OzwRCSXB1+/8F6w6HkYHdbuWysYWnAF4fkRgKDcSFc54CE+Sv0rHXKfeNUReGCrHukm1LNpi6AYeXotznhYJbQ==
 
-zod@^3.17.3:
+zod@^3.17.3, zod@^3.19.1:
   version "3.19.1"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.19.1.tgz#112f074a97b50bfc4772d4ad1576814bd8ac4473"
   integrity sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==

@@ -9,12 +9,9 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import {
-  EditableCredentials,
-  EditableCredentialsSchema,
-  UserProps,
-} from "src/user";
+import { UserProps } from "src/user";
 import { useGlobalStore } from "src/store";
+import { EditableCredentials, EditableCredentialsSchema } from "shared/api";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();
@@ -80,7 +77,9 @@ const EditCredentialsForm = ({ user }: UserProps) => {
           type="text"
           placeholder="Username123"
           isError={!!errors.username?.message}
-          error={errors.username?.message?.replace("String", "Username")}
+          error={errors.username?.message
+            ?.toString()
+            .replace("String", "Username")}
           autoComplete="username"
           {...register("username", { required: true })}
         />

@@ -1,140 +1,62 @@
-import * as z from "nestjs-zod/z";
-import { createZodDto } from "nestjs-zod/dto";
+import { createZodDto } from "@anatine/zod-nestjs";
+import { extendApi } from "@anatine/zod-openapi";
 
-import { UserModel } from "src/zod";
+import { API_OPERATIONS } from "../constants";
+import {
+  ChangePasswordInfoSchema,
+  DeleteAccountInfoSchema,
+  EditableSchema,
+  ForgetPasswordSchema,
+  QuestionQuerySchema,
+  ResetPasswordSchema,
+  SigninSchema,
+  SignupSchema,
+} from "shared/api";
 
-const passwordZodString = z
-  .string()
-  .min(8, { message: "Password must be at least 8 characters" });
-
-export const SignupSchema = UserModel.pick({
-  email: true,
-  username: true,
-}).extend({
-  password: passwordZodString,
+const SignupApi = extendApi(SignupSchema, {
+  title: "Sign up API",
+  description: API_OPERATIONS.SIGN_UP_SUMMARY,
 });
 
-export const SigninSchema = SignupSchema.pick({
-  email: true,
-  password: true,
+const SigninApi = extendApi(SigninSchema, {
+  title: "Sign in API",
+  description: API_OPERATIONS.SIGN_IN_SUMMARY,
 });
 
-export const ForgetPasswordSchema = UserModel.pick({
-  email: true,
+const EditUserApi = extendApi(EditableSchema, {
+  title: "Edit user API",
+  description: API_OPERATIONS.EDIT_USER_INFO_SUMMARY,
 });
 
-const ResetPasswordSchema = SignupSchema.pick({
-  password: true,
-}).extend({ token: z.string() });
-
-export const EditableSchema = UserModel.pick({
-  email: true,
-  username: true,
-  hashRt: true,
-}).partial();
-
-export const ChangePasswordInfoSchema = z.object({
-  currentPassword: passwordZodString,
-  newPassword: passwordZodString,
+const ForgetPasswordApi = extendApi(ForgetPasswordSchema, {
+  title: "Forget password API",
+  description: API_OPERATIONS.FORGET_PASSWORD_SUMMARY,
 });
 
-export const QuestionQuerySchema = z.object({
-  difficulty: z.enum(["Easy", "Medium", "Hard"]).array().optional(),
-  titleSlugs: z.string().array().optional(),
-  topicTags: z
-    .enum([
-      "array",
-      "backtracking",
-      "biconnected-component",
-      "binary-indexed-tree",
-      "binary-search",
-      "binary-search-tree",
-      "binary-tree",
-      "bit-manipulation",
-      "bitmask",
-      "brainteaser",
-      "breadth-first-search",
-      "bucket-sort",
-      "combinatorics",
-      "concurrency",
-      "counting",
-      "counting-sort",
-      "data-stream",
-      "database",
-      "depth-first-search",
-      "design",
-      "divide-and-conquer",
-      "doubly-linked-list",
-      "dynamic-programming",
-      "enumeration",
-      "eulerian-circuit",
-      "game-theory",
-      "geometry",
-      "graph",
-      "greedy",
-      "hash-function",
-      "hash-table",
-      "heap-priority-queue",
-      "interactive",
-      "iterator",
-      "line-sweep",
-      "linked-list",
-      "math",
-      "matrix",
-      "memoization",
-      "merge-sort",
-      "minimum-spanning-tree",
-      "monotonic-queue",
-      "monotonic-stack",
-      "number-theory",
-      "ordered-set",
-      "prefix-sum",
-      "probability-and-statistics",
-      "queue",
-      "quickselect",
-      "radix-sort",
-      "randomized",
-      "recursion",
-      "rejection-sampling",
-      "reservoir-sampling",
-      "rolling-hash",
-      "segment-tree",
-      "shell",
-      "shortest-path",
-      "simulation",
-      "sliding-window",
-      "sorting",
-      "stack",
-      "string",
-      "string-matching",
-      "strongly-connected-component",
-      "suffix-array",
-      "topological-sort",
-      "tree",
-      "trie",
-      "two-pointers",
-      "union-find",
-    ])
-    .array()
-    .optional(),
+const ResetPasswordApi = extendApi(ResetPasswordSchema, {
+  title: "Reset password API",
+  description: API_OPERATIONS.RESET_PASSWORD_SUMMARY,
 });
 
-export const DeleteAccountInfoSchema = SignupSchema.pick({ password: true });
+const ChangePasswordApi = extendApi(ChangePasswordInfoSchema, {
+  title: "Change password API",
+  description: API_OPERATIONS.CHANGE_PASSWORD_SUMMARY,
+});
 
-export class SignupCredentialsDto extends createZodDto(SignupSchema) {}
-export class SigninCredentialsDto extends createZodDto(SigninSchema) {}
-export class EditableCredentialsDto extends createZodDto(EditableSchema) {}
+const DeleteAccountApi = extendApi(DeleteAccountInfoSchema, {
+  title: "Delete account API",
+  description: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY,
+});
+
+export class SignupCredentialsDto extends createZodDto(SignupApi) {}
+export class SigninCredentialsDto extends createZodDto(SigninApi) {}
+export class EditableCredentialsDto extends createZodDto(EditUserApi) {}
 export class ForgetPasswordCredentialsDto extends createZodDto(
-  ForgetPasswordSchema
+  ForgetPasswordApi
 ) {}
 export class ResetPasswordCredentialsDto extends createZodDto(
-  ResetPasswordSchema
+  ResetPasswordApi
 ) {}
-export class ChangePasswordInfoDto extends createZodDto(
-  ChangePasswordInfoSchema
-) {}
-export class DeleteAccountInfoDto extends createZodDto(
-  DeleteAccountInfoSchema
-) {}
-
 export class QuestionQueriesDto extends createZodDto(QuestionQuerySchema) {}
+export class ChangePasswordInfoDto extends createZodDto(ChangePasswordApi) {}
+export class DeleteAccountInfoDto extends createZodDto(DeleteAccountApi) {}

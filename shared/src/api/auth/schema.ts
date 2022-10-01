@@ -18,7 +18,7 @@ const SigninSchema = SignupSchema.pick({
   password: true,
 });
 
-const ForgetPasswordSchema = UserModel.pick({
+const ForgetPasswordSchema = SignupSchema.pick({
   email: true,
 });
 

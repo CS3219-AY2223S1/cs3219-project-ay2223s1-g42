@@ -8,8 +8,8 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { ResetPasswordInfo, ResetPasswordInfoSchema } from "../types";
 import { useGlobalStore } from "src/store";
+import { ResetPasswordData, ResetPasswordSchema } from "shared/api";
 
 type Props = {
   token: string;
@@ -22,8 +22,8 @@ const ResetPasswordForm = ({ token }: Props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ResetPasswordInfo>({
-    resolver: zodResolver(ResetPasswordInfoSchema),
+  } = useForm<ResetPasswordData>({
+    resolver: zodResolver(ResetPasswordSchema),
   });
 
   // forget password mutation
@@ -35,7 +35,7 @@ const ResetPasswordForm = ({ token }: Props) => {
   });
 
   // submit function
-  const handleResetPassword = async (credentials: ResetPasswordInfo) => {
+  const handleResetPassword = async (credentials: ResetPasswordData) => {
     const resetData = { ...credentials, token };
     resetPasswordMutation.mutate(resetData);
   };

@@ -10,7 +10,7 @@ import {
   PrimaryDialog,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { DeleteAccountInfo, DeleteAccountInfoSchema } from "src/user";
+import { DeleteAccountData, DeleteAccountInfoSchema } from "shared/api";
 
 type Props = {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose }: Props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<DeleteAccountInfo>({
+  } = useForm<DeleteAccountData>({
     resolver: zodResolver(DeleteAccountInfoSchema),
   });
 
@@ -45,7 +45,7 @@ export const DeleteAccountDialog = ({ isOpen, onClose }: Props) => {
     },
   });
 
-  const handleDeleteAccount = async (info: DeleteAccountInfo) => {
+  const handleDeleteAccount = async (info: DeleteAccountData) => {
     deleteAccountMutation.mutate(info);
     reset();
   };
