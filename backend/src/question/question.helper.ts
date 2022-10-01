@@ -29,12 +29,13 @@ export function sanitizeDifficuly(query: string | string[], separator = ",") {
   }, []);
 }
 
+// Defaults to "OR"
 export function sanitizeTopicMatch(query = "OR") {
   const res = query.trim().toUpperCase();
   if (res == "AND" || res == "OR") {
     return res;
   } else {
-    return "and";
+    return "OR";
   }
 }
 
