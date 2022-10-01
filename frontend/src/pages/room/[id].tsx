@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router";
+import shallow from "zustand/shallow";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
 import { LoadedRoom } from "src/features";
@@ -8,17 +9,18 @@ import { ROOM_EVENTS } from "shared/api";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
-  const { user, queueRoomId, room, roomStatus, joinRoom, cleanupEditor } =
-    useGlobalStore((state) => {
+  const { user, queueRoomId, room, roomStatus, joinRoom } = useGlobalStore(
+    (state) => {
       return {
         user: state.user,
         queueRoomId: state.queueRoomId,
         room: state.room,
         roomStatus: state.roomStatus,
         joinRoom: state.joinRoom,
-        cleanupEditor: state.cleanupEditor,
       };
-    });
+    },
+    shallow
+  );
 
   const pageRoomId = id ?? "default";
   const isValidRoom = pageRoomId === queueRoomId;
@@ -35,9 +37,6 @@ const RoomPage = (): JSX.Element => {
       console.log("joing room: ", { user, pageRoomId });
       joinRoom(pageRoomId);
     }
-    return () => {
-      cleanupEditor();
-    };
   }, []);
 
   if (
@@ -54,7 +53,7 @@ const RoomPage = (): JSX.Element => {
   }
 
   if (room) {
-    return <LoadedRoom roomId={pageRoomId} user={user} />;
+    return <LoadedRoom />;
   }
 
   return <LoadingLayout />;

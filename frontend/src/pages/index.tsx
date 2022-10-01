@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import shallow from "zustand/shallow";
 
 import {
   BigHeading,
@@ -36,25 +37,16 @@ const DEFAULT_DIFFICULTY: RadioGroupValue<QuestionDifficulty> =
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
-  const {
-    user,
-    isInQueue,
-    roomSocket,
-    matchSocket,
-    setMatchDifficulties,
-    joinQueue,
-    leaveQueue,
-  } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      isInQueue: state.isInQueue,
-      roomSocket: state.roomSocket,
-      matchSocket: state.matchSocket,
-      setMatchDifficulties: state.setMatchDifficulties,
-      joinQueue: state.joinQueue,
-      leaveQueue: state.leaveQueue,
-    };
-  });
+  const { user, isInQueue, setMatchDifficulties, joinQueue, leaveQueue } =
+    useGlobalStore((state) => {
+      return {
+        user: state.user,
+        isInQueue: state.isInQueue,
+        setMatchDifficulties: state.setMatchDifficulties,
+        joinQueue: state.joinQueue,
+        leaveQueue: state.leaveQueue,
+      };
+    }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const [difficulty, setDifficulty] =
@@ -81,29 +73,6 @@ const Dashboard = () => {
     }
     leaveQueue();
   };
-
-  // connects to match and room socket servers
-  useEffect(() => {
-    if (!matchSocket) {
-      console.error(
-        "failed to connect to match socket server, match socket not set"
-      );
-      return;
-    }
-    if (!roomSocket) {
-      console.error(
-        "failed to connect to room socket server, room socket not set"
-      );
-      return;
-    }
-    if (!user) {
-      console.error("failed to connect to socket servers, user not logged in");
-      return;
-    }
-    matchSocket.connect();
-    roomSocket.connect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   useEffect(() => {
     if (!user) {

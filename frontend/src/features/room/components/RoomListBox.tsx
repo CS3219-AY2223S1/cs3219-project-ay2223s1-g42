@@ -1,3 +1,5 @@
+import shallow from "zustand/shallow";
+
 import { BaseListbox } from "src/components";
 import { LANGUAGE, useGlobalStore } from "src/store";
 
@@ -7,7 +9,7 @@ const RoomListBox = () => {
       language: state.editorLanguage,
       setLanguage: state.setEditorLanguage,
     };
-  });
+  }, shallow);
   return (
     <BaseListbox
       value={language}

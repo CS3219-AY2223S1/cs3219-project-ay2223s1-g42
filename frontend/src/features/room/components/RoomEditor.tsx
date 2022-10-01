@@ -1,33 +1,42 @@
+import { useCallback, useEffect, useRef } from "react";
+import shallow from "zustand/shallow";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
 import { SpinnerIcon } from "src/components";
 import { LANGUAGE, useGlobalStore } from "src/store";
-import { UserInfo } from "shared/api";
 
-type EditorProps = {
-  user: UserInfo;
-  roomId: string;
-};
-
-const RoomEditor = ({ user, roomId }: EditorProps) => {
-  const { input, language, setup } = useGlobalStore((state) => {
+const RoomEditor = () => {
+  const setupEditorRef = useRef(useGlobalStore((state) => state.setupEditor));
+  const cleanupEditorRef = useRef(
+    useGlobalStore((state) => state.cleanupEditor)
+  );
+  const { input, language } = useGlobalStore((state) => {
     return {
       input: state.editorInput,
       language: state.editorLanguage,
-      setup: state.setupEditor,
     };
-  });
+  }, shallow);
+  // const [editorMounted, setEditorMounted] = useState<boolean>(false);
 
-  const handleEditorDidMount = (
-    editor: monaco.editor.IStandaloneCodeEditor
-  ) => {
-    setup(editor, user, roomId);
-  };
+  const handleEditorDidMount = useCallback(
+    (editor: monaco.editor.IStandaloneCodeEditor) => {
+      const setupEditor = setupEditorRef.current;
+      setupEditor(editor);
+    },
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      console.log("cleaning up editor");
+      const cleanupEditor = cleanupEditorRef.current;
+      cleanupEditor();
+    };
+  }, []);
 
   return (
     <Editor
-      key={roomId}
       // height="auto"
       defaultLanguage={LANGUAGE.TS}
       language={language}

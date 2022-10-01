@@ -6,6 +6,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import shallow from "zustand/shallow";
 
 import "./styles/globals.css";
 import routes from "~react-pages";
@@ -18,8 +19,13 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  const user = useGlobalStore((state) => state.user);
-  const navigate = useNavigate();
+  const { user, matchSocket, roomSocket } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      matchSocket: state.matchSocket,
+      roomSocket: state.roomSocket,
+    };
+  }, shallow);
 
   const allRoutes = useRoutes(routes);
 
@@ -28,6 +34,35 @@ const App = () => {
   //     navigate(`/login`);
   //   }
   // }, []);
+
+  // connects to match and room socket servers
+  useEffect(() => {
+    if (!matchSocket) {
+      console.error(
+        "failed to connect to match socket server, match socket not set"
+      );
+      return;
+    }
+    if (!roomSocket) {
+      console.error(
+        "failed to connect to room socket server, room socket not set"
+      );
+      return;
+    }
+    if (!user) {
+      console.error("failed to connect to socket servers, user not logged in");
+      return;
+    }
+    console.log("connecting to socket servers...");
+    matchSocket.connect();
+    roomSocket.connect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      console.log("disconnecting from socket servers...");
+      matchSocket.disconnect();
+      roomSocket.disconnect();
+    };
+  }, [user]);
 
   if (!allRoutes) {
     return <ErrorPage />;

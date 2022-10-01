@@ -9,4 +9,6 @@ export enum LANGUAGE {
   JS = "javascript",
   PY = "python",
   CPP = "cpp",
+  JAVA = "java",
+  GO = "go",
 }
