@@ -1,45 +1,77 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from "@nestjs/common";
 
 import { QuestionService } from "./question.service";
 import { FlattenedQuestionSummary } from "./question.type";
 import { PublicRoute } from "../utils/decorator";
+import { QuestionQueryDto } from "./QuestionQuery.dto";
 
 @Controller("question")
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @PublicRoute()
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    })
+  )
   @Get(["", "/summary"])
-  async getSummaries(
-    @Query("titleSlugs") titleSlugs: string | string[] | undefined,
-    @Query("topicTags") topicTags: string | string[] | undefined
-  ) {
-    // if nether are specified
-    if (!titleSlugs && !topicTags) {
-      const summaries = await this.questionService.getSummaries();
+  async getSummaries(@Query() query: QuestionQueryDto) {
+    const { difficulty, titleSlugs, topicMatch, topicTags } = query;
+
+    // if none specified
+    if (!difficulty && !titleSlugs && !topicTags) {
+      const summaries = await this.questionService.getAllSummaries();
       return summaries;
     }
 
-    const summaries: Record<string, FlattenedQuestionSummary> = {};
-    if (titleSlugs) {
-      const res = await this.questionService.getSummariesFromSlug(
-        this.sanitizeQuery(titleSlugs)
-      );
-      res.forEach((v) => (summaries[v.titleSlug] = v));
-    }
+    const filterMap: Record<string, FlattenedQuestionSummary> = {};
 
-    if (topicTags) {
-      const res = await this.questionService.getSummariesFromTopicTags(
-        this.sanitizeQuery(topicTags)
+    if (difficulty) {
+      const res = await this.questionService.getSummariesFromDifficulty(
+        difficulty
       );
       res.forEach((v) => {
-        if (!summaries[v.titleSlug]) {
-          summaries[v.titleSlug] = v;
+        const { titleSlug } = v;
+        if (!filterMap[titleSlug]) {
+          filterMap[titleSlug] = v;
         }
       });
     }
 
-    return Object.values(summaries);
+    if (titleSlugs) {
+      const res = await this.questionService.getSummariesFromSlug(titleSlugs);
+      res.forEach((v) => {
+        const { titleSlug } = v;
+        if (!filterMap[titleSlug]) {
+          filterMap[titleSlug] = v;
+        }
+      });
+    }
+
+    if (topicTags) {
+      const res = await this.questionService.getSummariesFromTopicTags(
+        topicTags,
+        topicMatch
+      );
+      res.forEach((v) => {
+        const { titleSlug } = v;
+        if (!filterMap[titleSlug]) {
+          filterMap[titleSlug] = v;
+        }
+      });
+    }
+
+    return Object.values(filterMap);
   }
 
   @PublicRoute()
@@ -69,28 +101,14 @@ export class QuestionController {
   @PublicRoute()
   @Get("/content/:titleSlug")
   async getContentFromSlug(@Param("titleSlug") titleSlug: string) {
-    const questionContent = await this.questionService.getContentFromSlug(
-      titleSlug
-    );
+    try {
+      const questionContent = await this.questionService.getContentFromSlug(
+        titleSlug
+      );
 
-    return questionContent;
-  }
-
-  // ***** HELPER FUNCTION ***** //
-  // Can possibly replace this using a DTO
-  private sanitizeQuery(query: string | string[], separator = ",") {
-    const splitQuery: string[] = [];
-    if (!Array.isArray(query)) {
-      splitQuery.push(...query.split(separator));
-    } else {
-      splitQuery.push(...query.flatMap((v) => v.split(",")));
+      return questionContent;
+    } catch (error) {
+      throw new BadRequestException(`unable to get content for '${titleSlug}'`);
     }
-
-    return splitQuery.reduce((prev: string[], curr) => {
-      if (curr.trim()) {
-        prev.push(curr.trim().toLowerCase());
-      }
-      return prev;
-    }, []);
   }
 }
