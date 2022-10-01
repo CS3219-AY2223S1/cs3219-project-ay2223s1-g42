@@ -1,11 +1,12 @@
 import create from "zustand";
 
+import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
 import { AuthSlice, createAuthSlice } from "./createAuthSlice";
 import { CallSlice, createCallSlice } from "./createCallSlice";
 import { createEditorSlice, EditorSlice } from "./createEditorSlice";
 import { MatchSlice, createMatchSlice } from "./createMatchSlice";
 import { RoomSlice, createRoomSlice } from "./createRoomSlice";
-import { MATCH_EVENTS, ROOM_EVENTS, StatusType } from "./enums";
+import { StatusType } from "./enums";
 
 export type Status = {
   status: StatusType;
