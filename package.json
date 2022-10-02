@@ -22,7 +22,7 @@
     "frontend:lint": "yarn --cwd frontend install && yarn --cwd frontend lint",
     "backend:lint": "yarn --cwd backend install && yarn --cwd backend lint",
     "shared:lint": "yarn --cwd shared install && yarn --cwd shared lint",
-    "build": "npm-run-all --parallel frontend:build backend:build",
+    "build": "npm-run-all -s frontend:build backend:build",
     "frontend:build": "yarn --cwd frontend install && yarn --cwd frontend build",
     "backend:build": "yarn --cwd backend install && yarn --cwd backend build"
   },
