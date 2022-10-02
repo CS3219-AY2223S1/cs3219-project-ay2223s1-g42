@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
+import * as _ from "lodash";
 
 import {
   FlattenedQuestionContent,
   FlattenedQuestionSummary,
+  QuestionContentFromDb,
   QuestionSummaryFromDb,
+  QUESTION_CONTENT_SELECT,
   QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
@@ -11,6 +14,29 @@ import { PrismaService } from "../prisma/prisma.service";
 @Injectable()
 export class QuestionService {
   constructor(private prisma: PrismaService) {}
+
+  /**
+   * Gets all the question summaries with the following fields:
+   * acRate, difficulty, title, titleSlug, topicTags and updatedAt
+   *
+   * @return  Array of QuestionSummary with the relevant fields
+   */
+  async getAllSummaries() {
+    const res: QuestionSummaryFromDb[] =
+      await this.prisma.questionSummary.findMany({
+        select: { ...QUESTION_SUMMARY_SELECT },
+      });
+
+    return this.formatQuestionSummaries(res);
+  }
+
+  async getAllTopics() {
+    const res = await this.prisma.topicTag.findMany({
+      select: { topicSlug: true },
+    });
+
+    return res.map((slug) => slug.topicSlug);
+  }
 
   /**
    * Gets a summary that matches the unique title slug
@@ -25,23 +51,10 @@ export class QuestionService {
   ): Promise<FlattenedQuestionContent> {
     const res = await this.prisma.questionContent.findUniqueOrThrow({
       where: { titleSlug },
-      select: {
-        content: true,
-        hints: true,
-        summary: {
-          include: {
-            topicTags: true,
-          },
-        },
-      },
+      select: { ...QUESTION_CONTENT_SELECT },
     });
 
-    return {
-      content: res.content,
-      discussionLink: this.getDiscussionLink(titleSlug),
-      hints: res.hints.map((v) => v.hint),
-      topicTags: res.summary.topicTags.map((v) => v.topicSlug),
-    };
+    return this.formatQuestionContent(res);
   }
 
   /**
@@ -57,18 +70,27 @@ export class QuestionService {
   }
 
   /**
-   * Gets all the question summaries with the following fields:
-   * acRate, difficulty, title, titleSlug, topicTags and updatedAt
-   *
-   * @return  Array of QuestionSummary with the relevant fields
+   * @return  {FlattenedQuestionSummary[]}  Summary of Daily Question
    */
-  async getSummaries() {
-    const res: QuestionSummaryFromDb[] =
+  async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary[]> {
+    // Cron job ensures that there's only 1 QOTD at a time
+    const dailySummary: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
+        where: { isDailyQuestion: true },
         select: { ...QUESTION_SUMMARY_SELECT },
       });
 
-    return this.toQuestionSummaryTableType(res);
+    return this.formatQuestionSummaries(dailySummary);
+  }
+
+  async getSummariesFromDifficulty(difficulties: string[]) {
+    const validDifficulties: QuestionSummaryFromDb[] =
+      await this.prisma.questionSummary.findMany({
+        where: { difficulty: { in: difficulties } },
+        select: { ...QUESTION_SUMMARY_SELECT },
+      });
+
+    return this.formatQuestionSummaries(validDifficulties);
   }
 
   /**
@@ -80,27 +102,16 @@ export class QuestionService {
    * @throws  NotFoundError
    */
   async getSummariesFromSlug(titleSlugs: string[]) {
-    const res: QuestionSummaryFromDb[] =
+    const allTitleSlugs = await this.getAllTitleSlugs();
+    const validSlugs = _.intersection(allTitleSlugs, titleSlugs);
+
+    const validSummaries: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
-        where: { titleSlug: { in: titleSlugs } },
+        where: { titleSlug: { in: validSlugs } },
         select: { ...QUESTION_SUMMARY_SELECT },
       });
 
-    return this.toQuestionSummaryTableType(res);
-  }
-
-  /**
-   * @return  {QuestionSummary}  Summary of Daily Question
-   */
-  async getDailyQuestionSummary() {
-    // Cron job ensures that there's only 1 QOTD at a time
-    const dailySummary: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
-        where: { isDailyQuestion: true },
-        select: { ...QUESTION_SUMMARY_SELECT },
-      });
-
-    return this.toQuestionSummaryTableType(dailySummary);
+    return this.formatQuestionSummaries(validSummaries);
   }
 
   /**
@@ -111,45 +122,47 @@ export class QuestionService {
    *
    * @return  Array of matching, flattened QuestionSummary
    */
-  async getSummariesFromTopicTags(
-    topicTags: string[]
-  ): Promise<FlattenedQuestionSummary[]> {
-    const res = await this.prisma.topicTag.findMany({
-      where: { topicSlug: { in: topicTags } },
-      select: { questionSummaries: { select: { titleSlug: true } } },
+  async getSummariesFromTopicTags(topicTags: string[], matchType: string) {
+    const allTopicTags = await this.getAllTopics();
+    const validTopicTagArray = _.intersection(allTopicTags, topicTags);
+
+    const validSummaries = await this.prisma.topicTag.findMany({
+      where: { topicSlug: { in: validTopicTagArray } },
+      select: {
+        questionSummaries: {
+          select: { ...QUESTION_SUMMARY_SELECT },
+        },
+      },
     });
 
-    // consist of at least one invalid tag
-    if (topicTags.length != res.length) {
-      return [];
-    }
-
-    const slugArrays: string[][] = [];
-    for (const { questionSummaries } of res) {
-      slugArrays.push(questionSummaries.map((slug) => slug.titleSlug));
-    }
-
-    if (slugArrays.length === 1) {
-      return await this.getSummariesFromSlug(slugArrays.flat());
-    }
-
-    // Gets intersection of arrays (AND filter)
-    const intersect = slugArrays.reduce((prev, curr) =>
-      curr.filter(Set.prototype.has, new Set(prev))
+    // Array questions grouped by matched valid topic tags
+    const flatValidSummaries: QuestionSummaryFromDb[][] = validSummaries.map(
+      (v) => v.questionSummaries
     );
 
-    return await this.getSummariesFromSlug(intersect);
-  }
+    const res: FlattenedQuestionSummary[] = this.filterSummaryByMatchType(
+      flatValidSummaries,
+      matchType
+    );
 
-  async getAllTopics() {
-    const res = await this.prisma.topicTag.findMany({
-      select: { topicSlug: true },
-    });
-
-    return res.map((slug) => slug.topicSlug);
+    return res;
   }
 
   // ***** HELPER FUNCTIONS ***** //
+
+  private formatQuestionContent(
+    data: QuestionContentFromDb
+  ): FlattenedQuestionContent {
+    const { content, titleSlug, ...info } = data;
+    const normContent: FlattenedQuestionContent = {
+      content,
+      discussionLink: this.getDiscussionLink(titleSlug),
+      hints: info.hints.map((v) => v.hint),
+      topicTags: info.summary.topicTags.map((v) => v.topicSlug),
+    };
+
+    return normContent;
+  }
 
   /**
    * Helper method to shape QuestionSummaryTableType into a consumer-friendly formay.
@@ -158,21 +171,19 @@ export class QuestionService {
    *
    * @return  {FlattenedQuestionSummary[]}  "Flattened" QuestionSummaryTableType
    */
-  private toQuestionSummaryTableType(
+  private formatQuestionSummaries(
     data: QuestionSummaryFromDb[]
   ): FlattenedQuestionSummary[] {
-    const normData = [
-      ...data.map((summary) => {
-        const { topicTags, updatedAt, titleSlug, ...info } = summary;
-        return {
-          ...info,
-          discussionLink: this.getDiscussionLink(titleSlug),
-          topicTags: topicTags.map((tag) => tag.topicSlug),
-          titleSlug,
-          updatedAt,
-        };
-      }),
-    ];
+    const normData = data.map((summary) => {
+      const { topicTags, updatedAt, titleSlug, ...info } = summary;
+      return {
+        ...info,
+        discussionLink: this.getDiscussionLink(titleSlug),
+        topicTags: topicTags.map((tag) => tag.topicSlug),
+        titleSlug,
+        updatedAt,
+      };
+    });
 
     return normData;
   }
@@ -182,5 +193,34 @@ export class QuestionService {
       `https://leetcode.com/problems/${titleSlug}` +
       `/discuss/?currentPage=1&orderBy=most_votes&query=`
     );
+  }
+
+  private async getAllTitleSlugs() {
+    const res = await this.prisma.questionSummary.findMany({
+      select: { titleSlug: true },
+    });
+
+    return res.map((slug) => slug.titleSlug);
+  }
+
+  private filterSummaryByMatchType(
+    flatValidSummaries: QuestionSummaryFromDb[][],
+    matchType = "OR"
+  ): FlattenedQuestionSummary[] {
+    if (matchType == "AND") {
+      const andMatched = _.intersectionBy(
+        ...flatValidSummaries,
+        (summary) => summary.titleSlug
+      );
+
+      return this.formatQuestionSummaries(andMatched);
+    } else {
+      const orMatched = _.uniqBy(
+        flatValidSummaries.flat(),
+        (summary) => summary.titleSlug
+      );
+
+      return this.formatQuestionSummaries(orMatched);
+    }
   }
 }
