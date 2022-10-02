@@ -18,11 +18,11 @@
     "backend:dev": "yarn --cwd backend && yarn --cwd backend start:dev",
     "backend:local": "yarn --cwd backend && yarn --cwd backend start:local",
     "backend:studio": "yarn --cwd backend prisma:dev:studio",
-    "lint": "npm-run-all -s frontend:lint backend:lint shared:lint",
+    "lint": "npm-run-all -s shared:lint frontend:lint backend:lint",
     "frontend:lint": "yarn --cwd frontend install && yarn --cwd frontend lint",
     "backend:lint": "yarn --cwd backend install && yarn --cwd backend lint",
     "shared:lint": "yarn --cwd shared install && yarn --cwd shared lint",
-    "build": "npm-run-all -s frontend:build backend:build shared:build",
+    "build": "npm-run-all -s shared:build frontend:build backend:build",
     "frontend:build": "yarn --cwd frontend install && yarn --cwd frontend build",
     "backend:build": "yarn --cwd backend install && yarn --cwd backend build",
     "shared:build": "yarn --cwd shared install && yarn --cwd shared build"
