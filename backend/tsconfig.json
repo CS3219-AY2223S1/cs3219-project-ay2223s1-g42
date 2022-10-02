@@ -21,10 +21,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "composite": true,
-    "declarationMap": true
+    "noFallthroughCasesInSwitch": false
   },
-  "references": [{ "path": "../shared" }],
-  "include": ["../shared/src/"]
+  "references": [{ "path": "../shared" }]
 }
