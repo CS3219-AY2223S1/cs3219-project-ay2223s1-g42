@@ -8,7 +8,6 @@ import { useGlobalStore } from "src/store";
 import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
 
 const RoomPage = (): JSX.Element => {
-  console.log("rendering room page component!");
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, queueRoomId, room, roomStatus, queueStatus, joinRoom } =
@@ -38,7 +37,6 @@ const RoomPage = (): JSX.Element => {
       return;
     }
     if (!room) {
-      console.log("joing room: ", { user, pageRoomId });
       joinRoom(pageRoomId);
     }
   }, []);

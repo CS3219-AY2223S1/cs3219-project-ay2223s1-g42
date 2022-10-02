@@ -7,7 +7,6 @@ import { SpinnerIcon } from "src/components";
 import { LANGUAGE, useGlobalStore } from "src/store";
 
 const RoomEditor = () => {
-  console.log("rendering room editor component!");
   const {
     user,
     room,
@@ -15,7 +14,6 @@ const RoomEditor = () => {
     language,
     doc,
     provider,
-    binding,
     setupDoc,
     setupProvider,
     setupBinding,
@@ -29,7 +27,6 @@ const RoomEditor = () => {
       language: state.editorLanguage,
       doc: state.doc,
       provider: state.editorProvider,
-      binding: state.editorBinding,
       setupDoc: state.setupDoc,
       setupProvider: state.setupProvider,
       setupBinding: state.setupBinding,
@@ -51,25 +48,18 @@ const RoomEditor = () => {
 
   // set up editor document on first mount
   useEffect(() => {
-    console.log("setting up editor document");
     setupDoc();
   }, [setupDoc]);
 
   // set up provider on editor first mount
   // or when user or room changes
   useEffect(() => {
-    console.log("setting up provider!");
     setupProvider();
-  }, [doc, monaco, user, room, setupProvider]);
-
-  // clean up provider on unmount
-  useEffect(() => {
-    if (!provider) {
-      return;
-    }
     return () => cleanupProvider();
-  }, [provider, cleanupProvider]);
+  }, [doc, monaco, user, room, setupProvider, cleanupProvider]);
 
+  // set up binding whenever provider or
+  // monaco instance changes
   useEffect(() => {
     if (!editorRef.current || !monaco) {
       console.error(
@@ -78,18 +68,12 @@ const RoomEditor = () => {
       return;
     }
     setupBinding(editorRef.current);
-  }, [provider, monaco, editorMounted, setupBinding]);
-
-  // clean up binding on unmount
-  useEffect(() => {
-    if (!binding) {
-      return;
-    }
     return () => cleanupBinding();
-  }, [binding, cleanupBinding]);
+  }, [provider, monaco, editorMounted, setupBinding, cleanupBinding]);
 
   return (
     <Editor
+      key={room?.id}
       // height="auto"
       defaultLanguage={LANGUAGE.TS}
       language={language}

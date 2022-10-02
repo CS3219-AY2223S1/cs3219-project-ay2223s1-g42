@@ -137,7 +137,6 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
 
   matchSocket.on(MATCH_EVENTS.CANCEL_MATCH_SUCCESS, (data) => {
     const { message }: { message: string } = JSON.parse(data);
-    console.log("receinved cancel room success event: ", { message });
     const queueStatusMsg = `Match has been cancelled!`;
     const queueStatus: Status = {
       status: StatusType.INFO,
@@ -192,7 +191,6 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       matchSocket.connect();
     }
     const payload = JSON.stringify({ id: user.id });
-    console.log("leaving queue: ", { payload });
     socket.emit(MATCH_EVENTS.LEAVE_QUEUE, payload);
   };
 
@@ -200,25 +198,20 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     const user = getState().user;
     const room = getState().room;
     const queueRoomId = getState().queueRoomId;
-
     if (room) {
       console.error("failed to cancel room, user has already joined room!");
       return;
     }
-
     if (!user || !queueRoomId) {
       console.error(
         "failed to cancel room, user not logged in or user not matched a room"
       );
       return;
     }
-
     if (!matchSocket.connected) {
       matchSocket.connect();
     }
-
     const payload = JSON.stringify({ id: user.id, roomId: queueRoomId });
-    console.log("cancel room payload: ", payload);
     matchSocket.emit(MATCH_EVENTS.CANCEL_MATCH, payload);
   };
 

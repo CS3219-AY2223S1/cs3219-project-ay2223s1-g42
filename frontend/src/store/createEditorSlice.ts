@@ -120,19 +120,17 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     monacoBinding?.ytext.observe((event, transaction) => {
       const updatedInput = transaction.doc.getText("monaco").toJSON();
       const language = event.target.getAttribute("language");
-      console.log("language: ", { language });
       setState({
         editorLanguage: language,
         editorInput: updatedInput,
       });
     });
 
+    // set initial editor document language to typescript
     const language = monacoBinding.ytext.getAttribute("language");
-    // if (language) {
-    //   setState({
-    //     editorLanguage: language,
-    //   });
-    // }
+    if (!language) {
+      monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
+    }
 
     setState({
       editorBinding: monacoBinding,

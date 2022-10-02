@@ -161,7 +161,6 @@ export class MatchService {
     // disconnect all users in the room (including connected room users)
     const disconnectAllUsers = currentRoom.users.map(async (user) => {
       await this.roomService.removeUserFromRoom(currentRoom, user.id);
-      console.log("user socket id: ", { socketId: user.socketId });
       server.to(user.socketId).emit(
         MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
         JSON.stringify({
