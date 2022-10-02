@@ -15,9 +15,9 @@ export default defineConfig((configEnv) => {
       }),
       ValidateEnv({}),
     ],
-    define: {
-      global: {},
-    },
+    // define: {
+    //   global: "({})",
+    // },
     resolve: {
       alias: {
         shared: resolve(__dirname, "../shared", "src"),
