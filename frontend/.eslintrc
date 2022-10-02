@@ -4,13 +4,17 @@
     "es2021": true
   },
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "prettier"
   ],
   "rules": {
+    "prettier/prettier": "error",
     "@typescript-eslint/ban-ts-comment": "warn",
     "no-use-before-define": "error",
     "react/prop-types": "error",

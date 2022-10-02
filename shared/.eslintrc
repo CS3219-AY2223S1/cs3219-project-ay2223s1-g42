@@ -4,9 +4,10 @@
     "es2021": true
   },
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "extends": ["plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
   "rules": {
+    "prettier/prettier": "error",
     "@typescript-eslint/ban-ts-comment": "warn",
     "no-use-before-define": "error",
     "no-empty": [
