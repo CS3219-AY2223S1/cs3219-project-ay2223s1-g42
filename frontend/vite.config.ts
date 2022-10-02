@@ -36,7 +36,7 @@ export default defineConfig((configEnv) => {
     },
     build: {
       rollupOptions: {
-        external: ["shared"],
+        external: ["zod"],
       },
     },
   };
