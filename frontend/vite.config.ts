@@ -34,5 +34,10 @@ export default defineConfig((configEnv) => {
           : "[hash:base64:5]",
       },
     },
+    build: {
+      rollupOptions: {
+        external: ["shared"],
+      },
+    },
   };
 });
