@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
 import { useGlobalStore } from "src/store";
+import shallow from "zustand/shallow";
 import { MatchCountdownTimer } from "./MatchCountdownTimer";
 
 const MATCH_QUEUE_DURATION = 30;
@@ -14,24 +15,45 @@ type Props = {
 
 const MatchDialog = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
-  const { isInQueue, queueRoomId, leaveRoom } = useGlobalStore((state) => {
-    return {
-      isInQueue: state.isInQueue,
-      queueRoomId: state.queueRoomId,
-      leaveRoom: state.leaveRoom,
-    };
-  });
+  const { isInQueue, queueRoomId, leaveQueue, cancelMatch } = useGlobalStore(
+    (state) => {
+      return {
+        isInQueue: state.isInQueue,
+        queueRoomId: state.queueRoomId,
+        leaveQueue: state.leaveQueue,
+        cancelMatch: state.cancelMatch,
+      };
+    },
+    shallow
+  );
 
   const dialogTitle = queueRoomId ? "Match Found" : "Matching you now...";
   const dialogDescription = queueRoomId
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
 
-  const handleDisconnect = () => {
+  const handleLeaveQueue = () => {
+    leaveQueue();
     onClose();
-    if (!isInQueue) {
-      leaveRoom();
+  };
+
+  const handleCancelMatch = () => {
+    cancelMatch();
+    onClose();
+  };
+
+  const handleDisconnect = () => {
+    if (isInQueue) {
+      handleLeaveQueue();
+      return;
     }
+    if (!queueRoomId) {
+      console.error(
+        "cannot disconnect from match, not in queue or match found"
+      );
+      return;
+    }
+    handleCancelMatch();
   };
 
   return (
@@ -40,6 +62,7 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
       onClose={onClose}
       title={dialogTitle}
       description={dialogDescription}
+      autoClose={false}
     >
       <div className="flex flex-col gap-6">
         <div className="flex w-full items-center justify-center">
@@ -48,14 +71,14 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
               duration={MATCH_FOUND_DURATION}
               isPlaying={!!queueRoomId}
               key={"match-found-timer"}
-              onComplete={handleDisconnect}
+              onComplete={handleCancelMatch}
             />
           ) : isInQueue ? (
             <MatchCountdownTimer
               duration={MATCH_QUEUE_DURATION}
               isPlaying={isInQueue}
               key={"match-queue-timer"}
-              onComplete={handleDisconnect}
+              onComplete={handleLeaveQueue}
             />
           ) : (
             <></>

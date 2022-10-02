@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
 
@@ -10,7 +10,7 @@ import {
 } from "src/components";
 import { MatchDialog, QuestionRadioGroup } from "src/features";
 import { useGlobalStore } from "src/store";
-import { QuestionDifficulty } from "shared/api";
+import { MATCH_EVENTS, QuestionDifficulty } from "shared/api";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -37,16 +37,31 @@ const DEFAULT_DIFFICULTY: RadioGroupValue<QuestionDifficulty> =
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
-  const { user, isInQueue, setMatchDifficulties, joinQueue, leaveQueue } =
-    useGlobalStore((state) => {
-      return {
-        user: state.user,
-        isInQueue: state.isInQueue,
-        setMatchDifficulties: state.setMatchDifficulties,
-        joinQueue: state.joinQueue,
-        leaveQueue: state.leaveQueue,
-      };
-    }, shallow);
+  const {
+    user,
+    room,
+    queueRoomId,
+    isInQueue,
+    queueStatus,
+    setMatchDifficulties,
+    joinQueue,
+    leaveQueue,
+    leaveRoom,
+    cancelMatch,
+  } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      room: state.room,
+      queueRoomId: state.queueRoomId,
+      isInQueue: state.isInQueue,
+      queueStatus: state.queueStatus,
+      setMatchDifficulties: state.setMatchDifficulties,
+      joinQueue: state.joinQueue,
+      leaveQueue: state.leaveQueue,
+      leaveRoom: state.leaveRoom,
+      cancelMatch: state.cancelMatch,
+    };
+  }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const [difficulty, setDifficulty] =
@@ -64,22 +79,23 @@ const Dashboard = () => {
     joinQueue([difficulty.title]);
   };
 
-  // handle leave match qeueue
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
-    // if not matched, leave queue
-    if (!isInQueue) {
-      return;
-    }
-    leaveQueue();
   };
 
+  // close dialog if match cancel event received
+  useEffect(() => {
+    if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
+      handleMatchDialogClose();
+    }
+  }, [queueStatus?.event]);
+
+  // redirect to login page if user not logged in
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, navigate]);
 
   if (!user) {
     return <SpinnerIcon className="h-12 w-12" />;

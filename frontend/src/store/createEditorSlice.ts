@@ -8,7 +8,6 @@ import type { GlobalStore } from "./useGlobalStore";
 import { LANGUAGE } from "./enums";
 
 export type EditorSlice = {
-  editor: monaco.editor.IStandaloneCodeEditor | undefined;
   doc: Y.Doc | undefined;
   text: Y.Text | undefined;
   editorLanguage: LANGUAGE;
@@ -18,8 +17,11 @@ export type EditorSlice = {
   editorClients: string[] | undefined;
   editorBinding: MonacoBinding | undefined;
   setEditorLanguage: (language: LANGUAGE) => void;
-  setupEditor: (editor: monaco.editor.IStandaloneCodeEditor) => void;
-  cleanupEditor: () => void;
+  setupDoc: () => void;
+  setupProvider: () => void;
+  setupBinding: (editor: monaco.editor.IStandaloneCodeEditor) => void;
+  cleanupProvider: () => void;
+  cleanupBinding: () => void;
 };
 
 const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
@@ -34,34 +36,27 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     setState({ editorLanguage: language });
   };
 
+  // set up editor document
   const setupDoc = () => {
-    const _doc = getState().doc;
-    const doc = !!_doc ? _doc : new Y.Doc();
-    return doc;
+    const doc = new Y.Doc();
+    const docText = doc.getText("monaco");
+    setState({ doc, text: docText });
   };
 
-  const setupEditor = (editor: monaco.editor.IStandaloneCodeEditor) => {
-    console.log("running store set up editor!");
-    const _editor = getState().editor;
-    if (_editor) {
-      return;
-    }
-    setState({ editor });
-
+  // set up provider
+  const setupProvider = () => {
+    // load doc and text
+    const doc = getState().doc;
+    const docText = getState().text;
     const user = getState().user;
-    if (!user) {
-      console.error("failed to setup editor, user not logged in");
-      return;
-    }
-
     const room = getState().room;
-    if (!room) {
-      console.error("failed to setup editor, user not in a room");
+
+    if (!doc || !docText || !user || !room) {
+      console.error(
+        "failed to setup provider, doc/doc text/user/room not initialized"
+      );
       return;
     }
-
-    // set up doc
-    const doc = setupDoc();
 
     // set up provider
     const socketIOProvider = new SocketIOProvider(
@@ -75,9 +70,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
         // auth: { token: 'valid-token' },
       }
     );
-
-    // set up monaco editor doc text
-    const docText = doc.getText("monaco");
 
     // set up socket io provider awareness
     socketIOProvider.awareness.on("change", () => {
@@ -100,63 +92,74 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       setState({ isEditorProviderConnected: connected });
     });
 
-    // set up binding
+    setState({ editorProvider: socketIOProvider });
+  };
+
+  // set up binding to between provider and editor document text
+  const setupBinding = (editor: monaco.editor.IStandaloneCodeEditor) => {
+    const docText = getState().text;
+    const provider = getState().editorProvider;
+    const room = getState().room;
     const model = editor.getModel();
-    if (!model) {
-      console.error("editor model is undefined, fail to set up binding");
+
+    if (!docText || !provider || !room || !model) {
+      console.error(
+        "failed to setup binding, editor text/provider/room/editor model not initialized"
+      );
       return;
     }
+
     const monacoBinding = new MonacoBinding(
       docText,
       /** @type {monaco.editor.ITextModel} */ model,
       new Set([editor]),
-      socketIOProvider.awareness
+      provider.awareness
     );
 
     // observe document language + editor document text changes
     monacoBinding?.ytext.observe((event, transaction) => {
       const updatedInput = transaction.doc.getText("monaco").toJSON();
       const language = event.target.getAttribute("language");
+      console.log("language: ", { language });
       setState({
-        editorLanguage: language ?? LANGUAGE.TS,
+        editorLanguage: language,
         editorInput: updatedInput,
       });
     });
 
+    const language = monacoBinding.ytext.getAttribute("language");
+    // if (language) {
+    //   setState({
+    //     editorLanguage: language,
+    //   });
+    // }
+
     setState({
-      doc,
-      editorProvider: socketIOProvider,
-      text: docText,
       editorBinding: monacoBinding,
+      editorLanguage: language ?? LANGUAGE.TS,
     });
   };
 
-  // clean up editor
-  const cleanupEditor = () => {
-    const doc = getState().doc;
-    if (doc) {
-      doc.destroy();
-    }
+  const cleanupProvider = () => {
     const provider = getState().editorProvider;
-    if (provider) {
-      provider.disconnect();
-      provider.destroy();
+    if (!provider) {
+      return;
     }
+    provider.disconnect();
+    provider.destroy();
+    setState({ editorProvider: undefined });
+  };
+
+  const cleanupBinding = () => {
     const binding = getState().editorBinding;
-    if (binding) {
-      binding.destroy();
+    if (!binding) {
+      return;
     }
-    setState({
-      doc: undefined,
-      editorProvider: undefined,
-      text: undefined,
-      editorBinding: undefined,
-      editorLanguage: undefined,
-    });
+    binding.destroy();
+    setState({ editorBinding: undefined });
   };
 
   return {
-    editor: undefined,
     doc: undefined,
     text: undefined,
     editorLanguage: LANGUAGE.TS,
@@ -165,9 +168,12 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     editorInput: undefined,
     editorClients: undefined,
     editorBinding: undefined,
-    setupEditor,
+    setupDoc,
+    setupProvider,
+    setupBinding,
     setEditorLanguage,
-    cleanupEditor,
+    cleanupProvider,
+    cleanupBinding,
   };
 };
 

@@ -5,8 +5,11 @@ export enum MATCH_EVENTS {
   LEAVE_QUEUE = "leave",
   LEAVE_QUEUE_SUCCESS = "leave-success",
   LEAVE_QUEUE_ERROR = "leave-error",
-  MATCH_FOUND = "found",
-  ROOM_EXISTS = "matched",
+  CANCEL_MATCH = "cancel-match",
+  CANCEL_MATCH_SUCCESS = "cancel-match-success",
+  CANCEL_MATCH_ERR = "cancel-match-error",
+  MATCH_FOUND = "found-match",
+  ROOM_EXISTS = "room-exists",
 }
 
 export enum MATCH_MESSAGES {
@@ -16,6 +19,8 @@ export enum MATCH_MESSAGES {
   LEAVE_QUEUE = "leaving queue...",
   LEAVE_QUEUE_SUCCESS = "successfully left queue",
   LEAVE_QUEUE_ERROR = "failed to leave queue",
+  CANCEL_MATCH_SUCCESS = "successfully cancelled match",
+  CANCEL_MATCH_ERR = "failed to cancel match",
   MATCH_FOUND = "found a match",
   ROOM_EXISTS = "already matched",
 }

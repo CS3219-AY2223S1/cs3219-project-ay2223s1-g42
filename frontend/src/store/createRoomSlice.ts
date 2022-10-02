@@ -41,10 +41,11 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     withCredentials: true,
     transports: ["websocket"],
     autoConnect: false,
-    forceNew: true,
+    forceNew: false,
   });
 
   roomSocket.on("connect", () => {
+    console.log("room socket id: ", { socketId: roomSocket.id });
     console.log("connected to /room ws server :)");
   });
 
@@ -158,24 +159,22 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
 
   const leaveRoom = () => {
     const user = getState().user;
-    if (!user) {
-      ("failed to leave room, user not logged in!");
-      return;
-    }
     const room = getState().room;
     const queueRoomId = getState().queueRoomId;
     const roomId = room?.id ?? queueRoomId;
-    if (!roomId) {
-      console.error("failed to leave room, no room id found!");
+
+    if (!user || !roomId) {
+      ("failed to leave room, user not logged in or room id not found!");
+      return;
     }
+
     if (!roomSocket.connected) {
       roomSocket.connect();
     }
+
     const payload = JSON.stringify({ id: user.id, roomId });
     console.log("leave room payload: ", payload);
     roomSocket.emit(ROOM_EVENTS.LEAVE_ROOM, payload);
-    // kill room socket
-    // roomSocket.disconnect();
   };
 
   return {

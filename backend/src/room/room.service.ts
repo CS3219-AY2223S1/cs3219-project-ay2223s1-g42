@@ -73,7 +73,6 @@ export class RoomService {
       ...room,
       users: newUsers,
     };
-    console.log({ oldUsers: room.users, newUsers });
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
 
     // remove user from room users

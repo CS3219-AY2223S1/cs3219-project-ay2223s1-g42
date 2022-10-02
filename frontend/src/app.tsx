@@ -37,20 +37,10 @@ const App = () => {
 
   // connects to match and room socket servers
   useEffect(() => {
-    if (!matchSocket) {
+    if (!matchSocket || !roomSocket || !user) {
       console.error(
-        "failed to connect to match socket server, match socket not set"
+        "failed to connect to match socket server, sockets not set or user not logged in"
       );
-      return;
-    }
-    if (!roomSocket) {
-      console.error(
-        "failed to connect to room socket server, room socket not set"
-      );
-      return;
-    }
-    if (!user) {
-      console.error("failed to connect to socket servers, user not logged in");
       return;
     }
     console.log("connecting to socket servers...");
@@ -62,7 +52,7 @@ const App = () => {
       matchSocket.disconnect();
       roomSocket.disconnect();
     };
-  }, [user]);
+  }, [matchSocket, roomSocket, user]);
 
   if (!allRoutes) {
     return <ErrorPage />;

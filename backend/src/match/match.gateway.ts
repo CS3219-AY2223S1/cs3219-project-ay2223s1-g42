@@ -15,6 +15,7 @@ import {
   PoolUserData,
   PoolUser,
   MATCH_MESSAGES,
+  PendingRoomUser,
 } from "shared/api";
 
 @UseGuards(WsJwtAccessGuard)
@@ -74,6 +75,7 @@ export class MatchGateway {
       }
 
       // if match found, create room with matched users
+      // and disconnect matched users from queue
       const matchedRoom = await this.matchService.handleFoundMatches(
         poolUser,
         matchingUserIds
@@ -133,5 +135,26 @@ export class MatchGateway {
       MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
       JSON.stringify({ message: MATCH_MESSAGES.LEAVE_QUEUE_SUCCESS })
     );
+  }
+
+  @SubscribeMessage(MATCH_EVENTS.CANCEL_MATCH)
+  async onCancelRoom(client: Socket, data: any) {
+    const { id: pendingUserId, roomId: pendingUserRoomId }: PendingRoomUser =
+      JSON.parse(data);
+    try {
+      this.matchService.handleCancelMatch(
+        client,
+        this.server,
+        pendingUserId,
+        pendingUserRoomId
+      );
+    } catch (err) {
+      console.error(err);
+      client.emit(
+        MATCH_EVENTS.CANCEL_MATCH_ERR,
+        JSON.stringify({ message: MATCH_MESSAGES.CANCEL_MATCH_ERR })
+      );
+      return;
+    }
   }
 }

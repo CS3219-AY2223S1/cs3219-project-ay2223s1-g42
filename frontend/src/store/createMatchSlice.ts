@@ -16,6 +16,7 @@ export type MatchSlice = {
   queueRoomId: string | undefined;
   joinQueue: (difficulties: QuestionDifficulty[]) => void;
   leaveQueue: () => void;
+  cancelMatch: () => void;
 };
 
 const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
@@ -134,6 +135,31 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     setState({ queueStatus });
   });
 
+  matchSocket.on(MATCH_EVENTS.CANCEL_MATCH_SUCCESS, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    console.log("receinved cancel room success event: ", { message });
+    const queueStatusMsg = `Match has been cancelled!`;
+    const queueStatus: Status = {
+      status: StatusType.INFO,
+      event: MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
+      message: queueStatusMsg,
+    };
+    toast(queueStatusMsg);
+    setState({ queueStatus, queueRoomId: undefined, room: undefined });
+  });
+
+  matchSocket.on(MATCH_EVENTS.CANCEL_MATCH_ERR, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const queueStatusMsg = `Error occurred while cancelling match.`;
+    const queueStatus: Status = {
+      status: StatusType.ERROR,
+      event: MATCH_EVENTS.CANCEL_MATCH_ERR,
+      message: queueStatusMsg,
+    };
+    toast(queueStatusMsg);
+    setState({ queueStatus });
+  });
+
   const joinQueue = (difficulties: QuestionDifficulty[]) => {
     const user = getState().user;
     if (!user) {
@@ -154,22 +180,46 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
 
   const leaveQueue = () => {
     const user = getState().user;
-    if (!user) {
-      console.error("user not logged in, cannot leave queue!");
-      return;
-    }
     const socket = getState().matchSocket;
-    if (!socket) {
-      console.error("socket not set, cannot leave queue!");
+    const isInQueue = getState().isInQueue;
+    if (!user || !socket || !isInQueue) {
+      console.error(
+        "failed to leave queue, user/socket/not set OR not in queue"
+      );
       return;
     }
-    if (!getState().isInQueue) {
-      console.error("user already disconnected from the queue!");
-      return;
+    if (!matchSocket.connected) {
+      matchSocket.connect();
     }
     const payload = JSON.stringify({ id: user.id });
     console.log("leaving queue: ", { payload });
     socket.emit(MATCH_EVENTS.LEAVE_QUEUE, payload);
+  };
+
+  const cancelMatch = () => {
+    const user = getState().user;
+    const room = getState().room;
+    const queueRoomId = getState().queueRoomId;
+
+    if (room) {
+      console.error("failed to cancel room, user has already joined room!");
+      return;
+    }
+
+    if (!user || !queueRoomId) {
+      console.error(
+        "failed to cancel room, user not logged in or user not matched a room"
+      );
+      return;
+    }
+
+    if (!matchSocket.connected) {
+      matchSocket.connect();
+    }
+
+    const payload = JSON.stringify({ id: user.id, roomId: queueRoomId });
+    console.log("cancel room payload: ", payload);
+    matchSocket.emit(MATCH_EVENTS.CANCEL_MATCH, payload);
   };
 
   return {
@@ -182,6 +232,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     queueRoomId: undefined,
     joinQueue,
     leaveQueue,
+    cancelMatch,
   };
 };
 
