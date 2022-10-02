@@ -12,6 +12,7 @@ export default defineConfig((configEnv) => {
       react(),
       Pages({
         dirs: "src/pages",
+        importMode: "async",
       }),
       ValidateEnv({}),
     ],
