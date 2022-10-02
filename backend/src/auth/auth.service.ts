@@ -163,7 +163,7 @@ export class AuthService {
     return tokens;
   }
 
-  async verifyEmail(token: string) {
+  async verifyEmail(token: string): Promise<Tokens> {
     const cachedUser = await this.cache.getKeyInNamespace<CacheableUserFields>(
       [NAMESPACES.AUTH],
       token

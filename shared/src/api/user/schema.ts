@@ -8,12 +8,22 @@ const UserInfoSchema = UserModel.pick({
   username: true,
 });
 
+const UserHashInfoSchema = UserModel.pick({
+  id: true,
+  email: true,
+  username: true,
+  hash: true,
+  hashRt: true,
+});
+
 const EditableSchema = UserModel.pick({
   email: true,
   username: true,
   hashRt: true,
 }).partial();
 
-export type UserInfo = z.infer<typeof UserInfoSchema>;
+type UserInfo = z.infer<typeof UserInfoSchema>;
+type UserHashInfo = z.infer<typeof UserHashInfoSchema>;
 
-export { EditableSchema, UserInfoSchema };
+export { EditableSchema, UserInfoSchema, UserHashInfoSchema };
+export type { UserInfo, UserHashInfo };

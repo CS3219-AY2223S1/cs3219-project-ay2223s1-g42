@@ -34,6 +34,17 @@ import {
   ChangePasswordInfoDto,
   DeleteAccountInfoDto,
 } from "src/utils/zod";
+import {
+  ChangePasswordResponse,
+  DeleteAccountResponse,
+  ForgetPasswordResponse,
+  RefreshResponse,
+  ResetPasswordResponse,
+  SigninResponse,
+  SignoutResponse,
+  SignupResponse,
+  VerifyEmailResponse,
+} from "shared/api";
 
 @Controller("auth")
 export class AuthController {
@@ -60,7 +71,9 @@ export class AuthController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async signup(@Body() credentials: SignupCredentialsDto) {
+  async signup(
+    @Body() credentials: SignupCredentialsDto
+  ): Promise<SignupResponse> {
     await this.authService.signup(credentials);
     return { message: "success" };
   }
@@ -84,7 +97,7 @@ export class AuthController {
   async signin(
     @Body() credentials: SigninCredentialsDto,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<SigninResponse> {
     const tokens = await this.authService.signin(credentials);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -105,7 +118,7 @@ export class AuthController {
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<SignoutResponse> {
     await this.authService.signout(user.id);
     this.clearCookies(res);
     return { message: "success" };
@@ -128,7 +141,7 @@ export class AuthController {
   async refresh(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<RefreshResponse> {
     const tokens = await this.authService.refreshTokens(user.id, user.email);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -151,7 +164,7 @@ export class AuthController {
   async verifyEmail(
     @Param("token") token: string,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<VerifyEmailResponse> {
     const tokens = await this.authService.verifyEmail(token);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -192,7 +205,7 @@ export class AuthController {
   })
   async forgetPassword(
     @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
-  ) {
+  ): Promise<ForgetPasswordResponse> {
     const { email } = forgetPasswordInfo;
     await this.authService.resetPassword(email);
     return { message: "success" };
@@ -221,7 +234,9 @@ export class AuthController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
+  async resetPassword(
+    @Body() resetPasswordInfo: ResetPasswordCredentialsDto
+  ): Promise<ResetPasswordResponse> {
     const { token, password } = resetPasswordInfo;
     await this.authService.verifyResetEmail(token, password);
     return { message: "success" };
@@ -256,7 +271,7 @@ export class AuthController {
   async changePassword(
     @GetUser() user: User,
     @Body() changePasswordInfo: ChangePasswordInfoDto
-  ) {
+  ): Promise<ChangePasswordResponse> {
     const { newPassword, currentPassword } = changePasswordInfo;
     await this.authService.changePassword(
       user.id,
@@ -295,7 +310,7 @@ export class AuthController {
   async deleteAccount(
     @GetUser() user: User,
     @Body() { password }: DeleteAccountInfoDto
-  ) {
+  ): Promise<DeleteAccountResponse> {
     await this.authService.deleteAccount(user.id, password);
     return { message: "success" };
   }

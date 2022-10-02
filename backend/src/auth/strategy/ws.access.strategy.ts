@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { UserService } from "../../user/user.service";
 import { JwtPayload } from "../auth.service";
+import { UserInfo } from "shared/api";
 
 @Injectable()
 export class WsAccessJwtStrategy extends PassportStrategy(Strategy, "jwt-ws") {
@@ -24,7 +25,7 @@ export class WsAccessJwtStrategy extends PassportStrategy(Strategy, "jwt-ws") {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<UserInfo> {
     const [err, user] = await this.users.find({
       id: payload.sub,
     });

@@ -23,6 +23,12 @@ import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
 import { EditableCredentialsDto, ThrowKnownPrismaErrors } from "src/utils";
+import {
+  DeleteUserResponse,
+  EditUserResponse,
+  GetUserResponse,
+  UserInfo,
+} from "shared/api";
 
 @Controller("users")
 export class UserController {
@@ -49,7 +55,7 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  getMe(@GetUser() user: User) {
+  getMe(@GetUser() user: UserInfo): GetUserResponse {
     return user;
   }
 
@@ -77,7 +83,7 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async getUser(@Param("id") id: string) {
+  async getUser(@Param("id") id: string): Promise<GetUserResponse> {
     const [err, user] = await this.userService.find({ id: parseInt(id) });
     ThrowKnownPrismaErrors(err);
     return user;
@@ -120,7 +126,7 @@ export class UserController {
     @GetUser() user: User,
     @Param("id") id: string,
     @Body() userInfo: EditableCredentialsDto
-  ) {
+  ): Promise<EditUserResponse> {
     if (parseInt(id) === user.id) {
       const { email, username } = userInfo;
       const [err] = await this.userService.update(user.id, {
@@ -157,7 +163,10 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async deleteUser(@GetUser() user: User, @Param("id") id: string) {
+  async deleteUser(
+    @GetUser() user: User,
+    @Param("id") id: string
+  ): Promise<DeleteUserResponse> {
     if (parseInt(id) === user.id) {
       const [err, deletedUser] = await this.userService.delete(user.id);
       ThrowKnownPrismaErrors(err);
