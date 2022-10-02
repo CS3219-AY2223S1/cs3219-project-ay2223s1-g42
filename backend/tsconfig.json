@@ -25,5 +25,6 @@
     "composite": true,
     "declarationMap": true
   },
-  "references": [{ "path": "../shared" }]
+  "references": [{ "path": "../shared" }],
+  "include": ["../shared/src/"]
 }
