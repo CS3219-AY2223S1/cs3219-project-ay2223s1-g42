@@ -13,7 +13,7 @@ export function sanitizeFilters(query: string | string[], separator = ",") {
   }, []);
 }
 
-export function sanitizeDifficuly(query: string | string[], separator = ",") {
+export function sanitizeDifficulty(query: string | string[], separator = ",") {
   const splitQuery: string[] = [];
   if (!Array.isArray(query)) {
     splitQuery.push(...query.split(separator));

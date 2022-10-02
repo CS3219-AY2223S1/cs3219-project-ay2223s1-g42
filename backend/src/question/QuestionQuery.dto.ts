@@ -1,7 +1,7 @@
 import { Transform } from "class-transformer";
 import { IsOptional, IsString } from "class-validator";
 import {
-  sanitizeDifficuly,
+  sanitizeDifficulty,
   sanitizeFilters,
   sanitizeTopicMatch,
 } from "./question.helper";
@@ -9,7 +9,7 @@ import {
 export class QuestionQueryDto {
   @IsOptional()
   @IsString({ each: true })
-  @Transform(({ value }) => sanitizeDifficuly(value)) //CSV by default
+  @Transform(({ value }) => sanitizeDifficulty(value)) //CSV by default
   public difficulty: string[];
 
   @IsOptional()
