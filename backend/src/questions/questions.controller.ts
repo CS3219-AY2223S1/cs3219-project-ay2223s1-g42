@@ -14,13 +14,13 @@ import {
   ApiNotFoundResponse,
 } from "@nestjs/swagger";
 
-import { QuestionService } from "./question.service";
-import { FlattenedQuestionSummary } from "./question.type";
+import { QuestionService } from "./questions.service";
+import { FlattenedQuestionSummary } from "./questions.type";
 import { PublicRoute } from "../utils/decorator";
-import { QuestionQueryDto } from "./QuestionQuery.dto";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "src/utils/constants";
+import { QuestionQueryDto } from "./QuestionsQuery.dto";
 
-@Controller("question")
+@Controller("questions")
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
