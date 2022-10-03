@@ -20,9 +20,10 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
+    "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false
   },
   "references": [{ "path": "../shared" }],
-  "include": ["prisma/zod", "./src", "./test"]
+  "exclude": ["node_modules", "test", "dist", "dist/**/*spec.ts"],
+  "include": ["prisma/zod"]
 }
