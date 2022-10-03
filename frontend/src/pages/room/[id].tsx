@@ -10,17 +10,25 @@ import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, queueRoomId, room, roomStatus, queueStatus, joinRoom } =
-    useGlobalStore((state) => {
-      return {
-        user: state.user,
-        queueRoomId: state.queueRoomId,
-        room: state.room,
-        roomStatus: state.roomStatus,
-        queueStatus: state.queueStatus,
-        joinRoom: state.joinRoom,
-      };
-    }, shallow);
+  const {
+    user,
+    queueRoomId,
+    room,
+    roomStatus,
+    queueStatus,
+    joinRoom,
+    resetProviderBinding,
+  } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      queueRoomId: state.queueRoomId,
+      room: state.room,
+      roomStatus: state.roomStatus,
+      queueStatus: state.queueStatus,
+      joinRoom: state.joinRoom,
+      resetProviderBinding: state.resetProviderBinding,
+    };
+  }, shallow);
 
   const pageRoomId = id ?? "default";
   const isQueuedRoom = pageRoomId === queueRoomId;
@@ -45,8 +53,9 @@ const RoomPage = (): JSX.Element => {
   useEffect(() => {
     if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
       navigate("/");
+      resetProviderBinding();
     }
-  }, [queueStatus?.event, navigate]);
+  }, [queueStatus?.event, navigate, resetProviderBinding]);
 
   if (isInvalidRoom) {
     return (
