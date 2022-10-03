@@ -45,12 +45,18 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
   // set up provider
   const setupProvider = () => {
+    // check if provider already set up
+    const provider = getState().editorProvider;
+    if (provider) {
+      console.error("failed to setup provider, provider already set up");
+      return;
+    }
+
     // load doc and text
     const doc = getState().doc;
     const docText = getState().text;
     const user = getState().user;
     const room = getState().room;
-
     if (!doc || !docText || !user || !room) {
       console.error(
         "failed to setup provider, doc/doc text/user/room not initialized"
@@ -104,7 +110,8 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
     if (!docText || !provider || !room || !model) {
       console.error(
-        "failed to setup binding, editor text/provider/room/editor model not initialized"
+        "failed to setup binding, editor text/provider/room/editor model not initialized: ",
+        { docText, provider, room, model }
       );
       return;
     }

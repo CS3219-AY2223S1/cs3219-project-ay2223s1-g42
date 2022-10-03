@@ -7,6 +7,7 @@ import { SpinnerIcon } from "src/components";
 import { LANGUAGE, useGlobalStore } from "src/store";
 
 const RoomEditor = () => {
+  console.log("rendering room editor component!");
   const {
     user,
     room,
@@ -55,8 +56,10 @@ const RoomEditor = () => {
   // or when user or room changes
   useEffect(() => {
     setupProvider();
-    return () => cleanupProvider();
-  }, [doc, monaco, user, room, setupProvider, cleanupProvider]);
+    return () => {
+      cleanupProvider();
+    };
+  }, [monaco, doc, user, room, setupProvider, cleanupProvider]);
 
   // set up binding whenever provider or
   // monaco instance changes
@@ -68,7 +71,9 @@ const RoomEditor = () => {
       return;
     }
     setupBinding(editorRef.current);
-    return () => cleanupBinding();
+    return () => {
+      cleanupBinding();
+    };
   }, [provider, monaco, editorMounted, setupBinding, cleanupBinding]);
 
   return (
