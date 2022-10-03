@@ -2,21 +2,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { GoogleIcon } from "src/components/icons";
+import {
+  BlueButton,
+  TextInput,
+  PrimaryButton,
+  ErrorAlert,
+  GoogleIcon,
+  PrimaryLink,
+  SuccessAlert,
+  Divider,
+} from "src/components";
 import { SignUpCredentials, SignupCredentialsSchema } from "../types";
-import { PrimaryLink } from "src/components/base/link";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
-
-  // sign in mutations
-  const useSignUpMutation = useAuthStore((state) => state.useSignupMutation);
-  const signupMutation = useSignUpMutation({
-    onSuccess: () => queryClient.invalidateQueries(["me"]),
-  });
 
   // form setup
   const {
@@ -28,15 +28,23 @@ const SignupForm = () => {
     resolver: zodResolver(SignupCredentialsSchema),
   });
 
+  // sign in mutations
+  const useSignUpMutation = useGlobalStore((state) => state.useSignupMutation);
+  const signupMutation = useSignUpMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
+      reset();
+    },
+  });
+
   // submit function
   const handleSignup = async (credentials: SignUpCredentials) => {
     signupMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleSignup);
 
   return (
-    <>
+    <div>
       {signupMutation.isError ? (
         <ErrorAlert
           title={"Sign up failed!"}
@@ -51,21 +59,15 @@ const SignupForm = () => {
         <></>
       )}
       <div>
-        <BlueButton className="w-full flex items-center justify-center relative">
-          <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
+        <BlueButton className="relative flex w-full items-center justify-center">
+          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
             <GoogleIcon className="h-5 w-5 text-red-500" />
           </div>
           Sign up with Google
         </BlueButton>
-        <div className="relative flex py-5 items-center">
-          <div className="flex-grow border-t border-neutral-400"></div>
-          <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
-            Or, sign up with your email
-          </span>
-          <div className="flex-grow border-t border-neutral-400"></div>
-        </div>
+        <Divider label="Or, sign up with your email" />
         <form
-          className="flex flex-col gap-8 space-y-8 mb-3"
+          className="mb-3 flex flex-col gap-8 space-y-8"
           onSubmit={onSubmit}
         >
           <div className="flex flex-col gap-5">
@@ -101,11 +103,11 @@ const SignupForm = () => {
             Sign up
           </PrimaryButton>
         </form>
-        <PrimaryLink className="self-center" href="/login">
+        <PrimaryLink className="self-center" to="/login">
           Sign in
         </PrimaryLink>
       </div>
-    </>
+    </div>
   );
 };
 

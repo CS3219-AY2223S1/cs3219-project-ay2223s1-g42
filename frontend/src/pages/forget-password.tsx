@@ -1,13 +1,10 @@
-import { NextPage } from "next";
-
+import { BigHeading } from "src/components";
 import { ForgetPasswordForm } from "../login/components";
 
-const ForgetPasswordPage: NextPage = () => {
+const ForgetPasswordPage = () => {
   return (
-    <div className="w-full px-4 flex flex-col text-center mx-auto">
-      <h1 className="font-display font-bold leading-tight text-5xl mt-4 mb-12 text-black-600">
-        Forget Password
-      </h1>
+    <div className="flex w-full flex-col gap-8 px-4 text-center">
+      <BigHeading>Forget Password</BigHeading>
       <ForgetPasswordForm />
     </div>
   );

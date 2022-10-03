@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "ignore": ["*.env*", ".git", "node_modules", "*.log"]
+  }
+}

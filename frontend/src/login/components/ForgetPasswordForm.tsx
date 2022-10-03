@@ -1,18 +1,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { TextInput, PrimaryButton } from "src/components/base";
+import {
+  SuccessAlert,
+  ErrorAlert,
+  TextInput,
+  PrimaryButton,
+  NormalHeading,
+} from "src/components";
 import { ForgetPasswordInfo, ForgetPasswordInfoSchema } from "../types";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 const ForgetPasswordForm = () => {
-  // forget password mutation
-  const useForgetPasswordMutation = useAuthStore(
-    (state) => state.useForgetPasswordMutation
-  );
-  const forgetPasswordMutation = useForgetPasswordMutation();
-
   // form setup
   const {
     register,
@@ -23,15 +22,22 @@ const ForgetPasswordForm = () => {
     resolver: zodResolver(ForgetPasswordInfoSchema),
   });
 
+  // forget password mutation
+  const useForgetPasswordMutation = useGlobalStore(
+    (state) => state.useForgetPasswordMutation
+  );
+  const forgetPasswordMutation = useForgetPasswordMutation({
+    onSuccess: reset,
+  });
+
   // submit function
   const handleSignin = async (credentials: ForgetPasswordInfo) => {
     forgetPasswordMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleSignin);
 
   return (
-    <>
+    <div>
       {forgetPasswordMutation.isSuccess ? (
         <SuccessAlert
           title="Email sent!"
@@ -43,9 +49,9 @@ const ForgetPasswordForm = () => {
           message="Failed to send reset instructions."
         />
       ) : (
-        <h4 className="leading-tight text-1xl text-black-50 flex flex-col text-center mb-4">
+        <NormalHeading className="mb-4 text-sm font-normal">
           Please enter your account email address
-        </h4>
+        </NormalHeading>
       )}
       <form className="flex flex-col gap-8" onSubmit={onSubmit}>
         <TextInput
@@ -64,7 +70,7 @@ const ForgetPasswordForm = () => {
           Send reset instructions
         </PrimaryButton>
       </form>
-    </>
+    </div>
   );
 };
 

@@ -1,14 +1,10 @@
-import Link from "next/link";
+import { NavLink, NavLinkProps } from "react-router-dom";
 
-import { Props } from "./types";
-
-const BaseLink = ({ href, children, className = "", ...other }: Props) => {
+const BaseLink = ({ to, className, children, ...other }: NavLinkProps) => {
   return (
-    <Link href={href}>
-      <a className={className} {...other}>
-        {children}
-      </a>
-    </Link>
+    <NavLink to={to} className={className} {...other}>
+      {children}
+    </NavLink>
   );
 };
 

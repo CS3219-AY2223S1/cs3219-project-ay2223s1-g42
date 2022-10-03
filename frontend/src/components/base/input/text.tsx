@@ -20,9 +20,9 @@ const TextInput = React.forwardRef<HTMLInputElement, Props>(
             id={`floating_outlined_${other.name}`}
             ref={ref}
             className={cx(
-              "block px-2.5 pb-2.5 pt-4 w-full text-md",
-              "bg-transparent border-[1px] appearance-none focus:outline-none",
-              "focus:ring-0 focus:border-blue-600 peer placeholder-transparent",
+              "text-md block w-full px-2.5 pb-2.5 pt-4",
+              "appearance-none border-[1px] bg-transparent focus:outline-none",
+              "peer placeholder-transparent focus:border-blue-600 focus:ring-0",
               `focus:placeholder-neutral-400 ${className}`,
               {
                 "text-neutral-900": !isError,
@@ -36,10 +36,10 @@ const TextInput = React.forwardRef<HTMLInputElement, Props>(
           <label
             htmlFor="floating_outlined"
             className={cx(
-              "absolute text-sm duration-300 transform -translate-y-4 scale-75 text-neutral-500",
-              "top-2 z-10 origin-[0] bg-neutral-100 px-2 peer-focus:px-[6px] peer-placeholder-shown:top-1/2",
-              "peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2",
-              "peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1",
+              "absolute -translate-y-4 scale-75 transform text-sm text-neutral-500 duration-300",
+              "top-2 z-10 origin-[0] bg-neutral-100 px-2 peer-placeholder-shown:top-1/2 peer-focus:px-[6px]",
+              "peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100",
+              "left-1 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75",
               {
                 "peer-focus:text-blue-600": !isError,
                 "peer-focus:text-red-500": isError,
@@ -50,7 +50,7 @@ const TextInput = React.forwardRef<HTMLInputElement, Props>(
           </label>
         </div>
         {isError && (
-          <p className="mt-2 text-sm text-red-600 text-start">
+          <p className="mt-2 text-start text-sm text-red-600">
             <span>Oops! </span>
             {error}
           </p>

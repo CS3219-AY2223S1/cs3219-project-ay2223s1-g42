@@ -5,7 +5,7 @@ type Props = {
 
 const SuccessAlert = ({ title, message }: Props) => {
   return (
-    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100" role="alert">
+    <div className="mb-4 bg-green-100 p-4 text-sm text-green-700" role="alert">
       <span className="font-medium">{title} </span>
       {message}
     </div>

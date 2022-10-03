@@ -1,21 +1,38 @@
-import { PrimaryButton, RedButton } from "src/components/base";
-import { PrimaryDialog } from "src/components/base/dialog";
-import { useAuthStore, useSocketStore } from "src/hooks";
+import { useNavigate } from "react-router";
+
+import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
+import { useGlobalStore } from "src/store";
+import { MatchCountdownTimer } from "./MatchCountdownTimer";
+
+const MATCH_QUEUE_DURATION = 30;
+const MATCH_FOUND_DURATION = 10;
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export function MatchDialog({ isOpen, onClose }: Props) {
-  const user = useAuthStore((state) => state.user);
-  const room = useSocketStore((state) => state.room);
-  const otherUser = room?.users.filter((u) => u.id !== user?.id)[0];
+const MatchDialog = ({ isOpen, onClose }: Props) => {
+  const navigate = useNavigate();
+  const { isInQueue, queueRoomId, leaveRoom } = useGlobalStore((state) => {
+    return {
+      isInQueue: state.isInQueue,
+      queueRoomId: state.queueRoomId,
+      leaveRoom: state.leaveRoom,
+    };
+  });
 
-  const dialogTitle = room ? "Match Found" : "Matching you now...";
-  const dialogDescription = room
+  const dialogTitle = queueRoomId ? "Match Found" : "Matching you now...";
+  const dialogDescription = queueRoomId
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
+
+  const handleDisconnect = () => {
+    onClose();
+    if (!isInQueue) {
+      leaveRoom();
+    }
+  };
 
   return (
     <PrimaryDialog
@@ -25,19 +42,51 @@ export function MatchDialog({ isOpen, onClose }: Props) {
       description={dialogDescription}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <p>Email: {otherUser?.email}</p>
-          <p>Username: {otherUser?.username}</p>
-        </div>
-        <div className="flex flex-col justify-center gap-2">
-          {room ? (
-            <PrimaryButton className="w-full">Enter room now</PrimaryButton>
+        <div className="flex w-full items-center justify-center">
+          {queueRoomId ? (
+            <MatchCountdownTimer
+              duration={MATCH_FOUND_DURATION}
+              isPlaying={!!queueRoomId}
+              key={"match-found-timer"}
+              onComplete={handleDisconnect}
+            />
+          ) : isInQueue ? (
+            <MatchCountdownTimer
+              duration={MATCH_QUEUE_DURATION}
+              isPlaying={isInQueue}
+              key={"match-queue-timer"}
+              onComplete={handleDisconnect}
+            />
           ) : (
             <></>
           )}
-          <RedButton className="w-full">Disconnect</RedButton>
+        </div>
+
+        {queueRoomId ? (
+          <div className="flex flex-col gap-1">
+            <p>Room ID: {queueRoomId}</p>
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className="flex flex-col gap-3">
+          {queueRoomId ? (
+            <PrimaryButton
+              className="w-full"
+              onClick={() => navigate(`/room/${queueRoomId}`)}
+            >
+              Join room
+            </PrimaryButton>
+          ) : (
+            <></>
+          )}
+          <RedButton className="w-full" onClick={handleDisconnect}>
+            Disconnect
+          </RedButton>
         </div>
       </div>
     </PrimaryDialog>
   );
-}
+};
+
+export { MatchDialog };

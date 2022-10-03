@@ -27,6 +27,8 @@ import {
   SignupCredentialsDto,
   ForgetPasswordCredentialsDto,
   ResetPasswordCredentialsDto,
+  ChangePasswordInfoDto,
+  DeleteAccountInfoDto,
 } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
@@ -175,11 +177,11 @@ export class AuthController {
   @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY })
   @ApiCreatedResponse({
     description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGET_PASSWORD_EMAIL_SENT_DESCRIPTION,
   })
   @ApiCreatedResponse({
     description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGETPASSWORD_EMAIL_SENT_DESCRIPTION,
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_FORGET_PASSWORD_EMAIL_SENT_DESCRIPTION,
   })
   @ApiBadRequestResponse({
     description:
@@ -222,6 +224,79 @@ export class AuthController {
   async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
     const { token, password } = resetPasswordInfo;
     await this.authService.verifyResetEmail(token, password);
+    return { message: "success" };
+  }
+
+  /**
+   * Change password of user after verifying the current password
+   * @param changePasswordInfo info of user needed for password change
+   */
+  @Post("/change-password")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: API_OPERATIONS.CHANGE_PASSWORD_SUMMARY })
+  @ApiOkResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_CHANGE_PASSWORD_DESCRIPTION,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiBadRequestResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  async changePassword(
+    @GetUser() user: User,
+    @Body() changePasswordInfo: ChangePasswordInfoDto
+  ) {
+    const { newPassword, currentPassword } = changePasswordInfo;
+    await this.authService.changePassword(
+      user.id,
+      currentPassword,
+      newPassword
+    );
+    return { message: "success" };
+  }
+
+  /**
+   * Deletes user account after verifying the specified password
+   * @param deleteAccountInfo info of user needed for account deletion
+   */
+  @Post("/delete-account")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY })
+  @ApiOkResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.SUCCESSFUL_DELETE_ACCOUNT_DESCRIPTION,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.UNAUTHORIZED_REQUEST_USER_NOT_LOGGED_IN_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiBadRequestResponse({
+    description:
+      API_RESPONSES_DESCRIPTION.BAD_REQUEST_INVALID_CREDENTIALS_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  async deleteAccount(
+    @GetUser() user: User,
+    @Body() { password }: DeleteAccountInfoDto
+  ) {
+    await this.authService.deleteAccount(user.id, password);
     return { message: "success" };
   }
 }

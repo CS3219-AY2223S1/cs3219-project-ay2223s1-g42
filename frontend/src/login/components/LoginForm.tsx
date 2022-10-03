@@ -1,27 +1,24 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
-import { BlueButton, TextInput, PrimaryButton } from "src/components/base";
-import { ErrorAlert, SuccessAlert } from "src/components/base/alert";
-import { GoogleIcon } from "src/components/icons";
+import {
+  Divider,
+  ErrorAlert,
+  SuccessAlert,
+  BlueButton,
+  GoogleIcon,
+  TextInput,
+  LightLink,
+  PrimaryButton,
+  PrimaryLink,
+} from "src/components";
 import { SignInCredentials, SigninCredentialsSchema } from "../types";
-import { LightLink, PrimaryLink } from "src/components/base/link";
-import { useAuthStore } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
-
-  // sign in mutations
-  const useSignInMutation = useAuthStore((state) => state.useSigninMutation);
-  const signinMutation = useSignInMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
-      router.push("/");
-    },
-  });
 
   // form setup
   const {
@@ -33,15 +30,24 @@ const LoginForm = () => {
     resolver: zodResolver(SigninCredentialsSchema),
   });
 
+  // sign in mutations
+  const useSignInMutation = useGlobalStore((state) => state.useSigninMutation);
+  const signinMutation = useSignInMutation({
+    onSuccess: () => {
+      console.log("invalidating ME query!");
+      queryClient.refetchQueries(["me"]);
+      reset();
+    },
+  });
+
   // submit function
   const handleSignin = async (credentials: SignInCredentials) => {
     signinMutation.mutate(credentials);
-    reset();
   };
   const onSubmit = handleSubmit(handleSignin);
 
   return (
-    <>
+    <div>
       {signinMutation.isError ? (
         <ErrorAlert
           title={"Login failed!"}
@@ -52,21 +58,15 @@ const LoginForm = () => {
       ) : (
         <></>
       )}
-      <>
-        <BlueButton className="relative w-full flex items-center justify-center">
-          <div className="absolute left-0 h-full w-12 bg-neutral-50 flex items-center justify-center">
+      <div>
+        <BlueButton className="relative flex w-full items-center justify-center">
+          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
             <GoogleIcon className="h-5 w-5" />
           </div>
           Sign in with Google
         </BlueButton>
-        <div className="flex py-5 items-center">
-          <div className="flex-grow border-t border-neutral-400"></div>
-          <span className="text-sm md:text-base flex-shrink mx-4 text-neutral-400">
-            Or, sign in with your email
-          </span>
-          <div className="flex-grow border-t border-neutral-400"></div>
-        </div>
-        <form className="flex flex-col gap-8 mb-3" onSubmit={onSubmit}>
+        <Divider label="Or, sign in with your email" />
+        <form className="mb-3 flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
             <TextInput
               label="Email"
@@ -87,18 +87,18 @@ const LoginForm = () => {
               {...register("password", { required: true })}
             />
             <div className="flex flex-row-reverse">
-              <LightLink href="/forget-password">Forget password?</LightLink>
+              <LightLink to="/forget-password">Forget password?</LightLink>
             </div>
           </div>
           <PrimaryButton type="submit" isLoading={signinMutation.isLoading}>
             Sign in
           </PrimaryButton>
         </form>
-        <PrimaryLink className="self-center" href="/signup">
+        <PrimaryLink className="self-center" to="/signup">
           Sign up
         </PrimaryLink>
-      </>
-    </>
+      </div>
+    </div>
   );
 };
 

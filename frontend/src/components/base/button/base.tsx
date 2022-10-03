@@ -1,4 +1,4 @@
-import { Spinner } from "src/components/icons";
+import { SpinnerIcon } from "src/components";
 import { BaseProps } from "./types";
 
 export function BaseButton({
@@ -11,12 +11,12 @@ export function BaseButton({
 }: BaseProps) {
   return (
     <button
-      className={`group flex font-sans font-medium transition duration-300 px-3 py-3
-      ease-out border-[1px] justify-center items-center ${className}`}
+      className={`group flex items-center justify-center border-[1px] p-3 font-sans
+      font-medium transition duration-300 ease-out ${className}`}
       {...other}
     >
       {isLoading ? (
-        <Spinner
+        <SpinnerIcon
           className={`fill-${loadColor} group-hover:fill-${loadHoverColor}`}
         />
       ) : (

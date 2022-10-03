@@ -1,25 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { PrismaClient } from "@prisma/client";
 import { v4 } from "uuid";
 import * as randomstring from "randomstring";
-import { Cache } from "cache-manager";
 
 import { AppModule } from "../src/app.module";
 import { AuthController } from "../src/auth/auth.controller";
 import { UserService } from "../src/user/user.service";
 import { AuthService } from "../src/auth/auth.service";
-import { UserController } from "../src/user/user.controller";
-import { PrismaService } from "../src/prisma/prisma.service";
 import { RedisCacheService } from "../src/cache/redisCache.service";
 import { NAMESPACES } from "../src/cache/constants";
 import { AuthModule } from "../src/auth/auth.module";
 import { UserModule } from "../src/user/user.module";
 import { RedisCacheModule } from "../src/cache/redisCache.module";
-import { COOKIE_OPTIONS } from "../src/config";
-import { Response } from "express";
-import { sign } from "crypto";
 
 type CacheableUserFields = {
   email: string;

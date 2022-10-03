@@ -22,18 +22,19 @@
     "db:local:start": "docker compose up dev-db dev-redis -d && yarn prisma:dev:migrate && yarn prisma:dev:generate",
     "db:local:start:sleep": "echo 'Enter sleep time:' && read slepy && docker compose up dev-db dev-redis -d && sleep $slepy && yarn prisma:dev:migrate && yarn prisma:dev:generate",
     "db:local:restart": "yarn db:local:rm && yarn db:local:start",
-    "db:dev:push": "dotenv -e .env.local -- npx prisma db push && sed -i -e '3d' src/zod/*",
-    "prisma:dev:generate": "dotenv -e .env.local -- npx prisma generate && sed -i -e '3d' src/zod/* && yarn lint --quiet --fix",
+    "db:dev:push": "dotenv -e .env.local -- npx prisma db push && yarn clean:zod:index",
+    "prisma:dev:generate": "dotenv -e .env.local -- npx prisma generate && yarn clean:zod:index && yarn lint --quiet --fix",
     "prisma:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:dev:deploy": "dotenv -e .env.local -- prisma migrate deploy",
     "prisma:dev:studio": "dotenv -e .env.local -- npx prisma studio",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint": "prettier \"{src,apps,libs,test}/**/*.ts\" --write && eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --forceExit",
-    "clear_jest": "jest --clearCache"
+    "clear_jest": "jest --clearCache",
+    "clean:zod:index": "rm -rdf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts"
   },
   "dependencies": {
     "-": "^0.0.1",
@@ -53,6 +54,8 @@
     "babel-jest": "^29.0.3",
     "cache-manager": "^4.1.0",
     "cache-manager-ioredis": "^2.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",
     "csurf": "^1.11.0",
     "handlebars": "^4.7.7",
@@ -69,7 +72,9 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "socket.io": "^4.5.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "y-socket.io": "^1.0.0",
+    "yjs": "^13.5.41"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

@@ -1,10 +1,8 @@
 import axios from "axios";
 
-import { env } from "../env/client.mjs";
-
 const Axios = axios.create({
   withCredentials: true,
-  baseURL: env.NEXT_PUBLIC_API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
