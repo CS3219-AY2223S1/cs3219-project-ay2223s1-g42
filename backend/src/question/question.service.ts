@@ -40,7 +40,6 @@ export class QuestionService {
    */
   async getAllSummaries() {
     const summaries = await this.getAllSummariesFromCache();
-
     return this.formatQuestionSummaries(summaries);
   }
 
@@ -125,8 +124,8 @@ export class QuestionService {
   ): Promise<FlattenedQuestionSummary[]> {
     const allTopicTags = await this.getAllTopics();
     const validTopicTagArray = _.intersection(allTopicTags, topicTags);
-    const cachedSummaries = await this.getAllSummariesFromCache();
 
+    const cachedSummaries = await this.getAllSummariesFromCache();
     const cachedSummariesFromTopicTag: QuestionSummaryFromDb[][] = [];
     for (const tag of validTopicTagArray) {
       const currentMatchedQuestions = cachedSummaries.filter((summary) => {
@@ -137,12 +136,10 @@ export class QuestionService {
       });
       cachedSummariesFromTopicTag.push(currentMatchedQuestions);
     }
-
     const res: FlattenedQuestionSummary[] = this.filterSummaryByMatchType(
       cachedSummariesFromTopicTag,
       matchType
     );
-
     return res;
   }
 
