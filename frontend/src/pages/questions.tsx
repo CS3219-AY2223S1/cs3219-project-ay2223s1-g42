@@ -126,7 +126,11 @@ const QuesitonPage = () => {
   // TODO: Uncomment this to load all qns initially
   // React.useEffect(() => {
   //   async function getData() {
+<<<<<<< HEAD
   //     await Axios.get<QuestionSummary[]>("questions/summary/").then(
+=======
+  //     await Axios.get<QuestionSummary[]>("question/summary/").then(
+>>>>>>> fix: add questions in navbar
   //       ({ data }) => {
   //         setData(data);
   //         setLoadingData(false);
