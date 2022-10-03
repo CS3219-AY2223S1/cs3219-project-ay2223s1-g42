@@ -31,9 +31,9 @@ import {
   DeleteAccountInfoDto,
 } from "../utils/zod";
 import { JwtRefreshGuard } from "./guard";
-import { GetUser, PublicRoute } from "../utils/decorator";
-import { COOKIE_OPTIONS } from "../config";
-import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import { GetUser, PublicRoute } from "src/utils/decorator";
+import { COOKIE_OPTIONS } from "src/config";
+import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "src/utils/constants";
 
 @Controller("auth")
 export class AuthController {
