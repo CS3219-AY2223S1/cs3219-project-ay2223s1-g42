@@ -25,6 +25,25 @@ const Table = <T,>({ columns, data }: Props<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [tableData] = React.useState<T[]>([...data]);
 
+<<<<<<< HEAD
+=======
+  const [qnData, setQnData] = React.useState<QuestionSummary[]>([...data]);
+
+  // TODO: Change endpoint if needed
+  const refreshData = () => {
+    async function getData() {
+      // await Axios.get<QuestionSummary[]>(
+      //   "questions/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
+      // ).then(({ data }) => {
+      //   setQnData(data);
+      // });
+      await Axios.get<QuestionSummary[]>("questions/").then(({ data }) => {
+        setQnData(data);
+      });
+    }
+    getData();
+  };
+>>>>>>> fix: change BE endpoint to use 'questions'
   const table = useReactTable({
     data: tableData,
     columns,
