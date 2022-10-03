@@ -1,5 +1,5 @@
 import {
-  createColumnHelper,
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { Axios } from "src/services";
 
 type QuestionSummary = {
   acRate: number;
@@ -21,106 +22,27 @@ type QuestionSummary = {
 };
 
 type Props = {
-  columns?: any; // TODO: figure out type
-  data?: QuestionSummary[];
+  columns: ColumnDef<QuestionSummary, any>[];
+  data: QuestionSummary[];
 };
 
-function stringifyDate(strDate: string) {
-  const date = new Date(strDate);
-  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
-}
-
-const columnHelper = createColumnHelper<QuestionSummary>();
-
-const defaultColumns = [
-  columnHelper.accessor("title", {
-    cell: (info) => info.getValue(),
-    id: "title",
-    header: "Title",
-  }),
-  columnHelper.accessor("difficulty", {
-    cell: (info) => info.getValue(),
-    id: "difficulty",
-    header: "Difficulty",
-  }),
-  columnHelper.accessor("topicTags", {
-    cell: (info) =>
-      info.getValue().reduce((prev, curr) => {
-        return prev + ", " + curr;
-      }),
-    id: "topicTags",
-    header: "Topics",
-    enableSorting: false,
-  }),
-  // TODO: change to hyperlink icon, open in new tab
-  columnHelper.accessor("discussionLink", {
-    cell: (info) => info.getValue(),
-    header: "Discussion",
-    enableSorting: false,
-  }),
-  columnHelper.accessor("createdAt", {
-    cell: (info) => stringifyDate(info.getValue()),
-    header: "Added on",
-  }),
-];
-
-const defaultQuesitons: QuestionSummary[] = [
-  {
-    acRate: 32.102882410776,
-    difficulty: "Medium",
-    title: "3Sum",
-    createdAt: "2022-09-23T19:20:36.199Z",
-    discussionLink:
-      "https://leetcode.com/problems/3sum/discuss/?currentPage=1&orderBy=most_votes&query=",
-    topicTags: ["array", "two-pointers", "sorting"],
-    titleSlug: "3sum",
-    updatedAt: "2022-09-25T15:00:10.440Z",
-  },
-  {
-    acRate: 40.56593028625932,
-    difficulty: "Easy",
-    title: "Longest Common Prefix",
-    createdAt: "2022-09-23T19:20:36.134Z",
-    discussionLink:
-      "https://leetcode.com/problems/longest-common-prefix/discuss/?currentPage=1&orderBy=most_votes&query=",
-    topicTags: ["string"],
-    titleSlug: "longest-common-prefix",
-    updatedAt: "2022-09-25T15:00:10.358Z",
-  },
-  {
-    acRate: 56.35673953099588,
-    difficulty: "Medium",
-    title: "Path Sum II",
-    createdAt: "2022-09-23T19:20:45.569Z",
-    discussionLink:
-      "https://leetcode.com/problems/path-sum-ii/discuss/?currentPage=1&orderBy=most_votes&query=",
-    topicTags: ["backtracking", "tree", "depth-first-search", "binary-tree"],
-    titleSlug: "path-sum-ii",
-    updatedAt: "2022-09-25T15:00:19.368Z",
-  },
-  {
-    acRate: 49.06049551975713,
-    difficulty: "Easy",
-    title: "Two Sum",
-    createdAt: "2022-09-23T19:20:34.911Z",
-    discussionLink:
-      "https://leetcode.com/problems/two-sum/discuss/?currentPage=1&orderBy=most_votes&query=",
-    topicTags: ["array", "hash-table"],
-    titleSlug: "two-sum",
-    updatedAt: "2022-09-25T15:00:09.251Z",
-  },
-];
-
-const Table = ({
-  columns = defaultColumns,
-  data = defaultQuesitons,
-}: Props) => {
+const Table = ({ columns, data }: Props) => {
   const rerender = React.useReducer(() => ({}), {})[1];
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  const [qnData, setQnData] = React.useState<QuestionSummary[]>([data[0]]);
+  const [qnData, setQnData] = React.useState<QuestionSummary[]>([...data]);
 
-  const refreshData = () => setQnData(() => [...defaultQuesitons]);
+  // TODO: Change endpoint if needed
+  const refreshData = () => {
+    async function getData() {
+      await Axios.get<QuestionSummary[]>(
+        "question/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
+      ).then(({ data }) => {
+        setQnData(data);
+      });
+    }
+    getData();
+  };
   const table = useReactTable({
     data: qnData,
     columns,
@@ -186,13 +108,16 @@ const Table = ({
           })}
         </tbody>
       </table>
+      {/* shows number of visible rows */}
       <div>{table.getRowModel().rows.length} Rows</div>
       <div>
         <button onClick={() => rerender()}>Force Rerender</button>
       </div>
+      {/* gets data from backend (5 qns currently) */}
       <div>
         <button onClick={() => refreshData()}>Refresh Data</button>
       </div>
+      {/* shows sorting fn applied on which column */}
       <pre>{JSON.stringify(sorting, null, 2)}</pre>
     </div>
   );
