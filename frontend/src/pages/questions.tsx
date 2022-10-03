@@ -126,7 +126,7 @@ const QuesitonPage = () => {
   // TODO: Uncomment this to load all qns initially
   // React.useEffect(() => {
   //   async function getData() {
-  //     await Axios.get<QuestionSummary[]>("question/summary/").then(
+  //     await Axios.get<QuestionSummary[]>("questions/summary/").then(
   //       ({ data }) => {
   //         setData(data);
   //         setLoadingData(false);

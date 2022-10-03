@@ -36,11 +36,11 @@ const Table = ({ columns, data }: Props) => {
   const refreshData = () => {
     async function getData() {
       // await Axios.get<QuestionSummary[]>(
-      //   "question/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
+      //   "questions/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
       // ).then(({ data }) => {
       //   setQnData(data);
       // });
-      await Axios.get<QuestionSummary[]>("question/").then(({ data }) => {
+      await Axios.get<QuestionSummary[]>("questions/").then(({ data }) => {
         setQnData(data);
       });
     }
