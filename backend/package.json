@@ -22,7 +22,7 @@
     "db:local:start": "docker compose up dev-db dev-redis -d && yarn prisma:dev:migrate && yarn prisma:dev:generate",
     "db:local:start:sleep": "echo 'Enter sleep time:' && read slepy && docker compose up dev-db dev-redis -d && sleep $slepy && yarn prisma:dev:migrate && yarn prisma:dev:generate",
     "db:local:restart": "yarn db:local:rm && yarn db:local:start",
-    "db:dev:push": "dotenv -e .env.local -- npx prisma db push && yarn clean:zod:index",
+    "db:dev:push": "dotenv -e .env.local -- npx prisma db push",
     "prisma:dev:generate": "dotenv -e .env.local -- npx prisma generate && yarn --cwd ../shared/ lint --quiet --fix",
     "prisma:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:dev:deploy": "dotenv -e .env.local -- prisma migrate deploy",
