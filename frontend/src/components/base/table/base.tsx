@@ -23,7 +23,6 @@ type Props<T> = {
 
 const Table = <T,>({ columns, data }: Props<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
   const [tableData] = React.useState<T[]>([...data]);
 
   const table = useReactTable({
