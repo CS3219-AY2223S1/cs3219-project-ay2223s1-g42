@@ -151,7 +151,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     if (!provider) {
       return;
     }
-    provider.disconnect();
     provider.destroy();
   };
 
