@@ -23,7 +23,7 @@
     "db:local:start:sleep": "echo 'Enter sleep time:' && read slepy && docker compose up dev-db dev-redis -d && sleep $slepy && yarn prisma:dev:migrate && yarn prisma:dev:generate",
     "db:local:restart": "yarn db:local:rm && yarn db:local:start",
     "db:dev:push": "dotenv -e .env.local -- npx prisma db push && yarn clean:zod:index",
-    "prisma:dev:generate": "dotenv -e .env.local -- npx prisma generate && yarn clean:zod:index && yarn lint --quiet --fix",
+    "prisma:dev:generate": "dotenv -e .env.local -- npx prisma generate && yarn --cwd ../shared/ lint --quiet --fix",
     "prisma:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:dev:deploy": "dotenv -e .env.local -- prisma migrate deploy",
     "prisma:dev:studio": "dotenv -e .env.local -- npx prisma studio",
@@ -32,8 +32,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "clean:zod:index": "rm -rf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@anatine/zod-nestjs": "^1.7.4",
@@ -97,8 +96,6 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.3",
-    "lint-staged": "^13.0.3",
-    "nestjs-zod-prisma": "^2.0.0",
     "prettier": "^2.3.2",
     "prisma": "^4.3.1",
     "source-map-support": "^0.5.20",
@@ -107,7 +104,8 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.0",
-    "typescript": "~4.7.4"
+    "typescript": "~4.7.4",
+    "zod-prisma": "^0.5.4"
   },
   "jest": {
     "moduleFileExtensions": [

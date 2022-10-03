@@ -26,6 +26,7 @@ import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+
 import {
   SignupCredentialsDto,
   SigninCredentialsDto,
@@ -33,7 +34,7 @@ import {
   ResetPasswordCredentialsDto,
   ChangePasswordInfoDto,
   DeleteAccountInfoDto,
-} from "src/utils/zod";
+} from "./auth.dto";
 import {
   ChangePasswordResponse,
   DeleteAccountResponse,

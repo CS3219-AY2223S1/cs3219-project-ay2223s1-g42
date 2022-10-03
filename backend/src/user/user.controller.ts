@@ -22,7 +22,8 @@ import { User } from "@prisma/client";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
-import { EditableCredentialsDto, ThrowKnownPrismaErrors } from "src/utils";
+import { ThrowKnownPrismaErrors } from "src/utils";
+import { EditableCredentialsDto } from "src/auth/auth.dto";
 import {
   DeleteUserResponse,
   EditUserResponse,

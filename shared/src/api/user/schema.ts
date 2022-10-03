@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import { UserModel } from "../../types";
+import { _UserModel } from "../../models";
 
-const UserInfoSchema = UserModel.pick({
+const UserInfoSchema = _UserModel.pick({
   id: true,
   email: true,
   username: true,
 });
 
-const UserHashInfoSchema = UserModel.pick({
+const UserHashInfoSchema = _UserModel.pick({
   id: true,
   email: true,
   username: true,
@@ -16,11 +16,13 @@ const UserHashInfoSchema = UserModel.pick({
   hashRt: true,
 });
 
-const EditableSchema = UserModel.pick({
-  email: true,
-  username: true,
-  hashRt: true,
-}).partial();
+const EditableSchema = _UserModel
+  .pick({
+    email: true,
+    username: true,
+    hashRt: true,
+  })
+  .partial();
 
 type UserInfo = z.infer<typeof UserInfoSchema>;
 type UserHashInfo = z.infer<typeof UserHashInfoSchema>;

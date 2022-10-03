@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { UserModel } from "../../types";
+import { _UserModel } from "../../models";
 
 // schemas
 const passwordZodString = z
@@ -8,8 +8,8 @@ const passwordZodString = z
   .min(8, { message: "Password must be at least 8 characters" });
 
 const SignupSchema = z.object({
-  username: UserModel.shape.username,
-  email: UserModel.shape.email,
+  username: _UserModel.shape.username,
+  email: _UserModel.shape.email,
   password: passwordZodString,
 });
 

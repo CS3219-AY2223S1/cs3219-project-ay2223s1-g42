@@ -14,11 +14,8 @@ import { v4 } from "uuid";
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
-import {
-  SignupCredentialsDto,
-  SigninCredentialsDto,
-  ThrowKnownPrismaErrors,
-} from "src/utils";
+import { ThrowKnownPrismaErrors } from "src/utils";
+import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
 import { NAMESPACES } from "shared/api";
 
 export type JwtPayload = {

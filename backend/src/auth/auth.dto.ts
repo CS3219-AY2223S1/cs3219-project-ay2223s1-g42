@@ -1,7 +1,7 @@
 import { createZodDto } from "@anatine/zod-nestjs";
 import { extendApi } from "@anatine/zod-openapi";
 
-import { API_OPERATIONS } from "../constants";
+import { API_OPERATIONS } from "src/utils";
 import {
   ChangePasswordInfoSchema,
   DeleteAccountInfoSchema,

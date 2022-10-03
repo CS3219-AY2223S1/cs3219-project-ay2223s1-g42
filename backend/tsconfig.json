@@ -23,5 +23,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-  "references": [{ "path": "../shared" }]
+  "references": [{ "path": "../shared" }],
+  "include": ["prisma/zod"]
 }

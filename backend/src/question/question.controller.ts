@@ -15,10 +15,17 @@ import {
 } from "@nestjs/swagger";
 
 import { QuestionService } from "./question.service";
-import { FlattenedQuestionSummary } from "./question.type";
-import { QuestionQueryDto } from "./QuestionQuery.dto";
 import { PublicRoute } from "../utils/decorator";
-import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "src/utils/constants";
+import { QuestionQueryDto } from "./QuestionQuery.dto";
+import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import {
+  GetSummariesResponse,
+  FlattenedQuestionSummary,
+  GetDailyQuestionSummaryResponse,
+  GetAllTopicsResponse,
+  GetDailyQuestionContentResponse,
+  GetSlugContentResponse,
+} from "shared/api";
 
 @Controller("question")
 export class QuestionController {
@@ -42,7 +49,9 @@ export class QuestionController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @Get("/summary")
-  async getSummaries(@Query() query: QuestionQueryDto) {
+  async getSummaries(
+    @Query() query: QuestionQueryDto
+  ): Promise<GetSummariesResponse> {
     const { difficulty, titleSlugs, topicMatch, topicTags } = query;
 
     // if none specified
@@ -103,9 +112,8 @@ export class QuestionController {
   @ApiNotFoundResponse({
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
-  async getSummaryForDailyQuestion() {
+  async getDailyQuestionSummary(): Promise<GetDailyQuestionSummaryResponse> {
     const dailySummary = await this.questionService.getDailyQuestionSummary();
-
     return dailySummary;
   }
 
@@ -121,9 +129,8 @@ export class QuestionController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @Get("/topics")
-  async getAllTopics() {
+  async getAllTopics(): Promise<GetAllTopicsResponse> {
     const topics = await this.questionService.getAllTopics();
-
     return topics;
   }
 
@@ -139,9 +146,8 @@ export class QuestionController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @Get("/content/daily")
-  async getContentForDailyQuestion() {
+  async getDailyQuestionContent(): Promise<GetDailyQuestionContentResponse> {
     const dailyContent = await this.questionService.getDailyQuestionContent();
-
     return dailyContent;
   }
 
@@ -157,12 +163,13 @@ export class QuestionController {
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @Get("/content/:titleSlug")
-  async getContentFromSlug(@Param("titleSlug") titleSlug: string) {
+  async getSlugContent(
+    @Param("titleSlug") titleSlug: string
+  ): Promise<GetSlugContentResponse> {
     try {
       const questionContent = await this.questionService.getContentFromSlug(
         titleSlug
       );
-
       return questionContent;
     } catch (error) {
       throw new BadRequestException(`unable to get content for '${titleSlug}'`);
