@@ -23,7 +23,5 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false
   },
-  "references": [{ "path": "../shared" }],
-  "exclude": ["node_modules", "test", "dist", "dist/**/*spec.ts"],
-  "include": ["prisma/zod"]
+  "references": [{ "path": "../shared" }]
 }
