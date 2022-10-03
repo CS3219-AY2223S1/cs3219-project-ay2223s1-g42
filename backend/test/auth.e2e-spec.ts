@@ -251,6 +251,7 @@ describe("AuthController (e2e)", () => {
   //Valid signout
   describe(`Test @POST("/auth/signout) for logged in users`, () => {
     test("Should return status code 200 if signout is successful", async () => {
+      //Creates a new user
       const newUser = {
         email:
           randomstring.generate({
@@ -279,20 +280,14 @@ describe("AuthController (e2e)", () => {
       //expect user to be created
       expect(findUser.email).toBe(newUser.email);
       expect(findUser.username).toBe(newUser.username);
-
-      const tokens = await authService.signin(signInDTO);
-
-      const signIn = await request(app.getHttpServer())
+      const tempApp = app.getHttpServer();
+      await request(tempApp)
         .post("/auth/local/signin")
-        .send(signInDTO);
-
-      expect(signIn.body.message).toBe("success");
-      //expect(await request(app.getHttpServer).get("me")).not.toBe("null");
-      const res = await request(app.getHttpServer()).post("/auth/signout");
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body.message).toBe("success");
-
+        .send(signInDTO)
+        .expect(200)
+        .then(function (res) {
+          return request(tempApp).post("/auth/signout").expect(200);
+        });
       //Clean up
       userService.delete(user.id);
     });
@@ -339,14 +334,18 @@ describe("AuthController (e2e)", () => {
       expect(findUser.email).toBe(newUser.email);
       expect(findUser.username).toBe(newUser.username);
 
-      const signIn = await request(app.getHttpServer())
-        .post("/auth/local/signin")
-        .send(signInDTO);
+      const tempApp = app.getHttpServer();
 
-      expect(signIn.body.message).toBe("success");
-      const res = await request(app.getHttpServer()).get("/auth/refresh");
-      expect(res.statusCode).toBe(200);
-      expect(res.body.message).toBe("success");
+      await request(tempApp)
+        .post("/auth/local/signin")
+        .send(signInDTO)
+        .expect(200)
+        .then(function (res) {
+          return request(tempApp).get("/auth/refresh").expect(200);
+        });
+
+      //Clean up
+      userService.delete(user.id);
     });
   });
 
