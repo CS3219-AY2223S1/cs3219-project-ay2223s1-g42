@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { QuestionService } from "./question.service";
-import { QuestionController } from "./question.controller";
+import { QuestionService } from "./questions.service";
+import { QuestionController } from "./questions.controller";
 
 @Module({
   controllers: [QuestionController],

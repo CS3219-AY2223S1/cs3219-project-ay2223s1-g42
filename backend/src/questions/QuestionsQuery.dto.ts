@@ -4,7 +4,7 @@ import {
   sanitizeDifficulty,
   sanitizeFilters,
   sanitizeTopicMatch,
-} from "./question.helper";
+} from "./questions.helper";
 
 export class QuestionQueryDto {
   @IsOptional()
