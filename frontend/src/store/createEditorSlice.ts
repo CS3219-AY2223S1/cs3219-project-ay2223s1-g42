@@ -22,6 +22,7 @@ export type EditorSlice = {
   setupBinding: (editor: monaco.editor.IStandaloneCodeEditor) => void;
   cleanupProvider: () => void;
   cleanupBinding: () => void;
+  resetProviderBinding: () => void;
 };
 
 const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
@@ -152,7 +153,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     }
     provider.disconnect();
     provider.destroy();
-    setState({ editorProvider: undefined });
   };
 
   const cleanupBinding = () => {
@@ -161,7 +161,10 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
     binding.destroy();
-    setState({ editorBinding: undefined });
+  };
+
+  const resetProviderBinding = () => {
+    setState({ editorProvider: undefined, editorBinding: undefined });
   };
 
   return {
@@ -179,6 +182,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     setEditorLanguage,
     cleanupProvider,
     cleanupBinding,
+    resetProviderBinding,
   };
 };
 

@@ -9,10 +9,11 @@ import { RoomTabs } from "./RoomTabs";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
-  const { user, leaveRoom } = useGlobalStore((state) => {
+  const { user, leaveRoom, resetProviderBinding } = useGlobalStore((state) => {
     return {
       user: state.user,
       leaveRoom: state.leaveRoom,
+      resetProviderBinding: state.resetProviderBinding,
     };
   }, shallow);
   return (
@@ -24,6 +25,7 @@ const LeaveRoomButton = () => {
           return;
         }
         leaveRoom();
+        resetProviderBinding();
         navigate("/");
       }}
     >

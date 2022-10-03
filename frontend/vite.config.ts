@@ -3,6 +3,7 @@ import { resolve } from "path";
 import react from "@vitejs/plugin-react";
 import Pages from "vite-plugin-pages";
 import { ValidateEnv } from "@julr/vite-plugin-validate-env";
+import monacoEditorPlugin from "vite-plugin-monaco-editor";
 
 export default defineConfig((configEnv) => {
   const isDevelopment = configEnv.mode === "development";
@@ -15,9 +16,17 @@ export default defineConfig((configEnv) => {
         importMode: "async",
       }),
       ValidateEnv({}),
+      monacoEditorPlugin({
+        globalAPI: true,
+        languageWorkers: ["editorWorkerService", "json", "typescript"],
+      }),
     ],
-    define: {
-      global: {},
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
+      },
     },
     resolve: {
       alias: {

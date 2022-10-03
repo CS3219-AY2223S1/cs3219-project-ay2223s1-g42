@@ -8,33 +8,18 @@ import { LANGUAGE, useGlobalStore } from "src/store";
 
 const RoomEditor = () => {
   console.log("rendering room editor component!");
-  const {
-    user,
-    room,
-    input,
-    language,
-    doc,
-    provider,
-    setupDoc,
-    setupProvider,
-    setupBinding,
-    cleanupProvider,
-    cleanupBinding,
-  } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      room: state.room,
-      input: state.editorInput,
-      language: state.editorLanguage,
-      doc: state.doc,
-      provider: state.editorProvider,
-      setupDoc: state.setupDoc,
-      setupProvider: state.setupProvider,
-      setupBinding: state.setupBinding,
-      cleanupProvider: state.cleanupProvider,
-      cleanupBinding: state.cleanupBinding,
-    };
-  }, shallow);
+  const user = useGlobalStore((state) => state.user);
+  const room = useGlobalStore((state) => state.room);
+  const input = useGlobalStore((state) => state.editorInput);
+  const language = useGlobalStore((state) => state.editorLanguage);
+  const doc = useGlobalStore((state) => state.doc);
+  const provider = useGlobalStore((state) => state.editorProvider);
+  const binding = useGlobalStore((state) => state.editorBinding);
+  const setupDoc = useGlobalStore((state) => state.setupDoc);
+  const setupProvider = useGlobalStore((state) => state.setupProvider);
+  const setupBinding = useGlobalStore((state) => state.setupBinding);
+  const cleanupProvider = useGlobalStore((state) => state.cleanupProvider);
+  const cleanupBinding = useGlobalStore((state) => state.cleanupBinding);
   const monaco = useMonaco();
   const [editorMounted, setEditorMounted] = useState<boolean>(false);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
@@ -52,29 +37,45 @@ const RoomEditor = () => {
     setupDoc();
   }, [setupDoc]);
 
-  // set up provider on editor first mount
-  // or when user or room changes
+  // set up provider on editor first mount or when user or room changes
   useEffect(() => {
+    if (!monaco) {
+      console.error("failed to set up provider, monaco instance not set up");
+      return;
+    }
     setupProvider();
+  }, [monaco, doc, user, room, setupProvider]);
+
+  useEffect(() => {
+    if (!provider) {
+      return;
+    }
     return () => {
       cleanupProvider();
     };
-  }, [monaco, doc, user, room, setupProvider, cleanupProvider]);
+  }, [provider, cleanupProvider]);
 
-  // set up binding whenever provider or
-  // monaco instance changes
+  // set up binding whenever provider or monaco instance changes
   useEffect(() => {
     if (!editorRef.current || !monaco) {
       console.error(
-        "failed to setup binding, editor ref or monaco instance not setup"
+        "failed to setup binding, editor ref or monaco instance not setup: ",
+        { editorRef: editorRef.current, monaco }
       );
       return;
     }
+    console.log("setting up binding");
     setupBinding(editorRef.current);
+  }, [provider, monaco, editorMounted, setupBinding]);
+
+  useEffect(() => {
+    if (!binding) {
+      return;
+    }
     return () => {
       cleanupBinding();
     };
-  }, [provider, monaco, editorMounted, setupBinding, cleanupBinding]);
+  }, [binding, cleanupBinding]);
 
   return (
     <Editor
