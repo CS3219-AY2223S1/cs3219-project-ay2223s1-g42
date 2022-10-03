@@ -21,6 +21,8 @@ type NavItem = {
 };
 
 const LINKS_LOGGED_IN = [
+  { label: "dashboard", href: "/" },
+  { label: "questions", href: "/questions" },
   {
     label: "settings",
     href: "/user/settings",

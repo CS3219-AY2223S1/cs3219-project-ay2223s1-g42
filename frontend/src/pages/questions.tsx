@@ -100,7 +100,7 @@ const defaultColumns = [
       const lcLink = info.getValue();
       return (
         <div>
-          <a href={lcLink}>
+          <a href={lcLink} target="_blank" rel="noopener noreferrer">
             Open in <br />
             LC
           </a>
@@ -114,12 +114,16 @@ const defaultColumns = [
     cell: (info) => stringifyDate(info.getValue()),
     header: "Added on",
   }),
+  columnHelper.accessor("updatedAt", {
+    cell: (info) => stringifyDate(info.getValue()),
+    header: "Last updated",
+  }),
 ];
 
 const QuesitonPage = () => {
   const [loadingData, setLoadingData] = React.useState(false);
   const [data, setData] = React.useState<QuestionSummary[]>([]);
-  // TODO: Uncomment this to load all qns
+  // TODO: Uncomment this to load all qns initially
   // React.useEffect(() => {
   //   async function getData() {
   //     await Axios.get<QuestionSummary[]>("question/summary/").then(

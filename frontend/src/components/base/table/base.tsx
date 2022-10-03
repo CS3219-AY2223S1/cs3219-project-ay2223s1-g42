@@ -35,9 +35,12 @@ const Table = ({ columns, data }: Props) => {
   // TODO: Change endpoint if needed
   const refreshData = () => {
     async function getData() {
-      await Axios.get<QuestionSummary[]>(
-        "question/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
-      ).then(({ data }) => {
+      // await Axios.get<QuestionSummary[]>(
+      //   "question/?topicTags=breadth-first-search,HASH-TABLE  ,  ,  sTriNG&topicMatch=AND"
+      // ).then(({ data }) => {
+      //   setQnData(data);
+      // });
+      await Axios.get<QuestionSummary[]>("question/").then(({ data }) => {
         setQnData(data);
       });
     }
@@ -78,6 +81,7 @@ const Table = ({ columns, data }: Props) => {
                           header.getContext()
                         )}
                         {{
+                          //TODO: use chevron?
                           asc: " 🔼",
                           desc: " 🔽",
                         }[header.column.getIsSorted() as string] ?? null}
