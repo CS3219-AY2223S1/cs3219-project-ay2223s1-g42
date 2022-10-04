@@ -2,14 +2,13 @@ import { Injectable } from "@nestjs/common";
 import * as _ from "lodash";
 
 import {
-  FlattenedQuestionContent,
-  FlattenedQuestionSummary,
   QuestionContentFromDb,
   QuestionSummaryFromDb,
   QUESTION_CONTENT_SELECT,
   QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
+import { FlattenedQuestionContent, FlattenedQuestionSummary } from "shared/api";
 
 @Injectable()
 export class QuestionService {
@@ -24,7 +23,7 @@ export class QuestionService {
   async getAllSummaries() {
     const res: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(res);
@@ -51,9 +50,8 @@ export class QuestionService {
   ): Promise<FlattenedQuestionContent> {
     const res = await this.prisma.questionContent.findUniqueOrThrow({
       where: { titleSlug },
-      select: { ...QUESTION_CONTENT_SELECT },
+      select: QUESTION_CONTENT_SELECT,
     });
-
     return this.formatQuestionContent(res);
   }
 
@@ -70,24 +68,24 @@ export class QuestionService {
   }
 
   /**
-   * @return  {FlattenedQuestionSummary[]}  Summary of Daily Question
+   * @return  {FlattenedQuestionSummary}  Summary of Daily Question
    */
-  async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary[]> {
+  async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary> {
     // Cron job ensures that there's only 1 QOTD at a time
-    const dailySummary: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
+    const dailySummary: QuestionSummaryFromDb =
+      await this.prisma.questionSummary.findFirstOrThrow({
         where: { isDailyQuestion: true },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
-
-    return this.formatQuestionSummaries(dailySummary);
+    const [formattedSummary] = this.formatQuestionSummaries([dailySummary]);
+    return formattedSummary;
   }
 
   async getSummariesFromDifficulty(difficulties: string[]) {
     const validDifficulties: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { difficulty: { in: difficulties } },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(validDifficulties);
@@ -108,7 +106,7 @@ export class QuestionService {
     const validSummaries: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { titleSlug: { in: validSlugs } },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(validSummaries);
@@ -130,7 +128,7 @@ export class QuestionService {
       where: { topicSlug: { in: validTopicTagArray } },
       select: {
         questionSummaries: {
-          select: { ...QUESTION_SUMMARY_SELECT },
+          select: QUESTION_SUMMARY_SELECT,
         },
       },
     });

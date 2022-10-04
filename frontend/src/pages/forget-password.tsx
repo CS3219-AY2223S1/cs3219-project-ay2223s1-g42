@@ -1,5 +1,5 @@
 import { BigHeading } from "src/components";
-import { ForgetPasswordForm } from "../login/components";
+import { ForgetPasswordForm } from "../features/login";
 
 const ForgetPasswordPage = () => {
   return (

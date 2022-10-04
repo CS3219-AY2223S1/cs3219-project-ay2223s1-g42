@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { BigHeading, SpinnerIcon } from "src/components";
 import { useGlobalStore } from "src/store";
-import { LoginForm } from "../login";
+import { LoginForm } from "../features/login";
 
 const LoginPage = () => {
   const queryClient = useQueryClient();

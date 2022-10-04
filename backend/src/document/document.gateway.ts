@@ -66,7 +66,6 @@ export class DocumentGateway implements OnGatewayInit {
     // );
 
     this.ySocketIO.on("document-destroy", async (doc: Document) => {
-      console.log(`The document ${doc.name} is being destroyed`);
       try {
         await this.documentService.deleteDocument(doc.name);
       } catch (err) {
