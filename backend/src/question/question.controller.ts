@@ -41,7 +41,7 @@ export class QuestionController {
   @ApiNotFoundResponse({
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
-  @Get(["", "/summary"])
+  @Get("/summary")
   async getSummaries(@Query() query: QuestionQueryDto) {
     const { difficulty, titleSlugs, topicMatch, topicTags } = query;
 
