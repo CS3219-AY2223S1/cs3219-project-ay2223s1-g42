@@ -24,7 +24,7 @@ export class QuestionService {
   async getAllSummaries() {
     const res: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(res);
@@ -51,7 +51,7 @@ export class QuestionService {
   ): Promise<FlattenedQuestionContent> {
     const res = await this.prisma.questionContent.findUniqueOrThrow({
       where: { titleSlug },
-      select: { ...QUESTION_CONTENT_SELECT },
+      select: QUESTION_CONTENT_SELECT,
     });
 
     return this.formatQuestionContent(res);
@@ -77,7 +77,7 @@ export class QuestionService {
     const dailySummary: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { isDailyQuestion: true },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(dailySummary);
@@ -87,7 +87,7 @@ export class QuestionService {
     const validDifficulties: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { difficulty: { in: difficulties } },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(validDifficulties);
@@ -108,7 +108,7 @@ export class QuestionService {
     const validSummaries: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { titleSlug: { in: validSlugs } },
-        select: { ...QUESTION_SUMMARY_SELECT },
+        select: QUESTION_SUMMARY_SELECT,
       });
 
     return this.formatQuestionSummaries(validSummaries);
@@ -130,7 +130,7 @@ export class QuestionService {
       where: { topicSlug: { in: validTopicTagArray } },
       select: {
         questionSummaries: {
-          select: { ...QUESTION_SUMMARY_SELECT },
+          select: QUESTION_SUMMARY_SELECT,
         },
       },
     });

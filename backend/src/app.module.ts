@@ -16,7 +16,7 @@ import { generateEmailFromField } from "./utils/mail";
 import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
 import { DocumentModule } from "./document/document.module";
-import { QuestionModule } from "./questions/questions.module";
+import { QuestionModule } from "./question/question.module";
 
 @Module({
   imports: [

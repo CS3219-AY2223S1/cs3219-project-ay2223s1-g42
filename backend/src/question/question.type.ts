@@ -21,6 +21,7 @@ export const QUESTION_SUMMARY_SELECT =
     title: true,
     titleSlug: true,
     topicTags: { select: { topicSlug: true } },
+    createdAt: true,
     updatedAt: true,
   });
 

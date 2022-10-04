@@ -8,12 +8,12 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 
-import { QuestionService } from "./questions.service";
-import { FlattenedQuestionSummary } from "./questions.type";
+import { QuestionService } from "./question.service";
+import { FlattenedQuestionSummary } from "./question.type";
 import { PublicRoute } from "../utils/decorator";
-import { QuestionQueryDto } from "./QuestionsQuery.dto";
+import { QuestionQueryDto } from "./QuestionQuery.dto";
 
-@Controller("questions")
+@Controller("question")
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
