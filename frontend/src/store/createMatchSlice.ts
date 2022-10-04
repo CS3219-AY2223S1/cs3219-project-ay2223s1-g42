@@ -1,10 +1,14 @@
 import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
-import toast from "react-hot-toast";
+import toast, { ToastOptions } from "react-hot-toast";
 
 import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
 import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
+
+const matchToastOptions: ToastOptions = {
+  id: "match-toast",
+};
 
 export type MatchSlice = {
   matchSocket: Socket | undefined;
@@ -55,7 +59,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.ROOM_EXISTS,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.error(queueStatusMsg, matchToastOptions);
     console.error(message);
     setState({
       isInQueue: false,
@@ -85,7 +89,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.MATCH_FOUND,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.success(queueStatusMsg, matchToastOptions);
     // join room
     setState({
       isInQueue: false,
@@ -103,7 +107,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.JOIN_QUEUE_ERROR,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.error(queueStatusMsg, matchToastOptions);
     console.error(message);
     setState({ isInQueue: false, queueStatus });
   });
@@ -117,7 +121,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.success(queueStatusMsg, matchToastOptions);
     setState({ isInQueue: false, queueRoomId: undefined, queueStatus });
   });
 
@@ -130,7 +134,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.LEAVE_QUEUE_ERROR,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.error(queueStatusMsg, matchToastOptions);
     console.error(message);
     setState({ queueStatus });
   });
