@@ -66,48 +66,50 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
       autoClose={false}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex w-full items-center justify-center">
-          {queueRoomId ? (
-            <MatchCountdownTimer
-              duration={MATCH_FOUND_DURATION}
-              isPlaying={!!queueRoomId}
-              key={"match-found-timer"}
-              onComplete={handleCancelMatch}
-            />
-          ) : isInQueue ? (
-            <MatchCountdownTimer
-              duration={MATCH_QUEUE_DURATION}
-              isPlaying={isInQueue}
-              key={"match-queue-timer"}
-              onComplete={handleLeaveQueue}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
-
         {queueRoomId ? (
-          <div className="flex flex-col gap-1">
-            <p>Room ID: {queueRoomId}</p>
-          </div>
+          <>
+            <div className="flex w-full items-center justify-center">
+              <MatchCountdownTimer
+                duration={MATCH_FOUND_DURATION}
+                isPlaying={!!queueRoomId}
+                key={"match-found-timer"}
+                onComplete={handleCancelMatch}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <p>Room ID: {queueRoomId}</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <PrimaryButton
+                className="w-full"
+                onClick={() => navigate(`/room/${queueRoomId}`)}
+              >
+                Join room
+              </PrimaryButton>
+              <RedButton className="w-full" onClick={handleDisconnect}>
+                Disconnect
+              </RedButton>
+            </div>
+          </>
         ) : (
-          <></>
+          <>
+            {isInQueue && (
+              <div className="flex w-full items-center justify-center">
+                <MatchCountdownTimer
+                  duration={MATCH_QUEUE_DURATION}
+                  isPlaying={isInQueue}
+                  key={"match-queue-timer"}
+                  onComplete={handleLeaveQueue}
+                />
+              </div>
+            )}
+            <div className="flex flex-col gap-3">
+              <RedButton className="w-full" onClick={handleDisconnect}>
+                Disconnect
+              </RedButton>
+            </div>
+          </>
         )}
-        <div className="flex flex-col gap-3">
-          {queueRoomId ? (
-            <PrimaryButton
-              className="w-full"
-              onClick={() => navigate(`/room/${queueRoomId}`)}
-            >
-              Join room
-            </PrimaryButton>
-          ) : (
-            <></>
-          )}
-          <RedButton className="w-full" onClick={handleDisconnect}>
-            Disconnect
-          </RedButton>
-        </div>
       </div>
     </PrimaryDialog>
   );

@@ -30,7 +30,17 @@ const AppContainer = ({ children }: PropsWithChildren) => {
     }
   );
   useGetMe({
+    onSuccess: () => {
+      if (matchSocket?.connected && roomSocket?.connected) {
+        return;
+      }
+      matchSocket?.connect();
+      roomSocket?.connect();
+    },
     onError: () => {
+      if (!matchSocket?.connected && !roomSocket?.connected) {
+        return;
+      }
       matchSocket?.disconnect();
       roomSocket?.disconnect();
     },

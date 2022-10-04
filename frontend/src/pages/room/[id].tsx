@@ -51,7 +51,11 @@ const RoomPage = (): JSX.Element => {
 
   // redirect to dashboard page if match cancelled
   useEffect(() => {
-    if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
+    console.log({ queueStatusEvent: queueStatus?.event });
+    if (
+      queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS ||
+      queueStatus?.event === MATCH_EVENTS.MATCH_CANCELLED
+    ) {
       navigate("/");
       resetProviderBinding();
     }
