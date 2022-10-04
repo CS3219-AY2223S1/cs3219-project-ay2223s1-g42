@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
-
 import { BaseCheckGroup, CheckGroupValue } from "src/components";
 import { QuestionDifficulty } from "shared/api";
 
