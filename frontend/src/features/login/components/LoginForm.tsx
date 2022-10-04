@@ -1,8 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { SigninData, SigninSchema } from "g42-peerprep-shared";
+import { SigninData, SigninResponse, SigninSchema } from "g42-peerprep-shared";
 
 import {
   Divider,
@@ -15,7 +15,7 @@ import {
   PrimaryButton,
   PrimaryLink,
 } from "src/components";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
@@ -30,15 +30,23 @@ const LoginForm = () => {
     resolver: zodResolver(SigninSchema),
   });
 
-  // sign in mutations
-  const useSignInMutation = useGlobalStore((state) => state.useSigninMutation);
-  const signinMutation = useSignInMutation({
-    onSuccess: () => {
-      console.log("invalidating ME query!");
-      queryClient.refetchQueries(["me"]);
-      reset();
-    },
-  });
+  // sign in mutation
+  const signinMutation = useMutation(
+    (params: SigninData) =>
+      Axios.post<SigninResponse>(`/auth/local/signin`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        console.log("invalidating ME query!");
+        queryClient.refetchQueries(["me"]);
+        reset();
+      },
+      onError: (error) => {
+        console.error({ error });
+      },
+    }
+  );
 
   // submit function
   const handleSignin = async (credentials: SigninData) => {

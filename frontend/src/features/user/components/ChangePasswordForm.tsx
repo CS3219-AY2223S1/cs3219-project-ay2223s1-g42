@@ -3,7 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ChangePasswordData,
   ChangePasswordInfoSchema,
+  ChangePasswordResponse,
 } from "g42-peerprep-shared";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   ErrorAlert,
@@ -11,7 +13,7 @@ import {
   TextInput,
   PrimaryButton,
 } from "src/components";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const ChangePasswordForm = () => {
   // form setup
@@ -24,14 +26,20 @@ const ChangePasswordForm = () => {
     resolver: zodResolver(ChangePasswordInfoSchema),
   });
 
-  const useChangePasswordMutation = useGlobalStore(
-    (state) => state.useChangePasswordMutation
+  const changePasswordMutation = useMutation(
+    (params: ChangePasswordData) =>
+      Axios.post<ChangePasswordResponse>(`/auth/change-password`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        reset();
+      },
+      onError: (error) => {
+        console.error({ error });
+      },
+    }
   );
-  const changePasswordMutation = useChangePasswordMutation({
-    onSuccess: () => {
-      reset();
-    },
-  });
 
   // submit function
   const handleResetPassword = async (credentials: ChangePasswordData) => {
