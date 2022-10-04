@@ -1,10 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
 
 import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
+import { GetMeResponse } from "shared/api";
 
 const RoomContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -19,32 +22,37 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-  const { user, useGetMe, matchSocket, roomSocket } = useGlobalStore(
-    (state) => {
-      return {
-        user: state.user,
-        useGetMe: state.useGetMe,
-        matchSocket: state.matchSocket,
-        roomSocket: state.roomSocket,
-      };
+  const { user, setUser, matchSocket, roomSocket } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      setUser: state.setUser,
+      matchSocket: state.matchSocket,
+      roomSocket: state.roomSocket,
+    };
+  });
+
+  useQuery(
+    ["me"],
+    () => Axios.get<GetMeResponse>("/users/me").then((res) => res.data),
+    {
+      onSuccess: (data) => {
+        setUser(data);
+        if (matchSocket?.connected && roomSocket?.connected) {
+          return;
+        }
+        matchSocket?.connect();
+        roomSocket?.connect();
+      },
+      onError: (err) => {
+        console.error({ err });
+        if (!matchSocket?.connected && !roomSocket?.connected) {
+          return;
+        }
+        matchSocket?.disconnect();
+        roomSocket?.disconnect();
+      },
     }
   );
-  useGetMe({
-    onSuccess: () => {
-      if (matchSocket?.connected && roomSocket?.connected) {
-        return;
-      }
-      matchSocket?.connect();
-      roomSocket?.connect();
-    },
-    onError: () => {
-      if (!matchSocket?.connected && !roomSocket?.connected) {
-        return;
-      }
-      matchSocket?.disconnect();
-      roomSocket?.disconnect();
-    },
-  });
 
   // current pathname
   const location = useLocation();

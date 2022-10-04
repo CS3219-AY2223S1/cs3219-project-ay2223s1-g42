@@ -1,4 +1,3 @@
-// import { Dispatch, SetStateAction } from "react";
 import cx from "classnames";
 
 import { CheckFilledIcon } from "src/components";

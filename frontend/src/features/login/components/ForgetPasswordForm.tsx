@@ -1,7 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 
-import { ForgetPasswordData, ForgetPasswordSchema } from "shared/api";
+import {
+  ForgetPasswordData,
+  ForgetPasswordResponse,
+  ForgetPasswordSchema,
+} from "shared/api";
 import {
   SuccessAlert,
   ErrorAlert,
@@ -9,7 +14,7 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const ForgetPasswordForm = () => {
   // form setup
@@ -23,12 +28,20 @@ const ForgetPasswordForm = () => {
   });
 
   // forget password mutation
-  const useForgetPasswordMutation = useGlobalStore(
-    (state) => state.useForgetPasswordMutation
+  const forgetPasswordMutation = useMutation(
+    (params: ForgetPasswordData) =>
+      Axios.post<ForgetPasswordResponse>(`/auth/forget-password`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        reset();
+      },
+      onError: (error) => {
+        console.error({ error });
+      },
+    }
   );
-  const forgetPasswordMutation = useForgetPasswordMutation({
-    onSuccess: reset,
-  });
 
   // submit function
   const handleSignin = async (credentials: ForgetPasswordData) => {
