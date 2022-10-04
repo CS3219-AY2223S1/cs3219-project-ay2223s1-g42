@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node ./dist/main.js",
     "start:watch": "nest start --watch",
     "start:local": "yarn db:local:restart && yarn start:watch",
     "start:dev": "yarn redis:local:restart && yarn start:watch",
@@ -33,7 +33,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "clean:zod:index": "rm -rdf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts"
+    "clean:zod:index": "rm -rf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",

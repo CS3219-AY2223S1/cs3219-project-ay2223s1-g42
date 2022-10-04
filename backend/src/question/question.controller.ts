@@ -16,8 +16,8 @@ import {
 
 import { QuestionService } from "./question.service";
 import { FlattenedQuestionSummary } from "./question.type";
-import { PublicRoute } from "../utils/decorator";
 import { QuestionQueryDto } from "./QuestionQuery.dto";
+import { PublicRoute } from "../utils/decorator";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "src/utils/constants";
 
 @Controller("question")
@@ -41,7 +41,7 @@ export class QuestionController {
   @ApiNotFoundResponse({
     description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
-  @Get(["", "/summary"])
+  @Get("/summary")
   async getSummaries(@Query() query: QuestionQueryDto) {
     const { difficulty, titleSlugs, topicMatch, topicTags } = query;
 
