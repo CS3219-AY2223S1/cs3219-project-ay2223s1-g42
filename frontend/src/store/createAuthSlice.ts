@@ -79,10 +79,10 @@ const createAuthSlice: StateCreator<GlobalStore, [], [], AuthSlice> = (
         onSuccess: (data) => {
           setState({ user: data });
           if (options?.onSuccess) {
-            options.onSuccess();
+            options?.onSuccess();
           }
         },
-        retry: false,
+        onError: options?.onError,
       }
     );
   };

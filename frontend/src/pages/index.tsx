@@ -9,7 +9,11 @@ import {
   RadioGroupValue,
   SpinnerIcon,
 } from "src/components";
-import { MatchDialog, QuestionRadioGroup } from "src/features";
+import {
+  MatchDialog,
+  QuestionCheckGroup,
+  QuestionRadioGroup,
+} from "src/features";
 import { useGlobalStore } from "src/store";
 
 const difficultyMap: Record<
@@ -23,60 +27,52 @@ const difficultyMap: Record<
   },
   medium: {
     title: "medium",
-    description: "Trees, graphs, and some dynamic programming",
+    description:
+      "Challenging data structures and concepts such as trees, graphs, and some dynamic programming",
   },
   hard: {
     title: "hard",
-    description: "Binary search, dynamic programming, and graph traversal",
+    description:
+      "Complex data structures and concepts such as binary search, dynamic programming, and graph traversal",
   },
 };
 
-const DEFAULT_DIFFICULTY: RadioGroupValue<QuestionDifficulty> =
-  difficultyMap.easy;
+const DEFAULT_DIFFICULTY: QuestionDifficulty = difficultyMap.easy.title;
 
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
-  const {
-    user,
-    room,
-    queueRoomId,
-    isInQueue,
-    queueStatus,
-    setMatchDifficulties,
-    joinQueue,
-    leaveQueue,
-    leaveRoom,
-    cancelMatch,
-  } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      room: state.room,
-      queueRoomId: state.queueRoomId,
-      isInQueue: state.isInQueue,
-      queueStatus: state.queueStatus,
-      setMatchDifficulties: state.setMatchDifficulties,
-      joinQueue: state.joinQueue,
-      leaveQueue: state.leaveQueue,
-      leaveRoom: state.leaveRoom,
-      cancelMatch: state.cancelMatch,
-    };
-  }, shallow);
+  const { user, queueStatus, setMatchDifficulties, joinQueue } = useGlobalStore(
+    (state) => {
+      return {
+        user: state.user,
+        queueStatus: state.queueStatus,
+        setMatchDifficulties: state.setMatchDifficulties,
+        joinQueue: state.joinQueue,
+      };
+    },
+    shallow
+  );
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-  const [difficulty, setDifficulty] =
-    useState<RadioGroupValue<QuestionDifficulty>>(DEFAULT_DIFFICULTY);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<
+    QuestionDifficulty[]
+  >([DEFAULT_DIFFICULTY]);
 
   // handle set difficulty
-  const handleSetDifficulty = (value: RadioGroupValue<QuestionDifficulty>) => {
-    setDifficulty(value);
-    setMatchDifficulties([value.title]);
+  const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
+    const difficultySelected = selectedDifficulties.includes(difficulty);
+    const newDifficulties = difficultySelected
+      ? selectedDifficulties.filter((d) => d !== difficulty)
+      : selectedDifficulties.concat(difficulty);
+    setSelectedDifficulties(newDifficulties);
+    setMatchDifficulties(newDifficulties);
   };
 
   // handle join match queue
   const handleJoinQueue = () => {
     setIsMatchingDialogOpen(true);
-    joinQueue([difficulty.title]);
+    joinQueue(selectedDifficulties);
   };
 
   const handleMatchDialogClose = () => {
@@ -102,15 +98,20 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="m-auto space-y-8">
+    <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      <QuestionRadioGroup
+      <QuestionCheckGroup
+        selectedDifficulties={selectedDifficulties}
+        updateSelectedValues={handleUpdateDifficulty}
+        difficulties={Object.values(difficultyMap)}
+      />
+      {/* <QuestionRadioGroup
         difficulty={difficulty}
         setDifficulty={handleSetDifficulty}
         difficulties={Object.values(difficultyMap)}
-      />
+      /> */}
       <div className="flex flex-col">
-        <PrimaryButton onClick={handleJoinQueue}>Match</PrimaryButton>
+        <PrimaryButton onClick={handleJoinQueue}>Find match!</PrimaryButton>
         <MatchDialog
           isOpen={isMatchingDialogOpen}
           onClose={handleMatchDialogClose}

@@ -19,13 +19,22 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-  const { user, useGetMe } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      useGetMe: state.useGetMe,
-    };
+  const { user, useGetMe, matchSocket, roomSocket } = useGlobalStore(
+    (state) => {
+      return {
+        user: state.user,
+        useGetMe: state.useGetMe,
+        matchSocket: state.matchSocket,
+        roomSocket: state.roomSocket,
+      };
+    }
+  );
+  useGetMe({
+    onError: () => {
+      matchSocket?.disconnect();
+      roomSocket?.disconnect();
+    },
   });
-  useGetMe();
 
   // current pathname
   const location = useLocation();
