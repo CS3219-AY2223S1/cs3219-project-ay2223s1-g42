@@ -16,9 +16,9 @@ import {
 
 import { QuestionService } from "./question.service";
 import { FlattenedQuestionSummary } from "./question.type";
+import { QuestionQueryDto } from "./QuestionQuery.dto";
 import { PublicRoute } from "../utils/decorator";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "src/utils/constants";
-import { QuestionQueryDto } from "./QuestionQuery.dto";
 
 @Controller("question")
 export class QuestionController {
