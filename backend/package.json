@@ -5,6 +5,10 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=16",
+    "yarn": ">=1.22.0 < 2.0.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -33,7 +37,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "clean:zod:index": "rm -rf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts"
+    "clean:zod:index": "rm -rf src/zod/question* src/zod/topic* && head -1 src/zod/index.ts >> src/zod/tmp.ts && mv src/zod/tmp.ts src/zod/index.ts",
+    "gcp-build": "yarn build && yarn prisma generate && yarn clean:zod:index"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",

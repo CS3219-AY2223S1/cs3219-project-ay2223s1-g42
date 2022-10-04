@@ -1,0 +1,11 @@
+runtime: custom # allows deployment of Dockerfile
+instance_class: F1
+env: flex
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 1
+  cpu_utilization:
+    target_utilization: 0.8
+env_variables:
+  # ADD YOUR ENV VARS HERE
+
