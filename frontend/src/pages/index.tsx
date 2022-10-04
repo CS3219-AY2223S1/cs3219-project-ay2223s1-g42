@@ -9,11 +9,7 @@ import {
   RadioGroupValue,
   SpinnerIcon,
 } from "src/components";
-import {
-  MatchDialog,
-  QuestionCheckGroup,
-  QuestionRadioGroup,
-} from "src/features";
+import { MatchDialog, QuestionCheckGroup } from "src/features";
 import { useGlobalStore } from "src/store";
 
 const difficultyMap: Record<
@@ -37,54 +33,62 @@ const difficultyMap: Record<
   },
 };
 
-const DEFAULT_DIFFICULTY: QuestionDifficulty = difficultyMap.easy.title;
-
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
-  const { user, queueStatus, setMatchDifficulties, joinQueue } = useGlobalStore(
-    (state) => {
-      return {
-        user: state.user,
-        queueStatus: state.queueStatus,
-        setMatchDifficulties: state.setMatchDifficulties,
-        joinQueue: state.joinQueue,
-      };
-    },
-    shallow
-  );
+  const {
+    user,
+    queueStatus,
+    matchDifficulties,
+    setMatchDifficulties,
+    joinQueue,
+  } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      queueStatus: state.queueStatus,
+      matchDifficulties: state.matchDifficulties,
+      setMatchDifficulties: state.setMatchDifficulties,
+      joinQueue: state.joinQueue,
+    };
+  }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<
-    QuestionDifficulty[]
-  >([DEFAULT_DIFFICULTY]);
 
-  // handle set difficulty
+  // handle update selected difficulties
   const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
-    const difficultySelected = selectedDifficulties.includes(difficulty);
+    const difficultySelected = matchDifficulties.includes(difficulty);
     const newDifficulties = difficultySelected
-      ? selectedDifficulties.filter((d) => d !== difficulty)
-      : selectedDifficulties.concat(difficulty);
-    setSelectedDifficulties(newDifficulties);
+      ? matchDifficulties.filter((d) => d !== difficulty)
+      : matchDifficulties.concat(difficulty);
+    setMatchDifficulties(newDifficulties);
     setMatchDifficulties(newDifficulties);
   };
 
   // handle join match queue
-  const handleJoinQueue = () => {
+  const handleJoinQueue = useCallback(() => {
     setIsMatchingDialogOpen(true);
-    joinQueue(selectedDifficulties);
-  };
+    joinQueue(matchDifficulties);
+  }, [matchDifficulties, joinQueue]);
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
   };
 
-  // close dialog if match cancel event received
+  // find new match if match cancelled
   useEffect(() => {
     if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
-      handleMatchDialogClose();
+      requestAnimationFrame(() => {
+        handleMatchDialogClose();
+      });
+      return;
     }
-  }, [queueStatus?.event]);
+    if (queueStatus?.event === MATCH_EVENTS.MATCH_CANCELLED) {
+      requestAnimationFrame(() => {
+        handleJoinQueue();
+      });
+      return;
+    }
+  }, [queueStatus?.event, handleJoinQueue]);
 
   // redirect to login page if user not logged in
   useEffect(() => {
@@ -101,15 +105,10 @@ const Dashboard = () => {
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
       <QuestionCheckGroup
-        selectedDifficulties={selectedDifficulties}
+        selectedDifficulties={matchDifficulties}
         updateSelectedValues={handleUpdateDifficulty}
         difficulties={Object.values(difficultyMap)}
       />
-      {/* <QuestionRadioGroup
-        difficulty={difficulty}
-        setDifficulty={handleSetDifficulty}
-        difficulties={Object.values(difficultyMap)}
-      /> */}
       <div className="flex flex-col">
         <PrimaryButton onClick={handleJoinQueue}>Find match!</PrimaryButton>
         <MatchDialog

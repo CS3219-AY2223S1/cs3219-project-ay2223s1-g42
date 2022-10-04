@@ -159,8 +159,20 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.CANCEL_MATCH_ERR,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.error(queueStatusMsg, matchToastOptions);
     setState({ queueStatus });
+  });
+
+  matchSocket.on(MATCH_EVENTS.MATCH_CANCELLED, (data) => {
+    const { message }: { message: string } = JSON.parse(data);
+    const queueStatusMsg = `Match cancelled by other user(s), finding new match...`;
+    const queueStatus: Status = {
+      status: StatusType.INFO,
+      event: MATCH_EVENTS.MATCH_CANCELLED,
+      message: queueStatusMsg,
+    };
+    toast.error(queueStatusMsg, matchToastOptions);
+    setState({ queueStatus, queueRoomId: undefined, room: undefined });
   });
 
   const joinQueue = (difficulties: QuestionDifficulty[]) => {
