@@ -12,10 +12,11 @@ export function PrimaryDialog({
   description,
   isOpen,
   onClose,
+  autoClose,
   children,
 }: DialogProps) {
   return (
-    <BaseDialog isOpen={isOpen} onClose={onClose}>
+    <BaseDialog isOpen={isOpen} onClose={onClose} autoClose={autoClose}>
       <Dialog.Panel
         className="w-full max-w-md transform overflow-hidden border-[1px] border-neutral-900
         bg-neutral-100 p-4 text-center align-middle transition-all"

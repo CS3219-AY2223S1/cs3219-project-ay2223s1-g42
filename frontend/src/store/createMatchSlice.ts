@@ -147,7 +147,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
       message: queueStatusMsg,
     };
-    toast(queueStatusMsg);
+    toast.error(queueStatusMsg, matchToastOptions);
     setState({ queueStatus, queueRoomId: undefined, room: undefined });
   });
 

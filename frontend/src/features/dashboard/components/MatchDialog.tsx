@@ -51,6 +51,7 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
       console.error(
         "cannot disconnect from match, not in queue or match found"
       );
+      onClose();
       return;
     }
     handleCancelMatch();
