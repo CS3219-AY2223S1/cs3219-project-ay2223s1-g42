@@ -1,0 +1,33 @@
+{
+  "name": "typescript-starter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "prettier \"src/**/*.ts\" --write && eslint \"src/**/*.ts\" --fix",
+    "build": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Myreage/typescript-starter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Myreage/typescript-starter/issues"
+  },
+  "homepage": "https://github.com/Myreage/typescript-starter#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "zod": "^3.19.1"
+  }
+}

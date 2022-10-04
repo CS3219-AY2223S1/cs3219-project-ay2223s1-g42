@@ -25,15 +25,6 @@ export const QUESTION_SUMMARY_SELECT =
     updatedAt: true,
   });
 
-type ExtraContentFields = ExtraSummaryFields & {
-  hints: string[];
-};
-
-type ExtraSummaryFields = {
-  topicTags: string[];
-  discussionLink: string;
-};
-
 export type QuestionContentFromDb = Prisma.QuestionContentGetPayload<{
   select: typeof QUESTION_CONTENT_SELECT;
 }>;
@@ -41,12 +32,3 @@ export type QuestionContentFromDb = Prisma.QuestionContentGetPayload<{
 export type QuestionSummaryFromDb = Prisma.QuestionSummaryGetPayload<{
   select: typeof QUESTION_SUMMARY_SELECT;
 }>;
-
-export type FlattenedQuestionContent = Pick<QuestionContentFromDb, "content"> &
-  ExtraContentFields;
-
-export type FlattenedQuestionSummary = Omit<
-  QuestionSummaryFromDb,
-  "topicTags"
-> &
-  ExtraSummaryFields;

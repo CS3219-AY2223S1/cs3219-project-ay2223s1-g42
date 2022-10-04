@@ -7,7 +7,7 @@ import {
 } from "@prisma/client/runtime";
 import { HttpException, HttpStatus } from "@nestjs/common";
 
-export default function ThrowKnownPrismaErrors(e: Error) {
+const ThrowKnownPrismaErrors = (e: Error) => {
   if (
     e instanceof PrismaClientUnknownRequestError ||
     e instanceof PrismaClientRustPanicError ||
@@ -23,4 +23,6 @@ export default function ThrowKnownPrismaErrors(e: Error) {
   } else if (e instanceof Prisma.NotFoundError) {
     throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
   }
-}
+};
+
+export { ThrowKnownPrismaErrors };

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import shallow from "zustand/shallow";
 
 import {
   BigHeading,
@@ -7,8 +8,9 @@ import {
   RadioGroupValue,
   SpinnerIcon,
 } from "src/components";
-import { MatchDialog, QuestionRadioGroup } from "src/dashboard";
-import { QuestionDifficulty, useGlobalStore } from "src/store";
+import { MatchDialog, QuestionRadioGroup } from "src/features";
+import { useGlobalStore } from "src/store";
+import { MATCH_EVENTS, QuestionDifficulty } from "shared/api";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -37,23 +39,29 @@ const Dashboard = () => {
   // store states
   const {
     user,
+    room,
+    queueRoomId,
     isInQueue,
-    roomSocket,
-    matchSocket,
+    queueStatus,
     setMatchDifficulties,
     joinQueue,
     leaveQueue,
+    leaveRoom,
+    cancelMatch,
   } = useGlobalStore((state) => {
     return {
       user: state.user,
+      room: state.room,
+      queueRoomId: state.queueRoomId,
       isInQueue: state.isInQueue,
-      roomSocket: state.roomSocket,
-      matchSocket: state.matchSocket,
+      queueStatus: state.queueStatus,
       setMatchDifficulties: state.setMatchDifficulties,
       joinQueue: state.joinQueue,
       leaveQueue: state.leaveQueue,
+      leaveRoom: state.leaveRoom,
+      cancelMatch: state.cancelMatch,
     };
-  });
+  }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
   const [difficulty, setDifficulty] =
@@ -71,45 +79,23 @@ const Dashboard = () => {
     joinQueue([difficulty.title]);
   };
 
-  // handle leave match qeueue
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
-    // if not matched, leave queue
-    if (!isInQueue) {
-      return;
-    }
-    leaveQueue();
   };
 
-  // connects to match and room socket servers
+  // close dialog if match cancel event received
   useEffect(() => {
-    if (!matchSocket) {
-      console.error(
-        "failed to connect to match socket server, match socket not set"
-      );
-      return;
+    if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
+      handleMatchDialogClose();
     }
-    if (!roomSocket) {
-      console.error(
-        "failed to connect to room socket server, room socket not set"
-      );
-      return;
-    }
-    if (!user) {
-      console.error("failed to connect to socket servers, user not logged in");
-      return;
-    }
-    matchSocket.connect();
-    roomSocket.connect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [queueStatus?.event]);
 
+  // redirect to login page if user not logged in
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, navigate]);
 
   if (!user) {
     return <SpinnerIcon className="h-12 w-12" />;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 import { PrimaryButton, LoadingLayout, NormalHeading } from "src/components";
-import { ApiResponse } from "src/login";
+import { ApiResponse } from "src/features";
 import { Axios } from "src/services";
 
 const VerifyEmailPage = () => {
