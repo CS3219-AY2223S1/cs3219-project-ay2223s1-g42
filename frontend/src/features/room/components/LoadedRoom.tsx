@@ -18,7 +18,7 @@ const LeaveRoomButton = () => {
   }, shallow);
   return (
     <RedButton
-      className="border-[1px] border-l-neutral-900 py-2.5 text-sm md:py-2"
+      className="border-[1px] border-l-neutral-900 py-2.5 md:py-2"
       onClick={() => {
         if (!user) {
           console.error("user not logged in, cannot leave room");
