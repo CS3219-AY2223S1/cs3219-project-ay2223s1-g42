@@ -46,13 +46,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
   // set up provider
   const setupProvider = () => {
-    // check if provider already set up
-    const provider = getState().editorProvider;
-    if (provider) {
-      console.error("failed to setup provider, provider already set up");
-      return;
-    }
-
     // load doc and text
     const doc = getState().doc;
     const docText = getState().text;

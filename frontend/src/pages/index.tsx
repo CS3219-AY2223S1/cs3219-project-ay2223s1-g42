@@ -110,7 +110,7 @@ const Dashboard = () => {
         difficulties={Object.values(difficultyMap)}
       />
       <div className="flex flex-col">
-        <PrimaryButton onClick={handleJoinQueue}>Find match!</PrimaryButton>
+        <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
         <MatchDialog
           isOpen={isMatchingDialogOpen}
           onClose={handleMatchDialogClose}
