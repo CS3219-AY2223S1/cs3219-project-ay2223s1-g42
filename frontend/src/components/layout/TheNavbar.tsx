@@ -124,7 +124,7 @@ const TheNavbar = () => {
           <PrimaryButton
             type="button"
             className="inline-flex items-center bg-white p-3 text-sm
-            text-neutral-800 hover:text-neutral-800 focus:outline-none md:hidden"
+            text-neutral-800 focus:outline-none hover:text-neutral-800 md:hidden"
             onClick={() => setIsDropdownOpen((open) => !open)}
           >
             <span className="sr-only">Open main menu</span>
