@@ -28,7 +28,7 @@ const BaseTabs = ({ values }: BaseProp) => {
         ))}
       </Tab.List>
       <Tab.Panels
-        className="h-full max-h-[75vh] w-full overflow-y-scroll md:scrollbar-thin
+        className="md:scrollbar-thin h-full max-h-[75vh] w-full overflow-y-scroll
          lg:h-[calc(100%-42px)] lg:max-h-full"
       >
         {Object.values(values).map((value, i) => (
