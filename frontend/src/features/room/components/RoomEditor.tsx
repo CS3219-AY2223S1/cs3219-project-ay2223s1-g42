@@ -34,6 +34,7 @@ const RoomEditor = () => {
 
   // set up editor document on first mount
   useEffect(() => {
+    console.log("setting up editor doc");
     setupDoc();
   }, [setupDoc]);
 

@@ -28,13 +28,11 @@ const BaseTabs = ({ values }: BaseProp) => {
         ))}
       </Tab.List>
       <Tab.Panels
-        className="h-full max-h-[75vh] w-full overflow-y-scroll md:scrollbar-thin
-         md:scrollbar-thumb-neutral-300 lg:h-[calc(100%-42px)] lg:max-h-full"
+        className="h-full max-h-[75vh] w-full overflow-y-scroll py-3 md:scrollbar-thin
+        md:scrollbar-thumb-neutral-300 lg:h-[calc(100%-42px)] lg:max-h-full"
       >
         {Object.values(values).map((value, i) => (
-          <Tab.Panel key={i} className={cx("p-3 ")}>
-            {value}
-          </Tab.Panel>
+          <Tab.Panel key={i}>{value}</Tab.Panel>
         ))}
       </Tab.Panels>
     </Tab.Group>

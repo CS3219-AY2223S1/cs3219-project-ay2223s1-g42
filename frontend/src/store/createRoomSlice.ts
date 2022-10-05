@@ -64,7 +64,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
       message: roomStatusMsg,
     };
-    setState({ room, roomStatus });
+    setState({ room, roomStatus, queueRoomId: undefined });
   });
 
   roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
@@ -90,7 +90,6 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     toast.success(roomStatusMsg, roomToastOptions);
     setState({
       room: undefined,
-      queueRoomId: undefined,
       roomStatus,
     });
   });

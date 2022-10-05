@@ -8,6 +8,7 @@ import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
 import { GetMeResponse } from "shared/api";
+import { TheRoomStatusbar } from "./TheRoomStatusbar";
 
 const RoomContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -97,6 +98,7 @@ const AppLayout = ({ children }: PropsWithChildren) => {
     <>
       <TheNavbar />
       <AppContainer>{children}</AppContainer>
+      <TheRoomStatusbar />
       <TheToast />
     </>
   );
