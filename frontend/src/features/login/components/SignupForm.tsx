@@ -42,6 +42,7 @@ const SignupForm = () => {
     signupMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignup);
+  const path = "/";
 
   return (
     <div>
@@ -59,12 +60,20 @@ const SignupForm = () => {
         <></>
       )}
       <div>
-        <BlueButton className="relative flex w-full items-center justify-center">
-          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-            <GoogleIcon className="h-5 w-5 text-red-500" />
-          </div>
-          Sign up with Google
-        </BlueButton>
+        <a
+          href={`http://github.com/login/oauth/authorize?client_id=${
+            import.meta.env.VITE_OAUTH_CLIENT_ID
+          }&redirect_uri=${
+            import.meta.env.VITE_OAUTH_URL
+          }?path=${path}&scope=user:email`}
+        >
+          <BlueButton className="relative flex w-full items-center justify-center">
+            <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
+              <GoogleIcon className="h-5 w-5 text-red-500" />
+            </div>
+            Sign up with Google
+          </BlueButton>
+        </a>
         <Divider label="Or, sign up with your email" />
         <form
           className="mb-3 flex flex-col gap-8 space-y-8"

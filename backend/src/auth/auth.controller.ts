@@ -3,9 +3,11 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   Post,
+  Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -20,6 +22,7 @@ import {
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
+import { get } from "lodash";
 
 import { AuthService, Tokens } from "./auth.service";
 import { JwtRefreshGuard } from "./guard";
@@ -313,6 +316,43 @@ export class AuthController {
     @Body() { password }: DeleteAccountInfoDto
   ): Promise<DeleteAccountResponse> {
     await this.authService.deleteAccount(user.id, password);
+    return { message: "success" };
+  }
+
+  /**
+   * Directs the user to the successful oauth page
+   */
+  @PublicRoute()
+  @Post("/auth/local/oauth")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: API_OPERATIONS.OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
+  })
+  @ApiBadRequestResponse({
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  async oauthSignin(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<SigninResponse> {
+    const oauthCode = get(req, "query.code");
+    const path = get(req, "query.path", "/");
+    if (!oauthCode) {
+      throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
+    }
+
+    const gitHubUser = await this.authService.getGithubUser({ oauthCode });
+
+    //const tokens = await this.authService.signin();
+    //this.setCookies(res, tokens);
+    res.redirect(path);
     return { message: "success" };
   }
 }

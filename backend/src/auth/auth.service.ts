@@ -4,12 +4,14 @@ import {
   HttpStatus,
   Injectable,
 } from "@nestjs/common";
+import axios from "axios";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { MailerService } from "@nestjs-modules/mailer";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
+import querystring from "querystring";
 
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
@@ -387,5 +389,32 @@ export class AuthService {
     if (error || !userToDelete) {
       throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
     }
+  }
+
+  async getGithubUser({ oauthCode }: { oauthCode: string }) {
+    const githubToken = await axios
+      .post(
+        `https://github.com/login/oauth/access_token?client_id=${this.config.get(
+          "GITHUB_CLIENT_ID"
+        )}&client_secret=${this.config.get(
+          "GITHUB_CLIENT_SECRET"
+        )}&code=${oauthCode}`
+      )
+      .then((res) => res.data)
+      .catch((error) => {
+        throw error;
+      });
+    const decoded = new URLSearchParams(githubToken);
+    const accessToken = decoded.get("access_token");
+
+    return axios
+      .get("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => res.data)
+      .catch((error) => {
+        console.error(`Error getting user from GitHub`);
+        throw error;
+      });
   }
 }

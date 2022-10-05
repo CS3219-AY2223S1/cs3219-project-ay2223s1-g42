@@ -19,6 +19,9 @@ const EnvSchema = z.object({
   FRONTEND_URL: z.string(),
   SMTP_PORT: z.number().default(587),
   SMTP_HOST: z.string(),
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_URL: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {
@@ -30,7 +33,7 @@ export function validate(config: Record<string, unknown>) {
     REDIS_PORT: parseInt(REDIS_PORT as string),
     CACHE_TTL: parseInt(CACHE_TTL as string),
     SMTP_PORT: parseInt(SMTP_PORT as string),
-    ...rest,
+    ...rest,4
   });
   return parsedEnv;
 }

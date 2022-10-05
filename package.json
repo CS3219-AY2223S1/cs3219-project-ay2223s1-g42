@@ -28,7 +28,8 @@
     "shared:build": "yarn --cwd shared install && yarn --cwd shared build"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "url-search-params": "^1.1.0"
   },
   "dependencies": {
     "global": "^4.4.0",
