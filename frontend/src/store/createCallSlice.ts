@@ -1,8 +1,8 @@
 import { StateCreator } from "zustand";
 import Peer from "simple-peer";
+import { UserInfo } from "g42-peerprep-shared";
 
 import type { GlobalStore } from "./useGlobalStore";
-import { UserInfo } from "shared/api";
 
 export type Call = {
   from?: UserInfo;

@@ -1,5 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ChangePasswordData,
+  ChangePasswordInfoSchema,
+} from "g42-peerprep-shared";
 
 import {
   ErrorAlert,
@@ -8,7 +12,6 @@ import {
   PrimaryButton,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { ChangePasswordData, ChangePasswordInfoSchema } from "shared/api";
 
 const ChangePasswordForm = () => {
   // form setup

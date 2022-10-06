@@ -5,17 +5,17 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-
-import { CORS_OPTIONS } from "../config";
-import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
-import { RoomService } from "./room.service";
 import {
   ROOM_WS_NAMESPACE,
   ROOM_EVENTS,
   ROOM_MESSAGES,
   PendingRoomUser,
   RoomUser,
-} from "shared/api";
+} from "g42-peerprep-shared";
+
+import { CORS_OPTIONS } from "../config";
+import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
+import { RoomService } from "./room.service";
 
 @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({

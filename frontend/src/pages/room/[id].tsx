@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import shallow from "zustand/shallow";
+import { MATCH_EVENTS, ROOM_EVENTS } from "g42-peerprep-shared";
 
 import { LoadingLayout, UnauthorizedPage } from "src/components";
 import { LoadedRoom } from "src/features";
 import { useGlobalStore } from "src/store";
-import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();

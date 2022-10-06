@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ResetPasswordData, ResetPasswordSchema } from "g42-peerprep-shared";
 
 import {
   ErrorAlert,
@@ -9,7 +10,6 @@ import {
   NormalHeading,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { ResetPasswordData, ResetPasswordSchema } from "shared/api";
 
 type Props = {
   token: string;

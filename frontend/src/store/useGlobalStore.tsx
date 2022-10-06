@@ -6,7 +6,7 @@ import { createEditorSlice, EditorSlice } from "./createEditorSlice";
 import { MatchSlice, createMatchSlice } from "./createMatchSlice";
 import { RoomSlice, createRoomSlice } from "./createRoomSlice";
 import { StatusType } from "./enums";
-import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
+import { MATCH_EVENTS, ROOM_EVENTS } from "g42-peerprep-shared";
 
 export type Status = {
   status: StatusType;

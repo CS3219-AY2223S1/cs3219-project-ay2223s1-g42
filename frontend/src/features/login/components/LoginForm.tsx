@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { SigninData, SigninSchema } from "g42-peerprep-shared";
 
 import {
   Divider,
@@ -15,7 +16,6 @@ import {
   PrimaryLink,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { SigninData, SigninSchema } from "shared/api";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();

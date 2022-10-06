@@ -1,15 +1,15 @@
 import { Injectable, Inject, forwardRef } from "@nestjs/common";
 import { Server, Socket } from "socket.io";
-
-import { RedisCacheService } from "src/cache/redisCache.service";
-import { RoomService } from "src/room/room.service";
 import {
   MATCH_ERRORS,
   MATCH_EVENTS,
   MATCH_MESSAGES,
   NAMESPACES,
   PoolUser,
-} from "shared/api";
+} from "g42-peerprep-shared";
+
+import { RedisCacheService } from "src/cache/redisCache.service";
+import { RoomService } from "src/room/room.service";
 
 @Injectable()
 export class MatchService {

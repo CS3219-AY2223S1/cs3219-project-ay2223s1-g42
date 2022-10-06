@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import * as _ from "lodash";
+import {
+  FlattenedQuestionContent,
+  FlattenedQuestionSummary,
+} from "g42-peerprep-shared";
 
 import {
   QuestionContentFromDb,
@@ -8,7 +12,6 @@ import {
   QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
-import { FlattenedQuestionContent, FlattenedQuestionSummary } from "shared/api";
 
 @Injectable()
 export class QuestionService {

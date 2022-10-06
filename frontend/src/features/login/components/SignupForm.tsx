@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SignupData, SignupSchema } from "g42-peerprep-shared";
 
 import {
   BlueButton,
@@ -13,7 +14,6 @@ import {
   Divider,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { SignupData, SignupSchema } from "shared/api";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
