@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
+import { GetMeResponse } from "g42-peerprep-shared";
 
 import { useGlobalStore } from "src/store";
 import { Axios } from "src/services";
 import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
-import { GetMeResponse } from "shared/api";
 import { TheRoomStatusbar } from "./TheRoomStatusbar";
 
 const RoomContainer = ({ children }: PropsWithChildren) => {
