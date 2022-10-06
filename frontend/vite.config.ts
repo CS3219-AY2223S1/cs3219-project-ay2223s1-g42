@@ -45,7 +45,6 @@ export default defineConfig((configEnv) => {
       },
     },
     build: {
-      minify: false,
       sourcemap: true,
       rollupOptions: {
         external: ["zod"],
