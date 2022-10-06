@@ -27,6 +27,7 @@ export default defineConfig((configEnv) => {
           global: "globalThis",
         },
       },
+      exclude: ["zod"],
     },
     resolve: {
       alias: {
