@@ -61,7 +61,7 @@
     "y-monaco": "^0.1.4",
     "y-socket.io": "^1.0.0",
     "yjs": "^13.5.41",
-    "zod": "^3.18.0",
+    "zod": "^3.19.1",
     "zustand": "^4.1.1"
   },
   "devDependencies": {
