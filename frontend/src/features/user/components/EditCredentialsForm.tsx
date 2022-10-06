@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  EditableCredentials,
+  EditableCredentialsSchema,
+} from "g42-peerprep-shared";
 
 import {
   ErrorAlert,
@@ -11,7 +15,6 @@ import {
 } from "src/components";
 import { UserProps } from "src/features";
 import { useGlobalStore } from "src/store";
-import { EditableCredentials, EditableCredentialsSchema } from "shared/api";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();

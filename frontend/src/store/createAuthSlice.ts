@@ -5,10 +5,6 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-
-import { Axios } from "src/services";
-import type { GlobalStore } from "./useGlobalStore";
-import { ApiResponse } from "src/features";
 import {
   UserInfo,
   SigninData,
@@ -28,7 +24,11 @@ import {
   EditUserResponse,
   ChangePasswordResponse,
   DeleteAccountResponse,
-} from "shared/api";
+} from "g42-peerprep-shared";
+
+import { Axios } from "src/services";
+import type { GlobalStore } from "./useGlobalStore";
+import { ApiResponse } from "src/features";
 
 type Options = {
   onSuccess?: () => Promise<void> | void | undefined;

@@ -1,4 +1,4 @@
-import { UserInfo } from "shared/api";
+import { UserInfo } from "g42-peerprep-shared";
 
 // props
 export type UserProps = {

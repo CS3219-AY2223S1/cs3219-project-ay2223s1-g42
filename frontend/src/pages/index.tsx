@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
+import { MATCH_EVENTS, QuestionDifficulty } from "g42-peerprep-shared";
 
 import {
   BigHeading,
@@ -10,7 +11,6 @@ import {
 } from "src/components";
 import { MatchDialog, QuestionRadioGroup } from "src/features";
 import { useGlobalStore } from "src/store";
-import { MATCH_EVENTS, QuestionDifficulty } from "shared/api";
 
 const difficultyMap: Record<
   QuestionDifficulty,

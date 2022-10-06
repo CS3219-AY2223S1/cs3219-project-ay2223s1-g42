@@ -2,7 +2,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "shared/*": ["../shared/src/*"],
       "src/*": ["./src/*"]
     },
     "module": "commonjs",
@@ -22,6 +21,5 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false
-  },
-  "references": [{ "path": "../shared" }]
+  }
 }

@@ -20,21 +20,6 @@ import {
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
-
-import { AuthService, Tokens } from "./auth.service";
-import { JwtRefreshGuard } from "./guard";
-import { GetUser, PublicRoute } from "../utils/decorator";
-import { COOKIE_OPTIONS } from "../config";
-import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
-
-import {
-  SignupCredentialsDto,
-  SigninCredentialsDto,
-  ForgetPasswordCredentialsDto,
-  ResetPasswordCredentialsDto,
-  ChangePasswordInfoDto,
-  DeleteAccountInfoDto,
-} from "./auth.dto";
 import {
   ChangePasswordResponse,
   DeleteAccountResponse,
@@ -45,7 +30,21 @@ import {
   SignoutResponse,
   SignupResponse,
   VerifyEmailResponse,
-} from "shared/api";
+} from "g42-peerprep-shared";
+
+import { AuthService, Tokens } from "./auth.service";
+import { JwtRefreshGuard } from "./guard";
+import { GetUser, PublicRoute } from "../utils/decorator";
+import { COOKIE_OPTIONS } from "../config";
+import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import {
+  SignupCredentialsDto,
+  SigninCredentialsDto,
+  ForgetPasswordCredentialsDto,
+  ResetPasswordCredentialsDto,
+  ChangePasswordInfoDto,
+  DeleteAccountInfoDto,
+} from "./auth.dto";
 
 @Controller("auth")
 export class AuthController {

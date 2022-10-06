@@ -27,11 +27,9 @@ export default defineConfig((configEnv) => {
           global: "globalThis",
         },
       },
-      exclude: ["zod"],
     },
     resolve: {
       alias: {
-        shared: resolve(__dirname, "..", "shared", "src"),
         src: resolve(__dirname, "src"),
         app: resolve(__dirname, "src", "app"),
         components: resolve(__dirname, "src", "components"),
@@ -47,9 +45,6 @@ export default defineConfig((configEnv) => {
     },
     build: {
       sourcemap: true,
-      rollupOptions: {
-        external: ["zod"],
-      },
     },
   };
 });

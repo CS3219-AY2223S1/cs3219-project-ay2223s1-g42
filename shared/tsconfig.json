@@ -4,12 +4,12 @@
       "src/*": ["./src/*"],
       "zod": ["../frontend/node_modules/zod"]
     },
-    "target": "ESNext",
+    "target": "ES2018",
     "module": "CommonJS",
     "lib": ["DOM", "ES6", "ES2017", "ESNext"],
     "outDir": "dist",
-    "skipLibCheck": true,
     "sourceMap": true,
+    "declaration": true,
     "moduleResolution": "Node",
     "noImplicitAny": true,
     "strict": true,
@@ -23,8 +23,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "composite": true
+    "baseUrl": "."
   },
   "exclude": ["node_modules"],
   "include": ["./src"]

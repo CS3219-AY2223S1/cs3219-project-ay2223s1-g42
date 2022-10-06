@@ -17,13 +17,11 @@
     "noEmit": true,
     "jsx": "preserve",
     "paths": {
-      "shared/*": ["../shared/src/*"],
       "src/*": ["src/*"],
       "components/*": ["src/components/*"],
       "hooks/*": ["src/hooks/*"]
     },
     "types": ["vite/client"]
   },
-  "include": ["./src", "vite-env.d.ts"],
-  "references": [{ "path": "../shared" }]
+  "include": ["./src", "vite-env.d.ts"]
 }
