@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "src/*": ["./src/*"]
+      "src/*": ["./src/*"],
+      "zod": ["../frontend/../shared/node_modules/zod"]
     },
     "target": "ESNext",
     "module": "CommonJS",
