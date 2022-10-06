@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import Pages from "vite-plugin-pages";
 import { ValidateEnv } from "@julr/vite-plugin-validate-env";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
+import createExternal from "vite-plugin-external";
 
 export default defineConfig((configEnv) => {
   const isDevelopment = configEnv.mode === "development";
@@ -19,6 +20,11 @@ export default defineConfig((configEnv) => {
       monacoEditorPlugin({
         globalAPI: true,
         languageWorkers: ["editorWorkerService", "json", "typescript"],
+      }),
+      createExternal({
+        externals: {
+          zod: "zod",
+        },
       }),
     ],
     optimizeDeps: {
