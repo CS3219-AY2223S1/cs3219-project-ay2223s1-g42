@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SignupData, SignupSchema } from "shared/api";
+import { SignupData, SignupResponse, SignupSchema } from "shared/api";
 import {
   BlueButton,
   TextInput,
