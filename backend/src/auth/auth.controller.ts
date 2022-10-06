@@ -22,15 +22,24 @@ import {
   ApiCreatedResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
-import { Response, Request } from "express";
-import { get } from "lodash";
+import { Response } from "express";
+import {
+  ChangePasswordResponse,
+  DeleteAccountResponse,
+  ForgetPasswordResponse,
+  RefreshResponse,
+  ResetPasswordResponse,
+  SigninResponse,
+  SignoutResponse,
+  SignupResponse,
+  VerifyEmailResponse,
+} from "g42-peerprep-shared";
 
 import { AuthService, Tokens } from "./auth.service";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
-
 import {
   SignupCredentialsDto,
   SigninCredentialsDto,
@@ -41,6 +50,7 @@ import {
   QueryDto,
   OauthDto,
 } from "./auth.dto";
+<<<<<<< HEAD
 import {
   ChangePasswordResponse,
   DeleteAccountResponse,
@@ -53,6 +63,8 @@ import {
   SignupResponse,
   VerifyEmailResponse,
 } from "shared/api";
+=======
+>>>>>>> 30cd45258e5df74395c2a77bfc32583cb207474c
 
 @Controller("auth")
 export class AuthController {

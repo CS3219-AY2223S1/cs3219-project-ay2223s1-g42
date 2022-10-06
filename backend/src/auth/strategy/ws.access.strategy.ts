@@ -3,10 +3,10 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
+import { UserInfo } from "g42-peerprep-shared";
 
 import { UserService } from "../../user/user.service";
 import { JwtPayload } from "../auth.service";
-import { UserInfo } from "shared/api";
 
 @Injectable()
 export class WsAccessJwtStrategy extends PassportStrategy(Strategy, "jwt-ws") {

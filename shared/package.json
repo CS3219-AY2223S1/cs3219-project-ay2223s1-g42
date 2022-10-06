@@ -1,12 +1,22 @@
 {
-  "name": "typescript-starter",
+  "name": "g42-peerprep-shared",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "shared types for cs3219-g42",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist && yarn lint",
+    "prebuild": "yarn clean",
+    "preversion": "yarn build",
+    "postversion": "git push --follow-tags",
     "lint": "prettier \"src/**/*.ts\" --write && eslint \"src/**/*.ts\" --fix",
-    "build": "tsc -b"
+    "build": "yarn lint && tsc -b"
   },
   "repository": {
     "type": "git",
@@ -25,6 +35,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
     "typescript": "^4.8.4"
   },
   "dependencies": {

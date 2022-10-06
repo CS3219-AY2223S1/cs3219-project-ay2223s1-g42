@@ -30,7 +30,6 @@ export default defineConfig((configEnv) => {
     },
     resolve: {
       alias: {
-        shared: resolve(__dirname, "..", "shared", "src"),
         src: resolve(__dirname, "src"),
         app: resolve(__dirname, "src", "app"),
         components: resolve(__dirname, "src", "components"),
@@ -45,9 +44,7 @@ export default defineConfig((configEnv) => {
       },
     },
     build: {
-      rollupOptions: {
-        external: ["zod"],
-      },
+      minify: true,
     },
   };
 });

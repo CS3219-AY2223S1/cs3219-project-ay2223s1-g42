@@ -1,6 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import {
+  DeleteAccountData,
+  DeleteAccountInfoSchema,
+} from "g42-peerprep-shared";
 
 import {
   ErrorAlert,
@@ -10,7 +14,6 @@ import {
   PrimaryDialog,
 } from "src/components";
 import { useGlobalStore } from "src/store";
-import { DeleteAccountData, DeleteAccountInfoSchema } from "shared/api";
 
 type Props = {
   isOpen: boolean;
