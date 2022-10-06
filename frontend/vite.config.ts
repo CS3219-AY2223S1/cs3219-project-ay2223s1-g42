@@ -44,7 +44,7 @@ export default defineConfig((configEnv) => {
       },
     },
     build: {
-      sourcemap: true,
+      minify: true,
     },
   };
 });
