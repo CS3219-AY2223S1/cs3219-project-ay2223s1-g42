@@ -43,11 +43,13 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
 
   matchSocket.on("connect", () => {
     console.log("connected to /match ws server :)");
+    toast.success("Connected to match server", matchToastOptions);
     setState({ matchSocketConnected: true });
   });
 
   matchSocket.on("disconnect", () => {
     console.log("disconnected from /match ws server :(");
+    toast.loading("Reconnecting to match server...", matchToastOptions);
     setState({ matchSocketConnected: false });
   });
 
@@ -63,7 +65,6 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       event: MATCH_EVENTS.ROOM_EXISTS,
       message: queueStatusMsg,
     };
-    toast.error(queueStatusMsg, matchToastOptions);
     console.error(message);
     setState({
       isInQueue: false,

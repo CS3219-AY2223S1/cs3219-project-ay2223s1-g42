@@ -47,14 +47,14 @@ const RoomEditor = () => {
     setupProvider();
   }, [monaco, doc, user, room, setupProvider]);
 
-  useEffect(() => {
-    if (!provider) {
-      return;
-    }
-    return () => {
-      cleanupProvider();
-    };
-  }, [provider, cleanupProvider]);
+  // useEffect(() => {
+  //   if (!provider) {
+  //     return;
+  //   }
+  //   return () => {
+  //     cleanupProvider();
+  //   };
+  // }, [provider, cleanupProvider]);
 
   // set up binding whenever provider or monaco instance changes
   useEffect(() => {
@@ -69,14 +69,14 @@ const RoomEditor = () => {
     setupBinding(editorRef.current);
   }, [provider, monaco, editorMounted, setupBinding]);
 
-  useEffect(() => {
-    if (!binding) {
-      return;
-    }
-    return () => {
-      cleanupBinding();
-    };
-  }, [binding, cleanupBinding]);
+  // useEffect(() => {
+  //   if (!binding) {
+  //     return;
+  //   }
+  //   return () => {
+  //     cleanupBinding();
+  //   };
+  // }, [binding, cleanupBinding]);
 
   return (
     <Editor

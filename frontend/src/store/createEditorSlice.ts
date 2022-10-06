@@ -44,8 +44,18 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     setState({ doc, text: docText });
   };
 
+  const cleanupProvider = () => {
+    const provider = getState().editorProvider;
+    if (!provider) {
+      return;
+    }
+    provider.destroy();
+  };
+
   // set up provider
   const setupProvider = () => {
+    cleanupProvider();
+
     // load doc and text
     const doc = getState().doc;
     const docText = getState().text;
@@ -89,10 +99,20 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     );
     socketIOProvider.on("status", ({ status }: { status: string }) => {
       const connected = status === "connected";
+      console.log("socket io provider status: ", { status });
       setState({ isEditorProviderConnected: connected });
     });
 
+    console.log("setup provider complete: ", { socketIOProvider });
     setState({ editorProvider: socketIOProvider });
+  };
+
+  const cleanupBinding = () => {
+    const binding = getState().editorBinding;
+    if (!binding) {
+      return;
+    }
+    binding.destroy();
   };
 
   // set up binding to between provider and editor document text
@@ -109,6 +129,16 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       );
       return;
     }
+
+    if (!provider.socket.connected) {
+      provider.connect();
+    }
+
+    console.log("setting up bidning between: ", {
+      docText,
+      providerId: provider.socket.id,
+      editor,
+    });
 
     const monacoBinding = new MonacoBinding(
       docText,
@@ -137,22 +167,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       editorBinding: monacoBinding,
       editorLanguage: language ?? LANGUAGE.TS,
     });
-  };
-
-  const cleanupProvider = () => {
-    const provider = getState().editorProvider;
-    if (!provider) {
-      return;
-    }
-    provider.destroy();
-  };
-
-  const cleanupBinding = () => {
-    const binding = getState().editorBinding;
-    if (!binding) {
-      return;
-    }
-    binding.destroy();
   };
 
   const resetProviderBinding = () => {
