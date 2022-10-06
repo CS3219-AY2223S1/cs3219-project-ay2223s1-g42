@@ -14,12 +14,9 @@ const RoomEditor = () => {
   const language = useGlobalStore((state) => state.editorLanguage);
   const doc = useGlobalStore((state) => state.doc);
   const provider = useGlobalStore((state) => state.editorProvider);
-  const binding = useGlobalStore((state) => state.editorBinding);
   const setupDoc = useGlobalStore((state) => state.setupDoc);
   const setupProvider = useGlobalStore((state) => state.setupProvider);
   const setupBinding = useGlobalStore((state) => state.setupBinding);
-  const cleanupProvider = useGlobalStore((state) => state.cleanupProvider);
-  const cleanupBinding = useGlobalStore((state) => state.cleanupBinding);
   const monaco = useMonaco();
   const [editorMounted, setEditorMounted] = useState<boolean>(false);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
@@ -47,15 +44,6 @@ const RoomEditor = () => {
     setupProvider();
   }, [monaco, doc, user, room, setupProvider]);
 
-  // useEffect(() => {
-  //   if (!provider) {
-  //     return;
-  //   }
-  //   return () => {
-  //     cleanupProvider();
-  //   };
-  // }, [provider, cleanupProvider]);
-
   // set up binding whenever provider or monaco instance changes
   useEffect(() => {
     if (!editorRef.current || !monaco) {
@@ -68,15 +56,6 @@ const RoomEditor = () => {
     console.log("setting up binding");
     setupBinding(editorRef.current);
   }, [provider, monaco, editorMounted, setupBinding]);
-
-  // useEffect(() => {
-  //   if (!binding) {
-  //     return;
-  //   }
-  //   return () => {
-  //     cleanupBinding();
-  //   };
-  // }, [binding, cleanupBinding]);
 
   return (
     <Editor

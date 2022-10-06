@@ -44,7 +44,7 @@ const BaseDropdown = ({ items }: Props) => {
         className="flex w-full items-center justify-center border-[1px] border-neutral-900
           bg-white py-3 px-4 text-sm
           text-neutral-900 transition duration-300
-          ease-out hover:bg-neutral-900 hover:text-neutral-50 focus:outline-none"
+          ease-out focus:outline-none hover:bg-neutral-900 hover:text-neutral-50"
       >
         Options
         <ChevronDownIcon
