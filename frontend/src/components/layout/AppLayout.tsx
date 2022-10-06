@@ -23,14 +23,17 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-  const { user, setUser, matchSocket, roomSocket } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      setUser: state.setUser,
-      matchSocket: state.matchSocket,
-      roomSocket: state.roomSocket,
-    };
-  });
+  const { user, setUser, room, matchSocket, roomSocket } = useGlobalStore(
+    (state) => {
+      return {
+        user: state.user,
+        setUser: state.setUser,
+        room: state.room,
+        matchSocket: state.matchSocket,
+        roomSocket: state.roomSocket,
+      };
+    }
+  );
 
   useQuery(
     ["me"],
@@ -81,9 +84,12 @@ const AppContainer = ({ children }: PropsWithChildren) => {
       {isRoomPage ? (
         <RoomContainer>{children}</RoomContainer>
       ) : isAuthenticatedPage ? (
-        <div className="min-h-screen justify-between bg-neutral-100">
-          <Container hasTopPadding={true}>{children}</Container>
-        </div>
+        <>
+          <div className="min-h-screen justify-between bg-neutral-100">
+            <Container hasTopPadding={true}>{children}</Container>
+          </div>
+          {room && <TheRoomStatusbar />}
+        </>
       ) : isErrorPage ? (
         <Container hasTopPadding={false}>{children}</Container>
       ) : (
@@ -98,7 +104,6 @@ const AppLayout = ({ children }: PropsWithChildren) => {
     <>
       <TheNavbar />
       <AppContainer>{children}</AppContainer>
-      <TheRoomStatusbar />
       <TheToast />
     </>
   );
