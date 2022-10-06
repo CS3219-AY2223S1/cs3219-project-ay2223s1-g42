@@ -155,7 +155,7 @@ export class AuthService {
     }
 
     //If user is an oauth user trying to sign in via normal login
-    if (user.provider != "PEERPREP") {
+    if (user.provider != "CUSTOM") {
       throw new NotFoundException(AUTH_ERROR.INVALID_USER);
     }
     // if password incorrect, throw exception
@@ -428,12 +428,29 @@ export class AuthService {
   }
 
   async checkOauthLogins(email: string, username: string) {
-    const [err, user] = await this.users.findByEmail(email);
+    //Check whether user's email is registered
+    const [err, user] = await this.users.findFirstByEitherUniqueFields(
+      email,
+      username
+    );
 
-    if (err || !user) {
-      //User is not created
-      this.users.createOauthUser(email, username);
+    if (user) {
+      if (user.email == email) {
+        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
+      } else {
+        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
+      }
     }
+
+    const cachedEmail = await this.cache.getKeyInNamespace(
+      [NAMESPACES.AUTH],
+      email
+    );
+    if (!!cachedEmail) {
+      throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
+    }
+
+    this.users.createOauthUser(email, username);
   }
 
   /**
@@ -444,9 +461,6 @@ export class AuthService {
   async signinOauth(credentials: OauthDto): Promise<Tokens> {
     const { email } = credentials;
     const [err, user] = await this.users.findByEmail(email);
-
-    ThrowKnownPrismaErrors(err);
-
     const tokens = await this.signTokens(user.id, user.email);
     // update refresh token hash for logged in user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);

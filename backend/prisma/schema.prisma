@@ -28,11 +28,6 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-enum provider {
-  PEERPREP
-  GITHUB
-}
-
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -45,8 +40,9 @@ model User {
   hash      String?  @db.Text
   // hash for refresh token, set as @db.Text to remove length limit set by varchar
   hashRt    String?  @db.Text
-  provider  provider
+  provider  String   @db.Text
 
+  //Junkang was here
   @@map("users")
 }
 
