@@ -3,7 +3,9 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
+
 import axios from "axios";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -11,13 +13,16 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
-import querystring from "querystring";
 
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { ThrowKnownPrismaErrors } from "src/utils";
-import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
+import {
+  OauthDto,
+  SigninCredentialsDto,
+  SignupCredentialsDto,
+} from "./auth.dto";
 import { NAMESPACES } from "shared/api";
 
 export type JwtPayload = {
@@ -149,6 +154,10 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
     }
 
+    //If user is an oauth user trying to sign in via normal login
+    if (user.provider != "PEERPREP") {
+      throw new NotFoundException(AUTH_ERROR.INVALID_USER);
+    }
     // if password incorrect, throw exception
     const isPasswordCorrect = await argon2.verify(user.hash, password);
     if (!isPasswordCorrect) {
@@ -416,5 +425,31 @@ export class AuthService {
         console.error(`Error getting user from GitHub`);
         throw error;
       });
+  }
+
+  async checkOauthLogins(email: string, username: string) {
+    const [err, user] = await this.users.findByEmail(email);
+
+    if (err || !user) {
+      //User is not created
+      this.users.createOauthUser(email, username);
+    }
+  }
+
+  /**
+   * Authenticates user and returns the JWT token
+   * @param credentials credentials validated by zod schema
+   * @returns jwt token associated with the authenticated user
+   */
+  async signinOauth(credentials: OauthDto): Promise<Tokens> {
+    const { email } = credentials;
+    const [err, user] = await this.users.findByEmail(email);
+
+    ThrowKnownPrismaErrors(err);
+
+    const tokens = await this.signTokens(user.id, user.email);
+    // update refresh token hash for logged in user
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 }

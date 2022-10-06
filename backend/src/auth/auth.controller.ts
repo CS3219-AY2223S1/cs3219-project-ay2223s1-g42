@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -21,7 +22,7 @@ import {
   ApiCreatedResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
-import { Response } from "express";
+import { Response, Request } from "express";
 import { get } from "lodash";
 
 import { AuthService, Tokens } from "./auth.service";
@@ -37,11 +38,14 @@ import {
   ResetPasswordCredentialsDto,
   ChangePasswordInfoDto,
   DeleteAccountInfoDto,
+  QueryDto,
+  OauthDto,
 } from "./auth.dto";
 import {
   ChangePasswordResponse,
   DeleteAccountResponse,
   ForgetPasswordResponse,
+  OauthLoginResponse,
   RefreshResponse,
   ResetPasswordResponse,
   SigninResponse,
@@ -323,7 +327,7 @@ export class AuthController {
    * Directs the user to the successful oauth page
    */
   @PublicRoute()
-  @Post("/auth/local/oauth")
+  @Get("/local/oauth")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: API_OPERATIONS.OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY })
   @ApiOkResponse({
@@ -339,20 +343,25 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async oauthSignin(
-    @Req() req: Request,
+    @Query() query: QueryDto,
     @Res({ passthrough: true }) res: Response
-  ): Promise<SigninResponse> {
-    const oauthCode = get(req, "query.code");
-    const path = get(req, "query.path", "/");
+  ): Promise<OauthLoginResponse> {
+    const oauthCode = query.code;
     if (!oauthCode) {
       throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
     }
 
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
+    const userEmail = gitHubUser.email;
+    const username = gitHubUser.login;
 
-    //const tokens = await this.authService.signin();
-    //this.setCookies(res, tokens);
-    res.redirect(path);
+    //Is user in the database? If yes, create cookie
+    //Else add to database
+
+    this.authService.checkOauthLogins(userEmail, username);
+    const tokens = await this.authService.signinOauth(userEmail);
+    this.setCookies(res, tokens);
+
     return { message: "success" };
   }
 }

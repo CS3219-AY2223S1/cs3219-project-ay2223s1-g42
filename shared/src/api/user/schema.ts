@@ -24,8 +24,15 @@ const EditableSchema = _UserModel
   })
   .partial();
 
+const OauthInfoScehma = _UserModel.pick({
+  id: true,
+  email: true,
+  username: true,
+});
+
 type UserInfo = z.infer<typeof UserInfoSchema>;
 type UserHashInfo = z.infer<typeof UserHashInfoSchema>;
+type OauthUserInfo = z.infer<typeof OauthInfoScehma>;
 
-export { EditableSchema, UserInfoSchema, UserHashInfoSchema };
-export type { UserInfo, UserHashInfo };
+export { EditableSchema, UserInfoSchema, UserHashInfoSchema, OauthInfoScehma };
+export type { UserInfo, UserHashInfo, OauthUserInfo };

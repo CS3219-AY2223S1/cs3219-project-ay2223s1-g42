@@ -33,7 +33,7 @@ export function validate(config: Record<string, unknown>) {
     REDIS_PORT: parseInt(REDIS_PORT as string),
     CACHE_TTL: parseInt(CACHE_TTL as string),
     SMTP_PORT: parseInt(SMTP_PORT as string),
-    ...rest,4
+    ...rest,
   });
   return parsedEnv;
 }
