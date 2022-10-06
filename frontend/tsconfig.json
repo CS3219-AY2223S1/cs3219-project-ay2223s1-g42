@@ -20,7 +20,8 @@
       "shared/*": ["../shared/src/*"],
       "src/*": ["src/*"],
       "components/*": ["src/components/*"],
-      "hooks/*": ["src/hooks/*"]
+      "hooks/*": ["src/hooks/*"],
+      "zod": ["../shared/node_modules/zod"]
     },
     "types": ["vite/client"]
   },
