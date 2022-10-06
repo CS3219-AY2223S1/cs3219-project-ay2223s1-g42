@@ -5,10 +5,6 @@ import * as argon2 from "argon2";
 import { UserHashInfo, UserInfo } from "g42-peerprep-shared";
 
 import { PrismaService } from "../prisma/prisma.service";
-<<<<<<< HEAD
-import { OauthUserInfo, UserHashInfo, UserInfo } from "shared/api";
-=======
->>>>>>> 30cd45258e5df74395c2a77bfc32583cb207474c
 
 const USER_FIELDS: Prisma.UserSelect = {
   email: true,

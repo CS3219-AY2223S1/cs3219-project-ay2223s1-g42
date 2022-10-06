@@ -19,16 +19,7 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { ThrowKnownPrismaErrors } from "src/utils";
-<<<<<<< HEAD
-import {
-  OauthDto,
-  SigninCredentialsDto,
-  SignupCredentialsDto,
-} from "./auth.dto";
-import { NAMESPACES } from "shared/api";
-=======
 import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
->>>>>>> 30cd45258e5df74395c2a77bfc32583cb207474c
 
 export type JwtPayload = {
   sub: number;

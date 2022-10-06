@@ -50,21 +50,6 @@ import {
   QueryDto,
   OauthDto,
 } from "./auth.dto";
-<<<<<<< HEAD
-import {
-  ChangePasswordResponse,
-  DeleteAccountResponse,
-  ForgetPasswordResponse,
-  OauthLoginResponse,
-  RefreshResponse,
-  ResetPasswordResponse,
-  SigninResponse,
-  SignoutResponse,
-  SignupResponse,
-  VerifyEmailResponse,
-} from "shared/api";
-=======
->>>>>>> 30cd45258e5df74395c2a77bfc32583cb207474c
 
 @Controller("auth")
 export class AuthController {
