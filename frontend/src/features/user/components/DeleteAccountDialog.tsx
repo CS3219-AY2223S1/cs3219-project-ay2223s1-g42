@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import {
   DeleteAccountData,
   DeleteAccountInfoSchema,
+  DeleteAccountResponse,
 } from "g42-peerprep-shared";
 import { useMutation } from "@tanstack/react-query";
 

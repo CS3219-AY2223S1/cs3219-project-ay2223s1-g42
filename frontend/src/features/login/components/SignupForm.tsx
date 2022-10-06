@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupData, SignupSchema } from "g42-peerprep-shared";
+import { SignupData, SignupResponse, SignupSchema } from "g42-peerprep-shared";
 
 import {
   BlueButton,
