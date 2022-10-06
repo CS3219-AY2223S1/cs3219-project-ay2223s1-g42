@@ -40,7 +40,7 @@ model User {
   hash      String?  @db.Text
   // hash for refresh token, set as @db.Text to remove length limit set by varchar
   hashRt    String?  @db.Text
-  provider  String   @db.Text
+  provider  String   @default("CUSTOM") @db.Text
 
   //Junkang was here
   @@map("users")

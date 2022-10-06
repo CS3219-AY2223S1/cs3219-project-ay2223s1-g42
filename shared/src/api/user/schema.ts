@@ -6,6 +6,7 @@ const UserInfoSchema = _UserModel.pick({
   id: true,
   email: true,
   username: true,
+  provider: true,
 });
 
 const UserHashInfoSchema = _UserModel.pick({
@@ -14,6 +15,7 @@ const UserHashInfoSchema = _UserModel.pick({
   username: true,
   hash: true,
   hashRt: true,
+  provider: true,
 });
 
 const EditableSchema = _UserModel

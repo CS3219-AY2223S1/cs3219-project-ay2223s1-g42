@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, provider, User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
 
@@ -10,17 +10,20 @@ const USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
   id: true,
+  provider: true,
 };
 
 const USER_HASH_FIELDS: Prisma.UserSelect = {
   ...USER_FIELDS,
   hash: true,
   hashRt: true,
+  provider: true,
 };
 
 const OAUTH_USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
+  provider: true,
 };
 
 type UpdateableUserFields = Partial<
@@ -224,6 +227,7 @@ export class UserService {
       data: {
         email,
         username,
+        provider: PROVIDER.GITHUB,
       },
       select: OAUTH_USER_FIELDS,
     });

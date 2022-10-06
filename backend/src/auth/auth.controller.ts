@@ -361,7 +361,6 @@ export class AuthController {
     this.authService.checkOauthLogins(userEmail, username);
     const tokens = await this.authService.signinOauth(userEmail);
     this.setCookies(res, tokens);
-
     return { message: "success" };
   }
 }
