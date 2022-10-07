@@ -10,7 +10,7 @@ const CSRF_OPTIONS = {
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: false,
+  secure: true,
   sameSite: "lax",
 };
 
@@ -20,8 +20,8 @@ const CORS_OPTIONS: CorsOptions = {
     // "https://coinhall.org",
     // /https:\/\/.*\.coinhall\.org/,
     // // vercel deployments:
-    // "https://coinhall-org.vercel.app", // main branch
-    // /https:\/\/coinhall-[a-z0-9]*-coinhall\.vercel\.app/, // branches
+    "https://cs3219-project-ay2223s1-g42.vercel.app", // main branch
+    /https:\/\/*\.vercel\.app/, // branches
     // localhost regex:
     /http:\/\/localhost:/,
   ],

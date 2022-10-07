@@ -24,8 +24,8 @@ async function bootstrap() {
   const port = app.get(ConfigService).get("PORT");
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle("G420 PeerPussies API")
-    .setDescription("The REST interface for querying the G420 PeerPussies API")
+    .setTitle("G42 PeerPrep API")
+    .setDescription("The REST interface for querying the G42 PeerPrep API")
     .setVersion("1.0")
     .build();
   patchNestjsSwagger();
