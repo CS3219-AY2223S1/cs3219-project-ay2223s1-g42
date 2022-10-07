@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ForgetPasswordData, ForgetPasswordSchema } from "g42-peerprep-shared";
 
+import { ForgetPasswordData, ForgetPasswordSchema } from "shared/api";
 import {
   SuccessAlert,
   ErrorAlert,

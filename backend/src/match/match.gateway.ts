@@ -5,6 +5,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+
 import {
   MATCH_WS_NAMESPACE,
   MATCH_EVENTS,
@@ -12,8 +13,7 @@ import {
   PoolUser,
   MATCH_MESSAGES,
   PendingRoomUser,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { MatchService } from "./match.service";

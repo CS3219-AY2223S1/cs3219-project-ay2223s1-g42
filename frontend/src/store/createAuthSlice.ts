@@ -24,7 +24,7 @@ import {
   EditUserResponse,
   ChangePasswordResponse,
   DeleteAccountResponse,
-} from "g42-peerprep-shared";
+} from "shared/api";
 
 import { Axios } from "src/services";
 import type { GlobalStore } from "./useGlobalStore";

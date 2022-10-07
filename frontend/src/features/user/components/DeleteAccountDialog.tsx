@@ -1,11 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import {
-  DeleteAccountData,
-  DeleteAccountInfoSchema,
-} from "g42-peerprep-shared";
 
+import { DeleteAccountData, DeleteAccountInfoSchema } from "shared/api";
 import {
   ErrorAlert,
   RedButton,

@@ -2,11 +2,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  EditableCredentials,
-  EditableCredentialsSchema,
-} from "g42-peerprep-shared";
 
+import { EditableCredentials, EditableCredentialsSchema } from "shared/api";
 import {
   ErrorAlert,
   SuccessAlert,

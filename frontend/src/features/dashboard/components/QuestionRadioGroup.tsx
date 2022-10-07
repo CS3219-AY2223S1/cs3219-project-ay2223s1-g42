@@ -1,5 +1,4 @@
-import { QuestionDifficulty } from "g42-peerprep-shared";
-
+import { QuestionDifficulty } from "shared/api";
 import { BaseRadioGroup, RadioGroupValue } from "src/components";
 
 type Props = {

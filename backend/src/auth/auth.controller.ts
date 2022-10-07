@@ -20,6 +20,7 @@ import {
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
+
 import {
   ChangePasswordResponse,
   DeleteAccountResponse,
@@ -30,8 +31,7 @@ import {
   SignoutResponse,
   SignupResponse,
   VerifyEmailResponse,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { AuthService, Tokens } from "./auth.service";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";

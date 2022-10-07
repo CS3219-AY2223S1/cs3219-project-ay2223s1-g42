@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import Peer from "simple-peer";
-import { UserInfo } from "g42-peerprep-shared";
+import { UserInfo } from "shared/api";
 
 import type { GlobalStore } from "./useGlobalStore";
 

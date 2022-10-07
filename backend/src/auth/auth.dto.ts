@@ -1,5 +1,6 @@
 import { createZodDto } from "@anatine/zod-nestjs";
 import { extendApi } from "@anatine/zod-openapi";
+
 import {
   ChangePasswordInfoSchema,
   DeleteAccountInfoSchema,
@@ -9,8 +10,7 @@ import {
   ResetPasswordSchema,
   SigninSchema,
   SignupSchema,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { API_OPERATIONS } from "src/utils";
 
 const SignupApi = extendApi(SignupSchema, {

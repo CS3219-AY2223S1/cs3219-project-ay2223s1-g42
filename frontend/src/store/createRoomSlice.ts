@@ -9,7 +9,7 @@ import {
   QuestionDifficulty,
   ROOM_EVENTS,
   UserInfo,
-} from "g42-peerprep-shared";
+} from "shared/api";
 
 export type RoomUser = PoolUser & {
   socketId: string;
