@@ -1,6 +1,6 @@
 import { APP_GUARD, APP_PIPE } from "@nestjs/core";
 import { Module } from "@nestjs/common";
-import { ZodValidationPipe } from "nestjs-zod";
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";

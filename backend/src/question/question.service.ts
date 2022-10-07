@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import * as _ from "lodash";
 
+import { FlattenedQuestionContent, FlattenedQuestionSummary } from "shared/api";
 import {
-  FlattenedQuestionContent,
-  FlattenedQuestionSummary,
   QuestionContentFromDb,
   QuestionSummaryFromDb,
   QUESTION_CONTENT_SELECT,
@@ -53,7 +52,6 @@ export class QuestionService {
       where: { titleSlug },
       select: QUESTION_CONTENT_SELECT,
     });
-
     return this.formatQuestionContent(res);
   }
 
@@ -70,17 +68,17 @@ export class QuestionService {
   }
 
   /**
-   * @return  {FlattenedQuestionSummary[]}  Summary of Daily Question
+   * @return  {FlattenedQuestionSummary}  Summary of Daily Question
    */
-  async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary[]> {
+  async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary> {
     // Cron job ensures that there's only 1 QOTD at a time
-    const dailySummary: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
+    const dailySummary: QuestionSummaryFromDb =
+      await this.prisma.questionSummary.findFirstOrThrow({
         where: { isDailyQuestion: true },
         select: QUESTION_SUMMARY_SELECT,
       });
-
-    return this.formatQuestionSummaries(dailySummary);
+    const [formattedSummary] = this.formatQuestionSummaries([dailySummary]);
+    return formattedSummary;
   }
 
   async getSummariesFromDifficulty(difficulties: string[]) {

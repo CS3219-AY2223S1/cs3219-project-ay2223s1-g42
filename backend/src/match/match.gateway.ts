@@ -1,33 +1,22 @@
 import { UseGuards } from "@nestjs/common";
 import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
+import {
+  MATCH_WS_NAMESPACE,
+  MATCH_EVENTS,
+  PoolUserData,
+  PoolUser,
+  MATCH_MESSAGES,
+  PendingRoomUser,
+} from "shared/api";
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
-import { PublicUserInfo } from "../utils/zod/userInfo";
-import { QuestionDifficulty } from "src/utils/zod/question";
 import { MatchService } from "./match.service";
-import {
-  MATCH_ERRORS,
-  MATCH_EVENTS,
-  MATCH_MESSAGES,
-  MATCH_WS_NAMESPACE,
-} from "./constants";
-
-export type PoolUserData = Required<PublicUserInfo> & {
-  difficulties: QuestionDifficulty[];
-};
-
-export type PoolUser = PoolUserData & {
-  socketId: string;
-  timeJoined: number;
-};
 
 @UseGuards(WsJwtAccessGuard)
 @WebSocketGateway({
@@ -86,12 +75,11 @@ export class MatchGateway {
       }
 
       // if match found, create room with matched users
+      // and disconnect matched users from queue
       const matchedRoom = await this.matchService.handleFoundMatches(
         poolUser,
         matchingUserIds
       );
-
-      console.log({ matchedRoom });
 
       // if no error and matched room, emit room data to both users
       const notifyAllUsers = matchedRoom.users.map(
@@ -145,5 +133,26 @@ export class MatchGateway {
       MATCH_EVENTS.LEAVE_QUEUE_SUCCESS,
       JSON.stringify({ message: MATCH_MESSAGES.LEAVE_QUEUE_SUCCESS })
     );
+  }
+
+  @SubscribeMessage(MATCH_EVENTS.CANCEL_MATCH)
+  async onCancelRoom(client: Socket, data: any) {
+    const { id: pendingUserId, roomId: pendingUserRoomId }: PendingRoomUser =
+      JSON.parse(data);
+    try {
+      this.matchService.handleCancelMatch(
+        client,
+        this.server,
+        pendingUserId,
+        pendingUserRoomId
+      );
+    } catch (err) {
+      console.error(err);
+      client.emit(
+        MATCH_EVENTS.CANCEL_MATCH_ERR,
+        JSON.stringify({ message: MATCH_MESSAGES.CANCEL_MATCH_ERR })
+      );
+      return;
+    }
   }
 }

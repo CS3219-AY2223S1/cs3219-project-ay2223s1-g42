@@ -1,4 +1,4 @@
-import { z } from "nestjs-zod/z";
+import { z } from "zod";
 
 const EnvSchema = z.object({
   PORT: z.number().default(5000),

@@ -1,48 +1,63 @@
 import { useEffect } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import shallow from "zustand/shallow";
 
+import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
 import { LoadingLayout, UnauthorizedPage } from "src/components";
-import { LoadedRoom } from "src/dashboard";
-import { ROOM_EVENTS, useGlobalStore } from "src/store";
+import { LoadedRoom } from "src/features";
+import { useGlobalStore } from "src/store";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
-  const { user, queueRoomId, room, roomStatus, joinRoom, cleanupEditor } =
-    useGlobalStore((state) => {
-      return {
-        user: state.user,
-        queueRoomId: state.queueRoomId,
-        room: state.room,
-        roomStatus: state.roomStatus,
-        joinRoom: state.joinRoom,
-        cleanupEditor: state.cleanupEditor,
-      };
-    });
+  const navigate = useNavigate();
+  const {
+    user,
+    queueRoomId,
+    room,
+    roomStatus,
+    queueStatus,
+    joinRoom,
+    resetProviderBinding,
+  } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      queueRoomId: state.queueRoomId,
+      room: state.room,
+      roomStatus: state.roomStatus,
+      queueStatus: state.queueStatus,
+      joinRoom: state.joinRoom,
+      resetProviderBinding: state.resetProviderBinding,
+    };
+  }, shallow);
 
   const pageRoomId = id ?? "default";
-  const isValidRoom = pageRoomId === queueRoomId;
+  const isQueuedRoom = pageRoomId === queueRoomId;
+  const isInvalidRoom =
+    roomStatus?.event === ROOM_EVENTS.INVALID_ROOM ||
+    (queueRoomId && !isQueuedRoom);
 
   // join room on mount
   useEffect(() => {
     if (!user) {
       return;
     }
-    if (queueRoomId && !isValidRoom) {
+    if (queueRoomId && !isQueuedRoom) {
       return;
     }
     if (!room) {
-      console.log("joing room: ", { user, pageRoomId });
       joinRoom(pageRoomId);
     }
-    return () => {
-      cleanupEditor();
-    };
   }, []);
 
-  if (
-    roomStatus?.event === ROOM_EVENTS.INVALID_ROOM ||
-    (queueRoomId && !isValidRoom)
-  ) {
+  // redirect to dashboard page if match cancelled
+  useEffect(() => {
+    if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
+      navigate("/");
+      resetProviderBinding();
+    }
+  }, [queueStatus?.event, navigate, resetProviderBinding]);
+
+  if (isInvalidRoom) {
     return (
       <UnauthorizedPage title="Unauthorized room. Try finding another match instead!" />
     );
@@ -53,7 +68,7 @@ const RoomPage = (): JSX.Element => {
   }
 
   if (room) {
-    return <LoadedRoom roomId={pageRoomId} user={user} />;
+    return <LoadedRoom />;
   }
 
   return <LoadingLayout />;

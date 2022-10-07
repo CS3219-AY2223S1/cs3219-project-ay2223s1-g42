@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "src/*": ["./src/*"],
+      "zod": ["../frontend/node_modules/zod"]
+    },
+    "target": "ES2018",
+    "module": "CommonJS",
+    "lib": ["DOM", "ES6", "ES2017", "ESNext"],
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "Node",
+    "noImplicitAny": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src"]
+}

@@ -11,12 +11,12 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
+import { NAMESPACES } from "shared/api";
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
-import { SigninCredentialsDto, SignupCredentialsDto } from "../utils/zod";
 import { RedisCacheService } from "../cache/redisCache.service";
-import ThrowKnownPrismaErrors from "../utils/ThrowKnownPrismaErrors";
-import { NAMESPACES } from "src/cache/constants";
+import { ThrowKnownPrismaErrors } from "src/utils";
+import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
 
 export type JwtPayload = {
   sub: number;
@@ -160,7 +160,7 @@ export class AuthService {
     return tokens;
   }
 
-  async verifyEmail(token: string) {
+  async verifyEmail(token: string): Promise<Tokens> {
     const cachedUser = await this.cache.getKeyInNamespace<CacheableUserFields>(
       [NAMESPACES.AUTH],
       token

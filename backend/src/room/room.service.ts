@@ -1,10 +1,8 @@
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 
-import { NAMESPACES } from "src/cache/constants";
+import { NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
 import { RedisCacheService } from "src/cache/redisCache.service";
-import { PoolUser } from "src/match/match.gateway";
-import { Room, RoomUser } from "./room.gateway";
 
 @Injectable()
 export class RoomService {
@@ -75,7 +73,6 @@ export class RoomService {
       ...room,
       users: newUsers,
     };
-    console.log({ oldUsers: room.users, newUsers });
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
 
     // remove user from room users
