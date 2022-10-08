@@ -23,6 +23,7 @@ export class RoomService {
 
   async createRoom(users: PoolUser[]): Promise<Room> {
     // create room
+    console.log("creating room for: ", { users });
     const roomId = v4();
     const roomUsers: RoomUser[] = Array.from(
       new Set(
@@ -41,7 +42,7 @@ export class RoomService {
       await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
 
       // add user to room users (store room id of each user in a room)
-      const addRoomedUsers = Array.from(room.users).map(async (user) => {
+      const addRoomedUsers = room.users.map(async (user) => {
         await this.addUserAsRoomUser(room.id, user.id.toString());
       });
 

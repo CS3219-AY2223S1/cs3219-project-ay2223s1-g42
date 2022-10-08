@@ -114,9 +114,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
     binding.destroy();
-    const doc = getState().doc;
-    doc?.destroy();
-    setState({ editorBinding: undefined, doc: undefined, text: undefined });
+    setState({ editorBinding: undefined });
   };
 
   // set up binding to between provider and editor document text

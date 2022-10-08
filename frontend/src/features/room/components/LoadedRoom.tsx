@@ -25,7 +25,7 @@ const LeaveRoomButton = () => {
           return;
         }
         leaveRoom();
-        resetProviderBinding();
+        // resetProviderBinding();
         navigate("/");
       }}
     >

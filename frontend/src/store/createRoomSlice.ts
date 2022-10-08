@@ -91,6 +91,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     setState({
       room: undefined,
       roomStatus,
+      queueRoomId: undefined,
     });
   });
 

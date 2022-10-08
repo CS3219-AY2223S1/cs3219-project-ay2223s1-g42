@@ -97,7 +97,10 @@ export class MatchService {
       const matchedUserIds = Array.from(
         new Set(fetchAllMatchedUserIdsRes.flat())
       );
-      return matchedUserIds;
+      const uniqueMatchedUserIds = matchedUserIds.filter(
+        (id) => id !== user.id.toString()
+      );
+      return uniqueMatchedUserIds;
     } catch (err) {
       console.error(err);
       throw new Error(MATCH_ERRORS.HANDLE_FIND_MATCHING_USER_IDS);
@@ -123,7 +126,7 @@ export class MatchService {
       const newRoom = await this.roomService.createRoom([user, matchedUser]);
 
       // remove all users from match queues
-      const disconnectAllUsers = Array.from(newRoom.users).map(
+      const disconnectAllUsers = newRoom.users.map(
         async (user) => await this.disconnectFromMatchQueue(user)
       );
       await Promise.all(disconnectAllUsers);
