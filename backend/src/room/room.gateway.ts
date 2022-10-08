@@ -5,14 +5,14 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+
 import {
   ROOM_WS_NAMESPACE,
   ROOM_EVENTS,
   ROOM_MESSAGES,
   PendingRoomUser,
   RoomUser,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { CORS_OPTIONS } from "../config";
 import { WsJwtAccessGuard } from "../auth/guard/ws.access.guard";
 import { RoomService } from "./room.service";

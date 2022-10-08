@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
-import { MATCH_EVENTS, QuestionDifficulty } from "g42-peerprep-shared";
 
+import { MATCH_EVENTS, QuestionDifficulty } from "shared/api";
 import {
   BigHeading,
   PrimaryButton,

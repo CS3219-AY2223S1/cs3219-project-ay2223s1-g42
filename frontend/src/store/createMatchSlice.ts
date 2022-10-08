@@ -4,11 +4,7 @@ import toast from "react-hot-toast";
 
 import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
-import {
-  MATCH_EVENTS,
-  PoolUserData,
-  QuestionDifficulty,
-} from "g42-peerprep-shared";
+import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
 
 export type MatchSlice = {
   matchSocket: Socket | undefined;

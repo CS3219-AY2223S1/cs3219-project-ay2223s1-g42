@@ -18,13 +18,13 @@ import {
   ApiInternalServerErrorResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
+
 import {
   DeleteUserResponse,
   EditUserResponse,
   GetUserResponse,
   UserInfo,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { UserService } from "./user.service";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
