@@ -10,8 +10,8 @@ const CSRF_OPTIONS = {
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
 };
 
 const CORS_OPTIONS: CorsOptions = {
