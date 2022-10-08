@@ -10,7 +10,8 @@ import {
   SpinnerIcon,
 } from "src/components";
 import { MatchDialog, QuestionCheckGroup } from "src/features";
-import { useGlobalStore } from "src/store";
+import { matchToastOptions, useGlobalStore } from "src/store";
+import toast from "react-hot-toast";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -40,6 +41,8 @@ const Dashboard = () => {
     user,
     queueStatus,
     matchDifficulties,
+    matchSocket,
+    roomSocket,
     setMatchDifficulties,
     joinQueue,
   } = useGlobalStore((state) => {
@@ -47,6 +50,8 @@ const Dashboard = () => {
       user: state.user,
       queueStatus: state.queueStatus,
       matchDifficulties: state.matchDifficulties,
+      matchSocket: state.matchSocket,
+      roomSocket: state.roomSocket,
       setMatchDifficulties: state.setMatchDifficulties,
       joinQueue: state.joinQueue,
     };
@@ -57,18 +62,33 @@ const Dashboard = () => {
   // handle update selected difficulties
   const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
     const difficultySelected = matchDifficulties.includes(difficulty);
+    // if diffuculty already selected, unselect it, otherwise select it
     const newDifficulties = difficultySelected
       ? matchDifficulties.filter((d) => d !== difficulty)
       : matchDifficulties.concat(difficulty);
-    setMatchDifficulties(newDifficulties);
+    // prevent user from unselecting difficulty if it's the only one selected
+    if (newDifficulties.length === 0) {
+      return;
+    }
     setMatchDifficulties(newDifficulties);
   };
 
   // handle join match queue
   const handleJoinQueue = useCallback(() => {
+    if (!roomSocket?.connected || !matchSocket?.connected) {
+      toast.error("Unable to connect to server. Please try again later.", {
+        id: "join-queue-error",
+      });
+      return;
+    }
     setIsMatchingDialogOpen(true);
     joinQueue(matchDifficulties);
-  }, [matchDifficulties, joinQueue]);
+  }, [
+    roomSocket?.connected,
+    matchSocket?.connected,
+    joinQueue,
+    matchDifficulties,
+  ]);
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);

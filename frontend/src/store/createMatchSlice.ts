@@ -6,7 +6,7 @@ import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
 import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
 
-const matchToastOptions: ToastOptions = {
+export const matchToastOptions: ToastOptions = {
   id: "match-toast",
 };
 
