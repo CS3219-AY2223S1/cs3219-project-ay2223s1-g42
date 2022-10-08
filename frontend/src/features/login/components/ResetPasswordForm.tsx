@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ResetPasswordData, ResetPasswordSchema } from "g42-peerprep-shared";
 
+import { ResetPasswordData, ResetPasswordSchema } from "shared/api";
 import {
   ErrorAlert,
   SuccessAlert,

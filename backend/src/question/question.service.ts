@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as _ from "lodash";
-import {
-  FlattenedQuestionContent,
-  FlattenedQuestionSummary,
-} from "g42-peerprep-shared";
 
+import { FlattenedQuestionContent, FlattenedQuestionSummary } from "shared/api";
 import {
   QuestionContentFromDb,
   QuestionSummaryFromDb,

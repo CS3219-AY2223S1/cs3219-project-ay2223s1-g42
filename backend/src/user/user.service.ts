@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
-import { UserHashInfo, UserInfo } from "g42-peerprep-shared";
 
+import { UserHashInfo, UserInfo } from "shared/api";
 import { PrismaService } from "../prisma/prisma.service";
 
 const USER_FIELDS: Prisma.UserSelect = {

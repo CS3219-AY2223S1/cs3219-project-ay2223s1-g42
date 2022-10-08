@@ -10,8 +10,8 @@ import { MailerService } from "@nestjs-modules/mailer";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
-import { NAMESPACES } from "g42-peerprep-shared";
 
+import { NAMESPACES } from "shared/api";
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";

@@ -19,9 +19,10 @@
     "paths": {
       "src/*": ["src/*"],
       "components/*": ["src/components/*"],
-      "hooks/*": ["src/hooks/*"]
+      "hooks/*": ["src/hooks/*"],
+      "shared/*": ["../shared/src/*"],
     },
     "types": ["vite/client"]
   },
-  "include": ["./src", "vite-env.d.ts"]
+  "include": ["./src", "vite-env.d.ts", "../shared/src"]
 }

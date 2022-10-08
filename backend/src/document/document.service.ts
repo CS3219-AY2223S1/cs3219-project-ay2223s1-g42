@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Document } from "y-socket.io/dist/server";
-import { NAMESPACES } from "g42-peerprep-shared";
 
+import { NAMESPACES } from "shared/api";
 import { RedisCacheService } from "src/cache/redisCache.service";
 
 export const DOCUMENT_TEXT_NAME = "monaco";

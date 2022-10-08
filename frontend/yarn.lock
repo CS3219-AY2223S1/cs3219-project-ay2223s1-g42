@@ -2766,13 +2766,6 @@ functions-have-names@^1.2.2:
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-g42-peerprep-shared@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/g42-peerprep-shared/-/g42-peerprep-shared-1.0.0.tgz#86279ae3167357b9ef556b8977fb15fe5e921f23"
-  integrity sha512-jg64X2RqiW5pV00wa5/hPUkYBm8Nx8es9FwaEeVAiXQ18pMKpLQX7DlS0gwOJh34o/0XKQmbBUJoQPB4+cPGZA==
-  dependencies:
-    zod "^3.19.1"
-
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"

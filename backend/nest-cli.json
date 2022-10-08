@@ -5,5 +5,5 @@
   "compilerOptions": {
     "plugins": ["@nestjs/swagger"]
   },
-  "entryFile": "main"
+  "entryFile": "backend/src/main"
 }

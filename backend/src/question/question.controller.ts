@@ -13,6 +13,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
 } from "@nestjs/swagger";
+
 import {
   GetSummariesResponse,
   FlattenedQuestionSummary,
@@ -20,8 +21,7 @@ import {
   GetAllTopicsResponse,
   GetDailyQuestionContentResponse,
   GetSlugContentResponse,
-} from "g42-peerprep-shared";
-
+} from "shared/api";
 import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
 import { QuestionQueryDto } from "./QuestionQuery.dto";
