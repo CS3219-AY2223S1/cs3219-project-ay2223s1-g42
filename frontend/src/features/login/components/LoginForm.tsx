@@ -62,9 +62,7 @@ const LoginForm = () => {
         <a
           href={`http://github.com/login/oauth/authorize?client_id=${
             import.meta.env.VITE_OAUTH_CLIENT_ID
-          }&redirect_uri=${
-            import.meta.env.VITE_OAUTH_URL
-          }&path=${path}&scope=user:email`}
+          }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user:email`}
         >
           <BlueButton className="relative flex w-full items-center justify-center">
             <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">

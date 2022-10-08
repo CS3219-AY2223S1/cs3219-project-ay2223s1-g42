@@ -19,7 +19,11 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { ThrowKnownPrismaErrors } from "src/utils";
-import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
+import {
+  SigninCredentialsDto,
+  SignupCredentialsDto,
+  OauthDto,
+} from "./auth.dto";
 
 export type JwtPayload = {
   sub: number;
@@ -414,6 +418,33 @@ export class AuthService {
 
     return axios
       .get("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => res.data[0])
+      .catch((error) => {
+        console.error(`Error getting user from GitHub`);
+        throw error;
+      });
+  }
+
+  async getGithubEmail({ oauthCode }: { oauthCode: string }) {
+    const githubToken = await axios
+      .post(
+        `https://github.com/login/oauth/access_token?client_id=${this.config.get(
+          "GITHUB_CLIENT_ID"
+        )}&client_secret=${this.config.get(
+          "GITHUB_CLIENT_SECRET"
+        )}&code=${oauthCode}`
+      )
+      .then((res) => res.data)
+      .catch((error) => {
+        throw error;
+      });
+    const decoded = new URLSearchParams(githubToken);
+    const accessToken = decoded.get("access_token");
+
+    return axios
+      .get("https://api.github.com/user/emails", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => res.data)

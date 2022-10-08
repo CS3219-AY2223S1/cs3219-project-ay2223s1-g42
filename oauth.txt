@@ -1,5 +1,0 @@
-oauth url: http://localhost:5000/auth/local/github
-
-client_id: aab9c8d52377b23cc805
-
-client_secret: afb6867ad3820c43e31f9e05b6904ae0338f2a72

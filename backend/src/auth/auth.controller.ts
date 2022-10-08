@@ -34,6 +34,7 @@ import {
   SignoutResponse,
   SignupResponse,
   VerifyEmailResponse,
+  OauthLoginResponse,
 } from "shared/api";
 import { AuthService, Tokens } from "./auth.service";
 import { JwtRefreshGuard } from "./guard";
@@ -349,7 +350,9 @@ export class AuthController {
     }
 
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
-    const userEmail = gitHubUser.email;
+    const gitHubEmail = await this.authService.getGithubEmail({ oauthCode });
+    console.log(gitHubUser);
+    const userEmail = gitHubEmail.email;
     const username = gitHubUser.login;
 
     //Is user in the database? If yes, create cookie
