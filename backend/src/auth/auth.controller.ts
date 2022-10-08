@@ -350,15 +350,14 @@ export class AuthController {
     }
 
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
-    const gitHubEmail = await this.authService.getGithubEmail({ oauthCode });
-    console.log(gitHubUser);
-    const userEmail = gitHubEmail.email;
-    const username = gitHubUser.login;
+    const username = gitHubUser.username;
+    const userEmail = gitHubUser.email;
+    console.log(username);
+    console.log(userEmail);
 
-    //Is user in the database? If yes, create cookie
-    //Else add to database
-
+    //Check whether the user has created an account via oauth
     this.authService.checkOauthLogins(userEmail, username);
+    //Sign in
     const tokens = await this.authService.signinOauth(userEmail);
     this.setCookies(res, tokens);
     return { message: "success" };

@@ -10,30 +10,22 @@ const USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
   id: true,
-  provider: true,
 };
 
 const USER_HASH_FIELDS: Prisma.UserSelect = {
   ...USER_FIELDS,
   hash: true,
   hashRt: true,
-  provider: true,
 };
 
 const OAUTH_USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
-  provider: true,
 };
 
 type UpdateableUserFields = Partial<
   Pick<User, "username" | "email" | "hashRt" | "hash">
 >;
-
-enum PROVIDER {
-  CUSTOM = "CUSTOM",
-  GITHUB = "GITHUB",
-}
 
 @Injectable()
 export class UserService {
@@ -192,7 +184,6 @@ export class UserService {
         email,
         username,
         hash,
-        provider: PROVIDER.CUSTOM,
       },
       select: USER_FIELDS,
     });
@@ -222,12 +213,11 @@ export class UserService {
     email: string,
     username: string
   ): Promise<[Error, OauthUserInfo]> {
-    let hash = null;
     const res = await radash.try(this.prisma.user.create)({
       data: {
         email,
         username,
-        provider: PROVIDER.GITHUB,
+        provider: "GITHUB",
       },
       select: OAUTH_USER_FIELDS,
     });

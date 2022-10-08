@@ -30,6 +30,7 @@ const OauthInfoScehma = _UserModel.pick({
   id: true,
   email: true,
   username: true,
+  provider: true,
 });
 
 type UserInfo = z.infer<typeof UserInfoSchema>;

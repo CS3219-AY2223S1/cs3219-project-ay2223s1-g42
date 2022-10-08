@@ -14,7 +14,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
-import { NAMESPACES } from "shared/api";
+import { NAMESPACES, OauthInfoScehma } from "shared/api";
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
@@ -416,42 +416,29 @@ export class AuthService {
     const decoded = new URLSearchParams(githubToken);
     const accessToken = decoded.get("access_token");
 
-    return axios
+    const username = await axios
       .get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-      .then((res) => res.data[0])
+      .then((res) => res.data.login)
       .catch((error) => {
         console.error(`Error getting user from GitHub`);
         throw error;
       });
-  }
 
-  async getGithubEmail({ oauthCode }: { oauthCode: string }) {
-    const githubToken = await axios
-      .post(
-        `https://github.com/login/oauth/access_token?client_id=${this.config.get(
-          "GITHUB_CLIENT_ID"
-        )}&client_secret=${this.config.get(
-          "GITHUB_CLIENT_SECRET"
-        )}&code=${oauthCode}`
-      )
-      .then((res) => res.data)
-      .catch((error) => {
-        throw error;
-      });
-    const decoded = new URLSearchParams(githubToken);
-    const accessToken = decoded.get("access_token");
-
-    return axios
+    const primaryEmail = await axios
       .get("https://api.github.com/user/emails", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-      .then((res) => res.data)
+      .then((res) => res.data[0].email)
       .catch((error) => {
         console.error(`Error getting user from GitHub`);
         throw error;
       });
+    return {
+      username: username,
+      email: primaryEmail,
+    };
   }
 
   async checkOauthLogins(email: string, username: string) {
@@ -461,10 +448,13 @@ export class AuthService {
       username
     );
 
+    //If user exist
     if (user) {
-      if (user.email == email) {
+      //Check whether the user created account using peerprep login
+      if (user.email == email && user.provider == "CUSTOM") {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
-      } else {
+        //Is username in use
+      } else if (user.username == username && user.provider == "CUSTOM") {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
       }
     }
@@ -477,7 +467,10 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
     }
 
-    this.users.createOauthUser(email, username);
+    //Create user if it doesnt exist
+    if (!user) {
+      this.users.createOauthUser(email, username);
+    }
   }
 
   /**
@@ -488,6 +481,7 @@ export class AuthService {
   async signinOauth(credentials: OauthDto): Promise<Tokens> {
     const { email } = credentials;
     const [err, user] = await this.users.findByEmail(email);
+    ThrowKnownPrismaErrors(err);
     const tokens = await this.signTokens(user.id, user.email);
     // update refresh token hash for logged in user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
