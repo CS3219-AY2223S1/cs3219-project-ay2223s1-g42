@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
 
-import { RedButton } from "src/components";
+import { PrimaryButton, RedButton } from "src/components";
 import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
@@ -9,11 +9,10 @@ import { RoomTabs } from "./RoomTabs";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
-  const { user, leaveRoom, resetProviderBinding } = useGlobalStore((state) => {
+  const { user, leaveRoom } = useGlobalStore((state) => {
     return {
       user: state.user,
       leaveRoom: state.leaveRoom,
-      resetProviderBinding: state.resetProviderBinding,
     };
   }, shallow);
   return (
@@ -25,7 +24,6 @@ const LeaveRoomButton = () => {
           return;
         }
         leaveRoom();
-        // resetProviderBinding();
         navigate("/");
       }}
     >
@@ -38,8 +36,13 @@ const LoadedRoom = () => {
   console.log("rendering loaded room component!");
   return (
     <div className="flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
-      <div className="h-full max-h-full w-full border-[1px] border-neutral-800 pb-1">
+      <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
         <RoomTabs />
+        <div className="flex flex-row items-center justify-between border-t-[1px] border-neutral-800 p-2">
+          <PrimaryButton className="px-6 py-2.5">Back</PrimaryButton>
+          <span>question 10/100</span>
+          <PrimaryButton className="px-6 py-2.5">Next</PrimaryButton>
+        </div>
       </div>
       <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
         <div className="flex w-full flex-row items-center justify-between">
