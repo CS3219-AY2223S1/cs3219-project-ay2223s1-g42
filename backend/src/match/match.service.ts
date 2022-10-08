@@ -162,30 +162,28 @@ export class MatchService {
     }
 
     // disconnect all users in the room (including connected room users)
-    const disconnectAllUsers = Array.from(currentRoom.users).map(
-      async (user) => {
-        await this.roomService.removeUserFromRoom(currentRoom, user.id);
-        // emit CANCEL_MATCH_SUCCESS event to user that cancelled
-        if (user.socketId === client.id) {
-          client.emit(
-            MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
-            JSON.stringify({
-              message: MATCH_MESSAGES.CANCEL_MATCH_SUCCESS,
-            })
-          );
-          client.leave(currentRoom.id);
-          return;
-        }
-        // emit ROOM_CANCELLED event to users that accepted
-        server.to(user.socketId).emit(
-          MATCH_EVENTS.MATCH_CANCELLED,
+    const disconnectAllUsers = currentRoom.users.map(async (user) => {
+      await this.roomService.removeUserFromRoom(currentRoom, user.id);
+      // emit CANCEL_MATCH_SUCCESS event to user that cancelled
+      if (user.socketId === client.id) {
+        client.emit(
+          MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
           JSON.stringify({
-            message: MATCH_MESSAGES.MATCH_CANCELLED,
+            message: MATCH_MESSAGES.CANCEL_MATCH_SUCCESS,
           })
         );
-        server.to(user.socketId).socketsLeave(currentRoom.id);
+        client.leave(currentRoom.id);
+        return;
       }
-    );
+      // emit ROOM_CANCELLED event to users that accepted
+      server.to(user.socketId).emit(
+        MATCH_EVENTS.MATCH_CANCELLED,
+        JSON.stringify({
+          message: MATCH_MESSAGES.MATCH_CANCELLED,
+        })
+      );
+      server.to(user.socketId).socketsLeave(currentRoom.id);
+    });
     await Promise.all(disconnectAllUsers);
 
     // if room empty, delete room

@@ -100,7 +100,7 @@ export class RoomGateway {
 
       // get room data
       const currentRoom = await this.roomService.getRoomFromId(roomId);
-      const pendingUserData = Array.from(currentRoom.users).find(
+      const pendingUserData = currentRoom.users.find(
         (user) => user.id === pendingUserId
       );
 
