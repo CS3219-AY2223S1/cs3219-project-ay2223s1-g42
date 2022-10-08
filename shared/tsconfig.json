@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "src/*": ["./src/*"],
-      "zod": ["../frontend/node_modules/zod"]
+      "src/*": ["./src/*"]
     },
     "target": "ES2018",
     "module": "CommonJS",
