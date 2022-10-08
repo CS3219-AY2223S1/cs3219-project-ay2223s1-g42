@@ -50,11 +50,12 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
     provider.destroy();
+    setState({ editorProvider: undefined });
   };
 
   // set up provider
   const setupProvider = () => {
-    cleanupProvider();
+    // cleanupProvider();
 
     // load doc and text
     const doc = getState().doc;
@@ -113,6 +114,9 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
     binding.destroy();
+    const doc = getState().doc;
+    doc?.destroy();
+    setState({ editorBinding: undefined, doc: undefined, text: undefined });
   };
 
   // set up binding to between provider and editor document text
@@ -131,6 +135,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     }
 
     if (!provider.socket.connected) {
+      console.log("connecting to provider...");
       provider.connect();
     }
 

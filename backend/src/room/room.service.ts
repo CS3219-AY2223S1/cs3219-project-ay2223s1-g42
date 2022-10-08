@@ -24,9 +24,14 @@ export class RoomService {
   async createRoom(users: PoolUser[]): Promise<Room> {
     // create room
     const roomId = v4();
-    const roomUsers: RoomUser[] = users.map((user) => {
-      return { ...user, connected: false };
-    });
+    const roomUsers: RoomUser[] = Array.from(
+      new Set(
+        users.map((user) => {
+          return { ...user, connected: false };
+        })
+      )
+    );
+
     const room: Room = {
       id: roomId,
       users: roomUsers,
@@ -36,7 +41,7 @@ export class RoomService {
       await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
 
       // add user to room users (store room id of each user in a room)
-      const addRoomedUsers = room.users.map(async (user) => {
+      const addRoomedUsers = Array.from(room.users).map(async (user) => {
         await this.addUserAsRoomUser(room.id, user.id.toString());
       });
 
@@ -52,9 +57,7 @@ export class RoomService {
 
   async addUserToRoom(room: Room, user: RoomUser): Promise<Room> {
     // update users in room
-    const newUsers = room.users
-      .filter((roomUser) => roomUser.id !== user.id)
-      .concat(user);
+    const newUsers = room.users.concat(user);
     const newRoom: Room = {
       ...room,
       users: newUsers,
@@ -68,10 +71,10 @@ export class RoomService {
 
   async removeUserFromRoom(room: Room, userId: number): Promise<Room> {
     // update users in room
-    const newUsers = room.users.filter((user) => user.id !== userId);
+    const remainingUsers = room.users.filter((user) => user.id !== userId);
     const newRoom: Room = {
       ...room,
-      users: newUsers,
+      users: remainingUsers,
     };
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
 

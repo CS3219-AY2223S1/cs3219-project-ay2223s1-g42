@@ -44,7 +44,9 @@ export class RoomGateway {
       const room = await this.roomService.getRoomFromId(roomId);
 
       // get user info
-      const roomUser = room.users.find((user) => user.id === pendingUserId);
+      const roomUser = Array.from(room.users).find(
+        (user) => user.id === pendingUserId
+      );
 
       // emit error if room id not found, room id doesnt
       // provided room id or user not found in room
@@ -100,7 +102,7 @@ export class RoomGateway {
 
       // get room data
       const currentRoom = await this.roomService.getRoomFromId(roomId);
-      const pendingUserData = currentRoom.users.find(
+      const pendingUserData = Array.from(currentRoom.users).find(
         (user) => user.id === pendingUserId
       );
 
