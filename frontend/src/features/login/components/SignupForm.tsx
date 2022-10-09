@@ -1,8 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SignupData, SignupSchema } from "shared/api";
+import { SignupData, SignupResponse, SignupSchema } from "shared/api";
 import {
   BlueButton,
   TextInput,
@@ -13,7 +13,7 @@ import {
   SuccessAlert,
   Divider,
 } from "src/components";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const SignupForm = () => {
   const queryClient = useQueryClient();
@@ -28,14 +28,19 @@ const SignupForm = () => {
     resolver: zodResolver(SignupSchema),
   });
 
-  // sign in mutations
-  const useSignUpMutation = useGlobalStore((state) => state.useSignupMutation);
-  const signupMutation = useSignUpMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
-      reset();
-    },
-  });
+  // sign up mutation
+  const signupMutation = useMutation(
+    (params: SignupData) =>
+      Axios.post<SignupResponse>(`/auth/local/signup`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["me"]);
+        reset();
+      },
+    }
+  );
 
   // submit function
   const handleSignup = async (credentials: SignupData) => {

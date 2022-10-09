@@ -11,8 +11,8 @@ export function BaseButton({
 }: BaseProps) {
   return (
     <button
-      className={`group flex items-center justify-center border-[1px] p-3 font-sans
-      font-medium transition duration-300 ease-out ${className}`}
+      className={`group flex items-center justify-center border-[1px] py-[14px] px-4 font-sans
+      text-base font-medium transition duration-300 ease-out ${className}`}
       {...other}
     >
       {isLoading ? (

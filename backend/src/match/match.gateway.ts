@@ -81,6 +81,8 @@ export class MatchGateway {
         matchingUserIds
       );
 
+      console.log("found matched room: ", { matchedRoom });
+
       // if no error and matched room, emit room data to both users
       const notifyAllUsers = matchedRoom.users.map(
         async (user) =>

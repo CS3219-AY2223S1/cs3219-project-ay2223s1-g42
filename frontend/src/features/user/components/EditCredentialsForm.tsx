@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { EditableCredentials, EditableCredentialsSchema } from "shared/api";
+import {
+  EditableCredentials,
+  EditableCredentialsSchema,
+  EditUserResponse,
+} from "shared/api";
 import {
   ErrorAlert,
   SuccessAlert,
@@ -11,7 +15,7 @@ import {
   PrimaryButton,
 } from "src/components";
 import { UserProps } from "src/features";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const EditCredentialsForm = ({ user }: UserProps) => {
   const queryClient = useQueryClient();
@@ -29,17 +33,21 @@ const EditCredentialsForm = ({ user }: UserProps) => {
   });
 
   // edit credentials mutation
-  const useEditCredentialsMutation = useGlobalStore(
-    (state) => state.useEditCredentialsMutation
+  const editCredentialsMutation = useMutation(
+    (params: EditableCredentials) =>
+      Axios.patch<EditUserResponse>(`/users/${id}`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["me"]);
+      },
+      onError: (error) => {
+        console.error({ error });
+        reset();
+      },
+    }
   );
-  const editCredentialsMutation = useEditCredentialsMutation(id, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["me"]);
-    },
-    onError: () => {
-      reset();
-    },
-  });
 
   // submit function
   const handleResetPassword = async (credentials: EditableCredentials) => {
@@ -57,10 +65,10 @@ const EditCredentialsForm = ({ user }: UserProps) => {
 
   return (
     <div>
-      {editCredentialsMutation.isError ? (
-        <ErrorAlert title={"Username taken!"} message={"Please try again"} />
-      ) : editCredentialsMutation.isSuccess ? (
+      {editCredentialsMutation.isSuccess ? (
         <SuccessAlert title="Username changed!" />
+      ) : editCredentialsMutation.isError ? (
+        <ErrorAlert title={"Username taken!"} message={"Please try again"} />
       ) : (
         <></>
       )}
