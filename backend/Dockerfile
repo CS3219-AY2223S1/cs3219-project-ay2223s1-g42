@@ -7,7 +7,8 @@ COPY . /app/
 RUN yarn install
 RUN yarn prisma generate
 
-EXPOSE 8080
+EXPOSE 5000 
+EXPOSE 8080 
+EXPOSE 15316
 
 CMD [ "node", "./dist/backend/src/main.js" ]
-
