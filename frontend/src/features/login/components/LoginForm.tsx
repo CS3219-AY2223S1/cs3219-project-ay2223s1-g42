@@ -8,7 +8,7 @@ import {
   ErrorAlert,
   SuccessAlert,
   BlueButton,
-  GoogleIcon,
+  GithubIcon,
   TextInput,
   LightLink,
   PrimaryButton,
@@ -72,9 +72,9 @@ const LoginForm = () => {
         >
           <BlueButton className="relative flex w-full items-center justify-center">
             <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-              <GoogleIcon className="h-5 w-5" />
+              <GithubIcon className="h-5 w-5" />
             </div>
-            Sign in with Google
+            Sign in with GitHub
           </BlueButton>
         </a>
         <Divider label="Or, sign in with your email" />

@@ -8,7 +8,7 @@ import {
   TextInput,
   PrimaryButton,
   ErrorAlert,
-  GoogleIcon,
+  GithubIcon,
   PrimaryLink,
   SuccessAlert,
   Divider,
@@ -71,9 +71,9 @@ const SignupForm = () => {
         >
           <BlueButton className="relative flex w-full items-center justify-center">
             <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-              <GoogleIcon className="h-5 w-5 text-red-500" />
+              <GithubIcon className="h-5 w-5 text-red-500" />
             </div>
-            Sign up with Google
+            Sign up with GitHub
           </BlueButton>
         </a>
         <Divider label="Or, sign up with your email" />

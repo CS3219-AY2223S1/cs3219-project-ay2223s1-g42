@@ -19,7 +19,7 @@ const SigninSchema = SignupSchema.pick({
   password: true,
 });
 
-const oauthSigninSchema = SignupSchema.pick({
+const OauthSigninSchema = SignupSchema.pick({
   email: true,
 });
 
@@ -71,7 +71,7 @@ type DeletePasswordData = z.infer<typeof DeletePasswordSchema>;
 type EditableCredentials = z.infer<typeof EditableCredentialsSchema>;
 type DeleteAccountData = z.infer<typeof DeleteAccountInfoSchema>;
 type QuerySchemaData = z.infer<typeof QuerySchema>;
-type oauthSigninData = z.infer<typeof OauthInfoScehma>;
+type OauthSigninData = z.infer<typeof OauthInfoScehma>;
 
 export {
   SignupSchema,
@@ -96,5 +96,5 @@ export type {
   EditableCredentials,
   DeleteAccountData,
   QuerySchemaData,
-  oauthSigninData,
+  OauthSigninData,
 };
