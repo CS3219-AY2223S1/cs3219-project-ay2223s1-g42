@@ -3,12 +3,7 @@ import { Axios } from "src/services";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ApiResponse } from "src/features";
-import {
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { QuerySchemaData, OauthLoginResponse } from "shared/api";
 

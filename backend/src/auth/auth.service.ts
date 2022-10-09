@@ -483,6 +483,7 @@ export class AuthService {
     const { email } = credentials;
     const [err, user] = await this.users.findByEmail(email);
     //ThrowKnownPrismaErrors(err);
+    console.log(`user: ${user}`);
     const tokens = await this.signTokens(user.id, user.email);
     // update refresh token hash for logged in user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);

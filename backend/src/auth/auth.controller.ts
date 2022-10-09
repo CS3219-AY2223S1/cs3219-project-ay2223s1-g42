@@ -356,6 +356,8 @@ export class AuthController {
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
     const username = gitHubUser.username;
     const userEmail = gitHubUser.email;
+    console.log(username);
+    console.log(userEmail);
     //Check whether the user has created an account via oauth
     this.authService.checkOauthLogins(userEmail, username);
     //Sign in
