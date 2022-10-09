@@ -20,6 +20,7 @@ import {
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 import { Response } from "express";
@@ -96,6 +97,9 @@ export class AuthController {
   })
   @ApiForbiddenResponse({
     description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
+  })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
   })
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
@@ -352,8 +356,6 @@ export class AuthController {
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
     const username = gitHubUser.username;
     const userEmail = gitHubUser.email;
-    console.log(username);
-    console.log(userEmail);
 
     //Check whether the user has created an account via oauth
     this.authService.checkOauthLogins(userEmail, username);

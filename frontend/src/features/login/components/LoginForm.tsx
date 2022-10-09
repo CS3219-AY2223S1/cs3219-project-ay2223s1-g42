@@ -44,7 +44,6 @@ const LoginForm = () => {
     signinMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignin);
-  const path = "/";
 
   return (
     <div>

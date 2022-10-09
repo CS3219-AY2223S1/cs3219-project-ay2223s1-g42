@@ -184,6 +184,7 @@ export class UserService {
         email,
         username,
         hash,
+        provider: "CUSTOM",
       },
       select: USER_FIELDS,
     });
