@@ -24,20 +24,16 @@ import {
 } from "shared/api";
 import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
-import { QuestionQueryDto } from "./QuestionQuery.dto";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import { QuestionQuerySchemaDto } from "./question.dto";
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 
 @Controller("question")
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @PublicRoute()
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-    })
-  )
+  @UsePipes(ZodValidationPipe)
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_QUERY_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -50,7 +46,7 @@ export class QuestionController {
   })
   @Get("/summary")
   async getSummaries(
-    @Query() query: QuestionQueryDto
+    @Query() query: QuestionQuerySchemaDto
   ): Promise<GetSummariesResponse> {
     const { difficulty, titleSlugs, topicMatch, topicTags } = query;
 

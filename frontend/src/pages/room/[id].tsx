@@ -38,20 +38,19 @@ const RoomPage = (): JSX.Element => {
 
   // join room on mount
   useEffect(() => {
-    if (!user) {
+    // only attempt to join room if user logged in and has not joined a room
+    if (!user || (queueRoomId && !isQueuedRoom) || room) {
       return;
     }
-    if (queueRoomId && !isQueuedRoom) {
-      return;
-    }
-    if (!room) {
-      joinRoom(pageRoomId);
-    }
+    joinRoom(pageRoomId);
   }, []);
 
   // redirect to dashboard page if match cancelled
   useEffect(() => {
-    if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
+    if (
+      queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS ||
+      queueStatus?.event === MATCH_EVENTS.MATCH_CANCELLED
+    ) {
       navigate("/");
       resetProviderBinding();
     }

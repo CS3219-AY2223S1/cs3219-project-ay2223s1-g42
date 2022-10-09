@@ -1,7 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 
-import { ResetPasswordData, ResetPasswordSchema } from "shared/api";
+import {
+  ResetPasswordData,
+  ResetPasswordResponse,
+  ResetPasswordSchema,
+} from "shared/api";
 import {
   ErrorAlert,
   SuccessAlert,
@@ -9,7 +14,7 @@ import {
   PrimaryButton,
   NormalHeading,
 } from "src/components";
-import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 type Props = {
   token: string;
@@ -26,13 +31,21 @@ const ResetPasswordForm = ({ token }: Props) => {
     resolver: zodResolver(ResetPasswordSchema),
   });
 
-  // forget password mutation
-  const useResetPasswordMutation = useGlobalStore(
-    (state) => state.useResetPasswordMutation
+  // reset password mutation
+  const resetPasswordMutation = useMutation(
+    (params: ResetPasswordData) =>
+      Axios.post<ResetPasswordResponse>(`/auth/reset-password`, params).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        reset();
+      },
+      onError: (error) => {
+        console.error({ error });
+      },
+    }
   );
-  const resetPasswordMutation = useResetPasswordMutation({
-    onSuccess: reset,
-  });
 
   // submit function
   const handleResetPassword = async (credentials: ResetPasswordData) => {

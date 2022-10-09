@@ -1,10 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
 
+import { GetMeResponse } from "shared/api";
 import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
+import { TheRoomStatusbar } from "./TheRoomStatusbar";
 
 const RoomContainer = ({ children }: PropsWithChildren) => {
   return (
@@ -19,13 +23,40 @@ const RoomContainer = ({ children }: PropsWithChildren) => {
 
 const AppContainer = ({ children }: PropsWithChildren) => {
   // fetch me query
-  const { user, useGetMe } = useGlobalStore((state) => {
-    return {
-      user: state.user,
-      useGetMe: state.useGetMe,
-    };
-  });
-  useGetMe();
+  const { user, setUser, room, matchSocket, roomSocket } = useGlobalStore(
+    (state) => {
+      return {
+        user: state.user,
+        setUser: state.setUser,
+        room: state.room,
+        matchSocket: state.matchSocket,
+        roomSocket: state.roomSocket,
+      };
+    }
+  );
+
+  useQuery(
+    ["me"],
+    () => Axios.get<GetMeResponse>("/users/me").then((res) => res.data),
+    {
+      onSuccess: (data) => {
+        setUser(data);
+        if (matchSocket?.connected && roomSocket?.connected) {
+          return;
+        }
+        matchSocket?.connect();
+        roomSocket?.connect();
+      },
+      onError: (err) => {
+        console.error({ err });
+        if (!matchSocket?.connected && !roomSocket?.connected) {
+          return;
+        }
+        matchSocket?.disconnect();
+        roomSocket?.disconnect();
+      },
+    }
+  );
 
   // current pathname
   const location = useLocation();
@@ -53,9 +84,12 @@ const AppContainer = ({ children }: PropsWithChildren) => {
       {isRoomPage ? (
         <RoomContainer>{children}</RoomContainer>
       ) : isAuthenticatedPage ? (
-        <div className="min-h-screen justify-between bg-neutral-100">
-          <Container hasTopPadding={true}>{children}</Container>
-        </div>
+        <>
+          <div className="min-h-screen justify-between bg-neutral-100">
+            <Container hasTopPadding={true}>{children}</Container>
+          </div>
+          {room && <TheRoomStatusbar />}
+        </>
       ) : isErrorPage ? (
         <Container hasTopPadding={false}>{children}</Container>
       ) : (

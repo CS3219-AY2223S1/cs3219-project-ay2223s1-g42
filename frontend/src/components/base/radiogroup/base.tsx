@@ -35,7 +35,7 @@ const BaseRadioGroup = <
           className={({ checked }) =>
             cx(
               "relative flex cursor-pointer font-sans font-medium transition duration-300",
-              "items-center justify-center border-[1px] border-neutral-900 p-4 ease-out",
+              "items-center justify-center border-[1px] border-neutral-900 px-5 py-[18px] ease-out md:px-6 md:py-5",
               {
                 "bg-neutral-900": checked,
                 "bg-white hover:bg-neutral-300": !checked,
@@ -46,11 +46,11 @@ const BaseRadioGroup = <
           {({ checked }) => (
             <>
               <div className="flex w-full items-center justify-between">
-                <div className="text-sm">
+                <div>
                   <RadioGroup.Label
                     as="p"
                     className={cx(
-                      "mb-2 font-display text-lg font-semibold capitalize",
+                      "mb-1 font-display text-xl font-semibold capitalize md:mb-2 md:text-xl md:leading-tight",
                       {
                         "text-neutral-50": checked,
                         "text-neutral-900": !checked,
@@ -61,7 +61,7 @@ const BaseRadioGroup = <
                   </RadioGroup.Label>
                   <RadioGroup.Description
                     as="span"
-                    className={cx("inline", {
+                    className={cx("inline text-sm md:text-base", {
                       "text-neutral-300": checked,
                       "text-neutral-900": !checked,
                     })}

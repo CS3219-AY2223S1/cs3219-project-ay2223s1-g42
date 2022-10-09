@@ -69,7 +69,6 @@ export class ForgetPasswordCredentialsDto extends createZodDto(
 export class ResetPasswordCredentialsDto extends createZodDto(
   ResetPasswordApi
 ) {}
-export class QuestionQueriesDto extends createZodDto(QuestionQuerySchema) {}
 export class ChangePasswordInfoDto extends createZodDto(ChangePasswordApi) {}
 export class DeleteAccountInfoDto extends createZodDto(DeleteAccountApi) {}
 export class QueryDto extends createZodDto(QueryApi) {}

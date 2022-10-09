@@ -44,14 +44,18 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     setState({ doc, text: docText });
   };
 
-  // set up provider
-  const setupProvider = () => {
-    // check if provider already set up
+  const cleanupProvider = () => {
     const provider = getState().editorProvider;
-    if (provider) {
-      console.error("failed to setup provider, provider already set up");
+    if (!provider) {
       return;
     }
+    provider.destroy();
+    setState({ editorProvider: undefined });
+  };
+
+  // set up provider
+  const setupProvider = () => {
+    // cleanupProvider();
 
     // load doc and text
     const doc = getState().doc;
@@ -96,10 +100,20 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     );
     socketIOProvider.on("status", ({ status }: { status: string }) => {
       const connected = status === "connected";
+      console.log("socket io provider status: ", { status });
       setState({ isEditorProviderConnected: connected });
     });
 
     setState({ editorProvider: socketIOProvider });
+  };
+
+  const cleanupBinding = () => {
+    const binding = getState().editorBinding;
+    if (!binding) {
+      return;
+    }
+    binding.destroy();
+    setState({ editorBinding: undefined });
   };
 
   // set up binding to between provider and editor document text
@@ -115,6 +129,18 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
         { docText, provider, room, model }
       );
       return;
+    }
+
+    console.log("setting up binding with: ", {
+      docText,
+      model,
+      editor,
+      awareness: provider.awareness,
+    });
+
+    if (!provider.socket.connected) {
+      console.log("connecting to provider...");
+      provider.connect();
     }
 
     const monacoBinding = new MonacoBinding(
@@ -144,22 +170,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       editorBinding: monacoBinding,
       editorLanguage: language ?? LANGUAGE.TS,
     });
-  };
-
-  const cleanupProvider = () => {
-    const provider = getState().editorProvider;
-    if (!provider) {
-      return;
-    }
-    provider.destroy();
-  };
-
-  const cleanupBinding = () => {
-    const binding = getState().editorBinding;
-    if (!binding) {
-      return;
-    }
-    binding.destroy();
   };
 
   const resetProviderBinding = () => {

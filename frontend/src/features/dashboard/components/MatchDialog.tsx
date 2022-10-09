@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
@@ -15,22 +16,44 @@ type Props = {
 
 const MatchDialog = ({ isOpen, onClose }: Props) => {
   const navigate = useNavigate();
-  const { isInQueue, queueRoomId, leaveQueue, cancelMatch } = useGlobalStore(
-    (state) => {
-      return {
-        isInQueue: state.isInQueue,
-        queueRoomId: state.queueRoomId,
-        leaveQueue: state.leaveQueue,
-        cancelMatch: state.cancelMatch,
-      };
-    },
-    shallow
-  );
+  const {
+    isInQueue,
+    queueRoomId,
+    room,
+    joinRoom,
+    leaveRoom,
+    leaveQueue,
+    cancelMatch,
+  } = useGlobalStore((state) => {
+    return {
+      isInQueue: state.isInQueue,
+      queueRoomId: state.queueRoomId,
+      room: state.room,
+      joinRoom: state.joinRoom,
+      leaveRoom: state.leaveRoom,
+      leaveQueue: state.leaveQueue,
+      cancelMatch: state.cancelMatch,
+    };
+  }, shallow);
+  const [joinLoading, setJoinLoading] = useState<boolean>(false);
 
-  const dialogTitle = queueRoomId ? "Match Found" : "Matching you now...";
-  const dialogDescription = queueRoomId
+  console.log("match dialog queue room id: ", { queueRoomId });
+
+  const dialogTitle = room
+    ? "Already in a room!"
+    : queueRoomId
+    ? "Match Found"
+    : "Matching you now...";
+  const dialogDescription = room
+    ? "Please leave your room to find another match!"
+    : queueRoomId
     ? "You have been matched with a peer! Join the room now to start coding :)"
     : "Please hold while we search for a compatible match...";
+
+  const handleJoinRoom = (roomId: string) => {
+    setJoinLoading(true);
+    joinRoom(roomId);
+  };
 
   const handleLeaveQueue = () => {
     leaveQueue();
@@ -42,19 +65,18 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
     onClose();
   };
 
-  const handleDisconnect = () => {
-    if (isInQueue) {
-      handleLeaveQueue();
-      return;
-    }
-    if (!queueRoomId) {
-      console.error(
-        "cannot disconnect from match, not in queue or match found"
-      );
-      return;
-    }
-    handleCancelMatch();
+  const handleLeaveRoom = () => {
+    leaveRoom();
+    onClose();
   };
+
+  useEffect(() => {
+    if (isOpen && room && joinLoading) {
+      setJoinLoading(false);
+      navigate(`/room/${room.id}`);
+      return;
+    }
+  }, [isOpen, room, joinLoading, navigate]);
 
   return (
     <PrimaryDialog
@@ -65,48 +87,65 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
       autoClose={false}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex w-full items-center justify-center">
-          {queueRoomId ? (
-            <MatchCountdownTimer
-              duration={MATCH_FOUND_DURATION}
-              isPlaying={!!queueRoomId}
-              key={"match-found-timer"}
-              onComplete={handleCancelMatch}
-            />
-          ) : isInQueue ? (
-            <MatchCountdownTimer
-              duration={MATCH_QUEUE_DURATION}
-              isPlaying={isInQueue}
-              key={"match-queue-timer"}
-              onComplete={handleLeaveQueue}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
-
-        {queueRoomId ? (
-          <div className="flex flex-col gap-1">
-            <p>Room ID: {queueRoomId}</p>
-          </div>
+        {room ? (
+          <>
+            <div className="flex flex-col gap-1">
+              <p>Room ID: {room.id}</p>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <PrimaryButton
+                className="w-full"
+                onClick={() => navigate(`/room/${room.id}`)}
+              >
+                Return to room
+              </PrimaryButton>
+              <RedButton className="w-full" onClick={handleLeaveRoom}>
+                Disconnect
+              </RedButton>
+            </div>
+          </>
+        ) : queueRoomId ? (
+          <>
+            <div className="flex w-full items-center justify-center">
+              <MatchCountdownTimer
+                duration={MATCH_FOUND_DURATION}
+                isPlaying={!!queueRoomId}
+                key={"match-found-timer"}
+                onComplete={handleCancelMatch}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <p>Room ID: {queueRoomId}</p>
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <PrimaryButton
+                className="w-full"
+                onClick={() => handleJoinRoom(queueRoomId)}
+              >
+                Join room
+              </PrimaryButton>
+              <RedButton className="w-full" onClick={handleCancelMatch}>
+                Disconnect
+              </RedButton>
+            </div>
+          </>
+        ) : isInQueue ? (
+          <>
+            <div className="flex w-full items-center justify-center">
+              <MatchCountdownTimer
+                duration={MATCH_QUEUE_DURATION}
+                isPlaying={isInQueue}
+                key={"match-queue-timer"}
+                onComplete={handleLeaveQueue}
+              />
+            </div>
+            <RedButton className="w-full" onClick={handleLeaveQueue}>
+              Disconnect
+            </RedButton>
+          </>
         ) : (
           <></>
         )}
-        <div className="flex flex-col gap-3">
-          {queueRoomId ? (
-            <PrimaryButton
-              className="w-full"
-              onClick={() => navigate(`/room/${queueRoomId}`)}
-            >
-              Join room
-            </PrimaryButton>
-          ) : (
-            <></>
-          )}
-          <RedButton className="w-full" onClick={handleDisconnect}>
-            Disconnect
-          </RedButton>
-        </div>
       </div>
     </PrimaryDialog>
   );

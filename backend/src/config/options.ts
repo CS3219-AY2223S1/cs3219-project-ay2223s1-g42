@@ -19,9 +19,9 @@ const CORS_OPTIONS: CorsOptions = {
     // // coinhall.org domains:
     // "https://coinhall.org",
     // /https:\/\/.*\.coinhall\.org/,
-    // // vercel deployments:
-    // "https://coinhall-org.vercel.app", // main branch
-    // /https:\/\/coinhall-[a-z0-9]*-coinhall\.vercel\.app/, // branches
+    // vercel deployments:
+    "https://cs3219-g42-aidanaden.vercel.app", // main branch
+    /https:\/\/cs3219-g42-[a-z0-9]*-aidanaden\.vercel\.app/, // branches
     // localhost regex:
     /http:\/\/localhost:/,
   ],

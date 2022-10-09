@@ -6,82 +6,48 @@ const SummaryQuerySchema = z.object({
 });
 
 export const QuestionQuerySchema = z.object({
-  difficulty: z.enum(["Easy", "Medium", "Hard"]).array().optional(),
-  titleSlugs: z.string().array().optional(),
+  difficulty: z
+    .string()
+    .refine((v) =>
+      v.split(",").every((v) => ["easy", "medium", "hard"].includes(v))
+    )
+    .transform((v) =>
+      Array.from(new Set(v.split(",").map((v) => v.toLowerCase())))
+    )
+    .or(z.array(z.enum(["easy", "medium", "hard"])))
+    .optional(),
+  titleSlugs: z
+    .string()
+    .transform((v) =>
+      Array.from(
+        new Set(
+          v
+            .split(",")
+            .map((v) => v.trim().toLowerCase())
+            .filter((v) => v.length > 0)
+        )
+      )
+    )
+    .or(z.array(z.string()))
+    .optional(),
   topicTags: z
-    .enum([
-      "array",
-      "backtracking",
-      "biconnected-component",
-      "binary-indexed-tree",
-      "binary-search",
-      "binary-search-tree",
-      "binary-tree",
-      "bit-manipulation",
-      "bitmask",
-      "brainteaser",
-      "breadth-first-search",
-      "bucket-sort",
-      "combinatorics",
-      "concurrency",
-      "counting",
-      "counting-sort",
-      "data-stream",
-      "database",
-      "depth-first-search",
-      "design",
-      "divide-and-conquer",
-      "doubly-linked-list",
-      "dynamic-programming",
-      "enumeration",
-      "eulerian-circuit",
-      "game-theory",
-      "geometry",
-      "graph",
-      "greedy",
-      "hash-function",
-      "hash-table",
-      "heap-priority-queue",
-      "interactive",
-      "iterator",
-      "line-sweep",
-      "linked-list",
-      "math",
-      "matrix",
-      "memoization",
-      "merge-sort",
-      "minimum-spanning-tree",
-      "monotonic-queue",
-      "monotonic-stack",
-      "number-theory",
-      "ordered-set",
-      "prefix-sum",
-      "probability-and-statistics",
-      "queue",
-      "quickselect",
-      "radix-sort",
-      "randomized",
-      "recursion",
-      "rejection-sampling",
-      "reservoir-sampling",
-      "rolling-hash",
-      "segment-tree",
-      "shell",
-      "shortest-path",
-      "simulation",
-      "sliding-window",
-      "sorting",
-      "stack",
-      "string",
-      "string-matching",
-      "strongly-connected-component",
-      "suffix-array",
-      "topological-sort",
-      "tree",
-      "trie",
-      "two-pointers",
-      "union-find",
-    ])
-    .array()
+    .string()
+    .transform((v) =>
+      Array.from(
+        new Set(
+          v
+            .split(",")
+            .map((v) => v.trim().toLowerCase())
+            .filter((v) => v.length > 0)
+        )
+      )
+    )
+    .or(z.array(z.string()))
+    .optional(),
+  topicMatch: z
+    .string()
+    .transform((v) => v.toUpperCase())
+    .or(z.enum(["AND", "OR"]))
+    .default("AND")
     .optional(),
 });
