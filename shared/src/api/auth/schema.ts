@@ -19,10 +19,6 @@ const SigninSchema = SignupSchema.pick({
   password: true,
 });
 
-const OauthSigninSchema = SignupSchema.pick({
-  email: true,
-});
-
 const ForgetPasswordSchema = SignupSchema.pick({
   email: true,
 });
