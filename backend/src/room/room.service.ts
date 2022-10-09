@@ -32,10 +32,15 @@ export class RoomService {
         })
       )
     );
+    const allDifficulties = roomUsers.map((user) => user.difficulties);
+    const commonDifficulties = allDifficulties.reduce((p, c) =>
+      p.filter((d) => c.includes(d))
+    );
 
     const room: Room = {
       id: roomId,
       users: roomUsers,
+      difficulties: commonDifficulties,
     };
 
     try {

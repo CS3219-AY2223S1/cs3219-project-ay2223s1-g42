@@ -7,7 +7,6 @@ import { SpinnerIcon } from "src/components";
 import { useGlobalStore } from "src/store";
 
 const RoomEditor = () => {
-  console.log("rendering room editor component!");
   const {
     room,
     input,
@@ -49,7 +48,6 @@ const RoomEditor = () => {
 
   // set up editor document on first mount
   useEffect(() => {
-    console.log("setting up editor doc");
     setupDoc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -80,7 +78,6 @@ const RoomEditor = () => {
       );
       return;
     }
-    console.log("setting up binding");
     setupBinding(editorRef.current);
   }, [provider, monaco, doc, editorMounted, setupBinding]);
 

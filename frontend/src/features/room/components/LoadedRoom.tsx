@@ -33,7 +33,6 @@ const LeaveRoomButton = () => {
 };
 
 const LoadedRoom = () => {
-  console.log("rendering loaded room component!");
   return (
     <div className="flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
       <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">

@@ -4,26 +4,10 @@ import toast, { ToastOptions } from "react-hot-toast";
 
 import type { Status, GlobalStore } from "./useGlobalStore";
 import { StatusType } from "./enums";
-import {
-  PoolUser,
-  QuestionDifficulty,
-  ROOM_EVENTS,
-  UserInfo,
-} from "shared/api";
+import { Room, ROOM_EVENTS, UserInfo } from "shared/api";
 
 const roomToastOptions: ToastOptions = {
   id: "room-toast",
-};
-
-export type RoomUser = PoolUser & {
-  socketId: string;
-  timeJoined: Date;
-};
-
-export type Room = {
-  id: string;
-  users: RoomUser[];
-  difficulty?: QuestionDifficulty;
 };
 
 export type RoomSlice = {

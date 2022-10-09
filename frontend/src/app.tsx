@@ -43,12 +43,10 @@ const App = () => {
       );
       return;
     }
-    console.log("connecting to socket servers...");
     matchSocket.connect();
     roomSocket.connect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => {
-      console.log("disconnecting from socket servers...");
       matchSocket.disconnect();
       roomSocket.disconnect();
     };

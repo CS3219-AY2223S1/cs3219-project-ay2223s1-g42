@@ -37,7 +37,6 @@ const LoginForm = () => {
       ),
     {
       onSuccess: () => {
-        console.log("invalidating ME query!");
         queryClient.refetchQueries(["me"]);
         reset();
       },

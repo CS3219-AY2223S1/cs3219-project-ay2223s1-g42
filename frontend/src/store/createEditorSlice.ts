@@ -104,7 +104,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       setState({ isEditorProviderConnected: connected });
     });
 
-    console.log("setup provider complete: ", { socketIOProvider });
     setState({ editorProvider: socketIOProvider });
   };
 
@@ -136,12 +135,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       console.log("connecting to provider...");
       provider.connect();
     }
-
-    console.log("setting up bidning between: ", {
-      docText,
-      providerId: provider.socket.id,
-      editor,
-    });
 
     const monacoBinding = new MonacoBinding(
       docText,
