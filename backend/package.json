@@ -11,8 +11,9 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "yarn prisma generate && nest build",
-    "docker:build": "yarn build && docker image rm g42-backend; docker build . -t g42-backend",
+    "build": "yarn prisma generate && yarn nest build",
+    "docker:build": "yarn build && docker image rm cs3219g42/backend; docker build . -t cs3219g42/backend",
+    "docker:build-push": "yarn docker:build && docker push cs3219g42/backend",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node ./dist/main.js",
     "start:watch": "nest start --watch",
