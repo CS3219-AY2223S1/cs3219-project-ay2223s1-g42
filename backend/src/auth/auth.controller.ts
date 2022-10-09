@@ -49,7 +49,7 @@ import {
   ResetPasswordCredentialsDto,
   ChangePasswordInfoDto,
   DeleteAccountInfoDto,
-  QueryDto,
+  OauthQueryDto,
   OauthDto,
 } from "./auth.dto";
 
@@ -345,7 +345,7 @@ export class AuthController {
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async oauthSignin(
-    @Query() query: QueryDto,
+    @Query() query: OauthQueryDto,
     @Res({ passthrough: true }) res: Response
   ): Promise<OauthLoginResponse> {
     const oauthCode = query.code;

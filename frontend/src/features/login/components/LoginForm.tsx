@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router";
 
 import { SigninData, SigninResponse, SigninSchema } from "shared/api";
 import {
@@ -17,6 +18,7 @@ import {
 import { Axios } from "src/services";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // form setup
@@ -52,6 +54,15 @@ const LoginForm = () => {
   };
   const onSubmit = handleSubmit(handleSignin);
 
+  // oauth redirect
+  const handleOAuthRedirect = () => {
+    navigate(
+      `http://github.com/login/oauth/authorize?client_id=${
+        import.meta.env.VITE_OAUTH_CLIENT_ID
+      }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`
+    );
+  };
+
   return (
     <div>
       {signinMutation.isError ? (
@@ -65,18 +76,15 @@ const LoginForm = () => {
         <></>
       )}
       <div>
-        <a
-          href={`http://github.com/login/oauth/authorize?client_id=${
-            import.meta.env.VITE_OAUTH_CLIENT_ID
-          }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`}
+        <BlueButton
+          className="relative flex w-full items-center justify-center"
+          onClick={handleOAuthRedirect}
         >
-          <BlueButton className="relative flex w-full items-center justify-center">
-            <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-              <GithubIcon className="h-5 w-5" />
-            </div>
-            Sign in with GitHub
-          </BlueButton>
-        </a>
+          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
+            <GithubIcon className="h-5 w-5" />
+          </div>
+          Sign in with GitHub
+        </BlueButton>
         <Divider label="Or, sign in with your email" />
         <form className="mb-3 flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">

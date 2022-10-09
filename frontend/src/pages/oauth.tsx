@@ -1,20 +1,24 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { OauthQuerySchemaData, OauthLoginResponse } from "shared/api";
 import { LoadingLayout, ErrorPage } from "src/components";
 import { Axios } from "src/services";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { ApiResponse } from "src/features";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
-import { QuerySchemaData, OauthLoginResponse } from "shared/api";
 
 const OauthLogin = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState<boolean>(true);
   const queryClient = useQueryClient();
+
+  const code = searchParams.get("code");
+
   // sign in mutation
-  const OauthMutation = useMutation(
-    (code: string) =>
+  const authQuery = useQuery(
+    ["oauth", code],
+    () =>
       Axios.get<OauthLoginResponse>(`/auth/local/oauth?code=${code}`).then(
         (res) => res.data
       ),
@@ -31,20 +35,10 @@ const OauthLogin = () => {
 
   // navigate to dashboard if verify successful
   useEffect(() => {
-    const code = searchParams.get("code");
-    if (!code) {
-      setLoading(false);
-      return;
-    }
-    OauthMutation.mutate(code);
-  }, [searchParams]);
-
-  // navigate to dashboard if verify successful
-  useEffect(() => {
-    if (OauthMutation.isSuccess) {
+    if (authQuery.isSuccess) {
       navigate("/");
     }
-  }, [OauthMutation.isSuccess, navigate]);
+  }, [authQuery.isSuccess, navigate]);
 
   return <>{!loading ? <ErrorPage /> : <LoadingLayout />}</>;
 };

@@ -6,8 +6,8 @@ import {
   DeleteAccountInfoSchema,
   EditableSchema,
   ForgetPasswordSchema,
-  OauthInfoScehma,
-  QuerySchema,
+  OauthInfoSchema,
+  OauthQuerySchema,
   QuestionQuerySchema,
   ResetPasswordSchema,
   SigninSchema,
@@ -50,12 +50,12 @@ const DeleteAccountApi = extendApi(DeleteAccountInfoSchema, {
   description: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY,
 });
 
-const QueryApi = extendApi(QuerySchema, {
-  title: "Query API",
+const OauthQueryApi = extendApi(OauthQuerySchema, {
+  title: "Oauth query API",
   description: "API_OPERATIONS.QUERY_SUMMARY",
 });
 
-const OauthApi = extendApi(OauthInfoScehma, {
+const OauthApi = extendApi(OauthInfoSchema, {
   title: "Oauth API",
   description: "API_OPERATIONS.OAUTH_SUMMARY",
 });
@@ -71,5 +71,5 @@ export class ResetPasswordCredentialsDto extends createZodDto(
 ) {}
 export class ChangePasswordInfoDto extends createZodDto(ChangePasswordApi) {}
 export class DeleteAccountInfoDto extends createZodDto(DeleteAccountApi) {}
-export class QueryDto extends createZodDto(QueryApi) {}
+export class OauthQueryDto extends createZodDto(OauthQueryApi) {}
 export class OauthDto extends createZodDto(OauthApi) {}
