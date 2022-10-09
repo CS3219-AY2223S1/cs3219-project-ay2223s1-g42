@@ -14,7 +14,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
-import { NAMESPACES, OauthInfoScehma } from "shared/api";
+import { NAMESPACES, OauthInfoSchema } from "shared/api";
 import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
@@ -442,21 +442,27 @@ export class AuthService {
   }
 
   async checkOauthLogins(email: string, username: string) {
-    //Check whether user's email is registered
+    // check whether user's email is registered
     const [err, user] = await this.users.findFirstByEitherUniqueFields(
       email,
       username
     );
 
-    //If user exist
-    if (user) {
-      //Check whether the user created account using peerprep login
-      if (user.email == email && user.provider == "CUSTOM") {
-        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
-        //Is username in use
-      } else if (user.username == username && user.provider == "CUSTOM") {
-        throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
-      }
+    // create user if it doesnt exist
+    if (err || !user) {
+      console.log(`creating user: ${email} & ${username} `);
+      this.users.createOauthUser(email, username);
+      return;
+    }
+
+    // check whether the user created account using peerprep login
+    if (user.email === email && user.provider === "CUSTOM") {
+      console.log("email in use!");
+      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
+      // is username in use
+    } else if (user.username === username && user.provider === "CUSTOM") {
+      console.log("username in use!");
+      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
     }
 
     const cachedEmail = await this.cache.getKeyInNamespace(
@@ -464,13 +470,8 @@ export class AuthService {
       email
     );
     if (!!cachedEmail) {
+      console.log("email in process of verification!");
       throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
-    }
-
-    //Create user if it doesnt exist
-    if (!user) {
-      console.log(`creating user: ${email} & ${username} `);
-      this.users.createOauthUser(email, username);
     }
   }
 
@@ -481,6 +482,7 @@ export class AuthService {
    */
   async signinOauth(credentials: OauthDto): Promise<Tokens> {
     const { email } = credentials;
+    console.log("finding user with email: ", email);
     const [err, user] = await this.users.findByEmail(email);
     //ThrowKnownPrismaErrors(err);
     console.log(`user: ${user}`);

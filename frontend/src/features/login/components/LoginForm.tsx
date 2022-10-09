@@ -56,11 +56,9 @@ const LoginForm = () => {
 
   // oauth redirect
   const handleOAuthRedirect = () => {
-    navigate(
-      `http://github.com/login/oauth/authorize?client_id=${
-        import.meta.env.VITE_OAUTH_CLIENT_ID
-      }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`
-    );
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_OAUTH_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`;
   };
 
   return (
