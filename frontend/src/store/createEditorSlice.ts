@@ -131,6 +131,13 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
 
+    console.log("setting up binding with: ", {
+      docText,
+      model,
+      editor,
+      awareness: provider.awareness,
+    });
+
     if (!provider.socket.connected) {
       console.log("connecting to provider...");
       provider.connect();

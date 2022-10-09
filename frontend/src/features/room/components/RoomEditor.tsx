@@ -71,7 +71,7 @@ const RoomEditor = () => {
 
   // set up binding when provider or monaco instance or document changes
   useEffect(() => {
-    if (!editorRef.current || !monaco) {
+    if (!editorRef.current || !monaco || !editorMounted) {
       console.error(
         "failed to setup binding, editor ref or monaco instance not setup: ",
         { editorRef: editorRef.current, monaco }
