@@ -91,7 +91,7 @@ const TheNavbar = () => {
   return (
     <nav
       className={cx(
-        "fixed top-0 left-0 z-50 flex w-full flex-col px-4 font-display",
+        "fixed z-50 flex w-full flex-col px-4 font-display",
         "bg-neutral-100/[0.95] backdrop-blur-sm transition-all duration-300 ease-out",
         {
           "translate-y-0": scrollDirection !== ScrollDir.DOWN && isMobile,
@@ -102,7 +102,7 @@ const TheNavbar = () => {
       )}
     >
       <div className="mx-auto flex h-[72px] w-full max-w-5xl flex-wrap items-center justify-between">
-        <BaseLink to={".."} className="flex h-full items-center">
+        <BaseLink to={"/"} className="flex h-full items-center">
           {/* <img
             src="https://flowbite.com/docs/images/logo.svg"
             className="mr-3 h-6 sm:h-9"
@@ -124,7 +124,7 @@ const TheNavbar = () => {
           <PrimaryButton
             type="button"
             className="inline-flex items-center bg-white p-3 text-sm
-            text-neutral-800 hover:text-neutral-800 focus:outline-none md:hidden"
+            text-neutral-800 focus:outline-none hover:text-neutral-800 md:hidden"
             onClick={() => setIsDropdownOpen((open) => !open)}
           >
             <span className="sr-only">Open main menu</span>

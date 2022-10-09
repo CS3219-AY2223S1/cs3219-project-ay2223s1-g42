@@ -9,6 +9,7 @@ export enum MATCH_EVENTS {
   CANCEL_MATCH_SUCCESS = "cancel-match-success",
   CANCEL_MATCH_ERR = "cancel-match-error",
   MATCH_FOUND = "found-match",
+  MATCH_CANCELLED = "match-cancelled",
   ROOM_EXISTS = "room-exists",
 }
 
@@ -22,6 +23,7 @@ export enum MATCH_MESSAGES {
   CANCEL_MATCH_SUCCESS = "successfully cancelled match",
   CANCEL_MATCH_ERR = "failed to cancel match",
   MATCH_FOUND = "found a match",
+  MATCH_CANCELLED = "match cancelled by other user(s)",
   ROOM_EXISTS = "already matched",
 }
 

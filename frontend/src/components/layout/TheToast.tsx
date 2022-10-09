@@ -3,12 +3,12 @@ import { resolveValue, Toaster, ToastIcon } from "react-hot-toast";
 
 const TheToast = () => {
   return (
-    <Toaster position="bottom-center" toastOptions={{ duration: 5000 }}>
+    <Toaster position="bottom-center">
       {(t) => (
         <Transition
           appear
           show={t.visible}
-          className="flex transform border-[1px] border-neutral-900 bg-white p-4"
+          className="flex transform border-[1px] border-neutral-900 bg-white py-[14px] px-4 text-base"
           enter="transition-all duration-150"
           enterFrom="opacity-0 scale-50"
           enterTo="opacity-100 scale-100"

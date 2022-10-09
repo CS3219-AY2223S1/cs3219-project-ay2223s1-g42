@@ -1,6 +1,6 @@
 {
   "name": "g42-peerprep-shared",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "shared types for cs3219-g42",
   "main": "dist/index.js",
   "files": [

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
 
@@ -9,8 +9,9 @@ import {
   RadioGroupValue,
   SpinnerIcon,
 } from "src/components";
-import { MatchDialog, QuestionRadioGroup } from "src/features";
-import { useGlobalStore } from "src/store";
+import { MatchDialog, QuestionCheckGroup } from "src/features";
+import { matchToastOptions, useGlobalStore } from "src/store";
+import toast from "react-hot-toast";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -23,72 +24,91 @@ const difficultyMap: Record<
   },
   medium: {
     title: "medium",
-    description: "Trees, graphs, and some dynamic programming",
+    description:
+      "Challenging data structures and concepts such as trees, graphs, and some dynamic programming",
   },
   hard: {
     title: "hard",
-    description: "Binary search, dynamic programming, and graph traversal",
+    description:
+      "Complex data structures and concepts such as binary search, dynamic programming, and graph traversal",
   },
 };
-
-const DEFAULT_DIFFICULTY: RadioGroupValue<QuestionDifficulty> =
-  difficultyMap.easy;
 
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
   const {
     user,
-    room,
-    queueRoomId,
-    isInQueue,
     queueStatus,
+    matchDifficulties,
+    matchSocket,
+    roomSocket,
     setMatchDifficulties,
     joinQueue,
-    leaveQueue,
-    leaveRoom,
-    cancelMatch,
   } = useGlobalStore((state) => {
     return {
       user: state.user,
-      room: state.room,
-      queueRoomId: state.queueRoomId,
-      isInQueue: state.isInQueue,
       queueStatus: state.queueStatus,
+      matchDifficulties: state.matchDifficulties,
+      matchSocket: state.matchSocket,
+      roomSocket: state.roomSocket,
       setMatchDifficulties: state.setMatchDifficulties,
       joinQueue: state.joinQueue,
-      leaveQueue: state.leaveQueue,
-      leaveRoom: state.leaveRoom,
-      cancelMatch: state.cancelMatch,
     };
   }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-  const [difficulty, setDifficulty] =
-    useState<RadioGroupValue<QuestionDifficulty>>(DEFAULT_DIFFICULTY);
 
-  // handle set difficulty
-  const handleSetDifficulty = (value: RadioGroupValue<QuestionDifficulty>) => {
-    setDifficulty(value);
-    setMatchDifficulties([value.title]);
+  // handle update selected difficulties
+  const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
+    const difficultySelected = matchDifficulties.includes(difficulty);
+    // if diffuculty already selected, unselect it, otherwise select it
+    const newDifficulties = difficultySelected
+      ? matchDifficulties.filter((d) => d !== difficulty)
+      : matchDifficulties.concat(difficulty);
+    // prevent user from unselecting difficulty if it's the only one selected
+    if (newDifficulties.length === 0) {
+      return;
+    }
+    setMatchDifficulties(newDifficulties);
   };
 
   // handle join match queue
-  const handleJoinQueue = () => {
+  const handleJoinQueue = useCallback(() => {
+    if (!roomSocket?.connected || !matchSocket?.connected) {
+      toast.error("Unable to connect to server. Please try again later.", {
+        id: "join-queue-error",
+      });
+      return;
+    }
     setIsMatchingDialogOpen(true);
-    joinQueue([difficulty.title]);
-  };
+    joinQueue(matchDifficulties);
+  }, [
+    roomSocket?.connected,
+    matchSocket?.connected,
+    joinQueue,
+    matchDifficulties,
+  ]);
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
   };
 
-  // close dialog if match cancel event received
+  // find new match if match cancelled
   useEffect(() => {
     if (queueStatus?.event === MATCH_EVENTS.CANCEL_MATCH_SUCCESS) {
-      handleMatchDialogClose();
+      requestAnimationFrame(() => {
+        handleMatchDialogClose();
+      });
+      return;
     }
-  }, [queueStatus?.event]);
+    if (queueStatus?.event === MATCH_EVENTS.MATCH_CANCELLED) {
+      requestAnimationFrame(() => {
+        handleJoinQueue();
+      });
+      return;
+    }
+  }, [queueStatus?.event, handleJoinQueue]);
 
   // redirect to login page if user not logged in
   useEffect(() => {
@@ -102,15 +122,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="m-auto space-y-8">
+    <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      <QuestionRadioGroup
-        difficulty={difficulty}
-        setDifficulty={handleSetDifficulty}
+      <QuestionCheckGroup
+        selectedDifficulties={matchDifficulties}
+        updateSelectedValues={handleUpdateDifficulty}
         difficulties={Object.values(difficultyMap)}
       />
       <div className="flex flex-col">
-        <PrimaryButton onClick={handleJoinQueue}>Match</PrimaryButton>
+        <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
         <MatchDialog
           isOpen={isMatchingDialogOpen}
           onClose={handleMatchDialogClose}

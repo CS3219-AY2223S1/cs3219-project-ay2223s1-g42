@@ -1,25 +1,13 @@
 import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
-import toast from "react-hot-toast";
+import toast, { ToastOptions } from "react-hot-toast";
 
 import type { Status, GlobalStore } from "./useGlobalStore";
 import { StatusType } from "./enums";
-import {
-  PoolUser,
-  QuestionDifficulty,
-  ROOM_EVENTS,
-  UserInfo,
-} from "shared/api";
+import { Room, ROOM_EVENTS, UserInfo } from "shared/api";
 
-export type RoomUser = PoolUser & {
-  socketId: string;
-  timeJoined: Date;
-};
-
-export type Room = {
-  id: string;
-  users: RoomUser[];
-  difficulty?: QuestionDifficulty;
+const roomToastOptions: ToastOptions = {
+  id: "room-toast",
 };
 
 export type RoomSlice = {
@@ -60,7 +48,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
       message: roomStatusMsg,
     };
-    setState({ room, roomStatus });
+    setState({ room, roomStatus, queueRoomId: undefined });
   });
 
   roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
@@ -71,7 +59,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.JOIN_ROOM_ERROR,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast.error(roomStatusMsg, roomToastOptions);
     setState({ roomStatus });
   });
 
@@ -83,11 +71,11 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.LEAVE_ROOM_SUCCESS,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast.success(roomStatusMsg, roomToastOptions);
     setState({
       room: undefined,
-      queueRoomId: undefined,
       roomStatus,
+      queueRoomId: undefined,
     });
   });
 
@@ -99,7 +87,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.LEAVE_ROOM_ERR,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast.error(roomStatusMsg, roomToastOptions);
     setState({ roomStatus });
   });
 
@@ -111,7 +99,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.INVALID_ROOM,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast.error(roomStatusMsg, roomToastOptions);
     setState({ roomStatus });
   });
 
@@ -124,7 +112,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.NEW_USER_JOINED,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast(roomStatusMsg, roomToastOptions);
     setState({ room, newRoomUser: newUser, roomStatus });
   });
 
@@ -137,7 +125,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
       event: ROOM_EVENTS.OLD_USER_LEFT,
       message: roomStatusMsg,
     };
-    toast(roomStatusMsg);
+    toast(roomStatusMsg, roomToastOptions);
     setState({ room, oldRoomUser: oldUser, roomStatus });
   });
 

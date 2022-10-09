@@ -1,4 +1,5 @@
 import { PoolUser } from "../match/types";
+import { QuestionDifficulty } from "../question";
 
 export type RoomUser = PoolUser & {
   connected: boolean;
@@ -7,6 +8,7 @@ export type RoomUser = PoolUser & {
 export type Room = {
   id: string;
   users: RoomUser[];
+  difficulties: QuestionDifficulty[];
 };
 
 export type PendingRoomUser = {

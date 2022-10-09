@@ -97,7 +97,10 @@ export class MatchService {
       const matchedUserIds = Array.from(
         new Set(fetchAllMatchedUserIdsRes.flat())
       );
-      return matchedUserIds;
+      const uniqueMatchedUserIds = matchedUserIds.filter(
+        (id) => id !== user.id.toString()
+      );
+      return uniqueMatchedUserIds;
     } catch (err) {
       console.error(err);
       throw new Error(MATCH_ERRORS.HANDLE_FIND_MATCHING_USER_IDS);
@@ -161,10 +164,22 @@ export class MatchService {
     // disconnect all users in the room (including connected room users)
     const disconnectAllUsers = currentRoom.users.map(async (user) => {
       await this.roomService.removeUserFromRoom(currentRoom, user.id);
+      // emit CANCEL_MATCH_SUCCESS event to user that cancelled
+      if (user.socketId === client.id) {
+        client.emit(
+          MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
+          JSON.stringify({
+            message: MATCH_MESSAGES.CANCEL_MATCH_SUCCESS,
+          })
+        );
+        client.leave(currentRoom.id);
+        return;
+      }
+      // emit ROOM_CANCELLED event to users that accepted
       server.to(user.socketId).emit(
-        MATCH_EVENTS.CANCEL_MATCH_SUCCESS,
+        MATCH_EVENTS.MATCH_CANCELLED,
         JSON.stringify({
-          message: MATCH_MESSAGES.CANCEL_MATCH_SUCCESS,
+          message: MATCH_MESSAGES.MATCH_CANCELLED,
         })
       );
       server.to(user.socketId).socketsLeave(currentRoom.id);
