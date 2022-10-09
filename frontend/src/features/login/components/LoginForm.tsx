@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SigninData, SigninResponse, SigninSchema } from "shared/api";
+import { SigninData, OauthLoginResponse, SigninSchema } from "shared/api";
 import {
   Divider,
   ErrorAlert,
@@ -32,7 +32,7 @@ const LoginForm = () => {
   // sign in mutation
   const signinMutation = useMutation(
     (params: SigninData) =>
-      Axios.post<SigninResponse>(`/auth/local/signin`, params).then(
+      Axios.post<OauthResponse>(`/auth/local/signin`, params).then(
         (res) => res.data
       ),
     {
