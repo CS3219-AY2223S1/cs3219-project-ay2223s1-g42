@@ -16,9 +16,9 @@ import {
   PrimaryLink,
 } from "src/components";
 import { Axios } from "src/services";
+import { useEffect } from "react";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // form setup
@@ -60,6 +60,11 @@ const LoginForm = () => {
       import.meta.env.VITE_OAUTH_CLIENT_ID
     }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`;
   };
+
+  useEffect(() => {
+    // invalidate ME query on mount (after redirected here from oauth)
+    queryClient.invalidateQueries(["me"]);
+  }, []);
 
   return (
     <div>

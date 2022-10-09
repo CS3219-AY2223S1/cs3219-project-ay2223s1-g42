@@ -416,7 +416,7 @@ export class AuthService {
     const decoded = new URLSearchParams(githubToken);
     const accessToken = decoded.get("access_token");
 
-    const username = await axios
+    const username: string = await axios
       .get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
@@ -426,7 +426,7 @@ export class AuthService {
         throw error;
       });
 
-    const primaryEmail = await axios
+    const primaryEmail: string = await axios
       .get("https://api.github.com/user/emails", {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
@@ -450,18 +450,15 @@ export class AuthService {
 
     // create user if it doesnt exist
     if (err || !user) {
-      console.log(`creating user: ${email} & ${username} `);
       this.users.createOauthUser(email, username);
       return;
     }
 
     // check whether the user created account using peerprep login
     if (user.email === email && user.provider === "CUSTOM") {
-      console.log("email in use!");
       throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
       // is username in use
     } else if (user.username === username && user.provider === "CUSTOM") {
-      console.log("username in use!");
       throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
     }
 
@@ -482,10 +479,11 @@ export class AuthService {
    */
   async signinOauth(credentials: OauthDto): Promise<Tokens> {
     const { email } = credentials;
-    console.log("finding user with email: ", email);
     const [err, user] = await this.users.findByEmail(email);
-    //ThrowKnownPrismaErrors(err);
-    console.log(`user: ${user}`);
+    if (err || !user) {
+      ThrowKnownPrismaErrors(err);
+      return;
+    }
     const tokens = await this.signTokens(user.id, user.email);
     // update refresh token hash for logged in user
     await this.updateRefreshTokenHash(user.id, tokens.refresh_token);

@@ -218,6 +218,7 @@ export class UserService {
       data: {
         email,
         username,
+        provider: "GITHUB",
       },
       select: OAUTH_USER_FIELDS,
     });

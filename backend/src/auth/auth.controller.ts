@@ -22,7 +22,6 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
 } from "@nestjs/swagger";
-import { User } from "@prisma/client";
 import { Response } from "express";
 
 import {
@@ -52,6 +51,7 @@ import {
   OauthQueryDto,
   OauthDto,
 } from "./auth.dto";
+import { User } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
@@ -352,14 +352,12 @@ export class AuthController {
     if (!oauthCode) {
       throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
     }
-
     const gitHubUser = await this.authService.getGithubUser({ oauthCode });
-    console.log({ gitHubUser });
     const username = gitHubUser.username;
     const userEmail = gitHubUser.email;
-    //Check whether the user has created an account via oauth
+    // check if user has created an account via oauth
     this.authService.checkOauthLogins(userEmail, username);
-    //Sign in
+    // sign in
     const tokens = await this.authService.signinOauth({ email: userEmail });
     this.setCookies(res, tokens);
     return { message: "success" };
