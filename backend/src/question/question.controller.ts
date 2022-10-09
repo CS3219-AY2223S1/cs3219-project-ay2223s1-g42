@@ -26,6 +26,8 @@ import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
 import { QuestionQueryDto } from "./QuestionQuery.dto";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import { QuestionQuerySchemaDto } from "./question.dto";
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 
 @Controller("question")
 export class QuestionController {
@@ -33,10 +35,11 @@ export class QuestionController {
 
   @PublicRoute()
   @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-    })
+    ZodValidationPipe
+    // new ValidationPipe({
+    //   whitelist: true,
+    //   transform: true,
+    // })
   )
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_QUERY_SUMMARY })
   @ApiOkResponse({
@@ -50,9 +53,11 @@ export class QuestionController {
   })
   @Get("/summary")
   async getSummaries(
-    @Query() query: QuestionQueryDto
+    @Query() query: QuestionQuerySchemaDto
   ): Promise<GetSummariesResponse> {
+    console.log({ query: query.difficulty });
     const { difficulty, titleSlugs, topicMatch, topicTags } = query;
+    console.log({ difficulty, titleSlugs, topicMatch, topicTags });
 
     // if none specified
     if (!difficulty && !titleSlugs && !topicTags) {
