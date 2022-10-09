@@ -155,7 +155,7 @@ export class AuthService {
     }
 
     //If user is an oauth user trying to sign in via normal login
-    if (user.provider != "CUSTOM") {
+    if (user.provider !== "CUSTOM") {
       throw new NotFoundException(AUTH_ERROR.INVALID_USER);
     }
     // if password incorrect, throw exception

@@ -61,11 +61,6 @@ const LoginForm = () => {
     }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`;
   };
 
-  useEffect(() => {
-    // invalidate ME query on mount (after redirected here from oauth)
-    queryClient.invalidateQueries(["me"]);
-  }, []);
-
   return (
     <div>
       {signinMutation.isError ? (
