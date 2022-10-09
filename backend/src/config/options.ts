@@ -21,11 +21,14 @@ const CORS_OPTIONS: CorsOptions = {
     // /https:\/\/.*\.coinhall\.org/,
     // // vercel deployments:
     "https://cs3219-project-ay2223s1-g42.vercel.app", // main branch
+    "https://cs3219-g42.vercel.app", // aidan's link
+    "https://cs3219-g42-peerprep.xyz", // xyz domain
     /https:\/\/*\.vercel\.app/, // branches
     // localhost regex:
     /http:\/\/localhost:/,
   ],
   credentials: true,
+  allowedHeaders: ["content-type"]
 };
 
 export { CSRF_OPTIONS, COOKIE_OPTIONS, CORS_OPTIONS };
