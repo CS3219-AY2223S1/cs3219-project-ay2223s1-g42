@@ -8,7 +8,6 @@ import {
   ForgetPasswordSchema,
   OauthInfoSchema,
   OauthQuerySchema,
-  QuestionQuerySchema,
   ResetPasswordSchema,
   SigninSchema,
   SignupSchema,

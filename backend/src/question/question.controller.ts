@@ -5,7 +5,6 @@ import {
   Param,
   Query,
   UsePipes,
-  ValidationPipe,
 } from "@nestjs/common";
 import {
   ApiOperation,
