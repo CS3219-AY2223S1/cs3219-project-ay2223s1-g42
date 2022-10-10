@@ -94,7 +94,6 @@ const TheNavbar = () => {
 
   const { user, useSignoutMutation } = useGlobalStore((state) => state);
   const isSignedIn = !!user;
-
   const signoutMutation = useSignoutMutation({
     onSuccess: async () => {
       await queryClient.invalidateQueries(["me"]);
@@ -130,6 +129,13 @@ const TheNavbar = () => {
             <>
               <DesktopNavItems />
               <PrimaryButton
+                className="bg-neutral-100 px-4 text-base md:px-6"
+                onClick={handleSignout}
+                isLoading={signoutMutation.isLoading}
+              >
+                Log out
+              </PrimaryButton>
+              <PrimaryButton
                 type="button"
                 className="inline-flex items-center bg-white p-3 text-sm
             text-neutral-800 focus:outline-none hover:text-neutral-800 md:hidden"
@@ -137,13 +143,6 @@ const TheNavbar = () => {
               >
                 <span className="sr-only">Open main menu</span>
                 <BurgerMenuIcon className="h-7 w-7" />
-              </PrimaryButton>
-              <PrimaryButton
-                className="bg-neutral-100 px-4 text-base md:px-6"
-                onClick={handleSignout}
-                isLoading={signoutMutation.isLoading}
-              >
-                Log out
               </PrimaryButton>
             </>
           ) : (
