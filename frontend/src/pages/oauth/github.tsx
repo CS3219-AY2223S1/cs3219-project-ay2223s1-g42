@@ -3,13 +3,13 @@ import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { OauthQuerySchemaData, OauthLoginResponse } from "shared/api";
+import { OauthLoginResponse } from "shared/api";
 import { LoadingLayout, ErrorPage } from "src/components";
 import { Axios } from "src/services";
 
-const OauthLogin = () => {
+const OAuthGitHubLogin = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState<boolean>(true);
   const queryClient = useQueryClient();
 
@@ -40,7 +40,14 @@ const OauthLogin = () => {
     }
   }, [authQuery.isSuccess, navigate]);
 
+  // auth error
+  useEffect(() => {
+    if (authQuery.isError) {
+      setLoading(false);
+    }
+  }, [authQuery.isError]);
+
   return <>{!loading ? <ErrorPage /> : <LoadingLayout />}</>;
 };
 
-export default OauthLogin;
+export default OAuthGitHubLogin;

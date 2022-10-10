@@ -404,9 +404,9 @@ export class AuthService {
     const githubToken = await axios
       .post(
         `https://github.com/login/oauth/access_token?client_id=${this.config.get(
-          "GITHUB_CLIENT_ID"
+          "OAUTH_GITHUB_CLIENT_ID"
         )}&client_secret=${this.config.get(
-          "GITHUB_CLIENT_SECRET"
+          "OAUTH_GITHUB_CLIENT_SECRET"
         )}&code=${oauthCode}`
       )
       .then((res) => res.data)

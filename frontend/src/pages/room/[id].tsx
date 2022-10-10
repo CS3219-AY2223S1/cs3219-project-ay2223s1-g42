@@ -43,7 +43,7 @@ const RoomPage = (): JSX.Element => {
       return;
     }
     joinRoom(pageRoomId);
-  }, []);
+  }, [isQueuedRoom, joinRoom, pageRoomId, queueRoomId, room, user]);
 
   // redirect to dashboard page if match cancelled
   useEffect(() => {

@@ -30,7 +30,7 @@ const VerifyEmailPage = () => {
       return;
     }
     fetchVerify();
-  }, []);
+  }, [navigate, token]);
 
   return (
     <>

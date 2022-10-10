@@ -11,7 +11,6 @@ export const configuration = () => ({
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_NAME: process.env.SMTP_NAME,
   FRONTEND_URL: process.env.FRONTEND_URL,
-  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-  GITHUB_URL: process.env.GITHUB_URL,
-  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  OAUTH_GITHUB_CLIENT_ID: process.env.OAUTH_GITHUB_CLIENT_ID,
+  OAUTH_GITHUB_CLIENT_SECRET: process.env.OAUTH_GITHUB_CLIENT_SECRET,
 });

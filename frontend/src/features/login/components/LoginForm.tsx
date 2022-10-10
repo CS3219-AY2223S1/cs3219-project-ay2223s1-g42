@@ -55,8 +55,8 @@ const LoginForm = () => {
   // oauth redirect
   const handleOAuthRedirect = () => {
     window.location.href = `http://github.com/login/oauth/authorize?client_id=${
-      import.meta.env.VITE_OAUTH_CLIENT_ID
-    }&redirect_uri=${import.meta.env.VITE_OAUTH_URL}&scope=user`;
+      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
   };
 
   return (
