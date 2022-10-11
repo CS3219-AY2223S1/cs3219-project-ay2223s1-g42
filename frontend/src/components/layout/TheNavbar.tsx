@@ -2,6 +2,7 @@ import { useState } from "react";
 import cx from "classnames";
 import { useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import shallow from "zustand/shallow";
 
 import {
   BaseLink,
@@ -86,13 +87,18 @@ const DesktopNavItems = () => {
 };
 
 const TheNavbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const scrollDirection = useScrollDirection();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { user, useSignoutMutation } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      useSignoutMutation: state.useSignoutMutation,
+    };
+  }, shallow);
   const isMobile = useMobile();
+  const scrollDirection = useScrollDirection();
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
-  const { user, useSignoutMutation } = useGlobalStore((state) => state);
   const isSignedIn = !!user;
   const signoutMutation = useSignoutMutation({
     onSuccess: async () => {
