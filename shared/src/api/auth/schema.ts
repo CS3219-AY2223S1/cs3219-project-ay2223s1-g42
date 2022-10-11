@@ -23,9 +23,13 @@ const ForgetPasswordSchema = SignupSchema.pick({
   email: true,
 });
 
-const ResetPasswordSchema = SignupSchema.pick({
+const ResetPasswordFormSchema = SignupSchema.pick({
   password: true,
-}).extend({ token: z.string() });
+});
+
+const ResetPasswordSchema = ResetPasswordFormSchema.extend({
+  token: z.string(),
+});
 
 const ChangePasswordInfoSchema = z
   .object({
@@ -62,6 +66,7 @@ type SignupData = z.infer<typeof SignupSchema>;
 type SigninData = z.infer<typeof SigninSchema>;
 type ForgetPasswordData = z.infer<typeof ForgetPasswordSchema>;
 type ResetPasswordData = z.infer<typeof ResetPasswordSchema>;
+type ResetPasswordFormData = z.infer<typeof ResetPasswordFormSchema>;
 type ChangePasswordData = z.infer<typeof ChangePasswordInfoSchema>;
 type DeletePasswordData = z.infer<typeof DeletePasswordSchema>;
 type EditableCredentials = z.infer<typeof EditableCredentialsSchema>;
@@ -80,6 +85,7 @@ export {
   DeleteAccountInfoSchema,
   OauthQuerySchema,
   OauthInfoSchema,
+  ResetPasswordFormSchema,
 };
 
 export type {
@@ -93,4 +99,5 @@ export type {
   DeleteAccountData,
   OauthQuerySchemaData,
   OauthSigninData,
+  ResetPasswordFormData,
 };
