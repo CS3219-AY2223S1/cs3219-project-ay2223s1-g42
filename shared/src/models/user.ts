@@ -14,4 +14,5 @@ export const _UserModel = z.object({
   email: z.string(),
   hash: z.string(),
   hashRt: z.string().nullish(),
+  provider: z.string(),
 });

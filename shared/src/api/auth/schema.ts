@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { _UserModel } from "../../models";
+import { OauthInfoSchema } from "../user";
 
 // schemas
 const passwordZodString = z
@@ -52,6 +53,10 @@ const DeleteAccountInfoSchema = SignupSchema.pick({
   password: true,
 });
 
+const OauthQuerySchema = z.object({
+  code: z.string(),
+});
+
 // schema types
 type SignupData = z.infer<typeof SignupSchema>;
 type SigninData = z.infer<typeof SigninSchema>;
@@ -61,6 +66,8 @@ type ChangePasswordData = z.infer<typeof ChangePasswordInfoSchema>;
 type DeletePasswordData = z.infer<typeof DeletePasswordSchema>;
 type EditableCredentials = z.infer<typeof EditableCredentialsSchema>;
 type DeleteAccountData = z.infer<typeof DeleteAccountInfoSchema>;
+type OauthQuerySchemaData = z.infer<typeof OauthQuerySchema>;
+type OauthSigninData = z.infer<typeof OauthInfoSchema>;
 
 export {
   SignupSchema,
@@ -71,6 +78,8 @@ export {
   DeletePasswordSchema,
   EditableCredentialsSchema,
   DeleteAccountInfoSchema,
+  OauthQuerySchema,
+  OauthInfoSchema,
 };
 
 export type {
@@ -82,4 +91,6 @@ export type {
   DeletePasswordData,
   EditableCredentials,
   DeleteAccountData,
+  OauthQuerySchemaData,
+  OauthSigninData,
 };

@@ -8,7 +8,7 @@ import {
   ErrorAlert,
   SuccessAlert,
   BlueButton,
-  GoogleIcon,
+  GithubIcon,
   TextInput,
   LightLink,
   PrimaryButton,
@@ -52,6 +52,13 @@ const LoginForm = () => {
   };
   const onSubmit = handleSubmit(handleSignin);
 
+  // oauth redirect
+  const handleOAuthRedirect = () => {
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
+  };
+
   return (
     <div>
       {signinMutation.isError ? (
@@ -65,11 +72,14 @@ const LoginForm = () => {
         <></>
       )}
       <div>
-        <BlueButton className="relative flex w-full items-center justify-center">
+        <BlueButton
+          className="relative flex w-full items-center justify-center"
+          onClick={handleOAuthRedirect}
+        >
           <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-            <GoogleIcon className="h-5 w-5" />
+            <GithubIcon className="h-5 w-5" />
           </div>
-          Sign in with Google
+          Sign in with GitHub
         </BlueButton>
         <Divider label="Or, sign in with your email" />
         <form className="mb-3 flex flex-col gap-8" onSubmit={onSubmit}>

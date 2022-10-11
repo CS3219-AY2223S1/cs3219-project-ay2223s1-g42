@@ -19,6 +19,8 @@ const EnvSchema = z.object({
   FRONTEND_URL: z.string(),
   SMTP_PORT: z.number().default(587),
   SMTP_HOST: z.string(),
+  OAUTH_GITHUB_CLIENT_ID: z.string(),
+  OAUTH_GITHUB_CLIENT_SECRET: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {

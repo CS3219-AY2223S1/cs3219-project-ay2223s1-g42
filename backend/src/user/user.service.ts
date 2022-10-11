@@ -3,7 +3,7 @@ import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
 
-import { UserHashInfo, UserInfo } from "shared/api";
+import { UserHashInfo, UserInfo, OauthUserInfo } from "shared/api";
 import { PrismaService } from "../prisma/prisma.service";
 
 const USER_FIELDS: Prisma.UserSelect = {
@@ -16,6 +16,11 @@ const USER_HASH_FIELDS: Prisma.UserSelect = {
   ...USER_FIELDS,
   hash: true,
   hashRt: true,
+};
+
+const OAUTH_USER_FIELDS: Prisma.UserSelect = {
+  email: true,
+  username: true,
 };
 
 type UpdateableUserFields = Partial<
@@ -179,6 +184,7 @@ export class UserService {
         email,
         username,
         hash,
+        provider: "CUSTOM",
       },
       select: USER_FIELDS,
     });
@@ -194,6 +200,27 @@ export class UserService {
     const res = await radash.try(this.prisma.user.delete)({
       where: { id },
       select: USER_FIELDS,
+    });
+    return res;
+  }
+
+  /**
+   * Creates a new user in the database with hash
+   * @param email email of user
+   * @param username username of user
+   * @returns [`Err`, `User`]
+   */
+  async createOauthUser(
+    email: string,
+    username: string
+  ): Promise<[Error, OauthUserInfo]> {
+    const res = await radash.try(this.prisma.user.create)({
+      data: {
+        email,
+        username,
+        provider: "GITHUB",
+      },
+      select: OAUTH_USER_FIELDS,
     });
     return res;
   }
