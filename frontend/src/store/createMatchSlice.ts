@@ -47,7 +47,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     console.log("disconnected from /match ws server :(");
     const user = getState().user;
     if (user) {
-      toast.loading("Reconnecting to match server...", matchToastOptions);
+      toast.loading("Connecting to match server...", matchToastOptions);
     }
     setState({ matchSocketConnected: false });
   });

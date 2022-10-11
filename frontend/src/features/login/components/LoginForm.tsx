@@ -56,9 +56,15 @@ const LoginForm = () => {
   // oauth redirect
   const handleOAuthRedirect = () => {
     setOAuthLoading(true);
+<<<<<<< HEAD
     const githubClientId = import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID;
     const githubRedirectUri = import.meta.env.VITE_OAUTH_GITHUB_URL;
     window.location.href = `http://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${githubRedirectUri}&scope=user`;
+=======
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
+>>>>>>> feat: add oauth login loading, add mobile nav close icon, rename reconnecitng to connecting, finalize navbar links
   };
 
   return (
