@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" scale="1" border="20">
     <diagram id="-ViHEaRB6OaP1D2wqO0u" name="Page-1">
-        <mxGraphModel dx="2186" dy="961" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="1858" dy="817" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -85,8 +85,9 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="24" value="View in &lt;br&gt;read-only room" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;labelBackgroundColor=default;labelBorderColor=none;fontSize=14;endArrow=classic;endFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="17" target="27" edge="1">
-                    <mxGeometry relative="1" as="geometry">
+                    <mxGeometry x="0.1212" relative="1" as="geometry">
                         <mxPoint x="1039" y="600" as="targetPoint"/>
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="17" value="View list of &lt;br&gt;quesitons summary" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
