@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { SignupData, SignupResponse, SignupSchema } from "shared/api";
 import {
-  BlueButton,
+  BlackButton,
   TextInput,
   PrimaryButton,
   ErrorAlert,
@@ -47,6 +47,12 @@ const SignupForm = () => {
     signupMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignup);
+  // oauth redirect
+  const handleOAuthRedirect = () => {
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
+  };
 
   return (
     <div>
@@ -69,12 +75,15 @@ const SignupForm = () => {
             import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
           }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}?scope=user`}
         >
-          <BlueButton className="relative flex w-full items-center justify-center">
-            <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-              <GithubIcon className="h-5 w-5 text-red-500" />
+          <BlackButton
+            className="relative flex w-full items-center justify-center"
+            onClick={handleOAuthRedirect}
+          >
+            <div className="absolute left-1 flex h-full w-12 items-center justify-center">
+              <GithubIcon className="h-9 w-9" />
             </div>
-            Sign up with GitHub
-          </BlueButton>
+            Sign in with GitHub
+          </BlackButton>
         </a>
         <Divider label="Or, sign up with your email" />
         <form

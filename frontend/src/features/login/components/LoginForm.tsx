@@ -7,7 +7,6 @@ import {
   Divider,
   ErrorAlert,
   SuccessAlert,
-  BlueButton,
   BlackButton,
   GithubIcon,
   TextInput,
