@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" scale="1" border="20">
     <diagram id="SKKT97RxRqP2tx5iM8VO" name="History">
-        <mxGraphModel dx="1548" dy="681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="1858" dy="817" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="cZ165Y8xMysXK6VZJFTn-0"/>
                 <mxCell id="cZ165Y8xMysXK6VZJFTn-1" parent="cZ165Y8xMysXK6VZJFTn-0"/>
@@ -128,6 +128,11 @@
                 <mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=oval;endFill=1;" edge="1" parent="cZ165Y8xMysXK6VZJFTn-1" source="3">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="974.9310344827586" y="330" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="9" value="Get user's &lt;br&gt;attempt history" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="6">
+                    <mxGeometry x="0.1608" y="3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;endArrow=oval;endFill=1;" edge="1" parent="cZ165Y8xMysXK6VZJFTn-1">
