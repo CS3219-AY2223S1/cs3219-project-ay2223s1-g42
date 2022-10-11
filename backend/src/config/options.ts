@@ -31,7 +31,7 @@ const CORS_OPTIONS: CorsOptions = {
     /http:\/\/localhost:/,
   ],
   credentials: true,
-  allowedHeaders: ["content-type"],
+  // allowedHeaders: ["content-type"],
 };
 
 export { CSRF_OPTIONS, COOKIE_OPTIONS, CORS_OPTIONS };
