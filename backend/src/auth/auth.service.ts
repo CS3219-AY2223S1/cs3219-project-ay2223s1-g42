@@ -3,7 +3,10 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
+
+import axios from "axios";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { MailerService } from "@nestjs-modules/mailer";
@@ -16,7 +19,11 @@ import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { ThrowKnownPrismaErrors } from "src/utils";
-import { SigninCredentialsDto, SignupCredentialsDto } from "./auth.dto";
+import {
+  SigninCredentialsDto,
+  SignupCredentialsDto,
+  OauthDto,
+} from "./auth.dto";
 
 export type JwtPayload = {
   sub: number;
@@ -147,6 +154,10 @@ export class AuthService {
       throw new ForbiddenException(AUTH_ERROR.INVALID_CREDENTIALS);
     }
 
+    //If user is an oauth user trying to sign in via normal login
+    if (user.provider !== "CUSTOM") {
+      throw new NotFoundException(AUTH_ERROR.INVALID_USER);
+    }
     // if password incorrect, throw exception
     const isPasswordCorrect = await argon2.verify(user.hash, password);
     if (!isPasswordCorrect) {
@@ -387,5 +398,95 @@ export class AuthService {
     if (error || !userToDelete) {
       throw new ForbiddenException(AUTH_ERROR.UPDATE_ERROR);
     }
+  }
+
+  async getGithubUser({ oauthCode }: { oauthCode: string }) {
+    const githubToken = await axios
+      .post(
+        `https://github.com/login/oauth/access_token?client_id=${this.config.get(
+          "OAUTH_GITHUB_CLIENT_ID"
+        )}&client_secret=${this.config.get(
+          "OAUTH_GITHUB_CLIENT_SECRET"
+        )}&code=${oauthCode}`
+      )
+      .then((res) => res.data)
+      .catch((error) => {
+        throw error;
+      });
+    const decoded = new URLSearchParams(githubToken);
+    const accessToken = decoded.get("access_token");
+
+    const username: string = await axios
+      .get("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => res.data.login)
+      .catch((error) => {
+        console.error(`Error getting user from GitHub`);
+        throw error;
+      });
+
+    const primaryEmail: string = await axios
+      .get("https://api.github.com/user/emails", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      .then((res) => res.data[0].email)
+      .catch((error) => {
+        console.error(`Error getting user from GitHub`);
+        throw error;
+      });
+    return {
+      username: username,
+      email: primaryEmail,
+    };
+  }
+
+  async checkOauthLogins(email: string, username: string) {
+    // check whether user's email is registered
+    const [err, user] = await this.users.findFirstByEitherUniqueFields(
+      email,
+      username
+    );
+
+    // create user if it doesnt exist
+    if (err || !user) {
+      this.users.createOauthUser(email, username);
+      return;
+    }
+
+    // check whether the user created account using peerprep login
+    if (user.email === email && user.provider === "CUSTOM") {
+      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
+      // is username in use
+    } else if (user.username === username && user.provider === "CUSTOM") {
+      throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);
+    }
+
+    const cachedEmail = await this.cache.getKeyInNamespace(
+      [NAMESPACES.AUTH],
+      email
+    );
+    if (!!cachedEmail) {
+      console.log("email in process of verification!");
+      throw new ForbiddenException(AUTH_ERROR.UNVERIFIED_EMAIL);
+    }
+  }
+
+  /**
+   * Authenticates user and returns the JWT token
+   * @param credentials credentials validated by zod schema
+   * @returns jwt token associated with the authenticated user
+   */
+  async signinOauth(credentials: OauthDto): Promise<Tokens> {
+    const { email } = credentials;
+    const [err, user] = await this.users.findByEmail(email);
+    if (err || !user) {
+      ThrowKnownPrismaErrors(err);
+      return;
+    }
+    const tokens = await this.signTokens(user.id, user.email);
+    // update refresh token hash for logged in user
+    await this.updateRefreshTokenHash(user.id, tokens.refresh_token);
+    return tokens;
   }
 }

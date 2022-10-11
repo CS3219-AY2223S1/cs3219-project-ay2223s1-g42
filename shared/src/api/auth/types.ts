@@ -9,6 +9,7 @@ type ForgetPasswordResponse = MessageResponse;
 type ResetPasswordResponse = MessageResponse;
 type ChangePasswordResponse = MessageResponse;
 type DeleteAccountResponse = MessageResponse;
+type OauthLoginResponse = MessageResponse;
 
 export type {
   SignupResponse,
@@ -20,4 +21,5 @@ export type {
   ResetPasswordResponse,
   ChangePasswordResponse,
   DeleteAccountResponse,
+  OauthLoginResponse,
 };

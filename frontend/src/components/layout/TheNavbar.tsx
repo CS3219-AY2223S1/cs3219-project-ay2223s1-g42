@@ -1,14 +1,17 @@
 import { useState } from "react";
 import cx from "classnames";
+import { useNavigate } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import shallow from "zustand/shallow";
 
 import {
   BaseLink,
   PrimaryLink,
-  BaseDropdown,
   PrimaryButton,
   BurgerMenuIcon,
 } from "src/components";
 import { useScrollDirection, useMobile, ScrollDir } from "src/hooks";
+import { useGlobalStore } from "src/store";
 
 type NavItem = {
   label: string;
@@ -84,9 +87,29 @@ const DesktopNavItems = () => {
 };
 
 const TheNavbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const scrollDirection = useScrollDirection();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user, useSignoutMutation } = useGlobalStore((state) => {
+    return {
+      user: state.user,
+      useSignoutMutation: state.useSignoutMutation,
+    };
+  }, shallow);
   const isMobile = useMobile();
+  const scrollDirection = useScrollDirection();
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+  const isSignedIn = !!user;
+  const signoutMutation = useSignoutMutation({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["me"]);
+      navigate("/");
+    },
+  });
+
+  const handleSignout = () => {
+    signoutMutation.mutate();
+  };
 
   return (
     <nav
@@ -103,33 +126,39 @@ const TheNavbar = () => {
     >
       <div className="mx-auto flex h-[72px] w-full max-w-5xl flex-wrap items-center justify-between">
         <BaseLink to={"/"} className="flex h-full items-center">
-          {/* <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="mr-3 h-6 sm:h-9"
-            alt="Flowbite Logo"
-          /> */}
           <span className="self-center whitespace-nowrap font-sans text-xl font-semibold text-neutral-800">
             {"<PeerPrep />"}
           </span>
         </BaseLink>
         <div className="flex flex-row gap-2 md:gap-4">
-          <DesktopNavItems />
-          <BaseDropdown />
-          {/* <PrimaryButton
-            className="text-base px-4 md:px-6 bg-neutral-100"
-            onClick={() => navigate("/room")}
-          >
-            Get started
-          </PrimaryButton> */}
-          <PrimaryButton
-            type="button"
-            className="inline-flex items-center bg-white p-3 text-sm
+          {isSignedIn ? (
+            <>
+              <DesktopNavItems />
+              <PrimaryButton
+                className="bg-neutral-100 px-4 text-base md:px-6"
+                onClick={handleSignout}
+                isLoading={signoutMutation.isLoading}
+              >
+                Log out
+              </PrimaryButton>
+              <PrimaryButton
+                type="button"
+                className="inline-flex items-center bg-white p-3 text-sm
             text-neutral-800 focus:outline-none hover:text-neutral-800 md:hidden"
-            onClick={() => setIsDropdownOpen((open) => !open)}
-          >
-            <span className="sr-only">Open main menu</span>
-            <BurgerMenuIcon className="h-7 w-7" />
-          </PrimaryButton>
+                onClick={() => setIsDropdownOpen((open) => !open)}
+              >
+                <span className="sr-only">Open main menu</span>
+                <BurgerMenuIcon className="h-7 w-7" />
+              </PrimaryButton>
+            </>
+          ) : (
+            <PrimaryButton
+              className="bg-neutral-100 px-4 text-base md:px-6"
+              onClick={() => navigate("/signup")}
+            >
+              Get started
+            </PrimaryButton>
+          )}
         </div>
       </div>
       {/* mobile nav dropdown */}

@@ -34,6 +34,9 @@ export enum API_OPERATIONS {
   QUESTION_TOPIC_SUMMARY = "Retrieves the list of question topics",
   QUESTION_DAILY_QUESTION_SUMMARY = "Retrieves the question of the day's summary",
   QUESTION_CONTENT_SLUG_SUMMARY = "Retrieves the summary for the specified question",
+  OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY = "User successfully signed in using github",
+  QUERY_SUMMARY = "Retrieves Query in URL",
+  OAUTH_SUMMARY = "Login using Oauth",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
