@@ -8,6 +8,7 @@ import {
   ErrorAlert,
   SuccessAlert,
   BlueButton,
+  BlackButton,
   GithubIcon,
   TextInput,
   LightLink,
@@ -72,15 +73,15 @@ const LoginForm = () => {
         <></>
       )}
       <div>
-        <BlueButton
+        <BlackButton
           className="relative flex w-full items-center justify-center"
           onClick={handleOAuthRedirect}
         >
-          <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-            <GithubIcon className="h-5 w-5" />
+          <div className="absolute left-1 flex h-full w-12 items-center justify-center">
+            <GithubIcon className="h-9 w-9" />
           </div>
           Sign in with GitHub
-        </BlueButton>
+        </BlackButton>
         <Divider label="Or, sign in with your email" />
         <form className="mb-3 flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
