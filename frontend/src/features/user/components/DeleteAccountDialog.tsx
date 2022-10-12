@@ -11,10 +11,10 @@ import {
 import {
   ErrorAlert,
   RedButton,
-  SecondaryButton,
   TextInput,
   PrimaryDialog,
   SuccessAlert,
+  PrimaryButton,
 } from "src/components";
 import { useGlobalStore } from "src/store";
 import { Axios } from "src/services";
@@ -102,9 +102,9 @@ export const DeleteAccountDialog = ({ isOpen, onClose }: Props) => {
           <RedButton type="submit" className="w-full">
             Delete account
           </RedButton>
-          <SecondaryButton onClick={handleClose} className="w-full">
+          <PrimaryButton onClick={handleClose} className="w-full">
             Cancel
-          </SecondaryButton>
+          </PrimaryButton>
         </div>
       </form>
     </PrimaryDialog>

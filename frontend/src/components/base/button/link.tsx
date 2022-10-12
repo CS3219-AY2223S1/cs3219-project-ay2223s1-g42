@@ -1,6 +1,6 @@
 import { Props } from "./types";
 
-export function LinkButton({ className = "", children, ...other }: Props) {
+const LinkButton = ({ className = "", children, ...other }: Props) => {
   return (
     <button
       className={`border-b-[1px] border-transparent font-sans transition duration-300
@@ -10,4 +10,6 @@ export function LinkButton({ className = "", children, ...other }: Props) {
       {children}
     </button>
   );
-}
+};
+
+export { LinkButton };

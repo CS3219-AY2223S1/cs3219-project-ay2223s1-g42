@@ -101,8 +101,8 @@ const TheNavbar = () => {
 
   const isSignedIn = !!user;
   const signoutMutation = useSignoutMutation({
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(["me"]);
+    onSuccess: () => {
+      queryClient.invalidateQueries(["me"]);
       navigate("/");
     },
   });

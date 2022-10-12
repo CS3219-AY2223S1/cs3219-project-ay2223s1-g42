@@ -4,11 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { SignupData, SignupResponse, SignupSchema } from "shared/api";
 import {
-  BlueButton,
+  GithubButton,
   TextInput,
   PrimaryButton,
   ErrorAlert,
-  GithubIcon,
   PrimaryLink,
   SuccessAlert,
   Divider,
@@ -43,10 +42,17 @@ const SignupForm = () => {
   );
 
   // submit function
-  const handleSignup = async (credentials: SignupData) => {
+  const handleSignup = (credentials: SignupData) => {
     signupMutation.mutate(credentials);
   };
   const onSubmit = handleSubmit(handleSignup);
+
+  // oauth redirect
+  const handleOAuthRedirect = () => {
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
+    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
+  };
 
   return (
     <div>
@@ -64,18 +70,12 @@ const SignupForm = () => {
         <></>
       )}
       <div>
-        <a
-          href={`http://github.com/login/oauth/authorize?client_id=${
-            import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
-          }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}?scope=user`}
+        <GithubButton
+          className="relative flex w-full items-center justify-center"
+          onClick={handleOAuthRedirect}
         >
-          <BlueButton className="relative flex w-full items-center justify-center">
-            <div className="absolute left-0 flex h-full w-12 items-center justify-center bg-neutral-50">
-              <GithubIcon className="h-5 w-5 text-red-500" />
-            </div>
-            Sign up with GitHub
-          </BlueButton>
-        </a>
+          Sign in with GitHub
+        </GithubButton>
         <Divider label="Or, sign up with your email" />
         <form
           className="mb-3 flex flex-col gap-8 space-y-8"

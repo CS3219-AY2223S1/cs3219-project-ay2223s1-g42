@@ -8,7 +8,6 @@ import {
   Param,
   Post,
   Query,
-  Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -49,7 +48,6 @@ import {
   ChangePasswordInfoDto,
   DeleteAccountInfoDto,
   OauthQueryDto,
-  OauthDto,
 } from "./auth.dto";
 import { User } from "@prisma/client";
 
