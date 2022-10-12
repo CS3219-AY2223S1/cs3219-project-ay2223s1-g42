@@ -5,9 +5,16 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=16",
+    "yarn": ">=1.22.0 < 2.0.0"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "yarn prisma:dev:generate && nest build",
+    "build:prod": "yarn prisma generate && yarn nest build",
+    "docker:build": "yarn build:prod && docker image rm cs3219g42/backend; docker build . -t cs3219g42/backend",
+    "docker:build-push": "yarn docker:build && docker push cs3219g42/backend",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node ./dist/main.js",
     "start:watch": "nest start --watch",
@@ -33,7 +40,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "gcp-build": "yarn build && yarn prisma generate",
+    "gae-deploy": "yarn build && gcloud app deploy -q"
   },
   "dependencies": {
     "@anatine/zod-nestjs": "^1.7.4",

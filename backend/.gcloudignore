@@ -13,7 +13,5 @@
 .git
 .gitignore
 
-app.yaml
-
 # Node.js dependencies:
 node_modules/

@@ -5,8 +5,10 @@ FROM node:16-alpine
 WORKDIR /app
 COPY . /app/
 RUN yarn install
-RUN yarn prisma generate && yarn clean:zod:index
+RUN yarn prisma generate
 
-EXPOSE 5000
+EXPOSE 5000 
+EXPOSE 8080 
+EXPOSE 15316
 
-CMD [ "node", "./dist/main.js" ]
+CMD [ "node", "./dist/backend/src/main.js" ]

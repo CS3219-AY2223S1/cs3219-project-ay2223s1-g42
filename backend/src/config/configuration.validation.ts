@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   COOKIE_SECRET: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.number().default(6379),
+  REDIS_PASSWORD: z.string().default(""), // local redis has no password
   CACHE_TTL: z.number().default(1800),
   SMTP_EMAIL: z.string().email(),
   SMTP_PASSWORD: z.string(),
