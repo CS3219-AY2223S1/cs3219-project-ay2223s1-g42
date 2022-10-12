@@ -13,7 +13,7 @@ const GithubButton = ({ className = "", children, ...other }: Props) => {
       hover:bg-[#24292F]/90 dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 ${className}`}
       {...other}
     >
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-1 md:gap-3">
         <GithubIcon className="h-8 w-8" />
         {children}
       </div>
