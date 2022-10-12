@@ -5,7 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import {
   ResetPasswordData,
   ResetPasswordResponse,
-  ResetPasswordSchema,
+  ResetPasswordFormData,
+  ResetPasswordFormSchema,
 } from "shared/api";
 import {
   ErrorAlert,
@@ -27,8 +28,8 @@ const ResetPasswordForm = ({ token }: Props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ResetPasswordData>({
-    resolver: zodResolver(ResetPasswordSchema),
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(ResetPasswordFormSchema),
   });
 
   // reset password mutation
@@ -48,7 +49,7 @@ const ResetPasswordForm = ({ token }: Props) => {
   );
 
   // submit function
-  const handleResetPassword = async (credentials: ResetPasswordData) => {
+  const handleResetPassword = async (credentials: ResetPasswordFormData) => {
     const resetData = { ...credentials, token };
     resetPasswordMutation.mutate(resetData);
   };

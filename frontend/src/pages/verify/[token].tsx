@@ -1,8 +1,9 @@
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
+import { VerifyEmailResponse } from "shared/api";
 import { PrimaryButton, LoadingLayout, NormalHeading } from "src/components";
-import { ApiResponse } from "src/features";
 import { Axios } from "src/services";
 
 const VerifyEmailPage = () => {
@@ -10,26 +11,29 @@ const VerifyEmailPage = () => {
   const { token } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
 
+  const verifyEmailMutation = useMutation(
+    () =>
+      Axios.post<VerifyEmailResponse>(`/auth/verify/${token}`).then(
+        (res) => res.data
+      ),
+    {
+      onSuccess: () => {
+        navigate("/");
+      },
+      onError: (error) => {
+        setLoading(false);
+        console.error({ error });
+      },
+    }
+  );
+
   // navigate to dashboard if verify successful
   useEffect(() => {
-    const fetchVerify = async () => {
-      try {
-        const res = await Axios.post<ApiResponse>(
-          `${import.meta.env.VITE_API_URL}/auth/verify/${token}`
-        ).then((resp) => resp.data);
-        if (res.message === "success") {
-          navigate("/");
-        }
-      } catch (e) {
-        console.error(e);
-      }
-      setLoading(false);
-    };
     if (!token) {
       console.error(`invalid token value ${token}`);
       return;
     }
-    fetchVerify();
+    verifyEmailMutation.mutate();
   }, []);
 
   return (

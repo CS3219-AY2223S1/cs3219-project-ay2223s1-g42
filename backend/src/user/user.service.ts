@@ -10,6 +10,7 @@ const USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
   id: true,
+  provider: true,
 };
 
 const USER_HASH_FIELDS: Prisma.UserSelect = {

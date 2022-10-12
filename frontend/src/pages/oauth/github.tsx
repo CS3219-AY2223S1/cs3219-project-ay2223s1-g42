@@ -16,7 +16,7 @@ const OAuthGitHubLogin = () => {
   const code = searchParams.get("code");
 
   // sign in mutation
-  const authQuery = useQuery(
+  useQuery(
     ["oauth", code],
     () =>
       Axios.get<OauthLoginResponse>(`/auth/local/oauth?code=${code}`).then(
@@ -29,23 +29,10 @@ const OAuthGitHubLogin = () => {
       },
       onError: (error) => {
         console.error({ error });
+        setLoading(false);
       },
     }
   );
-
-  // navigate to dashboard if verify successful
-  useEffect(() => {
-    if (authQuery.isSuccess) {
-      navigate("/");
-    }
-  }, [authQuery.isSuccess, navigate]);
-
-  // auth error
-  useEffect(() => {
-    if (authQuery.isError) {
-      setLoading(false);
-    }
-  }, [authQuery.isError]);
 
   return <>{!loading ? <ErrorPage /> : <LoadingLayout />}</>;
 };

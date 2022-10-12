@@ -401,13 +401,15 @@ export class AuthService {
   }
 
   async getGithubUser({ oauthCode }: { oauthCode: string }) {
+    const githubClientId = this.config.getOrThrow("OAUTH_GITHUB_CLIENT_ID");
+    const githubClientSecret = this.config.getOrThrow(
+      "OAUTH_GITHUB_CLIENT_SECRET"
+    );
+
+    // get github token
     const githubToken = await axios
       .post(
-        `https://github.com/login/oauth/access_token?client_id=${this.config.get(
-          "OAUTH_GITHUB_CLIENT_ID"
-        )}&client_secret=${this.config.get(
-          "OAUTH_GITHUB_CLIENT_SECRET"
-        )}&code=${oauthCode}`
+        `https://github.com/login/oauth/access_token?client_id=${githubClientId}&client_secret=${githubClientSecret}&code=${oauthCode}`
       )
       .then((res) => res.data)
       .catch((error) => {
@@ -416,6 +418,7 @@ export class AuthService {
     const decoded = new URLSearchParams(githubToken);
     const accessToken = decoded.get("access_token");
 
+    // fetch username from github
     const username: string = await axios
       .get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -426,6 +429,7 @@ export class AuthService {
         throw error;
       });
 
+    // fetch email from github
     const primaryEmail: string = await axios
       .get("https://api.github.com/user/emails", {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -435,6 +439,7 @@ export class AuthService {
         console.error(`Error getting user from GitHub`);
         throw error;
       });
+
     return {
       username: username,
       email: primaryEmail,
