@@ -1,7 +1,7 @@
 import { BaseButton } from "./base";
 import { Props } from "./types";
 
-export function BlueButton({ className = "", children, ...other }: Props) {
+const BlueButton = ({ className = "", children, ...other }: Props) => {
   return (
     <BaseButton
       loadColor="neutral-50"
@@ -12,4 +12,6 @@ export function BlueButton({ className = "", children, ...other }: Props) {
       {children}
     </BaseButton>
   );
-}
+};
+
+export { BlueButton };

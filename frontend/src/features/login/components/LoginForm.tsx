@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,8 +8,7 @@ import {
   Divider,
   ErrorAlert,
   SuccessAlert,
-  BlackButton,
-  GithubIcon,
+  GithubButton,
   TextInput,
   LightLink,
   PrimaryButton,
@@ -18,6 +18,7 @@ import { Axios } from "src/services";
 
 const LoginForm = () => {
   const queryClient = useQueryClient();
+  const [oAuthLoading, setOAuthLoading] = useState<boolean>(false);
 
   // form setup
   const {
@@ -54,9 +55,10 @@ const LoginForm = () => {
 
   // oauth redirect
   const handleOAuthRedirect = () => {
-    window.location.href = `http://github.com/login/oauth/authorize?client_id=${
-      import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID
-    }&redirect_uri=${import.meta.env.VITE_OAUTH_GITHUB_URL}&scope=user`;
+    setOAuthLoading(true);
+    const githubClientId = import.meta.env.VITE_OAUTH_GITHUB_CLIENT_ID;
+    const githubRedirectUri = import.meta.env.VITE_OAUTH_GITHUB_URL;
+    window.location.href = `http://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${githubRedirectUri}&scope=user`;
   };
 
   return (
@@ -72,15 +74,13 @@ const LoginForm = () => {
         <></>
       )}
       <div>
-        <BlackButton
+        <GithubButton
           className="relative flex w-full items-center justify-center"
           onClick={handleOAuthRedirect}
+          isLoading={oAuthLoading}
         >
-          <div className="absolute left-1 flex h-full w-12 items-center justify-center">
-            <GithubIcon className="h-9 w-9" />
-          </div>
           Sign in with GitHub
-        </BlackButton>
+        </GithubButton>
         <Divider label="Or, sign in with your email" />
         <form className="mb-3 flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-5">
