@@ -1,11 +1,11 @@
 import { StateCreator } from "zustand";
 import Peer from "simple-peer";
+import { UserInfo } from "shared/api";
 
-import { User } from "src/login";
 import type { GlobalStore } from "./useGlobalStore";
 
 export type Call = {
-  from?: User;
+  from?: UserInfo;
   signal?: Peer.SignalData;
 };
 
@@ -21,7 +21,7 @@ export type CallSlice = {
   otherVideo: React.MutableRefObject<HTMLMediaElement | undefined> | undefined;
   connectionRef: React.MutableRefObject<Peer.Instance | undefined> | undefined;
   answerCall: () => void;
-  callUser: (from: User, id: number) => void;
+  callUser: (from: UserInfo, id: number) => void;
   leaveCall: () => void;
   setupVideo: () => void;
 };
@@ -132,7 +132,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     setState({ callAccepted: true });
   };
 
-  const callUser = (from: User, id: number) => {
+  const callUser = (from: UserInfo, id: number) => {
     // set up peer
     const peer = new Peer({
       initiator: true,

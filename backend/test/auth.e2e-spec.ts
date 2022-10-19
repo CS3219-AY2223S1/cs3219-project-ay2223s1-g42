@@ -4,15 +4,15 @@ import * as request from "supertest";
 import { v4 } from "uuid";
 import * as randomstring from "randomstring";
 
-import { AppModule } from "../src/app.module";
-import { AuthController } from "../src/auth/auth.controller";
-import { UserService } from "../src/user/user.service";
-import { AuthService } from "../src/auth/auth.service";
-import { RedisCacheService } from "../src/cache/redisCache.service";
-import { NAMESPACES } from "../src/cache/constants";
-import { AuthModule } from "../src/auth/auth.module";
-import { UserModule } from "../src/user/user.module";
-import { RedisCacheModule } from "../src/cache/redisCache.module";
+import { AppModule } from "src/app.module";
+import { AuthController } from "src/auth/auth.controller";
+import { UserService } from "src/user/user.service";
+import { AuthService } from "src/auth/auth.service";
+import { RedisCacheService } from "src/cache/redisCache.service";
+import { NAMESPACES } from "shared/api";
+import { AuthModule } from "src/auth/auth.module";
+import { UserModule } from "src/user/user.module";
+import { RedisCacheModule } from "src/cache/redisCache.module";
 
 type CacheableUserFields = {
   email: string;

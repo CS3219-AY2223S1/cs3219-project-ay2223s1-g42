@@ -1,8 +1,12 @@
-import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import cx from "classnames";
 
-import { CheckFilledIcon, CheckIcon, ChevronDownIcon } from "src/components";
+import {
+  CheckFilledIcon,
+  CheckIcon,
+  ChevronDownIcon,
+} from "src/components/icons";
 
 type DropdownItem = {
   label: string;
@@ -32,14 +36,15 @@ const SAMPLE_MENU_ITEMS = [
   },
 ];
 
-const BaseDropdown = ({ items = SAMPLE_MENU_ITEMS }: Props) => {
+const BaseDropdown = ({ items }: Props) => {
+  const menuItems = items || SAMPLE_MENU_ITEMS;
   return (
     <Menu as="div" className="relative z-10 text-left">
       <Menu.Button
         className="flex w-full items-center justify-center border-[1px] border-neutral-900
           bg-white py-3 px-4 text-sm
           text-neutral-900 transition duration-300
-          ease-out hover:bg-neutral-900 hover:text-neutral-50 focus:outline-none"
+          ease-out focus:outline-none hover:bg-neutral-900 hover:text-neutral-50"
       >
         Options
         <ChevronDownIcon
@@ -61,7 +66,7 @@ const BaseDropdown = ({ items = SAMPLE_MENU_ITEMS }: Props) => {
           border-[1px] border-neutral-900 bg-white focus:outline-none"
         >
           <div>
-            {items.map((item) => (
+            {menuItems.map((item) => (
               <Menu.Item key={item.label}>
                 {({ active }) => (
                   <button

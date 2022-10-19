@@ -4,6 +4,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
+import { UserInfo } from "shared/api";
 import { UserService } from "../../user/user.service";
 import { JwtPayload } from "../auth.service";
 
@@ -24,7 +25,7 @@ export class WsAccessJwtStrategy extends PassportStrategy(Strategy, "jwt-ws") {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<UserInfo> {
     const [err, user] = await this.users.find({
       id: payload.sub,
     });

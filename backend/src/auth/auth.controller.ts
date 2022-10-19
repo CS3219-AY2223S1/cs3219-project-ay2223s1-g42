@@ -3,9 +3,11 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   Param,
   Post,
+  Query,
   Res,
   UseGuards,
 } from "@nestjs/common";
@@ -17,23 +19,37 @@ import {
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
 } from "@nestjs/swagger";
-import { User } from "@prisma/client";
 import { Response } from "express";
 
-import { AuthService, Tokens } from "./auth.service";
 import {
-  SigninCredentialsDto,
-  SignupCredentialsDto,
-  ForgetPasswordCredentialsDto,
-  ResetPasswordCredentialsDto,
-  ChangePasswordInfoDto,
-  DeleteAccountInfoDto,
-} from "../utils/zod";
+  ChangePasswordResponse,
+  DeleteAccountResponse,
+  ForgetPasswordResponse,
+  RefreshResponse,
+  ResetPasswordResponse,
+  SigninResponse,
+  SignoutResponse,
+  SignupResponse,
+  VerifyEmailResponse,
+  OauthLoginResponse,
+} from "shared/api";
+import { AuthService, Tokens } from "./auth.service";
 import { JwtRefreshGuard } from "./guard";
 import { GetUser, PublicRoute } from "../utils/decorator";
 import { COOKIE_OPTIONS } from "../config";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
+import {
+  SignupCredentialsDto,
+  SigninCredentialsDto,
+  ForgetPasswordCredentialsDto,
+  ResetPasswordCredentialsDto,
+  ChangePasswordInfoDto,
+  DeleteAccountInfoDto,
+  OauthQueryDto,
+} from "./auth.dto";
+import { User } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
@@ -60,7 +76,9 @@ export class AuthController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async signup(@Body() credentials: SignupCredentialsDto) {
+  async signup(
+    @Body() credentials: SignupCredentialsDto
+  ): Promise<SignupResponse> {
     await this.authService.signup(credentials);
     return { message: "success" };
   }
@@ -78,13 +96,16 @@ export class AuthController {
   @ApiForbiddenResponse({
     description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
   })
+  @ApiNotFoundResponse({
+    description: API_RESPONSES_DESCRIPTION.NOT_FOUND_DESCRIPTION,
+  })
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
   async signin(
     @Body() credentials: SigninCredentialsDto,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<SigninResponse> {
     const tokens = await this.authService.signin(credentials);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -105,7 +126,7 @@ export class AuthController {
   async signout(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<SignoutResponse> {
     await this.authService.signout(user.id);
     this.clearCookies(res);
     return { message: "success" };
@@ -128,7 +149,7 @@ export class AuthController {
   async refresh(
     @GetUser() user: User,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<RefreshResponse> {
     const tokens = await this.authService.refreshTokens(user.id, user.email);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -151,7 +172,7 @@ export class AuthController {
   async verifyEmail(
     @Param("token") token: string,
     @Res({ passthrough: true }) res: Response
-  ) {
+  ): Promise<VerifyEmailResponse> {
     const tokens = await this.authService.verifyEmail(token);
     this.setCookies(res, tokens);
     return { message: "success" };
@@ -192,7 +213,7 @@ export class AuthController {
   })
   async forgetPassword(
     @Body() forgetPasswordInfo: ForgetPasswordCredentialsDto
-  ) {
+  ): Promise<ForgetPasswordResponse> {
     const { email } = forgetPasswordInfo;
     await this.authService.resetPassword(email);
     return { message: "success" };
@@ -221,7 +242,9 @@ export class AuthController {
   @ApiInternalServerErrorResponse({
     description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
   })
-  async resetPassword(@Body() resetPasswordInfo: ResetPasswordCredentialsDto) {
+  async resetPassword(
+    @Body() resetPasswordInfo: ResetPasswordCredentialsDto
+  ): Promise<ResetPasswordResponse> {
     const { token, password } = resetPasswordInfo;
     await this.authService.verifyResetEmail(token, password);
     return { message: "success" };
@@ -256,7 +279,7 @@ export class AuthController {
   async changePassword(
     @GetUser() user: User,
     @Body() changePasswordInfo: ChangePasswordInfoDto
-  ) {
+  ): Promise<ChangePasswordResponse> {
     const { newPassword, currentPassword } = changePasswordInfo;
     await this.authService.changePassword(
       user.id,
@@ -295,8 +318,46 @@ export class AuthController {
   async deleteAccount(
     @GetUser() user: User,
     @Body() { password }: DeleteAccountInfoDto
-  ) {
+  ): Promise<DeleteAccountResponse> {
     await this.authService.deleteAccount(user.id, password);
+    return { message: "success" };
+  }
+
+  /**
+   * Directs the user to the successful oauth page
+   */
+  @PublicRoute()
+  @Get("/local/oauth")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: API_OPERATIONS.OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
+  })
+  @ApiBadRequestResponse({
+    description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
+  })
+  @ApiForbiddenResponse({
+    description: API_RESPONSES_DESCRIPTION.FORBIDDEN_SIGNIN_DESCRIPTION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  async oauthSignin(
+    @Query() query: OauthQueryDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<OauthLoginResponse> {
+    const oauthCode = query.code;
+    if (!oauthCode) {
+      throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
+    }
+    const gitHubUser = await this.authService.getGithubUser({ oauthCode });
+    const username = gitHubUser.username;
+    const userEmail = gitHubUser.email;
+    // check if user has created an account via oauth
+    this.authService.checkOauthLogins(userEmail, username);
+    // sign in
+    const tokens = await this.authService.signinOauth({ email: userEmail });
+    this.setCookies(res, tokens);
     return { message: "success" };
   }
 }

@@ -29,6 +29,14 @@ export enum API_OPERATIONS {
   EDIT_USER_INFO_SUMMARY = "Edit data of specified user",
   DELETE_USER_SUMMARY = "Delete data of specified user",
   DELETE_ACCOUNT_SUMMARY = "Deletes user account after verifying the specified password",
+  QUESTION_QUERY_SUMMARY = "Retrieves the list of questions that satisfies the conditions in the query",
+  QUESTION_DAILY_SUMMARY = "Retrieves today's daily question",
+  QUESTION_TOPIC_SUMMARY = "Retrieves the list of question topics",
+  QUESTION_DAILY_QUESTION_SUMMARY = "Retrieves the question of the day's summary",
+  QUESTION_CONTENT_SLUG_SUMMARY = "Retrieves the summary for the specified question",
+  OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY = "User successfully signed in using github",
+  QUERY_SUMMARY = "Retrieves Query in URL",
+  OAUTH_SUMMARY = "Login using Oauth",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
@@ -57,4 +65,5 @@ export enum API_RESPONSES_DESCRIPTION {
   INTERNAL_SERVER_ERROR = "Internal Server Error",
   FORBIDDEN_SIGNUP_DESCRIPTION = "User used an unavailable email/username or has already signed up but have yet to verify account",
   FORBIDDEN_SIGNIN_DESCRIPTION = "User entered invalid credentials or is unverified",
+  SUCCESSFUL_QUESTION_QUERY = "Successful question query made",
 }

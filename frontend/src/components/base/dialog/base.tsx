@@ -1,18 +1,29 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
-import { Container } from "src/components/layout";
+import { Container } from "src/components";
 
 export type BaseProps = {
   isOpen: boolean;
   onClose: () => void;
+  autoClose?: boolean;
   children: JSX.Element;
 };
 
-export function BaseDialog({ isOpen, onClose, children }: BaseProps) {
+export function BaseDialog({
+  isOpen,
+  onClose,
+  autoClose,
+  children,
+}: BaseProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-[999]" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="relative z-[999]"
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onClose={autoClose ? onClose : () => {}}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

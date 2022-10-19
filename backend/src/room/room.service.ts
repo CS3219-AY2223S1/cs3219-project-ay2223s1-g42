@@ -1,10 +1,8 @@
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 
-import { NAMESPACES } from "src/cache/constants";
+import { NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
 import { RedisCacheService } from "src/cache/redisCache.service";
-import { PoolUser } from "src/match/match.gateway";
-import { Room, RoomUser } from "./room.gateway";
 
 @Injectable()
 export class RoomService {
@@ -25,13 +23,24 @@ export class RoomService {
 
   async createRoom(users: PoolUser[]): Promise<Room> {
     // create room
+    console.log("creating room for: ", { users });
     const roomId = v4();
-    const roomUsers: RoomUser[] = users.map((user) => {
-      return { ...user, connected: false };
-    });
+    const roomUsers: RoomUser[] = Array.from(
+      new Set(
+        users.map((user) => {
+          return { ...user, connected: false };
+        })
+      )
+    );
+    const allDifficulties = roomUsers.map((user) => user.difficulties);
+    const commonDifficulties = allDifficulties.reduce((p, c) =>
+      p.filter((d) => c.includes(d))
+    );
+
     const room: Room = {
       id: roomId,
       users: roomUsers,
+      difficulties: commonDifficulties,
     };
 
     try {
@@ -54,9 +63,7 @@ export class RoomService {
 
   async addUserToRoom(room: Room, user: RoomUser): Promise<Room> {
     // update users in room
-    const newUsers = room.users
-      .filter((roomUser) => roomUser.id !== user.id)
-      .concat(user);
+    const newUsers = room.users.concat(user);
     const newRoom: Room = {
       ...room,
       users: newUsers,
@@ -70,12 +77,11 @@ export class RoomService {
 
   async removeUserFromRoom(room: Room, userId: number): Promise<Room> {
     // update users in room
-    const newUsers = room.users.filter((user) => user.id !== userId);
+    const remainingUsers = room.users.filter((user) => user.id !== userId);
     const newRoom: Room = {
       ...room,
-      users: newUsers,
+      users: remainingUsers,
     };
-    console.log({ oldUsers: room.users, newUsers });
     await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
 
     // remove user from room users

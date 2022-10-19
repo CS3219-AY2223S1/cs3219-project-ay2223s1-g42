@@ -3,18 +3,25 @@ import { Prisma, User } from "@prisma/client";
 import * as radash from "radash";
 import * as argon2 from "argon2";
 
+import { UserHashInfo, UserInfo, OauthUserInfo } from "shared/api";
 import { PrismaService } from "../prisma/prisma.service";
 
 const USER_FIELDS: Prisma.UserSelect = {
   email: true,
   username: true,
   id: true,
+  provider: true,
 };
 
 const USER_HASH_FIELDS: Prisma.UserSelect = {
   ...USER_FIELDS,
   hash: true,
   hashRt: true,
+};
+
+const OAUTH_USER_FIELDS: Prisma.UserSelect = {
+  email: true,
+  username: true,
 };
 
 type UpdateableUserFields = Partial<
@@ -35,7 +42,7 @@ export class UserService {
     email?: string;
     username?: string;
     includeHash?: boolean;
-  }) {
+  }): Promise<[Error, UserInfo & UserHashInfo]> {
     if (id) {
       return this.findById(id, includeHash);
     }
@@ -52,7 +59,10 @@ export class UserService {
    * @param id id of user to find
    * @returns [`Err`, `User`]
    */
-  async findById(id: number, includeHash = false) {
+  async findById(
+    id: number,
+    includeHash = false
+  ): Promise<[Error, UserInfo & UserHashInfo]> {
     const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { id },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
@@ -66,7 +76,10 @@ export class UserService {
    * @param email email of user to find
    * @returns [`Err`, `User`]
    */
-  async findByEmail(email: string, includeHash = false) {
+  async findByEmail(
+    email: string,
+    includeHash = false
+  ): Promise<[Error, UserInfo & UserHashInfo]> {
     const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { email },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
@@ -79,7 +92,10 @@ export class UserService {
    * @param username username of user to find
    * @returns [`Err`, `User`]
    */
-  async findByUsername(username: string, includeHash = false) {
+  async findByUsername(
+    username: string,
+    includeHash = false
+  ): Promise<[Error, UserInfo & UserHashInfo]> {
     const res = await radash.try(this.prisma.user.findUniqueOrThrow)({
       where: { username },
       select: includeHash ? USER_HASH_FIELDS : USER_FIELDS,
@@ -94,7 +110,10 @@ export class UserService {
    * @param username of user to find
    * @returns [`Err`, `User`]
    */
-  async findFirstByEitherUniqueFields(email: string, username: string) {
+  async findFirstByEitherUniqueFields(
+    email: string,
+    username: string
+  ): Promise<[Error, UserInfo]> {
     const res = await radash.try(this.prisma.user.findFirstOrThrow)({
       where: { OR: [{ username }, { email }] },
       select: USER_FIELDS,
@@ -108,7 +127,10 @@ export class UserService {
    * @param fields updateable fields for user object (username, email, refresh token hash)
    * @returns [`Err`, `User`]
    */
-  async update(id: number, fields: UpdateableUserFields) {
+  async update(
+    id: number,
+    fields: UpdateableUserFields
+  ): Promise<[Error, UserInfo]> {
     const res = await radash.try(this.prisma.user.update)({
       where: { id },
       data: fields,
@@ -137,7 +159,11 @@ export class UserService {
    * @param password password of user
    * @returns [`Err`, `User`]
    */
-  async create(email: string, username: string, password: string) {
+  async create(
+    email: string,
+    username: string,
+    password: string
+  ): Promise<[Error, UserInfo]> {
     const hash = await argon2.hash(password);
     return this.createWithHash(email, username, hash);
   }
@@ -149,12 +175,17 @@ export class UserService {
    * @param hash hash of user
    * @returns [`Err`, `User`]
    */
-  async createWithHash(email: string, username: string, hash: string) {
+  async createWithHash(
+    email: string,
+    username: string,
+    hash: string
+  ): Promise<[Error, UserInfo]> {
     const res = await radash.try(this.prisma.user.create)({
       data: {
         email,
         username,
         hash,
+        provider: "CUSTOM",
       },
       select: USER_FIELDS,
     });
@@ -166,10 +197,31 @@ export class UserService {
    * @param id id of user to be delete
    * @returns [`Err`, `User`]
    */
-  async delete(id: number) {
+  async delete(id: number): Promise<[Error, UserInfo]> {
     const res = await radash.try(this.prisma.user.delete)({
       where: { id },
       select: USER_FIELDS,
+    });
+    return res;
+  }
+
+  /**
+   * Creates a new user in the database with hash
+   * @param email email of user
+   * @param username username of user
+   * @returns [`Err`, `User`]
+   */
+  async createOauthUser(
+    email: string,
+    username: string
+  ): Promise<[Error, OauthUserInfo]> {
+    const res = await radash.try(this.prisma.user.create)({
+      data: {
+        email,
+        username,
+        provider: "GITHUB",
+      },
+      select: OAUTH_USER_FIELDS,
     });
     return res;
   }

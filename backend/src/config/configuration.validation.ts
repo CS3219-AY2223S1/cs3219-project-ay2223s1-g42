@@ -1,4 +1,4 @@
-import { z } from "nestjs-zod/z";
+import { z } from "zod";
 
 const EnvSchema = z.object({
   PORT: z.number().default(5000),
@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   COOKIE_SECRET: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.number().default(6379),
+  REDIS_PASSWORD: z.string().default(""), // local redis has no password
   CACHE_TTL: z.number().default(1800),
   SMTP_EMAIL: z.string().email(),
   SMTP_PASSWORD: z.string(),
@@ -19,6 +20,8 @@ const EnvSchema = z.object({
   FRONTEND_URL: z.string(),
   SMTP_PORT: z.number().default(587),
   SMTP_HOST: z.string(),
+  OAUTH_GITHUB_CLIENT_ID: z.string(),
+  OAUTH_GITHUB_CLIENT_SECRET: z.string(),
 });
 
 export function validate(config: Record<string, unknown>) {
