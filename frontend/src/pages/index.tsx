@@ -16,6 +16,7 @@ import {
 } from "src/features";
 import { matchToastOptions, useGlobalStore } from "src/store";
 import toast from "react-hot-toast";
+import { MatchTypeCheckGroup } from "src/features/dashboard/components/MatchTypeCheckGroup";
 
 const tempDesign = "";
 
@@ -41,18 +42,17 @@ const difficultyMap: Record<
 };
 
 const matchMap: Record<MatchType, RadioGroupValue<MatchType>> = {
-  difficulty: {
-    title: "difficulty",
-    description:
-      "Simple data structures and concepts such as arrays, strings, and linked lists",
+  Difficulty: {
+    title: "Difficulty",
+    description: "Match based on question's difficulty (easy, medium or hard)",
   },
-  qotd: {
-    title: "qotd",
+  "Question Of The Day": {
+    title: "Question Of The Day",
     description:
       "Challenging data structures and concepts such as trees, graphs, and some dynamic programming",
   },
-  topics: {
-    title: "topics",
+  Topics: {
+    title: "Topics",
     description:
       "Complex data structures and concepts such as binary search, dynamic programming, and graph traversal",
   },
@@ -87,8 +87,15 @@ const Dashboard = () => {
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
 
-  const handleSetMatchType = (topics: MatchType[]) => {
-    setMatchTypes(topics);
+  const handleSetMatchType = (topics: MatchType) => {
+    const matchTypeSelected = matchType.includes(topics);
+    const newTypes = matchTypeSelected
+      ? matchType.filter((m) => m !== topics)
+      : matchType.concat(topics);
+    if (newTypes.length == 0) {
+      return;
+    }
+    setMatchTypes(newTypes);
   };
 
   // handle update selected difficulties
@@ -163,7 +170,7 @@ const Dashboard = () => {
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      <MatchTypeRadioGroup
+      <MatchTypeCheckGroup
         selectedType={matchType}
         setType={handleSetMatchType}
         types={Object.values(matchMap)}

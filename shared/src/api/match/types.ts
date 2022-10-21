@@ -10,4 +10,4 @@ export type PoolUser = PoolUserData & {
   timeJoined: number;
 };
 
-export type MatchType = "difficulty" | "qotd" | "topics";
+export type MatchType = "Difficulty" | "Question Of The Day" | "Topics";
