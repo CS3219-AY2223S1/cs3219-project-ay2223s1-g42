@@ -86,24 +86,9 @@ const Dashboard = () => {
   }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-  const [isDifficultySelected, setDifficultySelected] = useState(false);
-  const [isQotdSelected, setQotdSelected] = useState(false);
-  const [isTopicsSelected, setTopicsSelected] = useState(false);
-  const [isMatchTypeSelected, setMatchTypeSelected] = useState(false);
 
-  const handleDifficultyClick = () => {
-    setDifficultySelected(true);
-    setMatchTypeSelected(true);
-  };
-
-  const handleQotdClick = () => {
-    setQotdSelected(true);
-    setMatchTypeSelected(true);
-  };
-
-  const handleTopicsClick = () => {
-    setTopicsSelected(true);
-    setMatchTypeSelected(true);
+  const handleSetMatchType = (topics: MatchType[]) => {
+    setMatchTypes(topics);
   };
 
   // handle update selected difficulties
@@ -175,45 +160,19 @@ const Dashboard = () => {
     return <SpinnerIcon className="h-12 w-12" />;
   }
 
-  const selectMatchTypePage = (
-    <div className="inline-flex rounded-md shadow-sm">
-      <button onClick={handleDifficultyClick}>
-        <a
-          aria-current="page"
-          className="rounded-l-lg border border-gray-200 bg-white py-2 px-4 text-sm font-medium text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:text-white dark:focus:ring-blue-500 dark:hover:bg-gray-600 dark:hover:text-white"
-        >
-          Match By Difficulty
-        </a>
-      </button>
-      <button onClick={handleQotdClick}>
-        <a className="border-t border-b border-gray-200 bg-white py-2 px-4 text-sm font-medium text-gray-900 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 hover:bg-gray-100 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:text-white dark:focus:ring-blue-500 dark:hover:bg-gray-600 dark:hover:text-white">
-          Match By Qotd
-        </a>
-      </button>
-      <button onClick={handleTopicsClick}>
-        <a className="rounded-r-md border border-gray-200 bg-white py-2 px-4 text-sm font-medium text-gray-900 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 hover:bg-gray-100 hover:text-blue-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:text-white dark:focus:ring-blue-500 dark:hover:bg-gray-600 dark:hover:text-white">
-          Match By topics
-        </a>
-      </button>
-    </div>
-  );
-
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      {isMatchTypeSelected ? <div>Cunt</div> : selectMatchTypePage}
-    </div>
-  );
-};
-
-export default Dashboard;
-/* 
       <MatchTypeRadioGroup
         selectedType={matchType}
         setType={handleSetMatchType}
         types={Object.values(matchMap)}
       />
-*/
+    </div>
+  );
+};
+
+export default Dashboard;
 /*
  <QuestionCheckGroup
         selectedDifficulties={matchDifficulties}
