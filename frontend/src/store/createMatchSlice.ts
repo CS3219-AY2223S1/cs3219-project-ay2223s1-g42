@@ -11,18 +11,20 @@ import {
 import { Axios } from "src/services";
 import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
+import { RadioGroupValue } from "src/components";
 
 export const matchToastOptions: ToastOptions = {
   id: "match-toast",
 };
+import { matchTypeMap } from "src/features";
 
 export type MatchSlice = {
   matchSocket: Socket | undefined;
   matchSocketConnected: boolean;
   matchDifficulties: QuestionDifficulty[];
   setMatchDifficulties: (difficulties: QuestionDifficulty[]) => void;
-  matchType: MatchType[];
-  setMatchTypes: (matchTypes: MatchType[]) => void;
+  matchType: RadioGroupValue<MatchType>;
+  setMatchType: (type: RadioGroupValue<MatchType>) => void;
   queueStatus: Status | undefined;
   isInQueue: boolean;
   queueRoomId: string | undefined;
@@ -39,8 +41,8 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     setState({ matchDifficulties: difficulties });
   };
 
-  const setMatchTypes = (types: MatchType[]) => {
-    setState({ matchType: types });
+  const setMatchType = (type: RadioGroupValue<MatchType>) => {
+    setState({ matchType: type });
   };
 
   const matchSocket = io(`${import.meta.env.VITE_API_URL}/match`, {
@@ -252,9 +254,9 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     matchSocket,
     matchSocketConnected: false,
     matchDifficulties: ["easy"],
-    matchType: [MatchType.DIFFICULTY],
+    matchType: matchTypeMap["difficulty"],
     setMatchDifficulties,
-    setMatchTypes,
+    setMatchType,
     queueStatus: undefined,
     isInQueue: false,
     queueRoomId: undefined,

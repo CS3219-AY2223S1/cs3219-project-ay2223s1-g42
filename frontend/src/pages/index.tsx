@@ -13,12 +13,11 @@ import {
   MatchDialog,
   QuestionCheckGroup,
   MatchTypeRadioGroup,
+  matchTypeMap,
 } from "src/features";
 import { matchToastOptions, useGlobalStore } from "src/store";
 import toast from "react-hot-toast";
 import { MatchTypeCheckGroup } from "src/features/dashboard/components/MatchTypeCheckGroup";
-
-const tempDesign = "";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -41,23 +40,6 @@ const difficultyMap: Record<
   },
 };
 
-const matchMap: Record<MatchType, RadioGroupValue<MatchType>> = {
-  Difficulty: {
-    title: "Difficulty",
-    description: "Match based on question's difficulty (easy, medium or hard)",
-  },
-  "Question Of The Day": {
-    title: "Question Of The Day",
-    description:
-      "Challenging data structures and concepts such as trees, graphs, and some dynamic programming",
-  },
-  Topics: {
-    title: "Topics",
-    description:
-      "Complex data structures and concepts such as binary search, dynamic programming, and graph traversal",
-  },
-};
-
 const Dashboard = () => {
   const navigate = useNavigate();
   // store states
@@ -69,7 +51,7 @@ const Dashboard = () => {
     matchType,
     roomSocket,
     setMatchDifficulties,
-    setMatchTypes,
+    setMatchType,
     joinQueue,
   } = useGlobalStore((state) => {
     return {
@@ -80,23 +62,12 @@ const Dashboard = () => {
       matchType: state.matchType,
       roomSocket: state.roomSocket,
       setMatchDifficulties: state.setMatchDifficulties,
-      setMatchTypes: state.setMatchTypes,
+      setMatchType: state.setMatchType,
       joinQueue: state.joinQueue,
     };
   }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
-
-  const handleSetMatchType = (topics: MatchType) => {
-    const matchTypeSelected = matchType.includes(topics);
-    const newTypes = matchTypeSelected
-      ? matchType.filter((m) => m !== topics)
-      : matchType.concat(topics);
-    if (newTypes.length == 0) {
-      return;
-    }
-    setMatchTypes(newTypes);
-  };
 
   // handle update selected difficulties
   const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
@@ -110,6 +81,10 @@ const Dashboard = () => {
       return;
     }
     setMatchDifficulties(newDifficulties);
+  };
+
+  const handleUpdateType = (type: RadioGroupValue<MatchType>) => {
+    setMatchType(type);
   };
 
   // handle join match queue
@@ -170,10 +145,11 @@ const Dashboard = () => {
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      <MatchTypeCheckGroup
-        selectedType={matchType}
-        setType={handleSetMatchType}
-        types={Object.values(matchMap)}
+
+      <MatchTypeRadioGroup
+        type={matchType}
+        setType={handleUpdateType}
+        types={Object.values(matchTypeMap)}
       />
     </div>
   );
@@ -185,6 +161,12 @@ export default Dashboard;
         selectedDifficulties={matchDifficulties}
         updateSelectedValues={handleUpdateDifficulty}
         difficulties={Object.values(difficultyMap)}
+      />
+
+      <MatchTypeCheckGroup
+        selectedType={matchType}
+        setType={handleSetMatchType}
+        types={Object.values(matchMap)}
       />
 
 
