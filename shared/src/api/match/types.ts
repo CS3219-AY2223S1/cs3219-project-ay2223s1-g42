@@ -9,3 +9,5 @@ export type PoolUser = PoolUserData & {
   socketId: string;
   timeJoined: number;
 };
+
+export type MatchType = "difficulty" | "qotd" | "topics";
