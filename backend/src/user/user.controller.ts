@@ -16,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { User } from "@prisma/client";
 
@@ -41,6 +42,7 @@ export class UserController {
    * @returns user object
    */
   @Get("me")
+  @ApiTags("User API routes")
   @ApiOperation({ summary: API_OPERATIONS.JWT_VERIFICATION_TOKEN_SUMMARY })
   @ApiOkResponse({
     description:
@@ -67,6 +69,7 @@ export class UserController {
    */
   @PublicRoute()
   @Get(":id")
+  @ApiTags("User API routes")
   @ApiOperation({ summary: API_OPERATIONS.RETURN_USER_INFO_WITH_ID_SUMMARY })
   @ApiOkResponse({
     description:
@@ -98,6 +101,7 @@ export class UserController {
    * @returns user object of the edited user
    */
   @Patch(":id")
+  @ApiTags("User API routes")
   @ApiOperation({ summary: API_OPERATIONS.EDIT_USER_INFO_SUMMARY })
   @ApiOkResponse({
     description:
@@ -147,6 +151,7 @@ export class UserController {
    * @returns deleted user object
    */
   @Delete(":id")
+  @ApiTags("User API routes")
   @ApiOperation({ summary: API_OPERATIONS.DELETE_USER_SUMMARY })
   @ApiOkResponse({
     description:

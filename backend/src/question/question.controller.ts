@@ -11,6 +11,7 @@ import {
   ApiOkResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 
 import {
@@ -33,6 +34,7 @@ export class QuestionController {
 
   @PublicRoute()
   @UsePipes(ZodValidationPipe)
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_QUERY_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -97,6 +99,7 @@ export class QuestionController {
 
   @PublicRoute()
   @Get("/summary/daily")
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_DAILY_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -113,6 +116,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_TOPIC_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -130,6 +134,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_DAILY_QUESTION_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -147,6 +152,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_CONTENT_SLUG_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
