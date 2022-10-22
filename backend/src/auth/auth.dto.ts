@@ -1,5 +1,7 @@
 import { createZodDto } from "@anatine/zod-nestjs";
 import { extendApi } from "@anatine/zod-openapi";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from "class-validator";
 
 import {
   ChangePasswordInfoSchema,
@@ -13,6 +15,7 @@ import {
   SignupSchema,
 } from "shared/api";
 import { API_OPERATIONS } from "src/utils";
+import { string } from "zod";
 
 const SignupApi = extendApi(SignupSchema, {
   title: "Sign up API",
@@ -59,16 +62,95 @@ const OauthApi = extendApi(OauthInfoSchema, {
   description: "API_OPERATIONS.OAUTH_SUMMARY",
 });
 
-export class SignupCredentialsDto extends createZodDto(SignupApi) {}
-export class SigninCredentialsDto extends createZodDto(SigninApi) {}
+export class SignupCredentialsDto extends createZodDto(SignupApi) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "username of the user",
+  })
+  public username: string;
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "email of the user",
+  })
+  public email: string;
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "password of the user",
+  })
+  public password: string;
+}
+export class SigninCredentialsDto extends createZodDto(SigninApi) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "email of the user",
+  })
+  public email: string;
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "password of the user",
+  })
+  public password: string;
+}
 export class EditableCredentialsDto extends createZodDto(EditUserApi) {}
 export class ForgetPasswordCredentialsDto extends createZodDto(
   ForgetPasswordApi
-) {}
+) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "Email the user signed up PeerPrep with",
+  })
+  public email: string;
+}
 export class ResetPasswordCredentialsDto extends createZodDto(
   ResetPasswordApi
-) {}
-export class ChangePasswordInfoDto extends createZodDto(ChangePasswordApi) {}
-export class DeleteAccountInfoDto extends createZodDto(DeleteAccountApi) {}
-export class OauthQueryDto extends createZodDto(OauthQueryApi) {}
+) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "Password the user wish to change to",
+  })
+  public password: string;
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "Access token",
+  })
+  public token: string;
+}
+export class ChangePasswordInfoDto extends createZodDto(ChangePasswordApi) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "Current password user is using",
+  })
+  public currentPassword: string;
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "Password the user wish to change to",
+  })
+  public newPassword: string;
+}
+export class DeleteAccountInfoDto extends createZodDto(DeleteAccountApi) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "The current password of the user",
+  })
+  public password: string;
+}
+export class OauthQueryDto extends createZodDto(OauthQueryApi) {
+  @IsString({ each: true })
+  @ApiProperty({
+    type: string,
+    description: "The token provided by GitHub for OAuth",
+  })
+  public code: string;
+}
 export class OauthDto extends createZodDto(OauthApi) {}

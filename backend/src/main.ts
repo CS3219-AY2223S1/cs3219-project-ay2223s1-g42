@@ -27,8 +27,12 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle("G42 PeerPrep API")
     .setDescription("The REST interface for querying the G42 PeerPrep API")
+    .addTag("User API routes")
+    .addTag("Auth API routes")
+    .addTag("Question API routes")
     .setVersion("1.0")
     .build();
+
   patchNestjsSwagger();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api", app, document);
