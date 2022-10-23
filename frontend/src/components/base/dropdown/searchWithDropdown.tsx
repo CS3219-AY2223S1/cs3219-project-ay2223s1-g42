@@ -14,7 +14,9 @@ const SearchWithDropdown = ({ topics }: Props) => {
       >
         <option>Choose a topic</option>
         {topics.map((topic) => (
-          <option value={topic}>{topic} </option>
+          <option key={topic} value={topic}>
+            {topic}
+          </option>
         ))}
       </select>
     </div>

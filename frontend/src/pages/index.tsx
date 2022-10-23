@@ -153,7 +153,7 @@ const Dashboard = () => {
     } else if (matchType == matchTypeMap["Question Of The Day"]) {
       return (
         <div className="m-auto space-y-12">
-          <a>Question of the day's queue</a>
+          <a>Question of the day queue</a>
           <div className="flex flex-col">
             <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
             <MatchDialog
