@@ -196,10 +196,6 @@ const Dashboard = () => {
     return <SpinnerIcon className="h-12 w-12" />;
   }
 
-  useEffect(() => {
-    console.log(matchType.title);
-  }, [matchType]);
-
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
