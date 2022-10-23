@@ -15,10 +15,10 @@ import {
   MatchTypeRadioGroup,
   matchTypeMap,
   matchTypeRadioGroup,
+  MatchByTopics,
 } from "src/features";
 import { matchToastOptions, useGlobalStore } from "src/store";
 import toast from "react-hot-toast";
-import { MatchTypeCheckGroup } from "src/features/dashboard/components/MatchTypeCheckGroup";
 
 const difficultyMap: Record<
   QuestionDifficulty,
@@ -135,8 +135,13 @@ const Dashboard = () => {
     } else if (matchType == matchTypeMap["Topics"]) {
       return (
         <div className="m-auto space-y-12">
-          Topics
+          {MatchByTopics}
           <div className="flex flex-col">
+            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
+            <MatchDialog
+              isOpen={isMatchingDialogOpen}
+              onClose={handleMatchDialogClose}
+            />
             <PrimaryButton
               onClick={() => handleUpdateType(matchTypeMap["None"])}
             >
@@ -147,9 +152,15 @@ const Dashboard = () => {
       );
     } else if (matchType == matchTypeMap["Question Of The Day"]) {
       return (
-        <div>
-          Question of the day
+        <div className="m-auto space-y-12">
+          <a>Question of the day's queue</a>
           <div className="flex flex-col">
+            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
+            <MatchDialog
+              isOpen={isMatchingDialogOpen}
+              onClose={handleMatchDialogClose}
+            />
+
             <PrimaryButton
               onClick={() => handleUpdateType(matchTypeMap["None"])}
             >
