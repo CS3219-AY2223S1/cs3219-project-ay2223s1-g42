@@ -16,6 +16,10 @@ const MatchTypeRadioGroup = ({ type, setType, types }: Props) => {
 };
 
 const matchTypeMap: Record<MatchType, RadioGroupValue<MatchType>> = {
+  None: {
+    title: "None",
+    description: "none",
+  },
   Difficulty: {
     title: "Difficulty",
     description: "Match based on difficulty (easy, medium or hard)",
@@ -31,4 +35,7 @@ const matchTypeMap: Record<MatchType, RadioGroupValue<MatchType>> = {
   },
 };
 
-export { MatchTypeRadioGroup, matchTypeMap };
+const matchTypeRadioGroup = Object.values(matchTypeMap).filter(
+  (e) => e.title != "None"
+);
+export { MatchTypeRadioGroup, matchTypeMap, matchTypeRadioGroup };

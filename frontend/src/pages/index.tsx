@@ -14,6 +14,7 @@ import {
   QuestionCheckGroup,
   MatchTypeRadioGroup,
   matchTypeMap,
+  matchTypeRadioGroup,
 } from "src/features";
 import { matchToastOptions, useGlobalStore } from "src/store";
 import toast from "react-hot-toast";
@@ -108,12 +109,65 @@ const Dashboard = () => {
     setIsMatchingDialogOpen(false);
   };
 
-  const [selectedRadioBtn, setSelectedBtn] = React.useState("radio");
-
-  const isRadioSelected = (value: string): boolean => selectedRadioBtn == value;
-
-  const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSelectedBtn(e.currentTarget.value);
+  const displayMatchType = (type: RadioGroupValue<MatchType>) => {
+    if (matchType == matchTypeMap["Difficulty"]) {
+      return (
+        <div className="m-auto space-y-12">
+          <QuestionCheckGroup
+            selectedDifficulties={matchDifficulties}
+            updateSelectedValues={handleUpdateDifficulty}
+            difficulties={Object.values(difficultyMap)}
+          />
+          <div className="flex flex-col">
+            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
+            <MatchDialog
+              isOpen={isMatchingDialogOpen}
+              onClose={handleMatchDialogClose}
+            />
+            <PrimaryButton
+              onClick={() => handleUpdateType(matchTypeMap["None"])}
+            >
+              Back
+            </PrimaryButton>
+          </div>
+        </div>
+      );
+    } else if (matchType == matchTypeMap["Topics"]) {
+      return (
+        <div className="m-auto space-y-12">
+          Topics
+          <div className="flex flex-col">
+            <PrimaryButton
+              onClick={() => handleUpdateType(matchTypeMap["None"])}
+            >
+              Back
+            </PrimaryButton>
+          </div>
+        </div>
+      );
+    } else if (matchType == matchTypeMap["Question Of The Day"]) {
+      return (
+        <div>
+          Question of the day
+          <div className="flex flex-col">
+            <PrimaryButton
+              onClick={() => handleUpdateType(matchTypeMap["None"])}
+            >
+              Back
+            </PrimaryButton>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <MatchTypeRadioGroup
+          type={matchType}
+          setType={handleUpdateType}
+          types={matchTypeRadioGroup}
+        />
+      );
+    }
+  };
 
   // find new match if match cancelled
   useEffect(() => {
@@ -142,41 +196,16 @@ const Dashboard = () => {
     return <SpinnerIcon className="h-12 w-12" />;
   }
 
+  useEffect(() => {
+    console.log(matchType.title);
+  }, [matchType]);
+
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-
-      <MatchTypeRadioGroup
-        type={matchType}
-        setType={handleUpdateType}
-        types={Object.values(matchTypeMap)}
-      />
+      {displayMatchType(matchType)}
     </div>
   );
 };
 
 export default Dashboard;
-/*
- <QuestionCheckGroup
-        selectedDifficulties={matchDifficulties}
-        updateSelectedValues={handleUpdateDifficulty}
-        difficulties={Object.values(difficultyMap)}
-      />
-
-      <MatchTypeCheckGroup
-        selectedType={matchType}
-        setType={handleSetMatchType}
-        types={Object.values(matchMap)}
-      />
-
-
-      <div className="flex flex-col">
-        <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
-        <MatchDialog
-          isOpen={isMatchingDialogOpen}
-          onClose={handleMatchDialogClose}
-        />
-      </div>
-
-
-*/
