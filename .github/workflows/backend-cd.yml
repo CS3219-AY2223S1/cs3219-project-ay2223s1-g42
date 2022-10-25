@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
-          cd g42/backend
-          git pull
-          yarn gh:deploy
+          script: |
+            cd g42/backend
+            git pull
+            yarn gh:deploy
