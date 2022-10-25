@@ -15,11 +15,6 @@ jobs:
       run:
         working-directory: "backend"
     steps:
-      - name: Install NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-
       - name: SSH into Droplet and run backend
         uses: appleboy/ssh-action@master
         with:
@@ -30,4 +25,4 @@ jobs:
             cd g42
             git pull
             cd backend
-            yarn gh:deploy
+            ./start.sh
