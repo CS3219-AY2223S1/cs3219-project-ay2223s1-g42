@@ -24,4 +24,4 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install 16
             cd backend
-            yarn gh:deploy >> /dev/null 2>&1 &
+            yarn gh:deploy
