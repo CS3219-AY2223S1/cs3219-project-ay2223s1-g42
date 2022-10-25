@@ -21,7 +21,7 @@ jobs:
       run:
         working-directory: "backend"
     steps:
-      - name: SSH into Droplet
+      - name: SSH into Droplet and run backend
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
