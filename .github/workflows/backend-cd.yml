@@ -1,9 +1,8 @@
 name: Backend CD to DigitalOcean Dropley
 
 on:
-  pull-request:
-    types:
-      - closed
+  pull_request:
+    types: ["closed"]
     branches: ["main"]
     paths:
       - "backend/**"
