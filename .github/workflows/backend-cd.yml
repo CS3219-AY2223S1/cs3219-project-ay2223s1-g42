@@ -1,4 +1,4 @@
-name: Backend CD to DigitalOcean Dropley
+name: Backend CD to DigitalOcean Droplet
 
 on:
   pull_request:
