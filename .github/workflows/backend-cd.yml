@@ -1,0 +1,33 @@
+name: Backend CD to DigitalOcean Dropley
+
+on:
+  pull-request:
+    types:
+      - closed
+    branches: ["main"]
+    paths:
+      - "backend/**"
+    workflow_dispatch:
+      inputs:
+        version:
+          description: "Image version"
+          required: true
+
+jobs:
+  on-merged-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "backend"
+    steps:
+      - name: SSH into Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          cd g42/backend
+          git pull
+          yarn gh:deploy
