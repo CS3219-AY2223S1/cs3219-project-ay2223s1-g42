@@ -1,4 +1,4 @@
-name: Backend CD to DigitalOcean Droplet
+name: Manual CD to DO Droplet
 
 on:
   workflow_dispatch:
