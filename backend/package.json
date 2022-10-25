@@ -10,6 +10,7 @@
     "yarn": ">=1.22.0 < 2.0.0"
   },
   "scripts": {
+    "gh:deploy": "docker rm -f $(docker ps -aq); yarn docker:build && docker run -dp 5000:5000 cs3219g42/backend",
     "prebuild": "rimraf dist",
     "build": "yarn prisma:dev:generate && nest build",
     "build:prod": "yarn prisma generate && yarn nest build",
