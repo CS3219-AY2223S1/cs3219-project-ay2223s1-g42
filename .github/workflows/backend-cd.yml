@@ -6,11 +6,11 @@ on:
     branches: ["main"]
     paths:
       - "backend/**"
-    workflow_dispatch:
-      inputs:
-        version:
-          description: "Image version"
-          required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image version"
+        required: true
 
 jobs:
   on-merged-pr:
