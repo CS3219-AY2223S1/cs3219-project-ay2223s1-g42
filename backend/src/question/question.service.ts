@@ -9,10 +9,26 @@ import {
   QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
+import { NAMESPACES } from "shared/api";
+import { RedisCacheService } from "src/cache/redisCache.service";
+import {
+  question_contents,
+  question_qotd_summary,
+  question_qotd_content,
+  question_summaries,
+  question_topics,
+  question_summary_difficulties,
+  question_summaries_formatted,
+} from "./question.cache.keys";
+import { title } from "process";
+import { QuestionHint, QuestionSummary, TopicTag } from "@prisma/client";
 
 @Injectable()
 export class QuestionService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService
+  ) {}
 
   /**
    * Gets all the question summaries with the following fields:
@@ -21,20 +37,62 @@ export class QuestionService {
    * @return  Array of QuestionSummary with the relevant fields
    */
   async getAllSummaries() {
-    const res: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
-        select: QUESTION_SUMMARY_SELECT,
+    const summaries = await this.cache.getKeyInNamespace<
+      FlattenedQuestionSummary[]
+    >([NAMESPACES.QUESTIONS], question_summaries_formatted);
+
+    if (!summaries) {
+      const res: QuestionSummaryFromDb[] =
+        await this.prisma.questionSummary.findMany({
+          select: QUESTION_SUMMARY_SELECT,
+        });
+
+      const questionSummaries = await this.prisma.topicTag.findMany({
+        select: {
+          questionSummaries: {
+            select: QUESTION_SUMMARY_SELECT,
+          },
+        },
       });
 
-    return this.formatQuestionSummaries(res);
+      const formattedQuestionSummaries = this.formatQuestionSummaries(res);
+
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        question_summaries,
+        res
+      );
+
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        question_summaries_formatted,
+        formattedQuestionSummaries
+      );
+      return formattedQuestionSummaries;
+    }
+
+    return summaries;
   }
 
   async getAllTopics() {
-    const res = await this.prisma.topicTag.findMany({
-      select: { topicSlug: true },
-    });
+    const topics = await this.cache.getKeyInNamespace<{ topicSlug: string }[]>(
+      [NAMESPACES.QUESTIONS],
+      question_topics
+    );
+    if (!topics) {
+      const res = await this.prisma.topicTag.findMany({
+        select: { topicSlug: true },
+      });
 
-    return res.map((slug) => slug.topicSlug);
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        question_topics,
+        res
+      );
+      return res.map((slug) => slug.topicSlug);
+    }
+
+    return topics.map((slug) => slug.topicSlug);
   }
 
   /**
@@ -48,47 +106,111 @@ export class QuestionService {
   async getContentFromSlug(
     titleSlug: string
   ): Promise<FlattenedQuestionContent> {
-    const res = await this.prisma.questionContent.findUniqueOrThrow({
-      where: { titleSlug },
-      select: QUESTION_CONTENT_SELECT,
-    });
-    return this.formatQuestionContent(res);
+    //If content isnt cached in memory yet
+    const titleKey = question_contents + titleSlug;
+
+    const content =
+      await this.cache.getKeyInNamespace<FlattenedQuestionContent>(
+        [NAMESPACES.QUESTIONS],
+        titleKey
+      );
+
+    if (!content) {
+      const res = await this.prisma.questionContent.findUniqueOrThrow({
+        where: { titleSlug },
+        select: QUESTION_CONTENT_SELECT,
+      });
+      const formattedQuestionContent = this.formatQuestionContent(res);
+      this.cache.setKeyInNamespace([NAMESPACES.QUESTIONS], titleKey, res);
+
+      return formattedQuestionContent;
+    }
+    return content;
   }
 
   /**
    * @return  The content of the Daily Question
    */
   async getDailyQuestionContent() {
-    const dailySlug = await this.prisma.questionSummary.findFirstOrThrow({
-      where: { isDailyQuestion: true },
-      select: { titleSlug: true },
-    });
+    let today = new Date().toISOString().slice(0, 10);
+    const dailyQuestionKey = question_qotd_content + today;
+    const dailyQuestionContent =
+      await this.cache.getKeyInNamespace<FlattenedQuestionContent>(
+        [NAMESPACES.QUESTIONS],
+        dailyQuestionKey
+      );
 
-    return await this.getContentFromSlug(dailySlug.titleSlug);
+    if (!dailyQuestionContent) {
+      const dailySlug = await this.prisma.questionSummary.findFirstOrThrow({
+        where: { isDailyQuestion: true },
+        select: { titleSlug: true },
+      });
+
+      const contentRetrivedFromSlug = await this.getContentFromSlug(
+        dailySlug.titleSlug
+      );
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        dailyQuestionKey,
+        contentRetrivedFromSlug
+      );
+    }
+
+    return dailyQuestionContent;
   }
 
   /**
    * @return  {FlattenedQuestionSummary}  Summary of Daily Question
    */
   async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary> {
-    // Cron job ensures that there's only 1 QOTD at a time
-    const dailySummary: QuestionSummaryFromDb =
-      await this.prisma.questionSummary.findFirstOrThrow({
-        where: { isDailyQuestion: true },
-        select: QUESTION_SUMMARY_SELECT,
-      });
-    const [formattedSummary] = this.formatQuestionSummaries([dailySummary]);
-    return formattedSummary;
+    let today = new Date().toISOString().slice(0, 10);
+    const dailyQuestionKey = question_qotd_summary + today;
+    const dailyQuestionSummary =
+      await this.cache.getKeyInNamespace<FlattenedQuestionSummary>(
+        [NAMESPACES.QUESTIONS],
+        dailyQuestionKey
+      );
+    if (!dailyQuestionSummary) {
+      // Cron job ensures that there's only 1 QOTD at a time
+      const dailySummary: QuestionSummaryFromDb =
+        await this.prisma.questionSummary.findFirstOrThrow({
+          where: { isDailyQuestion: true },
+          select: QUESTION_SUMMARY_SELECT,
+        });
+      const [formattedSummary] = this.formatQuestionSummaries([dailySummary]);
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        dailyQuestionKey,
+        formattedSummary
+      );
+      return formattedSummary;
+    }
+    return dailyQuestionSummary;
   }
 
   async getSummariesFromDifficulty(difficulties: string[]) {
-    const validDifficulties: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
-        where: { difficulty: { in: difficulties } },
-        select: QUESTION_SUMMARY_SELECT,
-      });
+    const summariesKey = question_summary_difficulties;
+    const summariesFromDifficulty = this.cache.getKeyInNamespace<
+      FlattenedQuestionSummary[]
+    >([NAMESPACES.QUESTIONS], summariesKey);
 
-    return this.formatQuestionSummaries(validDifficulties);
+    if (!summariesFromDifficulty) {
+      const validDifficulties: QuestionSummaryFromDb[] =
+        await this.prisma.questionSummary.findMany({
+          where: { difficulty: { in: difficulties } },
+          select: QUESTION_SUMMARY_SELECT,
+        });
+
+      this.cache.setKeyInNamespace(
+        [NAMESPACES.QUESTIONS],
+        summariesKey,
+        this.formatQuestionSummaries(validDifficulties)
+      );
+
+      return this.formatQuestionSummaries(validDifficulties);
+    }
+
+    return summariesFromDifficulty;
   }
 
   /**
@@ -103,13 +225,26 @@ export class QuestionService {
     const allTitleSlugs = await this.getAllTitleSlugs();
     const validSlugs = _.intersection(allTitleSlugs, titleSlugs);
 
+    let cachedSummaries = this.cache.getKeyInNamespace<
+      FlattenedQuestionSummary[]
+    >([NAMESPACES.QUESTIONS], question_summaries);
+
+    if (!cachedSummaries) {
+      cachedSummaries = this.getAllSummaries();
+    }
+
+    const validSummaries = (await cachedSummaries).filter((summary) => {
+      summary.titleSlug in validSlugs;
+    });
+    /*
     const validSummaries: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
         where: { titleSlug: { in: validSlugs } },
         select: QUESTION_SUMMARY_SELECT,
       });
-
-    return this.formatQuestionSummaries(validSummaries);
+      return this.formatQuestionSummaries(validSummaries);
+      */
+    return validSummaries;
   }
 
   /**
@@ -124,6 +259,19 @@ export class QuestionService {
     const allTopicTags = await this.getAllTopics();
     const validTopicTagArray = _.intersection(allTopicTags, topicTags);
 
+    /*
+    let cachedSummaries = await this.cache.getKeyInNamespace<
+      QuestionSummaryFromDb[]
+    >([NAMESPACES.QUESTIONS], question_summaries_for_topics);
+
+    if (!cachedSummaries) {
+      this.getAllSummaries();
+      cachedSummaries = await this.cache.getKeyInNamespace<
+        QuestionSummaryFromDb[]
+      >([NAMESPACES.QUESTIONS], question_summaries);
+    }
+    */
+
     const validSummaries = await this.prisma.topicTag.findMany({
       where: { topicSlug: { in: validTopicTagArray } },
       select: {
@@ -132,7 +280,6 @@ export class QuestionService {
         },
       },
     });
-
     // Array questions grouped by matched valid topic tags
     const flatValidSummaries: QuestionSummaryFromDb[][] = validSummaries.map(
       (v) => v.questionSummaries
