@@ -1,19 +1,17 @@
-const question_summaries_formatted = "summaries_formatted";
-const question_summaries = "summaries";
-const question_contents = "contents";
-const question_topics = "topics";
-const question_qotd_content = "question_of_the_day_content";
-const question_qotd_summary = "question_of_the_day_summary";
-const question_summary_difficulties = "question_summary_difficulties";
-const question_summaries_for_topics = "question_summary_for_topics";
+const QUESTION_SUMMARIES_FORMATTED = "summaries_formatted";
+const QUESTION_SUMMARIES = "summaries";
+const QUESTION_CONTENT = "contents";
+const QUESTION_TOPICS = "topics";
+const QUESTION_QOTD_CONTENT = "question_of_the_day_content";
+const QUESTION_QOTD_SUMMARY = "question_of_the_day_summary";
+const QUESTION_SUMMARY_DIFFICULTIES = "QUESTION_SUMMARY_DIFFICULTIES";
 
 export {
-  question_summaries,
-  question_contents,
-  question_topics,
-  question_qotd_content,
-  question_qotd_summary,
-  question_summary_difficulties,
-  question_summaries_formatted,
-  question_summaries_for_topics,
+  QUESTION_SUMMARIES,
+  QUESTION_CONTENT,
+  QUESTION_TOPICS,
+  QUESTION_QOTD_CONTENT,
+  QUESTION_QOTD_SUMMARY,
+  QUESTION_SUMMARY_DIFFICULTIES,
+  QUESTION_SUMMARIES_FORMATTED,
 };
