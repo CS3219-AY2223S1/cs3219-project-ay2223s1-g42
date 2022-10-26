@@ -43,6 +43,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   roomSocket.on(ROOM_EVENTS.JOIN_ROOM_SUCCESS, (data) => {
     const { room }: { room: Room } = JSON.parse(data);
     const roomStatusMsg = `Successfully joined room ${room.id}.`;
+    console.log({ event: ROOM_EVENTS.JOIN_ROOM_SUCCESS, room });
     const roomStatus: Status = {
       status: StatusType.SUCCESS,
       event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
@@ -106,6 +107,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   roomSocket.on(ROOM_EVENTS.NEW_USER_JOINED, (data) => {
     const { room, newUser }: { room: Room; newUser: UserInfo } =
       JSON.parse(data);
+    console.log({ event: ROOM_EVENTS.NEW_USER_JOINED, room });
     const roomStatusMsg = `${newUser.username} has joined the room.`;
     const roomStatus: Status = {
       status: StatusType.INFO,
@@ -119,6 +121,7 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   roomSocket.on(ROOM_EVENTS.OLD_USER_LEFT, (data) => {
     const { room, oldUser }: { room: Room; oldUser: UserInfo } =
       JSON.parse(data);
+    console.log({ event: ROOM_EVENTS.OLD_USER_LEFT, room });
     const roomStatusMsg = `${oldUser.username} has left the room.`;
     const roomStatus: Status = {
       status: StatusType.INFO,

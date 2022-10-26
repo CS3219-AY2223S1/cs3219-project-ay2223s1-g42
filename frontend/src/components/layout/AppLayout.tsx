@@ -89,7 +89,7 @@ const AppContainer = ({ children }: PropsWithChildren) => {
       ) : isAuthenticatedPage ? (
         <div className="relative min-h-screen justify-between">
           <Container hasTopPadding={true}>{children}</Container>
-          {room && <TheRoomStatusbar />}
+          {room && <TheRoomStatusbar room={room} />}
         </div>
       ) : isErrorPage ? (
         <Container hasTopPadding={false}>{children}</Container>
