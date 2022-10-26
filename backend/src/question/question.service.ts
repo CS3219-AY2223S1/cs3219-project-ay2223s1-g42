@@ -20,8 +20,6 @@ import {
   question_summary_difficulties,
   question_summaries_formatted,
 } from "./question.cache.keys";
-import { title } from "process";
-import { QuestionHint, QuestionSummary, TopicTag } from "@prisma/client";
 
 @Injectable()
 export class QuestionService {
@@ -258,11 +256,11 @@ export class QuestionService {
   async getSummariesFromTopicTags(topicTags: string[], matchType: string) {
     const allTopicTags = await this.getAllTopics();
     const validTopicTagArray = _.intersection(allTopicTags, topicTags);
+    const cachedSummariesFromTopicTag: QuestionSummaryFromDb[][] = [];
 
-    /*
     let cachedSummaries = await this.cache.getKeyInNamespace<
       QuestionSummaryFromDb[]
-    >([NAMESPACES.QUESTIONS], question_summaries_for_topics);
+    >([NAMESPACES.QUESTIONS], question_summaries);
 
     if (!cachedSummaries) {
       this.getAllSummaries();
@@ -270,23 +268,17 @@ export class QuestionService {
         QuestionSummaryFromDb[]
       >([NAMESPACES.QUESTIONS], question_summaries);
     }
-    */
 
-    const validSummaries = await this.prisma.topicTag.findMany({
-      where: { topicSlug: { in: validTopicTagArray } },
-      select: {
-        questionSummaries: {
-          select: QUESTION_SUMMARY_SELECT,
-        },
-      },
-    });
-    // Array questions grouped by matched valid topic tags
-    const flatValidSummaries: QuestionSummaryFromDb[][] = validSummaries.map(
-      (v) => v.questionSummaries
-    );
+    for (const tag in validTopicTagArray) {
+      cachedSummariesFromTopicTag.push(
+        cachedSummaries.filter((summary) =>
+          summary.topicTags.map((topic) => topic.topicSlug).includes(tag)
+        )
+      );
+    }
 
     const res: FlattenedQuestionSummary[] = this.filterSummaryByMatchType(
-      flatValidSummaries,
+      cachedSummariesFromTopicTag,
       matchType
     );
 
