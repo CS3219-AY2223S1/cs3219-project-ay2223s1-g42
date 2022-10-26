@@ -26,10 +26,10 @@ import { Cron } from "@nestjs/schedule";
 export class QuestionService {
   constructor(
     private prisma: PrismaService,
-    private cache: RedisCacheService,
-    private recentlyCached: string[]
+    private cache: RedisCacheService
   ) {}
 
+  recentlyCached: string[] = [];
   /**
    * Gets all the question summaries with the following fields:
    * acRate, difficulty, title, titleSlug, topicTags and updatedAt
