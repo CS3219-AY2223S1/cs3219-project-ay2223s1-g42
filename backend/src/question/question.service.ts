@@ -38,8 +38,8 @@ export class QuestionService {
    */
   async getAllSummaries() {
     const summaries = await this.cache.getKeyInNamespace<
-      FlattenedQuestionSummary[]
-    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES_FORMATTED);
+      QuestionSummaryFromDb[]
+    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
 
     if (!summaries) {
       const res: QuestionSummaryFromDb[] =
@@ -47,23 +47,16 @@ export class QuestionService {
           select: QUESTION_SUMMARY_SELECT,
         });
 
-      const formattedQuestionSummaries = this.formatQuestionSummaries(res);
-
       this.cache.setKeyInNamespace(
         [NAMESPACES.QUESTIONS],
         QUESTION_SUMMARIES,
         res
       );
 
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_SUMMARIES_FORMATTED,
-        formattedQuestionSummaries
-      );
-      return formattedQuestionSummaries;
+      return this.formatQuestionSummaries(res);
     }
 
-    return summaries;
+    return this.formatQuestionSummaries(summaries);
   }
 
   async getAllTopics() {
@@ -260,11 +253,13 @@ export class QuestionService {
     }
 
     for (const tag in validTopicTagArray) {
-      cachedSummariesFromTopicTag.push(
-        cachedSummaries.filter((summary) =>
-          summary.topicTags.map((topic) => topic.topicSlug).includes(tag)
-        )
-      );
+      const currentMatchedQuestions = cachedSummaries.filter((summary) => {
+        const currentQuestionTags = summary.topicTags.map(
+          (topic) => topic.topicSlug
+        );
+        return currentQuestionTags.includes(tag);
+      });
+      cachedSummariesFromTopicTag.push(currentMatchedQuestions);
     }
 
     const res: FlattenedQuestionSummary[] = this.filterSummaryByMatchType(
@@ -354,26 +349,15 @@ export class QuestionService {
   //Cron jobs to invalidate the cache
 
   @Cron("0 15 * * * *")
-  invalidateQuestionSummaries() {
+  invalidateQuestionCache() {
+    //Delete the question summaries
     this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
-    this.cache.deleteKeyInNamespace(
-      [NAMESPACES.QUESTIONS],
-      QUESTION_SUMMARIES_FORMATTED
-    );
-  }
-
-  @Cron("0 15 * * * *")
-  invalidateQuestionContents() {
+    //Delete the question content
     this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_CONTENT);
-  }
-
-  @Cron("0 15 * * * *")
-  invalidateQuestionTopics() {
+    //Delete the question topics
     this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_TOPICS);
-  }
 
-  @Cron("0 15 * * * *")
-  invalidateQotd() {
+    //Delete the question of the day's content and summary
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.QUESTIONS],
       QUESTION_QOTD_CONTENT
@@ -382,18 +366,14 @@ export class QuestionService {
       [NAMESPACES.QUESTIONS],
       QUESTION_QOTD_SUMMARY
     );
-  }
 
-  @Cron("0 15 * * * *")
-  invalidateQuestionDifficulties() {
+    //Delete the question summaries categorized into difficulties
     this.cache.deleteKeyInNamespace(
       [NAMESPACES.QUESTIONS],
       QUESTION_SUMMARY_DIFFICULTIES
     );
-  }
 
-  @Cron("0 15 * * * *")
-  invalidateIndividualQuestions() {
+    //Delete individual question summaries that has been cached
     for (const key in this.recentlyCached) {
       this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], key);
     }
