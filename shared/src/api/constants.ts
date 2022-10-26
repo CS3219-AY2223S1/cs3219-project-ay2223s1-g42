@@ -4,4 +4,5 @@ export enum NAMESPACES {
   USERS = "users",
   ROOM = "room",
   DOCUMENT = "document",
+  QUESTIONS = "questions",
 }
