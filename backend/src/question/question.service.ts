@@ -160,7 +160,7 @@ export class QuestionService {
         QUESTION_QOTD_SUMMARY
       );
     if (!dailyQuestionSummary) {
-      // Cron job ensures that there's only 1 QOTD at a time
+      // Serverless function ensures that there's only 1 QOTD at a time
       const dailySummary: QuestionSummaryFromDb =
         await this.prisma.questionSummary.findFirstOrThrow({
           where: { isDailyQuestion: true },
