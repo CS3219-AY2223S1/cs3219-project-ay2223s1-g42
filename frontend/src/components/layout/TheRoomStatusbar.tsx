@@ -35,12 +35,12 @@ const TheRoomStatusbar = ({ room }: { room: Room }) => {
       <div className="flex w-full flex-col items-center justify-between gap-3 border-[1px] border-neutral-900 bg-white p-2 pl-3 md:flex-row">
         <div className="flex h-full w-full flex-col gap-1 truncate text-ellipsis md:w-auto">
           <div className="truncate text-lg font-bold md:ml-0">{room.id}</div>
-          <div className="flex flex-row gap-3">
-            <div className="mt-[2px] flex flex-none flex-row gap-1 truncate">
+          <div className="flex flex-row items-center justify-center gap-3">
+            <div className="flex flex-none flex-row gap-1 truncate">
               {room.difficulties.map((difficulty, i) => (
                 <p
                   key={`${difficulty.toString()} ${i}`}
-                  className="capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
+                  className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
                 >
                   {difficulty.toString()}
                 </p>
