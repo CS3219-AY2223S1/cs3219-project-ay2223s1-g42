@@ -18,7 +18,6 @@ import {
   QUESTION_SUMMARIES,
   QUESTION_TOPICS,
   QUESTION_SUMMARY_DIFFICULTIES,
-  QUESTION_SUMMARIES_FORMATTED,
 } from "./question.cache.keys";
 import { Cron } from "@nestjs/schedule";
 
