@@ -9,7 +9,6 @@ import {
   MatchDialog,
   QuestionCheckGroup,
   MatchTypeRadioGroup,
-  MatchByTopics,
   TopicListBox,
 } from "src/features";
 import { useGlobalStore } from "src/store";
@@ -123,7 +122,6 @@ const Dashboard = () => {
               updateSelectedValues={handleUpdateDifficulty}
             />
           ) : matchType === MatchType.TOPICS ? (
-            // <MatchByTopics />
             <TopicListBox />
           ) : (
             <></>
