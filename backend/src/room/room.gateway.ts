@@ -63,8 +63,6 @@ export class RoomGateway {
         connected: true,
       };
 
-      console.log({ updatedRoomUser });
-
       // add user to room
       const updatedRoom = await this.roomService.addUserToRoom(
         room,

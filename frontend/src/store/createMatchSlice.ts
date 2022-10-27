@@ -2,10 +2,10 @@ import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast, { ToastOptions } from "react-hot-toast";
 
-import type { GlobalStore, Status } from "./useGlobalStore";
-import { StatusType } from "./enums";
 import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
 import { Axios } from "src/services";
+import type { GlobalStore, Status } from "./useGlobalStore";
+import { StatusType } from "./enums";
 
 export const matchToastOptions: ToastOptions = {
   id: "match-toast",

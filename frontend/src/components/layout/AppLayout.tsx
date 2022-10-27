@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
+import shallow from "zustand/shallow";
 
 import { GetMeResponse } from "shared/api";
 import { useGlobalStore } from "src/store";
@@ -9,7 +10,6 @@ import { Container } from "./Container";
 import { TheNavbar } from "./TheNavbar";
 import { TheToast } from "./TheToast";
 import { TheRoomStatusbar } from "./TheRoomStatusbar";
-import shallow from "zustand/shallow";
 
 const RoomContainer = ({ children }: PropsWithChildren) => {
   return (
