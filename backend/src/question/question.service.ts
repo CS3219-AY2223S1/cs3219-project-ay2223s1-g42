@@ -171,7 +171,7 @@ export class QuestionService {
   }
 
   async getSummariesFromDifficulty(difficulties: string[]) {
-    const summariesFromDifficulty = this.cache.getKeyInNamespace<
+    const summariesFromDifficulty = await this.cache.getKeyInNamespace<
       FlattenedQuestionSummary[]
     >([NAMESPACES.QUESTIONS], QUESTION_SUMMARY_DIFFICULTIES);
 
@@ -206,17 +206,21 @@ export class QuestionService {
     const allTitleSlugs = await this.getAllTitleSlugs();
     const validSlugs = _.intersection(allTitleSlugs, titleSlugs);
 
-    let cachedSummaries = this.cache.getKeyInNamespace<
-      FlattenedQuestionSummary[]
+    let cachedSummaries = await this.cache.getKeyInNamespace<
+      QuestionSummaryFromDb[]
     >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
 
     if (!cachedSummaries) {
-      cachedSummaries = this.getAllSummaries();
+      this.getAllSummaries();
+      cachedSummaries = await this.cache.getKeyInNamespace<
+        QuestionSummaryFromDb[]
+      >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
     }
 
-    const validSummaries = (await cachedSummaries).filter((summary) => {
-      summary.titleSlug in validSlugs;
+    const validSummaries = cachedSummaries.filter((summary) => {
+      return validSlugs.includes(summary.titleSlug);
     });
+
     /*
     const validSummaries: QuestionSummaryFromDb[] =
       await this.prisma.questionSummary.findMany({
@@ -225,7 +229,7 @@ export class QuestionService {
       });
       return this.formatQuestionSummaries(validSummaries);
       */
-    return validSummaries;
+    return this.formatQuestionSummaries(validSummaries);
   }
 
   /**
