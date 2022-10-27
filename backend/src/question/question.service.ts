@@ -247,7 +247,7 @@ export class QuestionService {
       >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
     }
 
-    for (const tag in validTopicTagArray) {
+    for (const tag of validTopicTagArray) {
       const currentMatchedQuestions = cachedSummaries.filter((summary) => {
         const currentQuestionTags = summary.topicTags.map(
           (topic) => topic.topicSlug
