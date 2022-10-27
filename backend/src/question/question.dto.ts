@@ -10,7 +10,7 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
   @ApiPropertyOptional({
     type: [String],
     description: "Difficulty level of the questions",
-    enum: ["easy", "medium", "hard"],
+    enum: ["Easy", "Medium", "Hard"],
   })
   public difficulty: string[];
 
