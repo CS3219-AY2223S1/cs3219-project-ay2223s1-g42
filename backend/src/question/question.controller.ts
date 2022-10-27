@@ -15,6 +15,7 @@ import {
   ApiNotFoundResponse,
   ApiTags,
 } from "@nestjs/swagger";
+import { ZodValidationPipe } from "@anatine/zod-nestjs";
 
 import {
   GetSummariesResponse,
@@ -28,7 +29,6 @@ import { QuestionService } from "./question.service";
 import { PublicRoute } from "../utils/decorator";
 import { API_OPERATIONS, API_RESPONSES_DESCRIPTION } from "../utils/constants";
 import { QuestionQuerySchemaDto } from "./question.dto";
-import { ZodValidationPipe } from "@anatine/zod-nestjs";
 
 @Controller("question")
 export class QuestionController {
