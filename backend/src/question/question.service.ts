@@ -221,14 +221,6 @@ export class QuestionService {
       return validSlugs.includes(summary.titleSlug);
     });
 
-    /*
-    const validSummaries: QuestionSummaryFromDb[] =
-      await this.prisma.questionSummary.findMany({
-        where: { titleSlug: { in: validSlugs } },
-        select: QUESTION_SUMMARY_SELECT,
-      });
-      return this.formatQuestionSummaries(validSummaries);
-      */
     return this.formatQuestionSummaries(validSummaries);
   }
 
