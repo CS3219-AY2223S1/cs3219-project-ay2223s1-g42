@@ -1,45 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
+import toast from "react-hot-toast";
 
 import { MatchType, MATCH_EVENTS, QuestionDifficulty } from "shared/api";
-import {
-  BigHeading,
-  PrimaryButton,
-  RadioGroupValue,
-  SpinnerIcon,
-} from "src/components";
+import { BigHeading, PrimaryButton, SpinnerIcon } from "src/components";
 import {
   MatchDialog,
   QuestionCheckGroup,
   MatchTypeRadioGroup,
-  matchTypeMap,
-  matchTypeRadioGroup,
   MatchByTopics,
+  TopicListBox,
 } from "src/features";
-import { matchToastOptions, useGlobalStore } from "src/store";
-import toast from "react-hot-toast";
+import { useGlobalStore } from "src/store";
 
-const difficultyMap: Record<
-  QuestionDifficulty,
-  RadioGroupValue<QuestionDifficulty>
-> = {
-  easy: {
-    title: "easy",
-    description:
-      "Simple data structures and concepts such as arrays, strings, and linked lists",
-  },
-  medium: {
-    title: "medium",
-    description:
-      "Challenging data structures and concepts such as trees, graphs, and some dynamic programming",
-  },
-  hard: {
-    title: "hard",
-    description:
-      "Complex data structures and concepts such as binary search, dynamic programming, and graph traversal",
-  },
-};
+enum PageStep {
+  FIRST = 1,
+  SECOND = 2,
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -69,6 +47,7 @@ const Dashboard = () => {
   }, shallow);
   // page states
   const [isMatchingDialogOpen, setIsMatchingDialogOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState<PageStep>(PageStep.FIRST);
 
   // handle update selected difficulties
   const handleUpdateDifficulty = (difficulty: QuestionDifficulty) => {
@@ -82,10 +61,6 @@ const Dashboard = () => {
       return;
     }
     setMatchDifficulties(newDifficulties);
-  };
-
-  const handleUpdateType = (type: RadioGroupValue<MatchType>) => {
-    setMatchType(type);
   };
 
   // handle join match queue
@@ -107,77 +82,6 @@ const Dashboard = () => {
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
-  };
-
-  const displayMatchType = (type: RadioGroupValue<MatchType>) => {
-    if (matchType == matchTypeMap["Difficulty"]) {
-      return (
-        <div className="m-auto space-y-12">
-          <QuestionCheckGroup
-            selectedDifficulties={matchDifficulties}
-            updateSelectedValues={handleUpdateDifficulty}
-            difficulties={Object.values(difficultyMap)}
-          />
-          <div className="flex flex-col">
-            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
-            <MatchDialog
-              isOpen={isMatchingDialogOpen}
-              onClose={handleMatchDialogClose}
-            />
-            <PrimaryButton
-              onClick={() => handleUpdateType(matchTypeMap["None"])}
-            >
-              Back
-            </PrimaryButton>
-          </div>
-        </div>
-      );
-    } else if (matchType == matchTypeMap["Topics"]) {
-      return (
-        <div className="m-auto space-y-12">
-          {MatchByTopics}
-          <div className="flex flex-col">
-            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
-            <MatchDialog
-              isOpen={isMatchingDialogOpen}
-              onClose={handleMatchDialogClose}
-            />
-            <PrimaryButton
-              onClick={() => handleUpdateType(matchTypeMap["None"])}
-            >
-              Back
-            </PrimaryButton>
-          </div>
-        </div>
-      );
-    } else if (matchType == matchTypeMap["Question Of The Day"]) {
-      return (
-        <div className="m-auto space-y-12">
-          <a>Question of the day queue</a>
-          <div className="flex flex-col">
-            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
-            <MatchDialog
-              isOpen={isMatchingDialogOpen}
-              onClose={handleMatchDialogClose}
-            />
-
-            <PrimaryButton
-              onClick={() => handleUpdateType(matchTypeMap["None"])}
-            >
-              Back
-            </PrimaryButton>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <MatchTypeRadioGroup
-          type={matchType}
-          setType={handleUpdateType}
-          types={matchTypeRadioGroup}
-        />
-      );
-    }
   };
 
   // find new match if match cancelled
@@ -210,7 +114,62 @@ const Dashboard = () => {
   return (
     <div className="m-auto space-y-12">
       <BigHeading>Welcome to PeerPrep</BigHeading>
-      {displayMatchType(matchType)}
+      {/* Second step */}
+      {currentStep === PageStep.SECOND ? (
+        <div className="m-auto space-y-12">
+          {matchType === MatchType.DIFFICULTY ? (
+            <QuestionCheckGroup
+              selectedDifficulties={matchDifficulties}
+              updateSelectedValues={handleUpdateDifficulty}
+            />
+          ) : matchType === MatchType.TOPICS ? (
+            // <MatchByTopics />
+            <TopicListBox />
+          ) : (
+            <></>
+          )}
+          <div className="flex flex-col gap-2">
+            <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
+            <PrimaryButton
+              onClick={() => {
+                setMatchType(undefined);
+                setCurrentStep(PageStep.FIRST);
+              }}
+            >
+              Back
+            </PrimaryButton>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* First step */}
+          <MatchTypeRadioGroup type={matchType} setType={setMatchType} />
+          <div className="flex flex-col">
+            <PrimaryButton
+              onClick={() => {
+                if (!matchType) {
+                  return;
+                }
+                if (matchType === MatchType.QOTD) {
+                  handleJoinQueue();
+                  return;
+                }
+                setCurrentStep(PageStep.SECOND);
+              }}
+            >
+              {matchType === MatchType.DIFFICULTY
+                ? "Select difficulty"
+                : matchType === MatchType.TOPICS
+                ? "Select topics"
+                : "Find match"}
+            </PrimaryButton>
+          </div>
+        </>
+      )}
+      <MatchDialog
+        isOpen={isMatchingDialogOpen}
+        onClose={handleMatchDialogClose}
+      />
     </div>
   );
 };

@@ -1,41 +1,35 @@
 import { MatchType } from "shared/api";
-import {
-  BaseRadioGroup,
-  CheckGroupValue,
-  RadioGroupValue,
-} from "src/components";
-
-type Props = {
-  type: RadioGroupValue<MatchType>;
-  setType: (value: RadioGroupValue<MatchType>) => void;
-  types: RadioGroupValue<MatchType>[];
-};
-
-const MatchTypeRadioGroup = ({ type, setType, types }: Props) => {
-  return <BaseRadioGroup value={type} setValue={setType} values={types} />;
-};
+import { BaseRadioGroup, RadioGroupValue } from "src/components";
 
 const matchTypeMap: Record<MatchType, RadioGroupValue<MatchType>> = {
-  None: {
-    title: "None",
-    description: "none",
-  },
-  Difficulty: {
-    title: "Difficulty",
+  difficulty: {
+    title: MatchType.DIFFICULTY,
     description: "Match based on difficulty (easy, medium or hard)",
   },
-  Topics: {
-    title: "Topics",
+  topics: {
+    title: MatchType.TOPICS,
     description:
       "Match based on question's topic eg Array, Linked List, Stacks",
   },
-  "Question Of The Day": {
-    title: "Question Of The Day",
+  qotd: {
+    title: MatchType.QOTD,
     description: "Match based on the question of the day",
   },
 };
 
-const matchTypeRadioGroup = Object.values(matchTypeMap).filter(
-  (e) => e.title != "None"
-);
-export { MatchTypeRadioGroup, matchTypeMap, matchTypeRadioGroup };
+type Props = {
+  type?: MatchType;
+  setType: (value: MatchType) => void;
+};
+
+const MatchTypeRadioGroup = ({ type, setType }: Props) => {
+  return (
+    <BaseRadioGroup
+      value={type}
+      updateValue={setType}
+      values={Object.values(matchTypeMap)}
+    />
+  );
+};
+
+export { MatchTypeRadioGroup };

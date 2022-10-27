@@ -3,35 +3,32 @@ import cx from "classnames";
 
 import { CheckFilledIcon } from "src/components";
 
-export type RadioGroupValue<Title extends string> = {
-  title: Title;
+export type RadioGroupValue<T extends string> = {
+  title: T;
   description: string;
 };
 
-type Props<T> = {
-  value: T;
-  setValue: (value: T) => void;
+type Props<V extends string, T extends RadioGroupValue<V>> = {
+  value?: V;
+  updateValue: (value: V) => void;
   values: T[];
 };
 
-const BaseRadioGroup = <
-  RadioGroupTitle extends string,
-  T extends RadioGroupValue<RadioGroupTitle>
->({
+const BaseRadioGroup = <V extends string>({
   value,
-  setValue,
+  updateValue,
   values,
-}: Props<T>) => {
+}: Props<V, RadioGroupValue<V>>) => {
   return (
     <RadioGroup
       className="flex flex-col gap-3"
       value={value}
-      onChange={setValue}
+      onChange={updateValue}
     >
       {values.map((value) => (
         <RadioGroup.Option
           key={value.title}
-          value={value}
+          value={value.title}
           className={({ checked }) =>
             cx(
               "relative flex cursor-pointer font-sans font-medium transition duration-300",

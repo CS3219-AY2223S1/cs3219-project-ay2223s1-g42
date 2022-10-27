@@ -10,8 +10,8 @@ export type PoolUser = PoolUserData & {
   timeJoined: number;
 };
 
-export type MatchType =
-  | "None"
-  | "Difficulty"
-  | "Question Of The Day"
-  | "Topics";
+export enum MatchType {
+  DIFFICULTY = "difficulty",
+  QOTD = "qotd",
+  TOPICS = "topics",
+}

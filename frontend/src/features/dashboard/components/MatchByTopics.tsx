@@ -1,18 +1,21 @@
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { SearchWithDropdown } from "src/components";
-import axios from "axios";
+import { Axios } from "src/services";
 
-const topics = await axios
-  .get(`${import.meta.env.VITE_API_URL}/question/topics`)
-  .then((res) => res.data)
-  .catch((error) => {
-    throw error;
-  });
-
-const MatchByTopics = (
-  <div>
-    <SearchWithDropdown topics={topics} />
-  </div>
-);
+const MatchByTopics = () => {
+  const topics = useQuery(["topics"], () =>
+    Axios.get("/question/topics").then((res) => res.data)
+  );
+  return (
+    <>
+      {topics.isLoading ? (
+        "Loading..."
+      ) : (
+        <SearchWithDropdown topics={topics.data} />
+      )}
+    </>
+  );
+};
 
 export { MatchByTopics };

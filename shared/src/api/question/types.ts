@@ -2,7 +2,11 @@ import { z } from "zod";
 
 import { QuestionContentModel, QuestionSummaryModel } from "../../models";
 
-type QuestionDifficulty = "easy" | "medium" | "hard";
+export enum QuestionDifficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
 
 type ExtraSummaryFields = {
   topicTags: string[];
@@ -38,7 +42,6 @@ type GetDailyQuestionContentResponse = FlattenedQuestionContent;
 type GetSlugContentResponse = FlattenedQuestionContent;
 
 export type {
-  QuestionDifficulty,
   PublicQuestionContent,
   PublicQuestionSummary,
   FlattenedQuestionContent,
