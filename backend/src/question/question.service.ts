@@ -1,7 +1,19 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Type } from "@nestjs/common";
+import { Cron } from "@nestjs/schedule";
 import * as _ from "lodash";
 
-import { FlattenedQuestionContent, FlattenedQuestionSummary } from "shared/api";
+import {
+  FlattenedQuestionContent,
+  FlattenedQuestionSummary,
+  NAMESPACES,
+} from "shared/api";
+import {
+  QUESTION_CONTENT,
+  QUESTION_QOTD_SUMMARY,
+  QUESTION_QOTD_CONTENT,
+  QUESTION_SUMMARIES,
+  QUESTION_TOPICS,
+} from "./question.cache.keys";
 import {
   QuestionContentFromDb,
   QuestionSummaryFromDb,
@@ -9,26 +21,32 @@ import {
   QUESTION_SUMMARY_SELECT,
 } from "./question.type";
 import { PrismaService } from "../prisma/prisma.service";
-import { NAMESPACES } from "shared/api";
-import { RedisCacheService } from "src/cache/redisCache.service";
-import {
-  QUESTION_CONTENT,
-  QUESTION_QOTD_SUMMARY,
-  QUESTION_QOTD_CONTENT,
-  QUESTION_SUMMARIES,
-  QUESTION_TOPICS,
-  QUESTION_SUMMARY_DIFFICULTIES,
-} from "./question.cache.keys";
-import { Cron } from "@nestjs/schedule";
+import { RedisCacheService } from "../cache/redisCache.service";
 
 @Injectable()
 export class QuestionService {
-  constructor(
-    private prisma: PrismaService,
-    private cache: RedisCacheService
-  ) {}
+  constructor(private prisma: PrismaService, private cache: RedisCacheService) {
+    // Invalidate cache on launch, for demo/test purposes
+    (async () => {
+      await this.invalidateQuestionCache();
+    })();
+  }
 
-  recentlyCached: string[] = [];
+  async getDataFromCache<Type>(key: string): Promise<Type> {
+    return await this.cache.getKeyInNamespace<Type>(
+      [NAMESPACES.QUESTIONS],
+      key
+    );
+  }
+
+  async storeDataInCache(key: string, value) {
+    return await this.cache.setKeyInNamespace(
+      [NAMESPACES.QUESTIONS],
+      key,
+      value
+    );
+  }
+
   /**
    * Gets all the question summaries with the following fields:
    * acRate, difficulty, title, titleSlug, topicTags and updatedAt
@@ -36,9 +54,9 @@ export class QuestionService {
    * @return  Array of QuestionSummary with the relevant fields
    */
   async getAllSummaries() {
-    const summaries = await this.cache.getKeyInNamespace<
+    const summaries: QuestionSummaryFromDb[] = await this.getDataFromCache<
       QuestionSummaryFromDb[]
-    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
+    >(QUESTION_SUMMARIES);
 
     if (!summaries) {
       const res: QuestionSummaryFromDb[] =
@@ -46,11 +64,7 @@ export class QuestionService {
           select: QUESTION_SUMMARY_SELECT,
         });
 
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_SUMMARIES,
-        res
-      );
+      await this.storeDataInCache(QUESTION_SUMMARIES, res);
 
       return this.formatQuestionSummaries(res);
     }
@@ -59,24 +73,22 @@ export class QuestionService {
   }
 
   async getAllTopics() {
-    const topics = await this.cache.getKeyInNamespace<{ topicSlug: string }[]>(
-      [NAMESPACES.QUESTIONS],
+    const topics: string[] = await this.getDataFromCache<string[]>(
       QUESTION_TOPICS
     );
     if (!topics) {
-      const res = await this.prisma.topicTag.findMany({
-        select: { topicSlug: true },
-      });
+      const topicsRetrieved = (
+        await this.prisma.topicTag.findMany({
+          select: { topicSlug: true },
+        })
+      ).map((v) => v.topicSlug);
 
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_TOPICS,
-        res
-      );
-      return res.map((slug) => slug.topicSlug);
+      await this.storeDataInCache(QUESTION_TOPICS, topicsRetrieved);
+
+      return topicsRetrieved;
     }
 
-    return topics.map((slug) => slug.topicSlug);
+    return topics;
   }
 
   /**
@@ -90,25 +102,20 @@ export class QuestionService {
   async getContentFromSlug(
     titleSlug: string
   ): Promise<FlattenedQuestionContent> {
-    //If content isnt cached in memory yet
     const titleKey = QUESTION_CONTENT + titleSlug;
 
-    const content =
-      await this.cache.getKeyInNamespace<FlattenedQuestionContent>(
-        [NAMESPACES.QUESTIONS],
-        titleKey
-      );
+    const content: FlattenedQuestionContent =
+      await this.getDataFromCache<FlattenedQuestionContent>(titleKey);
 
+    // If content not cached
     if (!content) {
       const res = await this.prisma.questionContent.findUniqueOrThrow({
         where: { titleSlug },
         select: QUESTION_CONTENT_SELECT,
       });
-      const formattedQuestionContent = this.formatQuestionContent(res);
-      this.cache.setKeyInNamespace([NAMESPACES.QUESTIONS], titleKey, res);
-      this.recentlyCached.push(titleKey);
-
-      return formattedQuestionContent;
+      const retrievedContent = this.formatQuestionContent(res);
+      await this.storeDataInCache(titleKey, retrievedContent);
+      return retrievedContent;
     }
     return content;
   }
@@ -117,9 +124,8 @@ export class QuestionService {
    * @return  The content of the Daily Question
    */
   async getDailyQuestionContent() {
-    const dailyQuestionContent =
-      await this.cache.getKeyInNamespace<FlattenedQuestionContent>(
-        [NAMESPACES.QUESTIONS],
+    const dailyQuestionContent: FlattenedQuestionContent =
+      await this.getDataFromCache<FlattenedQuestionContent>(
         QUESTION_QOTD_CONTENT
       );
 
@@ -129,14 +135,12 @@ export class QuestionService {
         select: { titleSlug: true },
       });
 
-      const contentRetrivedFromSlug = await this.getContentFromSlug(
+      const retrievedContent = await this.getContentFromSlug(
         dailySlug.titleSlug
       );
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_QOTD_CONTENT,
-        contentRetrivedFromSlug
-      );
+
+      await this.storeDataInCache(QUESTION_QOTD_CONTENT, retrievedContent);
+      return retrievedContent;
     }
 
     return dailyQuestionContent;
@@ -146,51 +150,40 @@ export class QuestionService {
    * @return  {FlattenedQuestionSummary}  Summary of Daily Question
    */
   async getDailyQuestionSummary(): Promise<FlattenedQuestionSummary> {
-    const dailyQuestionSummary =
-      await this.cache.getKeyInNamespace<FlattenedQuestionSummary>(
-        [NAMESPACES.QUESTIONS],
+    const dailyQuestionSummary: FlattenedQuestionSummary =
+      await this.getDataFromCache<FlattenedQuestionSummary>(
         QUESTION_QOTD_SUMMARY
       );
     if (!dailyQuestionSummary) {
       // Serverless function ensures that there's only 1 QOTD at a time
-      const dailySummary: QuestionSummaryFromDb =
+      const res: QuestionSummaryFromDb =
         await this.prisma.questionSummary.findFirstOrThrow({
           where: { isDailyQuestion: true },
           select: QUESTION_SUMMARY_SELECT,
         });
-      const [formattedSummary] = this.formatQuestionSummaries([dailySummary]);
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_QOTD_SUMMARY,
-        formattedSummary
-      );
-      return formattedSummary;
+      const [summary] = this.formatQuestionSummaries([res]);
+      await this.storeDataInCache(QUESTION_QOTD_SUMMARY, summary);
+      return summary;
     }
     return dailyQuestionSummary;
   }
 
   async getSummariesFromDifficulty(difficulties: string[]) {
-    const summariesFromDifficulty = await this.cache.getKeyInNamespace<
-      FlattenedQuestionSummary[]
-    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARY_DIFFICULTIES);
+    let allSummaries: QuestionSummaryFromDb[] = await this.getDataFromCache<
+      QuestionSummaryFromDb[]
+    >(QUESTION_SUMMARIES);
 
-    if (!summariesFromDifficulty) {
-      const validDifficulties: QuestionSummaryFromDb[] =
-        await this.prisma.questionSummary.findMany({
-          where: { difficulty: { in: difficulties } },
-          select: QUESTION_SUMMARY_SELECT,
-        });
-
-      this.cache.setKeyInNamespace(
-        [NAMESPACES.QUESTIONS],
-        QUESTION_SUMMARY_DIFFICULTIES,
-        this.formatQuestionSummaries(validDifficulties)
+    if (!allSummaries) {
+      await this.getAllSummaries(); // Trigger caching
+      allSummaries = await this.getDataFromCache<QuestionSummaryFromDb[]>(
+        QUESTION_SUMMARIES
       );
-
-      return this.formatQuestionSummaries(validDifficulties);
     }
 
-    return summariesFromDifficulty;
+    const matchedQuestions = allSummaries.filter((summary) =>
+      difficulties.includes(summary.difficulty.toLowerCase())
+    );
+    return this.formatQuestionSummaries(matchedQuestions);
   }
 
   /**
@@ -205,21 +198,20 @@ export class QuestionService {
     const allTitleSlugs = await this.getAllTitleSlugs();
     const validSlugs = _.intersection(allTitleSlugs, titleSlugs);
 
-    let cachedSummaries = await this.cache.getKeyInNamespace<
+    let cachedSummaries: QuestionSummaryFromDb[] = await this.getDataFromCache<
       QuestionSummaryFromDb[]
-    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
+    >(QUESTION_SUMMARIES);
 
     if (!cachedSummaries) {
       this.getAllSummaries();
-      cachedSummaries = await this.cache.getKeyInNamespace<
-        QuestionSummaryFromDb[]
-      >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
+      cachedSummaries = await this.getDataFromCache<QuestionSummaryFromDb[]>(
+        QUESTION_SUMMARIES
+      );
     }
 
     const validSummaries = cachedSummaries.filter((summary) => {
       return validSlugs.includes(summary.titleSlug);
     });
-
     return this.formatQuestionSummaries(validSummaries);
   }
 
@@ -236,15 +228,15 @@ export class QuestionService {
     const validTopicTagArray = _.intersection(allTopicTags, topicTags);
     const cachedSummariesFromTopicTag: QuestionSummaryFromDb[][] = [];
 
-    let cachedSummaries = await this.cache.getKeyInNamespace<
+    let cachedSummaries: QuestionSummaryFromDb[] = await this.getDataFromCache<
       QuestionSummaryFromDb[]
-    >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
+    >(QUESTION_SUMMARIES);
 
     if (!cachedSummaries) {
-      this.getAllSummaries();
-      cachedSummaries = await this.cache.getKeyInNamespace<
-        QuestionSummaryFromDb[]
-      >([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
+      await this.getAllSummaries();
+      cachedSummaries = await this.getDataFromCache<QuestionSummaryFromDb[]>(
+        QUESTION_SUMMARIES
+      );
     }
 
     for (const tag of validTopicTagArray) {
@@ -322,7 +314,7 @@ export class QuestionService {
 
   private filterSummaryByMatchType(
     flatValidSummaries: QuestionSummaryFromDb[][],
-    matchType = "OR"
+    matchType = "AND"
   ): FlattenedQuestionSummary[] {
     if (matchType == "AND") {
       const andMatched = _.intersectionBy(
@@ -342,35 +334,14 @@ export class QuestionService {
   }
 
   //Cron jobs to invalidate the cache
-
   @Cron("0 15 * * * *")
-  invalidateQuestionCache() {
-    //Delete the question summaries
-    this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_SUMMARIES);
-    //Delete the question content
-    this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_CONTENT);
-    //Delete the question topics
-    this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], QUESTION_TOPICS);
+  async invalidateQuestionCache() {
+    const questionCacheKeys = await this.cache.getAllKeysInNamespace([
+      NAMESPACES.QUESTIONS,
+    ]);
 
-    //Delete the question of the day's content and summary
-    this.cache.deleteKeyInNamespace(
-      [NAMESPACES.QUESTIONS],
-      QUESTION_QOTD_CONTENT
-    );
-    this.cache.deleteKeyInNamespace(
-      [NAMESPACES.QUESTIONS],
-      QUESTION_QOTD_SUMMARY
-    );
-
-    //Delete the question summaries categorized into difficulties
-    this.cache.deleteKeyInNamespace(
-      [NAMESPACES.QUESTIONS],
-      QUESTION_SUMMARY_DIFFICULTIES
-    );
-
-    //Delete individual question summaries that has been cached
-    for (const key in this.recentlyCached) {
-      this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], key);
+    for (const key of questionCacheKeys) {
+      await this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], key);
     }
   }
 }

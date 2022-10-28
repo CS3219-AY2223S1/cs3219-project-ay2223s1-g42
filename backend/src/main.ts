@@ -8,7 +8,7 @@ import * as cookieParser from "cookie-parser";
 // import * as csurf from "csurf";
 
 import { AppModule } from "./app.module";
-import { CORS_OPTIONS } from "./config";
+import { CORS_OPTIONS, CSRF_OPTIONS } from "./config";
 import { patchNestjsSwagger } from "@anatine/zod-nestjs";
 
 // const HTTPS_OPTIONS = {
@@ -21,7 +21,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // httpsOptions: HTTPS_OPTIONS,
   });
-  // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
+
   const port = app.get(ConfigService).get("PORT");
 
   const swaggerConfig = new DocumentBuilder()

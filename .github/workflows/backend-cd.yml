@@ -23,10 +23,12 @@ jobs:
           password: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd g42
+            git reset --hard
             git pull
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install 16
             npm install --global yarn
             cd backend
+            sed -i "s/\/\/\ //g" src/main.ts
             yarn gh:deploy
