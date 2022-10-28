@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
+  Post,
   Query,
   UsePipes,
 } from "@nestjs/common";
@@ -174,6 +176,24 @@ export class QuestionController {
       return questionContent;
     } catch (error) {
       throw new BadRequestException(`unable to get content for '${titleSlug}'`);
+    }
+  }
+
+  @PublicRoute()
+  @ApiTags("Question API routes")
+  @ApiOperation({ summary: API_OPERATIONS.QUESTION_INVALIDATE_CACHE })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_INVALIDATION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  @Post("/invalidateCache")
+  async invalidateCache() {
+    try {
+      await this.questionService.invalidateQuestionCache();
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 }

@@ -27,12 +27,10 @@ import { RedisCacheService } from "../cache/redisCache.service";
 
 @Injectable()
 export class QuestionService {
-  constructor(private prisma: PrismaService, private cache: RedisCacheService) {
-    // Invalidate cache on launch, for demo/test purposes
-    (async () => {
-      await this.invalidateQuestionCache();
-    })();
-  }
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService
+  ) {}
 
   /**
    * Gets all the question summaries with the following fields:
@@ -407,7 +405,6 @@ export class QuestionService {
     const questionCacheKeys = await this.cache.getAllKeysInNamespace([
       NAMESPACES.QUESTIONS,
     ]);
-
     for (const key of questionCacheKeys) {
       await this.cache.deleteKeyInNamespace([NAMESPACES.QUESTIONS], key);
     }

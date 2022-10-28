@@ -37,6 +37,7 @@ export enum API_OPERATIONS {
   OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY = "User successfully signed in using github",
   QUERY_SUMMARY = "Retrieves Query in URL",
   OAUTH_SUMMARY = "Login using Oauth",
+  QUESTION_INVALIDATE_CACHE = "Invalidates the question cache",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
@@ -66,4 +67,5 @@ export enum API_RESPONSES_DESCRIPTION {
   FORBIDDEN_SIGNUP_DESCRIPTION = "User used an unavailable email/username or has already signed up but have yet to verify account",
   FORBIDDEN_SIGNIN_DESCRIPTION = "User entered invalid credentials or is unverified",
   SUCCESSFUL_QUESTION_QUERY = "Successful question query made",
+  SUCCESSFUL_QUESTION_INVALIDATION = "Successfully invalidates the question cache",
 }
