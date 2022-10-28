@@ -5,7 +5,7 @@ import helmet from "helmet";
 import * as cookieParser from "cookie-parser";
 // import * as path from "path";
 // import * as fs from "fs";
-// import * as csurf from "csurf";
+/* import * as csurf from "csurf"; */
 
 import { AppModule } from "./app.module";
 import { CORS_OPTIONS, CSRF_OPTIONS } from "./config";
@@ -39,7 +39,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.use(helmet());
-  // app.use(csurf(CSRF_OPTIONS));
+  /* app.use(csurf(CSRF_OPTIONS)); */
   app.enableCors(CORS_OPTIONS);
 
   await app.listen(port);
