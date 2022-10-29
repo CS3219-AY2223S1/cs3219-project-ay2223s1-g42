@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import React, { useState } from "react";
 
 import { FlattenedQuestionSummary } from "shared/api";
-import { PrimaryLink, Badge, Table } from "src/components";
+import { Badge, Table, SpinnerIcon } from "src/components";
 import { Axios } from "src/services";
 
 function stringifyDate(date: Date) {
@@ -25,6 +25,11 @@ const defaultColumns = [
     id: "difficulty",
     header: "Difficulty",
   }),
+  columnHelper.accessor("acRate", {
+    cell: (info) => info.getValue().toFixed(2) + "%",
+    id: "acRate",
+    header: "Acceptance Rate",
+  }),
   // TODO: hyperlink badge
   columnHelper.accessor("topicTags", {
     cell: (info) =>
@@ -42,11 +47,9 @@ const defaultColumns = [
     cell: (info) => {
       const lcLink = info.getValue();
       return (
-        <div>
-          <PrimaryLink to={lcLink} target="_blank" rel="noopener noreferrer">
-            Open
-          </PrimaryLink>
-        </div>
+        <a href={lcLink} target="_blank" rel="noopener noreferrer">
+          Open
+        </a>
       );
     },
     header: "Discussion",
@@ -76,8 +79,12 @@ const QuestionsTable = () => {
   );
 
   return (
-    <div className="m-2 flex items-center justify-between">
-      <Table data={data} columns={defaultColumns} />
+    <div className="flex flex-col items-center justify-between">
+      {loadingData ? (
+        <SpinnerIcon />
+      ) : (
+        <Table data={data} columns={defaultColumns} />
+      )}
     </div>
   );
 };
