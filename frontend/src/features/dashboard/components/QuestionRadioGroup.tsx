@@ -2,8 +2,8 @@ import { QuestionDifficulty } from "shared/api";
 import { BaseRadioGroup, RadioGroupValue } from "src/components";
 
 type Props = {
-  difficulty: RadioGroupValue<QuestionDifficulty>;
-  setDifficulty: (value: RadioGroupValue<QuestionDifficulty>) => void;
+  difficulty: QuestionDifficulty;
+  setDifficulty: (value: QuestionDifficulty) => void;
   difficulties: RadioGroupValue<QuestionDifficulty>[];
 };
 
@@ -15,7 +15,7 @@ const QuestionRadioGroup = ({
   return (
     <BaseRadioGroup
       value={difficulty}
-      setValue={setDifficulty}
+      updateValue={setDifficulty}
       values={difficulties}
     />
   );
