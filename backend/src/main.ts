@@ -5,10 +5,10 @@ import helmet from "helmet";
 import * as cookieParser from "cookie-parser";
 // import * as path from "path";
 // import * as fs from "fs";
-// import * as csurf from "csurf";
+/* import * as csurf from "csurf"; */
 
 import { AppModule } from "./app.module";
-import { CORS_OPTIONS } from "./config";
+import { CORS_OPTIONS, CSRF_OPTIONS } from "./config";
 import { patchNestjsSwagger } from "@anatine/zod-nestjs";
 
 // const HTTPS_OPTIONS = {
@@ -21,21 +21,25 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     // httpsOptions: HTTPS_OPTIONS,
   });
-  // const cookieSecret = app.get(ConfigService).getOrThrow("COOKIE_SECRET");
+
   const port = app.get(ConfigService).get("PORT");
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle("G42 PeerPrep API")
     .setDescription("The REST interface for querying the G42 PeerPrep API")
+    .addTag("User API routes")
+    .addTag("Auth API routes")
+    .addTag("Question API routes")
     .setVersion("1.0")
     .build();
+
   patchNestjsSwagger();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("api", app, document);
 
   app.use(cookieParser());
   app.use(helmet());
-  // app.use(csurf(CSRF_OPTIONS));
+  /* app.use(csurf(CSRF_OPTIONS)); */
   app.enableCors(CORS_OPTIONS);
 
   await app.listen(port);

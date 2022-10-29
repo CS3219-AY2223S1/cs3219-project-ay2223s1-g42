@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
+  Post,
   Query,
   UsePipes,
 } from "@nestjs/common";
@@ -11,6 +13,7 @@ import {
   ApiOkResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 
 import {
@@ -33,6 +36,7 @@ export class QuestionController {
 
   @PublicRoute()
   @UsePipes(ZodValidationPipe)
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_QUERY_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -97,6 +101,7 @@ export class QuestionController {
 
   @PublicRoute()
   @Get("/summary/daily")
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_DAILY_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -113,6 +118,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_TOPIC_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -130,6 +136,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_DAILY_QUESTION_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -147,6 +154,7 @@ export class QuestionController {
   }
 
   @PublicRoute()
+  @ApiTags("Question API routes")
   @ApiOperation({ summary: API_OPERATIONS.QUESTION_CONTENT_SLUG_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_QUERY,
@@ -168,6 +176,24 @@ export class QuestionController {
       return questionContent;
     } catch (error) {
       throw new BadRequestException(`unable to get content for '${titleSlug}'`);
+    }
+  }
+
+  @PublicRoute()
+  @ApiTags("Question API routes")
+  @ApiOperation({ summary: API_OPERATIONS.QUESTION_INVALIDATE_CACHE })
+  @ApiOkResponse({
+    description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_QUESTION_INVALIDATION,
+  })
+  @ApiInternalServerErrorResponse({
+    description: API_RESPONSES_DESCRIPTION.INTERNAL_SERVER_ERROR,
+  })
+  @Post("/invalidateCache")
+  async invalidateCache() {
+    try {
+      await this.questionService.invalidateQuestionCache();
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 }

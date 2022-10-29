@@ -20,6 +20,9 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiTags,
+  ApiParam,
+  ApiBody,
 } from "@nestjs/swagger";
 import { Response } from "express";
 
@@ -58,6 +61,7 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signup")
   @HttpCode(HttpStatus.CREATED)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.SIGN_UP_SUMMARY })
   @ApiCreatedResponse({
     description:
@@ -86,6 +90,7 @@ export class AuthController {
   @PublicRoute()
   @Post("/local/signin")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.SIGN_IN_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
@@ -113,6 +118,7 @@ export class AuthController {
 
   @Post("/signout")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.SIGN_OUT_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNOUT_DESCRIPTION,
@@ -136,6 +142,7 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Get("/refresh")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.REFRESH_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.REFRESH_DESCRIPTION,
@@ -158,6 +165,7 @@ export class AuthController {
   @PublicRoute()
   @Post("/verify/:token")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.VERIFY_SIGN_UP_SUMMARY })
   @ApiOkResponse({
     description:
@@ -195,6 +203,7 @@ export class AuthController {
   @PublicRoute()
   @Post("/forget-password")
   @HttpCode(HttpStatus.CREATED)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.FORGET_PASSWORD_SUMMARY })
   @ApiOkResponse({
     description:
@@ -226,6 +235,7 @@ export class AuthController {
   @PublicRoute()
   @Post("/reset-password")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.RESET_PASSWORD_SUMMARY })
   @ApiOkResponse({
     description:
@@ -256,6 +266,7 @@ export class AuthController {
    */
   @Post("/change-password")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.CHANGE_PASSWORD_SUMMARY })
   @ApiOkResponse({
     description:
@@ -295,6 +306,7 @@ export class AuthController {
    */
   @Post("/delete-account")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.DELETE_ACCOUNT_SUMMARY })
   @ApiOkResponse({
     description:
@@ -329,6 +341,7 @@ export class AuthController {
   @PublicRoute()
   @Get("/local/oauth")
   @HttpCode(HttpStatus.OK)
+  @ApiTags("Auth API routes")
   @ApiOperation({ summary: API_OPERATIONS.OAUTH_SUCCESSFUL_SIGNED_IN_SUMMARY })
   @ApiOkResponse({
     description: API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNIN_DESCRIPTION,
