@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { useLocation } from "react-router";
+import shallow from "zustand/shallow";
 
 import { GetMeResponse } from "shared/api";
 import { useGlobalStore } from "src/store";
@@ -32,7 +33,8 @@ const AppContainer = ({ children }: PropsWithChildren) => {
         matchSocket: state.matchSocket,
         roomSocket: state.roomSocket,
       };
-    }
+    },
+    shallow
   );
 
   useQuery(
@@ -64,6 +66,7 @@ const AppContainer = ({ children }: PropsWithChildren) => {
 
   // error page is any nonexistent catch all page
   const isErrorPage =
+    pathname !== "/" &&
     !pathname.includes("reset-password") &&
     !pathname.includes("room") &&
     !pathname.includes("verify") &&
@@ -84,12 +87,10 @@ const AppContainer = ({ children }: PropsWithChildren) => {
       {isRoomPage ? (
         <RoomContainer>{children}</RoomContainer>
       ) : isAuthenticatedPage ? (
-        <>
-          <div className="min-h-screen justify-between bg-neutral-100">
-            <Container hasTopPadding={true}>{children}</Container>
-          </div>
-          {room && <TheRoomStatusbar />}
-        </>
+        <div className="relative min-h-screen justify-between">
+          <Container hasTopPadding={true}>{children}</Container>
+          {room && <TheRoomStatusbar room={room} />}
+        </div>
       ) : isErrorPage ? (
         <Container hasTopPadding={false}>{children}</Container>
       ) : (

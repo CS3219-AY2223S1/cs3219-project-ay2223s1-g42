@@ -2,9 +2,10 @@ import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast, { ToastOptions } from "react-hot-toast";
 
+import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
+import { Axios } from "src/services";
 import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
-import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
 
 export const matchToastOptions: ToastOptions = {
   id: "match-toast",
@@ -43,11 +44,12 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     setState({ matchSocketConnected: true });
   });
 
-  matchSocket.on("disconnect", () => {
+  matchSocket.on("disconnect", async () => {
     console.log("disconnected from /match ws server :(");
+    await Axios.get("/auth/refresh");
     const user = getState().user;
     if (user) {
-      toast.loading("Reconnecting to match server...", matchToastOptions);
+      toast.loading("Connecting to match server...", matchToastOptions);
     }
     setState({ matchSocketConnected: false });
   });

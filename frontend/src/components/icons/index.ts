@@ -4,3 +4,4 @@ export * from "./CheckIcon";
 export * from "./CheckFilledIcon";
 export * from "./BurgerMenuIcon";
 export * from "./ChevronDownIcon";
+export * from "./CloseIcon";

@@ -44,7 +44,7 @@ export class RoomService {
     };
 
     try {
-      await this.cache.setKeyInNamespace([NAMESPACES.ROOM], roomId, room);
+      await this.setRoom(room);
 
       // add user to room users (store room id of each user in a room)
       const addRoomedUsers = room.users.map(async (user) => {
@@ -63,12 +63,12 @@ export class RoomService {
 
   async addUserToRoom(room: Room, user: RoomUser): Promise<Room> {
     // update users in room
-    const newUsers = room.users.concat(user);
+    const newUsers = room.users.filter((u) => u.id !== user.id).concat(user);
     const newRoom: Room = {
       ...room,
       users: newUsers,
     };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
+    await this.setRoom(newRoom);
 
     // add user to room users (store room id of each user in a room)
     await this.addUserAsRoomUser(room.id, user.id.toString());
@@ -82,7 +82,7 @@ export class RoomService {
       ...room,
       users: remainingUsers,
     };
-    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, newRoom);
+    await this.setRoom(newRoom);
 
     // remove user from room users
     await this.removeUserAsRoomUser(userId.toString());
@@ -115,6 +115,14 @@ export class RoomService {
       roomId
     );
     return room;
+  }
+
+  /**
+   * Set room data
+   * @param room Room data
+   */
+  async setRoom(room: Room) {
+    await this.cache.setKeyInNamespace([NAMESPACES.ROOM], room.id, room);
   }
 
   /**
