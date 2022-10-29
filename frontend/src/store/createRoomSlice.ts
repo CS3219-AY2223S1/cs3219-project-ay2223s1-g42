@@ -5,6 +5,7 @@ import toast, { ToastOptions } from "react-hot-toast";
 import type { Status, GlobalStore } from "./useGlobalStore";
 import { StatusType } from "./enums";
 import { Room, ROOM_EVENTS, UserInfo } from "shared/api";
+import { Axios } from "src/services";
 
 const roomToastOptions: ToastOptions = {
   id: "room-toast",
@@ -36,7 +37,8 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     console.log("connected to /room ws server :)");
   });
 
-  roomSocket.on("disconnect", () => {
+  roomSocket.on("disconnect", async () => {
+    await Axios.get("/auth/refresh");
     console.log("disconnected from /room ws server :(");
   });
 

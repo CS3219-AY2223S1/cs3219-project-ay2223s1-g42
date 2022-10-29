@@ -64,15 +64,21 @@ export class RoomGateway {
       };
 
       // add user to room
-      this.roomService.addUserToRoom(room, updatedRoomUser);
+      const updatedRoom = await this.roomService.addUserToRoom(
+        room,
+        updatedRoomUser
+      );
 
       // broadcast user has joined to room
-      client.emit(ROOM_EVENTS.JOIN_ROOM_SUCCESS, JSON.stringify({ room }));
+      client.emit(
+        ROOM_EVENTS.JOIN_ROOM_SUCCESS,
+        JSON.stringify({ room: updatedRoom })
+      );
       this.server
         .to(room.id)
         .emit(
           ROOM_EVENTS.NEW_USER_JOINED,
-          JSON.stringify({ room, newUser: roomUser })
+          JSON.stringify({ room: updatedRoom, newUser: roomUser })
         );
       // add user to room socket channel AFTER broadcast
       await client.join(room.id);

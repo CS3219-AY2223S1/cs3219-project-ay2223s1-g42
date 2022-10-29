@@ -143,6 +143,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       provider.connect();
     }
 
+    model.setEOL(0);
     const monacoBinding = new MonacoBinding(
       docText,
       /** @type {monaco.editor.ITextModel} */ model,

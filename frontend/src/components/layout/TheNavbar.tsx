@@ -9,6 +9,7 @@ import {
   PrimaryLink,
   PrimaryButton,
   BurgerMenuIcon,
+  CloseIcon,
 } from "src/components";
 import { useScrollDirection, useMobile, ScrollDir } from "src/hooks";
 import { useGlobalStore } from "src/store";
@@ -19,12 +20,19 @@ type NavItem = {
   isLast?: boolean;
 };
 
-const LINKS = [
-  { label: "dashboard", href: "/" },
+const LINKS_LOGGED_IN = [
   {
     label: "settings",
     href: "/user/settings",
   },
+  { label: "history", href: "/user/history" },
+  { label: "questions", href: "/questions/all" },
+];
+
+const LINKS_LOGGED_OUT = [
+  { label: "questions", href: "/questions/all" },
+  { label: "login", href: "/login" },
+  { label: "signup", href: "/signup" },
 ];
 
 const MobileNavItem = ({ label, href, isLast }: NavItem) => {
@@ -41,22 +49,34 @@ const MobileNavItem = ({ label, href, isLast }: NavItem) => {
   );
 };
 
-const MobileNavItems = ({ isOpen }: { isOpen: boolean }) => {
+const MobileNavItems = ({
+  isOpen,
+  isSignedIn,
+}: {
+  isOpen: boolean;
+  isSignedIn: boolean;
+}) => {
+  const links = isSignedIn ? LINKS_LOGGED_IN : LINKS_LOGGED_OUT;
   return (
     <div
       className={cx(
-        "mb-4 mt-2 w-full items-center justify-between bg-white transition-all duration-300 ease-out md:hidden",
-        { hidden: !isOpen, block: isOpen }
+        "mb-4 w-full items-center justify-between bg-white transition-all duration-300 ease-out md:hidden",
+        {
+          hidden: !isOpen,
+          block: isOpen,
+          "mt-1": isSignedIn,
+          "mt-0": !isSignedIn,
+        }
       )}
     >
       <ul
         className="flex flex-col border border-neutral-800 
         text-center font-semibold uppercase"
       >
-        {LINKS.slice(0, -1).map((item) => (
+        {links.slice(0, -1).map((item) => (
           <MobileNavItem key={item.label} {...item} />
         ))}
-        {LINKS.slice(-1).map((item) => (
+        {links.slice(-1).map((item) => (
           <MobileNavItem key={item.label} {...item} isLast={true} />
         ))}
       </ul>
@@ -78,7 +98,7 @@ const DesktopNavItems = () => {
   return (
     <div className="hidden w-full items-center justify-between md:flex md:w-auto">
       <ul className="flex flex-row gap-8 border-neutral-800 px-4 text-center text-sm font-semibold uppercase">
-        {LINKS.map((item) => (
+        {LINKS_LOGGED_IN.map((item) => (
           <DesktopNavItem key={item.label} {...item} />
         ))}
       </ul>
@@ -103,7 +123,7 @@ const TheNavbar = () => {
   const signoutMutation = useSignoutMutation({
     onSuccess: () => {
       queryClient.invalidateQueries(["me"]);
-      navigate("/");
+      navigate("/login");
     },
   });
 
@@ -130,7 +150,7 @@ const TheNavbar = () => {
             {"<PeerPrep />"}
           </span>
         </BaseLink>
-        <div className="flex flex-row gap-2 md:gap-4">
+        <div className="flex flex-row gap-2 md:gap-6">
           {isSignedIn ? (
             <>
               <DesktopNavItems />
@@ -143,26 +163,48 @@ const TheNavbar = () => {
               </PrimaryButton>
               <PrimaryButton
                 type="button"
-                className="inline-flex items-center bg-white p-3 text-sm
-            text-neutral-800 focus:outline-none hover:text-neutral-800 md:hidden"
+                className="inline-flex items-center bg-white p-3 text-sm text-neutral-800
+                focus:outline-none hover:text-neutral-800 md:hidden"
                 onClick={() => setIsDropdownOpen((open) => !open)}
               >
-                <span className="sr-only">Open main menu</span>
-                <BurgerMenuIcon className="h-7 w-7" />
+                <span className="sr-only">Toggle main menu</span>
+                {isDropdownOpen ? (
+                  <CloseIcon className="h-7 w-7" />
+                ) : (
+                  <BurgerMenuIcon className="h-7 w-7" />
+                )}
               </PrimaryButton>
             </>
           ) : (
-            <PrimaryButton
-              className="bg-neutral-100 px-4 text-base md:px-6"
-              onClick={() => navigate("/signup")}
-            >
-              Get started
-            </PrimaryButton>
+            <>
+              {isMobile ? (
+                <PrimaryButton
+                  type="button"
+                  className="inline-flex items-center bg-white p-3 text-sm text-neutral-800
+                  focus:outline-none hover:text-neutral-800 md:hidden"
+                  onClick={() => setIsDropdownOpen((open) => !open)}
+                >
+                  <span className="sr-only">Toggle main menu</span>
+                  {isDropdownOpen ? (
+                    <CloseIcon className="h-7 w-7" />
+                  ) : (
+                    <BurgerMenuIcon className="h-7 w-7" />
+                  )}
+                </PrimaryButton>
+              ) : (
+                <PrimaryButton
+                  className="bg-neutral-100 px-4 text-base md:px-6"
+                  onClick={() => navigate("/signup")}
+                >
+                  Get started
+                </PrimaryButton>
+              )}
+            </>
           )}
         </div>
       </div>
       {/* mobile nav dropdown */}
-      <MobileNavItems isOpen={isDropdownOpen} />
+      <MobileNavItems isOpen={isDropdownOpen} isSignedIn={isSignedIn} />
     </nav>
   );
 };
