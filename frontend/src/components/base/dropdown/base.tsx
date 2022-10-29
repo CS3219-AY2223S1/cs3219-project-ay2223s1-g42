@@ -14,6 +14,7 @@ type DropdownItem = {
 };
 
 type Props = {
+  title: string;
   items?: DropdownItem[];
 };
 
@@ -36,8 +37,11 @@ const SAMPLE_MENU_ITEMS = [
   },
 ];
 
-const BaseDropdown = ({ items }: Props) => {
+const TITLE = "Options";
+
+const BaseDropdown = ({ items, title }: Props) => {
   const menuItems = items || SAMPLE_MENU_ITEMS;
+  const menuTitle = title || TITLE;
   return (
     <Menu as="div" className="relative z-10 text-left">
       <Menu.Button
@@ -46,7 +50,7 @@ const BaseDropdown = ({ items }: Props) => {
           text-neutral-900 transition duration-300
           ease-out focus:outline-none hover:bg-neutral-900 hover:text-neutral-50"
       >
-        Options
+        {menuTitle}
         <ChevronDownIcon
           className="ml-2 -mr-1 h-5 w-5 stroke-[2px]"
           aria-hidden="true"

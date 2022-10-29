@@ -1,31 +1,48 @@
-import { Dispatch, Fragment, SetStateAction } from "react";
+import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import cx from "classnames";
 
 import { CheckIcon, ChevronDownIcon } from "src/components";
 
+type TypeOfArrayElements<T> = T extends Array<unknown> ? T : T[];
+
 type Props<T> = {
-  value: T;
-  setValue: Dispatch<SetStateAction<T>>;
-  values: T[];
+  value: T | undefined;
+  setValue: (value: T) => void;
+  values: TypeOfArrayElements<T>;
+  className?: string;
+  hasBorder?: boolean;
+  bigPadding?: boolean;
 };
 
-const BaseListbox = <T extends string>({
+const BaseListbox = <T extends string | string[]>({
   value,
   setValue,
   values,
+  className,
+  hasBorder,
+  bigPadding,
 }: Props<T>) => {
+  const isValueArray = Array.isArray(value);
   return (
-    <div className="z-10 h-full w-48 border-r-[1px] border-b-[1px] border-neutral-900">
-      <Listbox value={value} onChange={setValue}>
+    <div className={className}>
+      <Listbox value={value} onChange={setValue} multiple={isValueArray}>
         {({ open }) => (
           <div className="relative h-full">
             <Listbox.Button
-              className="relative h-full w-full cursor-pointer bg-white px-4 pr-10 text-left shadow-md
-              focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white
-              focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300"
+              className={cx(
+                "relative h-full w-full cursor-pointer bg-white px-4 pr-10 text-left",
+                "focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white",
+                "focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300",
+                {
+                  "border-[1px] border-neutral-900": hasBorder,
+                  "py-3": bigPadding,
+                }
+              )}
             >
-              <span className="block truncate capitalize">{value}</span>
+              <span className="block truncate capitalize">
+                {isValueArray ? `${value.length} topics selected` : value}
+              </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-50">
                 <ChevronDownIcon
                   className={cx(
@@ -46,9 +63,13 @@ const BaseListbox = <T extends string>({
               leaveTo="opacity-0"
             >
               <Listbox.Options
-                className="absolute max-h-60 w-full overflow-auto
-              border-t-[1px] border-t-neutral-900 bg-white py-1 text-base shadow-lg ring-1
-                ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                className={cx(
+                  "py-1text-base absolute max-h-60 w-full overflow-auto bg-white shadow-lg",
+                  "ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+                  {
+                    "border-t-[1px] border-t-neutral-900": !hasBorder,
+                  }
+                )}
               >
                 {values.map((lang, i) => (
                   <Listbox.Option

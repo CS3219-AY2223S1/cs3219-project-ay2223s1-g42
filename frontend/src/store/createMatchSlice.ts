@@ -2,7 +2,12 @@ import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast, { ToastOptions } from "react-hot-toast";
 
-import { MATCH_EVENTS, PoolUserData, QuestionDifficulty } from "shared/api";
+import {
+  MatchType,
+  MATCH_EVENTS,
+  PoolUserData,
+  QuestionDifficulty,
+} from "shared/api";
 import { Axios } from "src/services";
 import type { GlobalStore, Status } from "./useGlobalStore";
 import { StatusType } from "./enums";
@@ -16,6 +21,10 @@ export type MatchSlice = {
   matchSocketConnected: boolean;
   matchDifficulties: QuestionDifficulty[];
   setMatchDifficulties: (difficulties: QuestionDifficulty[]) => void;
+  matchTopics: string[] | undefined;
+  setMatchTopics: (topics: string[]) => void;
+  matchType: MatchType | undefined;
+  setMatchType: (type: MatchType | undefined) => void;
   queueStatus: Status | undefined;
   isInQueue: boolean;
   queueRoomId: string | undefined;
@@ -30,6 +39,14 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
 ) => {
   const setMatchDifficulties = (difficulties: QuestionDifficulty[]) => {
     setState({ matchDifficulties: difficulties });
+  };
+
+  const setMatchTopics = (topics: string[]) => {
+    setState({ matchTopics: topics });
+  };
+
+  const setMatchType = (type: MatchType | undefined) => {
+    setState({ matchType: type });
   };
 
   const matchSocket = io(`${import.meta.env.VITE_API_URL}/match`, {
@@ -240,8 +257,12 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
   return {
     matchSocket,
     matchSocketConnected: false,
-    matchDifficulties: ["easy"],
+    matchDifficulties: [QuestionDifficulty.EASY],
     setMatchDifficulties,
+    matchTopics: [],
+    setMatchTopics,
+    matchType: undefined,
+    setMatchType,
     queueStatus: undefined,
     isInQueue: false,
     queueRoomId: undefined,

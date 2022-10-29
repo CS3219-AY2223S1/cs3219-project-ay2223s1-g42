@@ -9,3 +9,9 @@ export type PoolUser = PoolUserData & {
   socketId: string;
   timeJoined: number;
 };
+
+export enum MatchType {
+  DIFFICULTY = "difficulty",
+  QOTD = "qotd",
+  TOPICS = "topics",
+}
