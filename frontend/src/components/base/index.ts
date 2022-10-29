@@ -10,3 +10,5 @@ export * from "./listbox";
 export * from "./dropdown";
 export * from "./heading";
 export * from "./divider";
+export * from "./badge";
+export * from "./table";
