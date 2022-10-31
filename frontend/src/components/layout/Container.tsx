@@ -11,6 +11,7 @@ const Container = ({
   hasTopPadding = false,
   ...other
 }: Props) => {
+  console.log("container rendered");
   return (
     <div
       className={cx(

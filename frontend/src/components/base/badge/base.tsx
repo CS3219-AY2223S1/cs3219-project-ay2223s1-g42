@@ -1,14 +1,13 @@
-import React from "react";
+type Props = React.HTMLAttributes<HTMLDivElement>;
 
-type Props = React.HTMLAttributes<HTMLDivElement> & {
-  value?: any;
-  styling?: any;
-};
-
-const Badge = (props: Props) => {
+const Badge = ({ children, className, ...others }: Props) => {
   return (
-    <div className="flex flex-col space-y-4 bg-slate-300">
-      <div>{props.value}</div>
+    <div
+      className={`border-[1px] border-neutral-900 bg-white py-1 px-2
+      text-sm capitalize text-neutral-900 ${className ?? ""}`}
+      {...others}
+    >
+      {children}
     </div>
   );
 };

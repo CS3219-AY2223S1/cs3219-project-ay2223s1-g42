@@ -73,7 +73,8 @@ const AppContainer = ({ children }: PropsWithChildren) => {
     !pathname.includes("forget-password") &&
     !pathname.includes("login") &&
     !pathname.includes("signup") &&
-    !pathname.includes("user");
+    !pathname.includes("user") &&
+    !pathname.includes("questions");
 
   // authenticated page is any page with user
   // logged in and is not an error page

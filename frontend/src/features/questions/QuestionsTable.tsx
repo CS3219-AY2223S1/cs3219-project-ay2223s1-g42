@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { createColumnHelper } from "@tanstack/react-table";
-import React, { useState } from "react";
+import { createColumnHelper, SortingFnOption } from "@tanstack/react-table";
 
-import { FlattenedQuestionSummary } from "shared/api";
-import { Badge, Table, SpinnerIcon } from "src/components";
+import { FlattenedQuestionSummary, QuestionDifficulty } from "shared/api";
+import { Badge, Table, BigHeading, LoadingLayout } from "src/components";
 import { Axios } from "src/services";
 
 function stringifyDate(date: Date) {
@@ -13,17 +12,49 @@ function stringifyDate(date: Date) {
 
 const columnHelper = createColumnHelper<FlattenedQuestionSummary>();
 
-const defaultColumns = [
+const difficultyOrder = {
+  [QuestionDifficulty.EASY]: 1,
+  [QuestionDifficulty.MEDIUM]: 2,
+  [QuestionDifficulty.HARD]: 3,
+};
+const difficultySortingFn: SortingFnOption<FlattenedQuestionSummary> = (
+  rowA,
+  rowB
+) => {
+  const difficultyA =
+    difficultyOrder[
+      rowA.original.difficulty.toLowerCase() as QuestionDifficulty
+    ];
+  const difficultyB =
+    difficultyOrder[
+      rowB.original.difficulty.toLowerCase() as QuestionDifficulty
+    ];
+  return difficultyB > difficultyA ? -1 : 1;
+};
+
+const topicsSortingFn: SortingFnOption<FlattenedQuestionSummary> = (
+  rowA,
+  rowB
+) => {
+  const numTopicsA = rowA.original.topicTags.length;
+  const numTopicsB = rowB.original.topicTags.length;
+  return numTopicsB > numTopicsA ? -1 : 1;
+};
+
+export const defaultColumns = [
   columnHelper.accessor("title", {
     cell: (info) => info.getValue(),
     id: "title",
     header: "Title",
+    size: 120,
   }),
   // TODO: hyperlink badge
   columnHelper.accessor("difficulty", {
     cell: (info) => info.getValue(),
     id: "difficulty",
     header: "Difficulty",
+    enableSorting: true,
+    sortingFn: difficultySortingFn,
   }),
   columnHelper.accessor("acRate", {
     cell: (info) => info.getValue().toFixed(2) + "%",
@@ -32,15 +63,16 @@ const defaultColumns = [
   }),
   // TODO: hyperlink badge
   columnHelper.accessor("topicTags", {
-    cell: (info) =>
-      info.getValue().map((v, idx) => <Badge value={v} key={idx} />),
-    // cell: (info) =>
-    //   info.getValue().reduce((prev, curr) => {
-    //     return prev + ", " + curr;
-    //   }),
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue().map((v, idx) => (
+          <Badge key={idx}>{v}</Badge>
+        ))}
+      </div>
+    ),
     id: "topicTags",
     header: "Topics",
-    enableSorting: false,
+    sortingFn: topicsSortingFn,
   }),
   // TODO: hyperlink badge
   columnHelper.accessor("discussionLink", {
@@ -62,28 +94,22 @@ const defaultColumns = [
 ];
 
 const QuestionsTable = () => {
-  const [loadingData, setLoadingData] = useState(true);
-  const [data, setData] = useState<FlattenedQuestionSummary[]>([]);
-  useQuery(
-    ["questions"],
-    async () => {
-      const res = await Axios.get("/question/summary");
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        setData(data);
-        setLoadingData(false);
-      },
-    }
-  );
+  const data = useQuery(["questions"], async () => {
+    const res = await Axios.get<FlattenedQuestionSummary[] | undefined>(
+      "/question/summary"
+    ).then((res) => res.data);
+    return res;
+  });
 
   return (
-    <div className="flex flex-col items-center justify-between">
-      {loadingData ? (
-        <SpinnerIcon />
+    <div>
+      {data.isLoading || !data.data ? (
+        <LoadingLayout />
       ) : (
-        <Table data={data} columns={defaultColumns} />
+        <>
+          <BigHeading className="mb-4">Questions</BigHeading>
+          <Table data={data.data} columns={defaultColumns} />
+        </>
       )}
     </div>
   );

@@ -28,7 +28,6 @@ const LINKS_LOGGED_IN = [
     href: "/user/settings",
   },
   { label: "history", href: "/user/history" },
-  { label: "questions", href: "/questions" },
 ];
 
 const LINKS_LOGGED_OUT = [

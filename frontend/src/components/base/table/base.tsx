@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -7,7 +8,8 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
+import cx from "classnames";
+
 import {
   LeftArrowIcon,
   RightArrowIcon,
@@ -22,11 +24,9 @@ type Props<T> = {
 };
 
 const Table = <T,>({ columns, data }: Props<T>) => {
-  const rerender = React.useReducer(() => ({}), {})[1];
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [tableData] = React.useState<T[]>([...data]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
-    data: tableData,
+    data,
     columns,
     state: {
       sorting,
@@ -53,8 +53,8 @@ const Table = <T,>({ columns, data }: Props<T>) => {
     );
   };
   return (
-    <div>
-      <div className="m-2 flex items-center justify-between">
+    <div className="flex w-auto flex-col gap-3 bg-red-400">
+      <div className="flex items-center justify-between">
         <span className="text-sm text-neutral-700">
           Showing{" "}
           <span className="font-bold text-neutral-900">{getPageStart()}</span>{" "}
@@ -62,7 +62,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
           of <span className="font-bold text-neutral-900">{data.length}</span>{" "}
           questions
         </span>
-        <div className="mt-2 inline-flex gap-1 xs:mt-0">
+        <div className="mt-2 inline-flex gap-3">
           <PrimaryButton
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
@@ -83,47 +83,45 @@ const Table = <T,>({ columns, data }: Props<T>) => {
           </PrimaryButton>
         </div>
       </div>
-      <div className="relative overflow-x-auto">
-        <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+      <div className="relative overflow-x-auto bg-green-400">
+        <table className="w-full border-[1px] border-neutral-900 text-left text-sm ">
+          <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      scope="col"
-                      className="py-3 px-6"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
-                              : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {(header.column.getCanSort() &&
-                            {
-                              //TODO: use chevron icon
-                              asc: (
-                                <ChevronDownIcon className="h-3 w-3 rotate-180 transform" />
-                              ),
-                              desc: <ChevronDownIcon className="h-3 w-3" />,
-                            }[header.column.getIsSorted() as string]) ?? (
-                            <SortIcon className="h-3 w-3" />
-                          )}
-                        </div>
-                      )}
-                    </th>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    scope="col"
+                    className="py-3 px-6"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={cx("flex flex-row items-center gap-1", {
+                          "cursor-pointer select-none":
+                            header.column.getCanSort(),
+                        })}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getCanSort() ? (
+                          !header.column.getIsSorted() ? (
+                            <span className="h-4 w-4" />
+                          ) : header.column.getIsSorted() === "asc" ? (
+                            <ChevronDownIcon className="h-4 w-4 rotate-180 transform stroke-[3px]" />
+                          ) : (
+                            <ChevronDownIcon className="h-4 w-4 transform stroke-[3px]" />
+                          )
+                        ) : (
+                          <SortIcon className="h-4 w-4" />
+                        )}
+                      </div>
+                    )}
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
@@ -132,11 +130,14 @@ const Table = <T,>({ columns, data }: Props<T>) => {
               return (
                 <tr
                   key={row.id}
-                  className="border-b bg-white dark:border-gray-700 dark:bg-gray-800"
+                  className="w-full border-b-[1px] border-neutral-900 bg-neutral-100 md:min-w-max"
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id} className="py-4 px-6">
+                      <td
+                        key={cell.id}
+                        className="bg-purple-400 py-2 px-3 text-base lg:min-h-[100px] lg:min-w-[200px] lg:py-3 lg:px-4"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
