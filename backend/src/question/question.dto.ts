@@ -53,4 +53,15 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
     ],
   })
   public topicTags: string[];
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({
+    type: String,
+    description:
+      "Determines if overlapped questions with matching topics are returned (AND)." +
+      'Defaults to "AND"',
+    enum: ["AND", "OR"],
+  })
+  public topicMatch: string;
 }

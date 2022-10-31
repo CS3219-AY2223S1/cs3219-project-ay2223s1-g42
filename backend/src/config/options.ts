@@ -4,8 +4,8 @@ import { CookieOptions } from "express";
 const CSRF_OPTIONS = {
   cookie: true,
   httpOnly: true,
-  secure: false,
-  sameSite: "lax",
+  secure: true,
+  sameSite: "none",
 };
 
 const COOKIE_OPTIONS: CookieOptions = {
@@ -15,23 +15,16 @@ const COOKIE_OPTIONS: CookieOptions = {
 };
 
 const CORS_OPTIONS: CorsOptions = {
+  allowedHeaders: ["content-type"],
+  credentials: true,
   origin: [
-    // // coinhall.org domains:
-    // "https://coinhall.org",
-    // /https:\/\/.*\.coinhall\.org/,
+    // xyz domain
+    "https://cs3219-g42-peerprep.xyz",
     // vercel deployments:
-    "https://cs3219-project-ay2223s1-g42.vercel.app", // jk's link
-    "https://cs3219-g42.vercel.app", // aidan's link
-    "https://cs3219-g42-aidanaden.vercel.app", // aidan's link
-    "https://cs3219-g42-peerprep.xyz", // xyz domain
-    // vercel deployments:
-    /https:\/\/*\.vercel\.app/, // branches
-    /https:\/\/cs3219-g42-[a-z0-9]*-aidanaden\.vercel\.app/, // branches
+    /https:\/\/.*\.vercel\.app/,
     // localhost regex:
     /http:\/\/localhost:/,
   ],
-  credentials: true,
-  allowedHeaders: ["content-type"],
 };
 
 export { CSRF_OPTIONS, COOKIE_OPTIONS, CORS_OPTIONS };
