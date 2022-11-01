@@ -137,9 +137,14 @@ const QuestionPanel = ({
         <LoadingLayout />
       ) : (
         <div className="flex h-full w-auto flex-col px-4 py-[14px] lg:max-w-[50vw]">
-          <h1 className="mb-6 font-display text-3xl font-bold">
-            {questionSummary.title}
-          </h1>
+          <div className="mb-6">
+            <h1 className="mb-3 font-display text-3xl font-bold">
+              {questionSummary.title}
+            </h1>
+            <div className="w-fit border-[1px] border-neutral-900 bg-white py-1 px-2 text-xs font-semibold uppercase">
+              {questionSummary.difficulty}
+            </div>
+          </div>
           {parse(cleanQuestionHtmlContent, options)}
         </div>
       )}
