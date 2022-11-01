@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import cx from "classnames";
+import type { Props as ButtonProps } from "src/components/base/button/types";
 
 import {
   LeftArrowIcon,
@@ -21,6 +22,20 @@ import {
 type Props<T> = {
   columns: ColumnDef<T, any>[];
   data: T[];
+};
+
+const TablePageButton = ({ className, children, ...other }: ButtonProps) => {
+  return (
+    <PrimaryButton
+      className={`p-3 xl:p-4 ${className}`}
+      {...other}
+      hasDefaultPadding={false}
+    >
+      <div className="flex flex-row items-center gap-1 md:gap-3">
+        {children}
+      </div>
+    </PrimaryButton>
+  );
 };
 
 const Table = <T,>({ columns, data }: Props<T>) => {
@@ -53,37 +68,34 @@ const Table = <T,>({ columns, data }: Props<T>) => {
     );
   };
   return (
-    <div className="flex w-auto flex-col gap-3 bg-red-400">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-neutral-700">
+    <div className="flex w-auto flex-col gap-3 ">
+      <div className="flex flex-row justify-between">
+        <span className="self-center text-left text-sm text-neutral-700">
           Showing{" "}
           <span className="font-bold text-neutral-900">{getPageStart()}</span>{" "}
           to <span className="font-bold text-neutral-900">{getPageEnd()}</span>{" "}
           of <span className="font-bold text-neutral-900">{data.length}</span>{" "}
           questions
         </span>
-        <div className="mt-2 inline-flex gap-3">
-          <PrimaryButton
+        <div className="flex flex-row gap-3">
+          <TablePageButton
+            className={cx({ hidden: !table.getCanPreviousPage() })}
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
           >
-            <div className="flex flex-row items-center gap-1 md:gap-3">
-              <LeftArrowIcon className="h-5 w-5" />
-              Prev
-            </div>
-          </PrimaryButton>
-          <PrimaryButton
+            <LeftArrowIcon className="h-5 w-5" />
+            <span className="hidden md:block">Prev</span>
+          </TablePageButton>
+          <TablePageButton
             disabled={!table.getCanNextPage()}
             onClick={() => table.nextPage()}
           >
-            <div className="flex flex-row items-center gap-1 md:gap-3">
-              Next
-              <RightArrowIcon className="h-5 w-5" />
-            </div>
-          </PrimaryButton>
+            <span className="hidden md:block">Next</span>
+            <RightArrowIcon className="h-5 w-5" />
+          </TablePageButton>
         </div>
       </div>
-      <div className="relative overflow-x-auto bg-green-400">
+      <div className="relative overflow-x-auto">
         <table className="w-full border-[1px] border-neutral-900 text-left text-sm ">
           <thead className="bg-neutral-900 text-xs uppercase tracking-wider text-neutral-50">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -93,7 +105,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
                     key={header.id}
                     colSpan={header.colSpan}
                     scope="col"
-                    className="py-3 px-6"
+                    className="py-3 px-4"
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -130,13 +142,13 @@ const Table = <T,>({ columns, data }: Props<T>) => {
               return (
                 <tr
                   key={row.id}
-                  className="w-full border-b-[1px] border-neutral-900 bg-neutral-100 md:min-w-max"
+                  className="w-full border-b-[1px] border-neutral-900 bg-neutral-100 text-sm md:min-w-max"
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
                         key={cell.id}
-                        className="bg-purple-400 py-2 px-3 text-base lg:min-h-[100px] lg:min-w-[200px] lg:py-3 lg:px-4"
+                        className="group py-3 px-4 lg:min-h-[100px] lg:min-w-[160px]"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper, SortingFnOption } from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
 
 import { FlattenedQuestionSummary, QuestionDifficulty } from "shared/api";
 import { Badge, Table, BigHeading, LoadingLayout } from "src/components";
 import { Axios } from "src/services";
 
-function stringifyDate(date: Date) {
-  date = new Date(date);
-  return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+function formatDate(date: Date) {
+  return formatDistance(new Date(date), new Date(), { addSuffix: true });
 }
 
 const columnHelper = createColumnHelper<FlattenedQuestionSummary>();
@@ -79,8 +79,13 @@ export const defaultColumns = [
     cell: (info) => {
       const lcLink = info.getValue();
       return (
-        <a href={lcLink} target="_blank" rel="noopener noreferrer">
-          Open
+        <a
+          className="border-b-[1px] border-neutral-900"
+          href={lcLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Link to discussion
         </a>
       );
     },
@@ -88,7 +93,7 @@ export const defaultColumns = [
     enableSorting: false,
   }),
   columnHelper.accessor("updatedAt", {
-    cell: (info) => stringifyDate(info.getValue()),
+    cell: (info) => formatDate(info.getValue()),
     header: "Last updated",
   }),
 ];
@@ -107,7 +112,7 @@ const QuestionsTable = () => {
         <LoadingLayout />
       ) : (
         <>
-          <BigHeading className="mb-4">Questions</BigHeading>
+          <BigHeading className="mb-12">Questions</BigHeading>
           <Table data={data.data} columns={defaultColumns} />
         </>
       )}
