@@ -21,16 +21,17 @@ type NavItem = {
 };
 
 const LINKS_LOGGED_IN = [
+  { label: "dashboard", href: "/" },
+  { label: "questions", href: "/questions" },
   {
     label: "settings",
     href: "/user/settings",
   },
   { label: "history", href: "/user/history" },
-  { label: "questions", href: "/questions/all" },
 ];
 
 const LINKS_LOGGED_OUT = [
-  { label: "questions", href: "/questions/all" },
+  { label: "questions", href: "/questions" },
   { label: "login", href: "/login" },
   { label: "signup", href: "/signup" },
 ];
