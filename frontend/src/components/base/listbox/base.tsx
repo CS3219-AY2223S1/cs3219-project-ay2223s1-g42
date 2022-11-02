@@ -4,12 +4,10 @@ import cx from "classnames";
 
 import { CheckIcon, ChevronDownIcon } from "src/components";
 
-type TypeOfArrayElements<T> = T extends Array<unknown> ? T : T[];
-
 type Props<T> = {
   value: T | undefined;
   setValue: (value: T) => void;
-  values: TypeOfArrayElements<T>;
+  values: T | T[];
   className?: string;
   hasBorder?: boolean;
   bigPadding?: boolean;

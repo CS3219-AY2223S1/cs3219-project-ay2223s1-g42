@@ -81,7 +81,9 @@ const RoomPage = (): JSX.Element => {
   }
 
   if (room && questionSummaries.data) {
-    return <LoadedRoom questionSummaries={questionSummaries.data} />;
+    return (
+      <LoadedRoom room={room} questionSummaries={questionSummaries.data} />
+    );
   }
 
   return <LoadingLayout />;

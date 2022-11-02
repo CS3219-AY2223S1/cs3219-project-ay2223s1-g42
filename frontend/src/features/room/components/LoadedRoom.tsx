@@ -3,13 +3,14 @@ import shallow from "zustand/shallow";
 import { useQuery } from "@tanstack/react-query";
 
 import { GetSummariesResponse, Room } from "shared/api";
-import { LoadingLayout, PrimaryButton, RedButton } from "src/components";
+import { Badge, LoadingLayout, PrimaryButton, RedButton } from "src/components";
 import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
 import { RoomTabs } from "./RoomTabs";
 import { Axios } from "src/services";
 import { useState } from "react";
+import { UserStatus } from "./UserStatus";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
@@ -37,34 +38,58 @@ const LeaveRoomButton = () => {
 };
 
 const LoadedRoom = ({
+  room,
   questionSummaries,
 }: {
+  room: Room;
   questionSummaries: GetSummariesResponse;
 }) => {
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
+  const { questionIdx, setQuestionIdx } = useGlobalStore((state) => {
+    return {
+      questionIdx: state.questionIdx,
+      setQuestionIdx: state.setQuestionIdx,
+    };
+  }, shallow);
   const handleSelectNextQuestion = () => {
-    if (currentQuestionIdx + 1 > questionSummaries.length) {
+    const nextQuestionIxd = questionIdx + 1;
+    if (nextQuestionIxd > questionSummaries.length) {
       return;
     }
-    setCurrentQuestionIdx((qid) => qid + 1);
+    setQuestionIdx(nextQuestionIxd);
   };
   const handleSelectPreviousQuestion = () => {
     if (!questionSummaries) {
       return;
     }
-    if (currentQuestionIdx - 1 < 0) {
+    const previousQuestionIdx = questionIdx - 1;
+    if (previousQuestionIdx < 0) {
       return;
     }
-    setCurrentQuestionIdx((qid) => qid - 1);
+    setQuestionIdx(previousQuestionIdx);
   };
   return (
     <div className="flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
       <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
         <RoomTabs
-          questionIdx={currentQuestionIdx}
+          questionIdx={questionIdx}
           questionSummaries={questionSummaries}
         />
-        <div className="flex flex-row items-center justify-between border-t-[1px] border-neutral-800 p-2">
+        <div className="flex flex-col gap-3 border-t-[1px] border-neutral-800 p-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-col gap-2">
+            <h1 className="max-w-full truncate text-lg font-bold">{room.id}</h1>
+            <div className="flex flex-row gap-1">
+              {room.difficulties.map((diff) => (
+                <Badge key={`${room.id} ${diff}`}>{diff}</Badge>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col justify-start gap-1 truncate">
+            {room.users.map((user) => (
+              <UserStatus key={user.id} user={user} />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-row items-center justify-between border-t-[1px] border-neutral-800 p-3">
           <PrimaryButton
             className="px-6 py-2.5"
             onClick={handleSelectPreviousQuestion}
@@ -72,7 +97,7 @@ const LoadedRoom = ({
             Back
           </PrimaryButton>
           <span>
-            {currentQuestionIdx + 1}/{questionSummaries.length}
+            {questionIdx + 1}/{questionSummaries.length}
           </span>
           <PrimaryButton
             className="px-6 py-2.5"

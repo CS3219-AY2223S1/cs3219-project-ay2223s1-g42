@@ -1,23 +1,10 @@
 import { useNavigate } from "react-router";
 import cx from "classnames";
 
-import { Room, RoomUser } from "shared/api";
+import { Room } from "shared/api";
 import { useGlobalStore } from "src/store";
 import { PrimaryButton, RedButton } from "../base";
-import { CheckIcon, SpinnerIcon } from "../icons";
-
-const UserStatus = ({ user }: { user: RoomUser }) => {
-  return (
-    <div className="flex flex-row items-center justify-center gap-1 text-base md:text-sm">
-      {user.connected ? (
-        <CheckIcon className="h- w-4 stroke-[3px] text-green-500" />
-      ) : (
-        <SpinnerIcon className="h-4 w-4" />
-      )}
-      <span>{user.username}</span>
-    </div>
-  );
-};
+import { UserStatus } from "src/features";
 
 const TheRoomStatusbar = ({ room }: { room: Room }) => {
   const leaveRoom = useGlobalStore((state) => state.leaveRoom);
@@ -48,7 +35,11 @@ const TheRoomStatusbar = ({ room }: { room: Room }) => {
             </div>
             <div className="flex w-full flex-row gap-2 truncate md:flex-row">
               {room.users.map((user) => (
-                <UserStatus key={user.id} user={user} />
+                <UserStatus
+                  key={user.id}
+                  className="items-center justify-center"
+                  user={user}
+                />
               ))}
             </div>
           </div>
