@@ -121,14 +121,14 @@ const Table = <T,>({ columns, data }: Props<T>) => {
                         )}
                         {header.column.getCanSort() ? (
                           !header.column.getIsSorted() ? (
-                            <span className="h-4 w-4" />
+                            <SortIcon className="h-4 w-4" />
                           ) : header.column.getIsSorted() === "asc" ? (
                             <ChevronDownIcon className="h-4 w-4 rotate-180 transform stroke-[3px]" />
                           ) : (
                             <ChevronDownIcon className="h-4 w-4 transform stroke-[3px]" />
                           )
                         ) : (
-                          <SortIcon className="h-4 w-4" />
+                          <span className="h-4 w-4" />
                         )}
                       </div>
                     )}
