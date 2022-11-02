@@ -8,7 +8,8 @@ export type RoomUser = PoolUser & {
 export type Room = {
   id: string;
   users: RoomUser[];
-  difficulties: QuestionDifficulty[];
+  difficulties?: QuestionDifficulty[];
+  topics?: string[];
 };
 
 export type PendingRoomUser = {

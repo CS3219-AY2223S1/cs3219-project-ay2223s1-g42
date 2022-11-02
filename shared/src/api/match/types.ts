@@ -2,7 +2,9 @@ import { QuestionDifficulty } from "../question/types";
 import { UserInfo } from "../user";
 
 export type PoolUserData = Required<UserInfo> & {
-  difficulties: QuestionDifficulty[];
+  difficulties?: QuestionDifficulty[];
+  topics?: string[];
+  qotd?: boolean;
 };
 
 export type PoolUser = PoolUserData & {
