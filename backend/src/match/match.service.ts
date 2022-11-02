@@ -53,10 +53,10 @@ export class MatchService {
 
       // add user to all topic namespaces selected
       if (user.topics) {
-        const addToAllTopicQueues = user.difficulties.map(
-          async (difficulty) =>
+        const addToAllTopicQueues = user.topics.map(
+          async (topic) =>
             await this.cache.setKeyInNamespace(
-              [NAMESPACES.MATCH, difficulty],
+              [NAMESPACES.MATCH, topic],
               user.id.toString(),
               user
             )
