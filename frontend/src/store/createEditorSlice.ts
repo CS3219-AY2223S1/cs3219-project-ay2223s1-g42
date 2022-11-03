@@ -164,15 +164,17 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     // observe document language + editor document text changes
     monacoBinding?.ytext.observe((event, transaction) => {
       const updatedInput = transaction.doc.getText("monaco").toJSON();
-      const language = event.target.getAttribute("language");
-      const questionIdx = event.target.getAttribute("questionIdx");
-      if (questionIdx) {
-        setQuestionIdx(questionIdx);
+      if (updatedInput) {
+        setState({ editorInput: updatedInput });
       }
-      setState({
-        editorLanguage: language,
-        editorInput: updatedInput,
-      });
+      const language = event.target.getAttribute("language");
+      if (language) {
+        setState({ editorLanguage: language });
+      }
+      const questionIdx: number = event.target.getAttribute("questionIdx");
+      if (questionIdx >= 0) {
+        setState({ questionIdx });
+      }
     });
 
     // set initial editor document language to typescript
@@ -182,7 +184,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     }
 
     // set initial question index
-    const questionIdx = monacoBinding.ytext.getAttribute("questionIdx");
+    const questionIdx: number = monacoBinding.ytext.getAttribute("questionIdx");
     if (!questionIdx) {
       monacoBinding.ytext.setAttribute("questionIdx", 0);
     }
