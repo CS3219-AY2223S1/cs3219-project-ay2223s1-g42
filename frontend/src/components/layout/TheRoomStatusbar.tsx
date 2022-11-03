@@ -24,14 +24,32 @@ const TheRoomStatusbar = ({ room }: { room: Room }) => {
           <div className="truncate text-lg font-bold md:ml-0">{room.id}</div>
           <div className="flex flex-row items-center justify-center gap-3">
             <div className="flex flex-none flex-row gap-1 truncate">
-              {room.difficulties.map((difficulty, i) => (
+              {room.difficulties ? (
+                room.difficulties.map((difficulty, i) => (
+                  <p
+                    key={`${difficulty.toString()} ${i}`}
+                    className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
+                  >
+                    {difficulty.toString()}
+                  </p>
+                ))
+              ) : room.topics ? (
+                room.topics.map((topic, i) => (
+                  <p
+                    key={`${topic.toString()} ${i}`}
+                    className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
+                  >
+                    {topic.toString()}
+                  </p>
+                ))
+              ) : (
                 <p
-                  key={`${difficulty.toString()} ${i}`}
+                  key={`qotd`}
                   className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
                 >
-                  {difficulty.toString()}
+                  Question of the day
                 </p>
-              ))}
+              )}
             </div>
             <div className="flex w-full flex-row gap-2 truncate md:flex-row">
               {room.users.map((user) => (

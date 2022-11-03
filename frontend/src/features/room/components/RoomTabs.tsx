@@ -3,17 +3,14 @@ import { BaseTabs } from "src/components";
 import { QuestionPanel } from "./QuestionPanel";
 
 const RoomTabs = ({
-  questionIdx,
   questionSummaries,
 }: {
-  questionIdx: number;
   questionSummaries: GetSummariesResponse;
 }) => {
   const tabValues: Record<string, JSX.Element> = {
     Description: (
       <QuestionPanel
-        key={questionIdx}
-        questionIdx={questionIdx}
+        key="question-panel"
         questionSummaries={questionSummaries}
       />
     ),

@@ -10,6 +10,7 @@ import {
   QuestionCheckGroup,
   MatchTypeRadioGroup,
   TopicListBox,
+  QuestionPreview,
 } from "src/features";
 import { useGlobalStore } from "src/store";
 
@@ -71,13 +72,8 @@ const Dashboard = () => {
       return;
     }
     setIsMatchingDialogOpen(true);
-    joinQueue(matchDifficulties);
-  }, [
-    roomSocket?.connected,
-    matchSocket?.connected,
-    joinQueue,
-    matchDifficulties,
-  ]);
+    joinQueue();
+  }, [roomSocket?.connected, matchSocket?.connected, joinQueue]);
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);
@@ -124,7 +120,7 @@ const Dashboard = () => {
           ) : matchType === MatchType.TOPICS ? (
             <TopicListBox />
           ) : (
-            <></>
+            <QuestionPreview />
           )}
           <div className="flex flex-col gap-2">
             <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>

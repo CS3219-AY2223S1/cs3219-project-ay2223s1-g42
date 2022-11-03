@@ -138,43 +138,7 @@ export class MatchService {
 
   async handleFindMatchingUserIds(user: PoolUser): Promise<string[]> {
     try {
-      const matchingUserIds: Promise<string[]>[] = [];
-
-      // search for all matching users in selected difficulty namespaces
-      if (user.difficulties) {
-        const difficultyMatchingUserIds = user.difficulties.map(
-          async (difficulty) => {
-            const userIds = await this.cache.getAllKeysInNamespace([
-              NAMESPACES.MATCH,
-              difficulty,
-            ]);
-            return userIds;
-          }
-        );
-        matchingUserIds.push(...difficultyMatchingUserIds);
-      }
-
-      // search for all matching users in selected topic namespaces
-      if (user.topics) {
-        const topicMatchingUserIds = user.topics.map(async (topic) => {
-          const userIds = await this.cache.getAllKeysInNamespace([
-            NAMESPACES.MATCH,
-            topic,
-          ]);
-          return userIds;
-        });
-        matchingUserIds.push(...topicMatchingUserIds);
-      }
-
-      // search for all matching users in qotd namespaces
-      if (user.qotd) {
-        const userIds = this.cache.getAllKeysInNamespace([
-          NAMESPACES.MATCH,
-          MatchType.QOTD,
-        ]);
-        matchingUserIds.push(userIds);
-      }
-      const fetchAllMatchedUserIdsRes = await Promise.all(matchingUserIds);
+      const fetchAllMatchedUserIdsRes = await this.getMatchingUserIds(user);
       const matchedUserIds = Array.from(
         new Set(fetchAllMatchedUserIdsRes.flat())
       );
@@ -186,6 +150,47 @@ export class MatchService {
       console.error(err);
       throw new Error(MATCH_ERRORS.HANDLE_FIND_MATCHING_USER_IDS);
     }
+  }
+
+  async getMatchingUserIds(user: PoolUser) {
+    const matchingUserIds: Promise<string[]>[] = [];
+
+    // search for all matching users in selected difficulty namespaces
+    if (user.difficulties) {
+      const difficultyMatchingUserIds = user.difficulties.map(
+        async (difficulty) => {
+          const userIds = await this.cache.getAllKeysInNamespace([
+            NAMESPACES.MATCH,
+            difficulty,
+          ]);
+          return userIds;
+        }
+      );
+      matchingUserIds.push(...difficultyMatchingUserIds);
+    }
+
+    // search for all matching users in selected topic namespaces
+    if (user.topics) {
+      const topicMatchingUserIds = user.topics.map(async (topic) => {
+        const userIds = await this.cache.getAllKeysInNamespace([
+          NAMESPACES.MATCH,
+          topic,
+        ]);
+        return userIds;
+      });
+      matchingUserIds.push(...topicMatchingUserIds);
+    }
+
+    // search for all matching users in qotd namespaces
+    if (user.qotd) {
+      const userIds = this.cache.getAllKeysInNamespace([
+        NAMESPACES.MATCH,
+        MatchType.QOTD,
+      ]);
+      matchingUserIds.push(userIds);
+    }
+    const matchedUserIdsRes = await Promise.all(matchingUserIds);
+    return matchedUserIdsRes;
   }
 
   async handleFoundMatches(user: PoolUser, matchingUserIds: string[]) {
@@ -203,8 +208,17 @@ export class MatchService {
         matchedUserId
       );
 
+      const roomType = user.difficulties
+        ? MatchType.DIFFICULTY
+        : user.topics
+        ? MatchType.TOPICS
+        : MatchType.QOTD;
+
       // create room and store all users as room users
-      const newRoom = await this.roomService.createRoom([user, matchedUser]);
+      const newRoom = await this.roomService.createRoom(
+        [user, matchedUser],
+        roomType
+      );
 
       // remove all users from match queues
       const disconnectAllUsers = newRoom.users.map(

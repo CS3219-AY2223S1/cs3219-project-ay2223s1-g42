@@ -28,7 +28,7 @@ export type MatchSlice = {
   queueStatus: Status | undefined;
   isInQueue: boolean;
   queueRoomId: string | undefined;
-  joinQueue: (difficulties: QuestionDifficulty[]) => void;
+  joinQueue: () => void;
   leaveQueue: () => void;
   cancelMatch: () => void;
 };
@@ -198,7 +198,7 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
     setState({ queueStatus, queueRoomId: undefined, room: undefined });
   });
 
-  const joinQueue = (difficulties: QuestionDifficulty[]) => {
+  const joinQueue = () => {
     const user = getState().user;
     if (!user) {
       console.error("user not logged in, cannot join queue!");
@@ -209,10 +209,42 @@ const createMatchSlice: StateCreator<GlobalStore, [], [], MatchSlice> = (
       console.error("socket not set, cannot join queue!");
       return;
     }
+    const matchType = getState().matchType;
+    if (!matchType) {
+      console.error("match type not set, cannot join queue!");
+      return;
+    }
     const poolUser: PoolUserData = {
       ...user,
-      difficulties,
     };
+
+    // join queue with difficulty/topics/qotd in user data
+    if (matchType === MatchType.DIFFICULTY) {
+      const difficulties = getState().matchDifficulties;
+      if (!difficulties) {
+        console.error(
+          "no difficulties selected even though match type set to difficulty!"
+        );
+        return;
+      }
+      poolUser.difficulties = difficulties;
+    }
+
+    if (matchType === MatchType.TOPICS) {
+      const topics = getState().matchTopics;
+      if (!topics || topics.length === 0) {
+        console.error(
+          "no topics selected even though match type set to topics!"
+        );
+        return;
+      }
+      poolUser.topics = topics;
+    }
+
+    if (matchType === MatchType.QOTD) {
+      poolUser.qotd = true;
+    }
+
     socket.emit(MATCH_EVENTS.JOIN_QUEUE, JSON.stringify(poolUser));
   };
 

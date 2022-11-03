@@ -111,12 +111,11 @@ const options: HTMLReactParserOptions = {
 };
 
 const QuestionPanel = ({
-  questionIdx,
   questionSummaries,
 }: {
-  questionIdx: number;
   questionSummaries: GetSummariesResponse;
 }) => {
+  const questionIdx = useGlobalStore((state) => state.questionIdx);
   const questionSummary = questionSummaries[questionIdx];
   const questionSlug = questionSummary.titleSlug;
   const questionDataQuery = useQuery(["question-data", questionSlug], () =>

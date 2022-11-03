@@ -1,4 +1,4 @@
-import { PoolUser } from "../match/types";
+import { MatchType, PoolUser } from "../match/types";
 import { QuestionDifficulty } from "../question";
 
 export type RoomUser = PoolUser & {
@@ -8,6 +8,7 @@ export type RoomUser = PoolUser & {
 export type Room = {
   id: string;
   users: RoomUser[];
+  type: MatchType;
   difficulties?: QuestionDifficulty[];
   topics?: string[];
 };
