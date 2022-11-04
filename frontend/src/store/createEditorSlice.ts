@@ -16,7 +16,9 @@ export type EditorSlice = {
   editorInput: string | undefined;
   editorClients: string[] | undefined;
   editorBinding: MonacoBinding | undefined;
+  questionIdx: number;
   setEditorLanguage: (language: LANGUAGE) => void;
+  setQuestionIdx: (idx: number) => void;
   setupDoc: () => void;
   setupProvider: () => void;
   setupBinding: (editor: monaco.editor.IStandaloneCodeEditor) => void;
@@ -35,6 +37,14 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       binding.ytext.setAttribute("language", language);
     }
     setState({ editorLanguage: language });
+  };
+
+  const setQuestionIdx = (idx: number) => {
+    const binding = getState().editorBinding;
+    if (binding) {
+      binding.ytext.setAttribute("questionIdx", idx);
+    }
+    setState({ questionIdx: idx });
   };
 
   // set up editor document
@@ -154,11 +164,17 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     // observe document language + editor document text changes
     monacoBinding?.ytext.observe((event, transaction) => {
       const updatedInput = transaction.doc.getText("monaco").toJSON();
+      if (updatedInput) {
+        setState({ editorInput: updatedInput });
+      }
       const language = event.target.getAttribute("language");
-      setState({
-        editorLanguage: language,
-        editorInput: updatedInput,
-      });
+      if (language) {
+        setState({ editorLanguage: language });
+      }
+      const questionIdx: number = event.target.getAttribute("questionIdx");
+      if (questionIdx >= 0) {
+        setState({ questionIdx });
+      }
     });
 
     // set initial editor document language to typescript
@@ -167,9 +183,16 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
     }
 
+    // set initial question index
+    const questionIdx: number = monacoBinding.ytext.getAttribute("questionIdx");
+    if (!questionIdx) {
+      monacoBinding.ytext.setAttribute("questionIdx", 0);
+    }
+
     setState({
       editorBinding: monacoBinding,
       editorLanguage: language ?? LANGUAGE.TS,
+      questionIdx: questionIdx ?? 0,
     });
   };
 
@@ -186,10 +209,12 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     editorInput: undefined,
     editorClients: undefined,
     editorBinding: undefined,
+    questionIdx: 0,
     setupDoc,
     setupProvider,
     setupBinding,
     setEditorLanguage,
+    setQuestionIdx,
     cleanupProvider,
     cleanupBinding,
     resetProviderBinding,

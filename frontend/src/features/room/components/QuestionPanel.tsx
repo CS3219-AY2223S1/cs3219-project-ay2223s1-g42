@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GetSlugContentResponse, GetSummariesResponse } from "shared/api";
 import { useGlobalStore } from "src/store";
 import { Axios } from "src/services";
-import { LoadingLayout } from "src/components";
+import { Badge, LoadingLayout } from "src/components";
 
 const QUESTION_DATA = {
   data: {
@@ -110,40 +110,43 @@ const options: HTMLReactParserOptions = {
   },
 };
 
-const QuestionPanel = () => {
-  const room = useGlobalStore((state) => state.room);
-
-  const questionSummariesQuery = useQuery(
-    ["question-summaries", room?.id],
-    () =>
-      Axios.get<GetSummariesResponse>(
-        `/question/summary?difficulty=${room?.difficulties.join(",")}`
-      ).then((res) => res.data)
+const QuestionPanel = ({
+  questionIdx,
+  questionSummaries,
+}: {
+  questionIdx: number;
+  questionSummaries: GetSummariesResponse;
+}) => {
+  const questionSummary = questionSummaries[questionIdx];
+  const questionSlug = questionSummary.titleSlug;
+  const questionDataQuery = useQuery(["question-data", questionSlug], () =>
+    Axios.get<GetSlugContentResponse>(`/question/content/${questionSlug}`).then(
+      (res) => res.data
+    )
   );
 
-  const questionSlugs = questionSummariesQuery.data?.map(
-    (question) => question.titleSlug
-  );
-
-  const questionQuery = useQuery(["question-data", questionSlugs?.[0]], () =>
-    Axios.get<GetSlugContentResponse>(
-      `/question/content/${questionSlugs?.[0]}`
-    ).then((res) => res.data)
-  );
-
-  const rawQuestionHtmlContent = questionQuery.data?.content;
+  const rawQuestionHtmlContent = questionDataQuery.data?.content;
   const rawHtmlContent = QUESTION_DATA.data.question.content;
   const cleanQuestionHtmlContent = sanitizeHtml(
     rawQuestionHtmlContent ?? rawHtmlContent
   );
 
-  // const rawHtmlContent = QUESTION_DATA.data.question.content;
-  // const cleanHtmlContent = sanitizeHtml(rawHtmlContent);
-
   return (
-    <div className="flex h-full w-auto flex-col px-4 py-[14px] lg:max-w-[50vw]">
-      {room ? parse(cleanQuestionHtmlContent, options) : <LoadingLayout />}
-    </div>
+    <>
+      {questionDataQuery.isLoading ? (
+        <LoadingLayout />
+      ) : (
+        <div className="flex h-full w-full flex-col px-4 py-[14px] md:max-w-[50vw]">
+          <div className="mb-6">
+            <h1 className="mb-3 font-display text-3xl font-bold">
+              {questionSummary.title}
+            </h1>
+            <Badge>{questionSummary.difficulty}</Badge>
+          </div>
+          {parse(cleanQuestionHtmlContent, options)}
+        </div>
+      )}
+    </>
   );
 };
 

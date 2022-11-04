@@ -1,9 +1,22 @@
+import { GetSummariesResponse } from "shared/api";
 import { BaseTabs } from "src/components";
 import { QuestionPanel } from "./QuestionPanel";
 
-const RoomTabs = () => {
+const RoomTabs = ({
+  questionIdx,
+  questionSummaries,
+}: {
+  questionIdx: number;
+  questionSummaries: GetSummariesResponse;
+}) => {
   const tabValues: Record<string, JSX.Element> = {
-    Description: <QuestionPanel />,
+    Description: (
+      <QuestionPanel
+        key={questionIdx}
+        questionIdx={questionIdx}
+        questionSummaries={questionSummaries}
+      />
+    ),
     Solution: <>{"Question solution here!!!"}</>,
     Submissions: <>{"Question submissions here!!!"}</>,
   };
