@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { CompleteQuestionContent, QuestionContentModel } from "./index";
 
 export const _QuestionHintModel = z.object({
