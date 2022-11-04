@@ -4,7 +4,6 @@ import { _UserModel } from "../../models";
 
 const UserHistoryQuerySchema = z.object({
   content: z.string(),
-  username: z.string(),
   titleSlug: z.string().transform((v) => v.trim().toLowerCase()),
 });
 
