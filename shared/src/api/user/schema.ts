@@ -3,21 +3,10 @@ import { z } from "zod";
 import { _UserModel } from "../../models";
 
 const UserHistoryQuerySchema = z.object({
+  content: z.string(),
   username: z.string(),
-  titleSlug: z
-    .string()
-    .transform((v) =>
-      Array.from(
-        new Set(
-          v
-            .split(",")
-            .map((v) => v.trim().toLowerCase())
-            .filter((v) => v.length > 0)
-        )
-      )
-    )
-    .or(z.array(z.string()))
-    .optional(),
+  roomId: z.string(),
+  titleSlug: z.string().transform((v) => v.trim().toLowerCase()),
 });
 
 const UserInfoSchema = _UserModel.pick({
