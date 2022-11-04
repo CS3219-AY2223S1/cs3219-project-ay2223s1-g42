@@ -7,8 +7,10 @@ import {
   Post,
 } from "@nestjs/common";
 
+import { UserInfo } from "shared/api";
 import { HistoryService } from "./history.service";
 import { HistoryDto } from "./history.dto";
+import { GetUser } from "../utils";
 
 //! To test routes, decorate them with @PublicRoute()
 @Controller("history")
@@ -16,8 +18,11 @@ export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 
   @Post("")
-  async addToUserHistory(@Body() historyInfo: HistoryDto) {
-    const { content, titleSlug, username } = historyInfo;
+  async addToUserHistory(
+    @GetUser() { username }: UserInfo,
+    @Body() historyInfo: HistoryDto
+  ) {
+    const { content, titleSlug } = historyInfo;
 
     const res = { message: "pending" };
     await this.historyService
@@ -27,15 +32,15 @@ export class HistoryController {
     return res;
   }
 
-  @Get(":username")
-  async getUserHistory(@Param("username") username: string) {
+  @Get("me")
+  async getUserHistory(@GetUser() { username }: UserInfo) {
     const userHistory = await this.historyService.getHistory(username);
     return userHistory;
   }
 
-  @Get(":username/:titleSlug")
+  @Get("me/:titleSlug")
   async getUserQuestionHistory(
-    @Param("username") username: string,
+    @GetUser() { username }: UserInfo,
     @Param("titleSlug") titleSlug: string
   ) {
     const userQuestionHistory = await this.historyService.getHistory(
@@ -45,9 +50,9 @@ export class HistoryController {
     return userQuestionHistory;
   }
 
-  @Get(":username/:titleSlug/:id")
+  @Get("me/:titleSlug/:id")
   async getUserQuestionAttempt(
-    @Param("username") username: string,
+    @GetUser() { username }: UserInfo,
     @Param("titleSlug") titleSlug: string,
     @Param("id") id: string
   ) {
