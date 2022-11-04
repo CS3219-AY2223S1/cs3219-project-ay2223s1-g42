@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { CompleteUserHistory, UserHistoryModel } from "./index";
 
 export const _UserModel = z.object({

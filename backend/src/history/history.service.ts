@@ -67,18 +67,21 @@ export class HistoryService {
     return filteredHistory;
   }
 
-  async addHistory(
-    username: string,
-    titleSlug: string,
-    content: string,
-    roomId: string
-  ) {
-    // await this.prisma.userHistory.upsert({
-    //   where: {},
-    // });
-    // await this.prisma.userHistory.create({
-    //   data: { content, roomId, titleSlug, username },
-    // });
+  /**
+   * Adds an attempt to the user's history
+   *
+   * @param   {string}  username   User's username
+   * @param   {string}  titleSlug  Title slug of the attempted question
+   * @param   {string}  content    Content of the editor
+   */
+  async addHistory(username: string, titleSlug: string, content: string) {
+    this.prisma.userHistory
+      .create({ data: { content, titleSlug, username } })
+      .then(async () => {
+        // revalidate cache after each creation
+        await this.invalidateSpecificHistoryCache(username);
+        await this.getHistory(username);
+      });
   }
 
   // ***** Caching helpers *****
@@ -92,7 +95,7 @@ export class HistoryService {
     if (!cachedUserHistory) {
       const prismaUserHistory = await this.prisma.user.findUniqueOrThrow({
         where: { username },
-        select: { history: true },
+        select: { history: { select: USER_HISTORY_SELECT } },
       });
 
       await this.redis.setKeyInNamespace(
@@ -101,7 +104,7 @@ export class HistoryService {
         prismaUserHistory.history
       );
 
-      return [];
+      return prismaUserHistory.history;
     }
     return cachedUserHistory;
   }
@@ -117,6 +120,7 @@ export class HistoryService {
   }
 
   async invalidateSpecificHistoryCache(username: string) {
+    console.log("invalidating cache for", username);
     await this.redis.deleteKeyInNamespace([NAMESPACES.HISTORY], username);
   }
 }
