@@ -12,7 +12,7 @@ import {
   TopicListBox,
   QuestionPreview,
 } from "src/features";
-import { useGlobalStore } from "src/store";
+import { matchToastOptions, useGlobalStore } from "src/store";
 
 enum PageStep {
   FIRST = 1,
@@ -26,6 +26,7 @@ const Dashboard = () => {
     user,
     queueStatus,
     matchDifficulties,
+    matchTopics,
     matchSocket,
     matchType,
     roomSocket,
@@ -37,6 +38,7 @@ const Dashboard = () => {
       user: state.user,
       queueStatus: state.queueStatus,
       matchDifficulties: state.matchDifficulties,
+      matchTopics: state.matchTopics,
       matchSocket: state.matchSocket,
       matchType: state.matchType,
       roomSocket: state.roomSocket,
@@ -71,9 +73,24 @@ const Dashboard = () => {
       });
       return;
     }
+    if (matchType === MatchType.DIFFICULTY && matchDifficulties.length === 0) {
+      toast.error("Please select at least one difficulty.", matchToastOptions);
+      return;
+    }
+    if (matchType === MatchType.TOPICS && matchTopics?.length === 0) {
+      toast.error("Please select at least one topic.", matchToastOptions);
+      return;
+    }
     setIsMatchingDialogOpen(true);
     joinQueue();
-  }, [roomSocket?.connected, matchSocket?.connected, joinQueue]);
+  }, [
+    roomSocket?.connected,
+    matchSocket?.connected,
+    matchType,
+    matchDifficulties.length,
+    matchTopics?.length,
+    joinQueue,
+  ]);
 
   const handleMatchDialogClose = () => {
     setIsMatchingDialogOpen(false);

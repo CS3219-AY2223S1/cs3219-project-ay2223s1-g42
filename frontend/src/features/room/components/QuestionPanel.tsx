@@ -135,7 +135,7 @@ const QuestionPanel = ({
       {questionDataQuery.isLoading ? (
         <LoadingLayout />
       ) : (
-        <div className="flex h-full w-full flex-col px-4 py-[14px] md:max-w-[50vw]">
+        <div className="flex h-full w-full flex-col px-4 py-3 md:max-w-[50vw]">
           <div className="mb-6">
             <h1 className="mb-3 font-display text-3xl font-bold">
               {questionSummary.title}

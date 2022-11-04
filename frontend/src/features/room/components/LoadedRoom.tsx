@@ -49,13 +49,13 @@ const LoadedRoom = ({
   }, shallow);
   const handleSelectNextQuestion = () => {
     const nextQuestionIxd = questionIdx + 1;
-    if (nextQuestionIxd > questionSummaries.length) {
+    if (nextQuestionIxd > questionSummaries.length - 1) {
       return;
     }
     setQuestionIdx(nextQuestionIxd);
   };
   const handleSelectPreviousQuestion = () => {
-    if (!questionSummaries) {
+    if (!questionSummaries || questionSummaries.length === 0) {
       return;
     }
     const previousQuestionIdx = questionIdx - 1;
