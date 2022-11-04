@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import {
   CompleteTopicTag,
   TopicTagModel,
@@ -21,7 +20,7 @@ export const _QuestionSummaryModel = z.object({
 
 export interface CompleteQuestionSummary
   extends z.infer<typeof _QuestionSummaryModel> {
-  topicTags: CompleteTopicTag[];
+  topicTags?: CompleteTopicTag[];
   QuestionContent?: CompleteQuestionContent | null;
 }
 
