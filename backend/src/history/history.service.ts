@@ -67,6 +67,20 @@ export class HistoryService {
     return filteredHistory;
   }
 
+  async addHistory(
+    username: string,
+    titleSlug: string,
+    content: string,
+    roomId: string
+  ) {
+    // await this.prisma.userHistory.upsert({
+    //   where: {},
+    // });
+    // await this.prisma.userHistory.create({
+    //   data: { content, roomId, titleSlug, username },
+    // });
+  }
+
   // ***** Caching helpers *****
   private async getUserFullHistoryFromCache(
     username: string
@@ -76,27 +90,33 @@ export class HistoryService {
     >([NAMESPACES.HISTORY], username);
 
     if (!cachedUserHistory) {
-      const prismaUserHistory = await this.prisma.userHistory.findMany({
-        select: USER_HISTORY_SELECT,
+      const prismaUserHistory = await this.prisma.user.findUniqueOrThrow({
+        where: { username },
+        select: { history: true },
       });
 
       await this.redis.setKeyInNamespace(
         [NAMESPACES.HISTORY],
         username,
-        prismaUserHistory
+        prismaUserHistory.history
       );
 
-      return prismaUserHistory;
+      return [];
     }
     return cachedUserHistory;
   }
 
-  async invalidateHistoryCache() {
+  async invalidateAllHistoryCache() {
     const historyCacheKeys = await this.redis.getAllKeysInNamespace([
       NAMESPACES.HISTORY,
     ]);
+    console.log(historyCacheKeys);
     for (const key of historyCacheKeys) {
       await this.redis.deleteKeyInNamespace([NAMESPACES.HISTORY], key);
     }
+  }
+
+  async invalidateSpecificHistoryCache(username: string) {
+    await this.redis.deleteKeyInNamespace([NAMESPACES.HISTORY], username);
   }
 }
