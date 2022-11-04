@@ -6,7 +6,9 @@ export const _UserHistoryModel = z.object({
   roomId: z.string(),
   titleSlug: z.string(),
   content: z.string(),
-  userId: z.number().int().nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  username: z.string().nullish(),
 });
 
 export interface CompleteUserHistory extends z.infer<typeof _UserHistoryModel> {
