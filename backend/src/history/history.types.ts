@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 export const USER_HISTORY_SELECT = Prisma.validator<Prisma.UserHistorySelect>()(
   {
+    id: true,
     content: true,
     titleSlug: true,
     updatedAt: true,

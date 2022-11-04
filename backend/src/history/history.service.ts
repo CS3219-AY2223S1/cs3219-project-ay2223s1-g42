@@ -24,12 +24,16 @@ export class HistoryService {
    */
   async getHistory(
     username: string,
-    titleSlug?: string
-  ): Promise<UserHistoryFromDb[]> {
-    if (titleSlug) {
+    titleSlug?: string,
+    id?: string
+  ): Promise<UserHistoryFromDb[] | UserHistoryFromDb> {
+    if (titleSlug && id) {
+      return this.getQuestionAttempt(username, titleSlug, id);
+    } else if (titleSlug) {
       return this.getQuestionHistory(username, titleSlug);
+    } else {
+      return this.getUserFullHistory(username);
     }
-    return this.getUserFullHistory(username);
   }
 
   /**
@@ -65,6 +69,17 @@ export class HistoryService {
     );
 
     return filteredHistory;
+  }
+
+  private async getQuestionAttempt(
+    username: string,
+    titleSlug: string,
+    id: string
+  ) {
+    const userTitleHistory = await this.getQuestionHistory(username, titleSlug);
+    const [attempt] = userTitleHistory.filter((v) => v.id.toString() == id);
+
+    return attempt;
   }
 
   /**
@@ -113,14 +128,12 @@ export class HistoryService {
     const historyCacheKeys = await this.redis.getAllKeysInNamespace([
       NAMESPACES.HISTORY,
     ]);
-    console.log(historyCacheKeys);
     for (const key of historyCacheKeys) {
       await this.redis.deleteKeyInNamespace([NAMESPACES.HISTORY], key);
     }
   }
 
   async invalidateSpecificHistoryCache(username: string) {
-    console.log("invalidating cache for", username);
     await this.redis.deleteKeyInNamespace([NAMESPACES.HISTORY], username);
   }
 }

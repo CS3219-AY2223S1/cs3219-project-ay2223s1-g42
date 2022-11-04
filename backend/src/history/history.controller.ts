@@ -45,6 +45,20 @@ export class HistoryController {
     return userQuestionHistory;
   }
 
+  @Get(":username/:titleSlug/:id")
+  async getUserQuestionAttempt(
+    @Param("username") username: string,
+    @Param("titleSlug") titleSlug: string,
+    @Param("id") id: string
+  ) {
+    const userQuestionHistory = await this.historyService.getHistory(
+      username,
+      titleSlug,
+      id
+    );
+    return userQuestionHistory;
+  }
+
   @Post("invalidateCache")
   async invalidateAllHistoryCache() {
     try {
