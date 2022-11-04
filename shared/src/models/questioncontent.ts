@@ -1,4 +1,5 @@
-import * as z from "zod";
+import { z } from "zod";
+
 import {
   CompleteQuestionSummary,
   QuestionSummaryModel,
