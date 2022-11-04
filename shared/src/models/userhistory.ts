@@ -1,14 +1,12 @@
 import * as z from "zod";
-
 import { CompleteUser, UserModel } from "./index";
 
 export const _UserHistoryModel = z.object({
   id: z.number().int(),
+  roomId: z.string(),
   titleSlug: z.string(),
   content: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  username: z.string().nullish(),
+  userId: z.number().int().nullish(),
 });
 
 export interface CompleteUserHistory extends z.infer<typeof _UserHistoryModel> {

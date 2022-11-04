@@ -1,5 +1,4 @@
 import * as z from "zod";
-
 import { CompleteUserHistory, UserHistoryModel } from "./index";
 
 export const _UserModel = z.object({
@@ -14,13 +13,13 @@ export const _UserModel = z.object({
    * @z.string().email({ message: "Invalid email address" })
    */
   email: z.string(),
-  hash: z.string(),
+  hash: z.string().nullish(),
   hashRt: z.string().nullish(),
   provider: z.string(),
 });
 
 export interface CompleteUser extends z.infer<typeof _UserModel> {
-  history?: CompleteUserHistory[];
+  history: CompleteUserHistory[];
 }
 
 /**
