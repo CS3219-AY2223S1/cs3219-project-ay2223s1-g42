@@ -1,5 +1,4 @@
 import * as z from "zod";
-
 import {
   CompleteQuestionSummary,
   QuestionSummaryModel,
@@ -17,8 +16,8 @@ export const _QuestionContentModel = z.object({
 
 export interface CompleteQuestionContent
   extends z.infer<typeof _QuestionContentModel> {
-  summary?: CompleteQuestionSummary;
-  hints?: CompleteQuestionHint[];
+  summary: CompleteQuestionSummary;
+  hints: CompleteQuestionHint[];
 }
 
 /**

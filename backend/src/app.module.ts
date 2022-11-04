@@ -17,6 +17,7 @@ import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
 import { DocumentModule } from "./document/document.module";
 import { QuestionModule } from "./question/question.module";
+import { HistoryController } from "./history/history.controller";
 import { HistoryModule } from "./history/history.module";
 
 @Module({
@@ -69,5 +70,6 @@ import { HistoryModule } from "./history/history.module";
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_GUARD, useClass: JwtAccessGuard },
   ],
+  controllers: [HistoryController],
 })
 export class AppModule {}
