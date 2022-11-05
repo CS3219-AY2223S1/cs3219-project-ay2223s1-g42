@@ -12,7 +12,6 @@ import { HistoryService } from "./history.service";
 import { HistoryDto } from "./history.dto";
 import { GetUser } from "../utils";
 
-//! To test routes, decorate them with @PublicRoute()
 @Controller("history")
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
@@ -32,13 +31,13 @@ export class HistoryController {
     return res;
   }
 
-  @Get("me")
+  @Get("")
   async getUserHistory(@GetUser() { username }: UserInfo) {
     const userHistory = await this.historyService.getHistory(username);
     return userHistory;
   }
 
-  @Get("me/:titleSlug")
+  @Get(":titleSlug")
   async getUserQuestionHistory(
     @GetUser() { username }: UserInfo,
     @Param("titleSlug") titleSlug: string
@@ -50,7 +49,7 @@ export class HistoryController {
     return userQuestionHistory;
   }
 
-  @Get("me/:titleSlug/:id")
+  @Get(":titleSlug/:id")
   async getUserQuestionAttempt(
     @GetUser() { username }: UserInfo,
     @Param("titleSlug") titleSlug: string,
