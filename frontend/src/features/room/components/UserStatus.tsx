@@ -14,7 +14,7 @@ const UserStatus = ({
   return (
     <div className={cx("flex flex-row gap-1 text-base md:text-sm", className)}>
       {user.connected ? (
-        <CheckIcon className="h- w-4 stroke-[3px] text-green-500" />
+        <CheckIcon className="h-4 w-4 stroke-[3px] text-green-500" />
       ) : (
         <SpinnerIcon className="h-4 w-4" />
       )}

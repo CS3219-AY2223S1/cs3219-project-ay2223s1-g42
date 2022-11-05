@@ -71,7 +71,7 @@ export class AuthService {
     );
 
     if (user) {
-      if (user.email == email) {
+      if (user.email === email) {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_EMAIL);
       } else {
         throw new ForbiddenException(AUTH_ERROR.UNAVAILABLE_USERNAME);

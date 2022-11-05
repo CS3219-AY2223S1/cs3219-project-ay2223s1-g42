@@ -2,17 +2,21 @@ import { createZodDto } from "@anatine/zod-nestjs";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 
-import { QuestionQuerySchema } from "shared/api";
+import {
+  QuestionDifficulty,
+  QuestionQuerySchema,
+  TopicMatchType,
+} from "shared/api";
 
 export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
   @IsOptional()
   @IsString({ each: true })
   @ApiPropertyOptional({
-    type: [String],
+    type: [QuestionDifficulty],
     description: "Difficulty level of the questions",
     enum: ["easy", "medium", "hard"],
   })
-  public difficulty: string[];
+  public difficulty: QuestionDifficulty[];
 
   @IsOptional()
   @IsString({ each: true })
@@ -57,11 +61,11 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({
-    type: String,
+    type: TopicMatchType,
     description:
       "Determines if overlapped questions with matching topics are returned (AND)." +
       'Defaults to "AND"',
     enum: ["AND", "OR"],
   })
-  public topicMatch: string;
+  public topicMatch: TopicMatchType;
 }

@@ -17,9 +17,9 @@ const TopicListBox = () => {
     Axios.get<GetAllTopicsResponse>("/question/topics").then((res) => res.data)
   );
   return (
-    <div className="bg-red-400">
+    <div>
       {topics.isLoading || !topics.data ? (
-        <SpinnerIcon className="h-4 w-4" />
+        <SpinnerIcon className="mx-auto h-6 w-6" />
       ) : (
         <BaseListbox
           value={matchTopics}

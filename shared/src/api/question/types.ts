@@ -8,6 +8,11 @@ export enum QuestionDifficulty {
   HARD = "hard",
 }
 
+export enum TopicMatchType {
+  AND = "AND",
+  OR = "OR",
+}
+
 type ExtraSummaryFields = {
   topicTags: string[];
   discussionLink: string;

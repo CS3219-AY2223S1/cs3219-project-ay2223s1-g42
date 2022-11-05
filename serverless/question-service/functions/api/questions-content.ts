@@ -74,7 +74,7 @@ export async function purgeStaleQuestionContent(
   prisma: PrismaClient,
   staleContentSet: string[]
 ) {
-  if (staleContentSet.length == 0) {
+  if (staleContentSet.length === 0) {
     return;
   }
 

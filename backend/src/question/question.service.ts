@@ -6,6 +6,7 @@ import {
   FlattenedQuestionContent,
   FlattenedQuestionSummary,
   NAMESPACES,
+  TopicMatchType,
 } from "shared/api";
 import {
   QUESTION_CONTENT,
@@ -120,7 +121,7 @@ export class QuestionService {
    */
   async getSummariesFromTopicTags(
     topicTags: string[],
-    matchType = "AND"
+    matchType: TopicMatchType = TopicMatchType.OR
   ): Promise<FlattenedQuestionSummary[]> {
     const allTopicTags = await this.getAllTopics();
     const validTopicTagArray = _.intersection(allTopicTags, topicTags);
@@ -203,9 +204,9 @@ export class QuestionService {
    */
   private filterSummaryByMatchType(
     flatValidSummaries: QuestionSummaryFromDb[][],
-    matchType = "AND"
+    matchType: TopicMatchType = TopicMatchType.OR
   ): FlattenedQuestionSummary[] {
-    if (matchType == "AND") {
+    if (matchType === TopicMatchType.AND) {
       const andMatched = _.intersectionBy(
         ...flatValidSummaries,
         (summary) => summary.titleSlug
