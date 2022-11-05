@@ -21,11 +21,11 @@ export class HistoryController {
     @GetUser() { username }: UserInfo,
     @Body() historyInfo: HistoryDto
   ) {
-    const { content, titleSlug } = historyInfo;
+    const { content, titleSlug, title } = historyInfo;
 
     const res = { message: "pending" };
     await this.historyService
-      .addHistory(username, titleSlug, content)
+      .addHistory(username, title, titleSlug, content)
       .then(() => (res.message = "success"))
       .catch(() => (res.message = "failed"));
     return res;

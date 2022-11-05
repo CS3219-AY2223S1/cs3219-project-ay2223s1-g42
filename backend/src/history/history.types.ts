@@ -7,7 +7,8 @@ export const USER_HISTORY_SELECT = Prisma.validator<Prisma.UserHistorySelect>()(
     id: true,
     content: true,
     titleSlug: true,
-    updatedAt: true,
+    title: true,
+    createdAt: true,
     username: true,
   }
 );
