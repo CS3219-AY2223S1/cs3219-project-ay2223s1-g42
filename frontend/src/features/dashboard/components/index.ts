@@ -3,4 +3,4 @@ export * from "./QuestionRadioGroup";
 export * from "./QuestionCheckGroup";
 export * from "./MatchTypeRadioGroup";
 export * from "./TopicListBox";
-export * from "./QuestionPreview";
+export * from "./DailyQuestionPreview";

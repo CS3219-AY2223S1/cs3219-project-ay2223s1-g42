@@ -10,7 +10,7 @@ import {
   QuestionCheckGroup,
   MatchTypeRadioGroup,
   TopicListBox,
-  QuestionPreview,
+  DailyQuestionPreview,
 } from "src/features";
 import { matchToastOptions, useGlobalStore } from "src/store";
 
@@ -124,8 +124,16 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="m-auto space-y-12">
-      <BigHeading>Welcome to PeerPrep</BigHeading>
+    <div className="m-auto w-full space-y-12">
+      <BigHeading>
+        {currentStep === PageStep.FIRST
+          ? "Welcome to PeerPrep"
+          : matchType === MatchType.DIFFICULTY
+          ? "Select difficulty(s)"
+          : matchType === MatchType.TOPICS
+          ? "Select topic(s)"
+          : "Question of the day"}
+      </BigHeading>
       {/* Second step */}
       {currentStep === PageStep.SECOND ? (
         <div className="m-auto space-y-12">
@@ -137,7 +145,7 @@ const Dashboard = () => {
           ) : matchType === MatchType.TOPICS ? (
             <TopicListBox />
           ) : (
-            <QuestionPreview />
+            <DailyQuestionPreview />
           )}
           <div className="flex flex-col gap-2">
             <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
@@ -159,10 +167,6 @@ const Dashboard = () => {
             <PrimaryButton
               onClick={() => {
                 if (!matchType) {
-                  return;
-                }
-                if (matchType === MatchType.QOTD) {
-                  handleJoinQueue();
                   return;
                 }
                 setCurrentStep(PageStep.SECOND);
