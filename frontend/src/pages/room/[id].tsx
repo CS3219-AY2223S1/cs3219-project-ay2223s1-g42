@@ -55,7 +55,7 @@ const RoomPage = (): JSX.Element => {
 
       if (room?.type === MatchType.TOPICS && room?.topics) {
         return Axios.get<GetSummariesResponse>(
-          `/question/summary?topics=${room?.topics.join(",")}`
+          `/question/summary?topicTags=${room?.topics.join(",")}`
         ).then((res) => res.data);
       }
 
