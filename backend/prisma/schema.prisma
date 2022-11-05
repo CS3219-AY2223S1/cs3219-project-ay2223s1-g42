@@ -93,7 +93,6 @@ model QuestionHint {
 model UserHistory {
   id        Int      @id @unique @default(autoincrement())
   titleSlug String
-  title     String
   content   String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

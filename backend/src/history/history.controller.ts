@@ -16,22 +16,22 @@ import { GetUser } from "../utils";
 export class HistoryController {
   constructor(private readonly historyService: HistoryService) {}
 
-  @Post("")
+  @Post()
   async addToUserHistory(
     @GetUser() { username }: UserInfo,
     @Body() historyInfo: HistoryDto
   ) {
-    const { content, titleSlug, title } = historyInfo;
+    const { content, titleSlug } = historyInfo;
 
     const res = { message: "pending" };
     await this.historyService
-      .addHistory(username, title, titleSlug, content)
+      .addHistory(username, titleSlug, content)
       .then(() => (res.message = "success"))
       .catch(() => (res.message = "failed"));
     return res;
   }
 
-  @Get("")
+  @Get()
   async getUserHistory(@GetUser() { username }: UserInfo) {
     const userHistory = await this.historyService.getHistory(username);
     return userHistory;
@@ -45,20 +45,6 @@ export class HistoryController {
     const userQuestionHistory = await this.historyService.getHistory(
       username,
       titleSlug
-    );
-    return userQuestionHistory;
-  }
-
-  @Get(":titleSlug/:id")
-  async getUserQuestionAttempt(
-    @GetUser() { username }: UserInfo,
-    @Param("titleSlug") titleSlug: string,
-    @Param("id") id: string
-  ) {
-    const userQuestionHistory = await this.historyService.getHistory(
-      username,
-      titleSlug,
-      id
     );
     return userQuestionHistory;
   }
