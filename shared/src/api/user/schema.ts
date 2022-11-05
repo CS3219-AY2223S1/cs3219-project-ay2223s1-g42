@@ -2,9 +2,11 @@ import { z } from "zod";
 
 import { _UserModel } from "../../models";
 
+// ? I don't think transforms are required
 const UserHistoryQuerySchema = z.object({
   content: z.string(),
-  titleSlug: z.string().transform((v) => v.trim().toLowerCase()),
+  titleSlug: z.string(),
+  title: z.string(),
 });
 
 const UserInfoSchema = _UserModel.pick({

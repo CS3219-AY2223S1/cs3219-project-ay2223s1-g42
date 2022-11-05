@@ -89,9 +89,14 @@ export class HistoryService {
    * @param   {string}  titleSlug  Title slug of the attempted question
    * @param   {string}  content    Content of the editor
    */
-  async addHistory(username: string, titleSlug: string, content: string) {
+  async addHistory(
+    username: string,
+    title: string,
+    titleSlug: string,
+    content: string
+  ) {
     this.prisma.userHistory
-      .create({ data: { content, titleSlug, username } })
+      .create({ data: { content, title, titleSlug, username } })
       .then(async () => {
         // revalidate cache after each creation
         await this.invalidateSpecificHistoryCache(username);
