@@ -1,10 +1,10 @@
 import * as z from "zod";
+
 import { CompleteUser, UserModel } from "./index";
 
 export const _UserHistoryModel = z.object({
   id: z.number().int(),
   titleSlug: z.string(),
-  title: z.string(),
   content: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
