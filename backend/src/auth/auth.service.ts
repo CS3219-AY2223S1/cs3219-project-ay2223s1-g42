@@ -15,7 +15,11 @@ import * as argon2 from "argon2";
 import { v4 } from "uuid";
 
 import { NAMESPACES } from "shared/api";
-import { AUTH_ERROR, VERIFY_EMAIL_OPTIONS } from "../utils/constants";
+import {
+  AUTH_ERROR,
+  RESET_PASSWORD_EMAIL_OPTIONS,
+  VERIFY_EMAIL_OPTIONS,
+} from "../utils/constants";
 import { UserService } from "../user/user.service";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { ThrowKnownPrismaErrors } from "src/utils";
@@ -282,10 +286,10 @@ export class AuthService {
     const userId = user.id;
 
     // reset password
-    const resetPasswordVerificationToken = v4();
+    const resetPasswordToken = v4();
     await this.cache.setKeyInNamespace<CacheableResetEmail>(
       [NAMESPACES.AUTH],
-      resetPasswordVerificationToken,
+      resetPasswordToken,
       {
         userId,
         username,
@@ -297,11 +301,11 @@ export class AuthService {
     await this.mailerService
       .sendMail({
         to: email,
-        subject: "Email Verification for resetting of password ✔",
-        template: "resetPasswordVerification", // The `.pug` or `.hbs` extension is appended automatically.
+        subject: RESET_PASSWORD_EMAIL_OPTIONS.subject,
+        template: RESET_PASSWORD_EMAIL_OPTIONS.template,
         context: {
           // Data to be sent to template engine.
-          code: resetPasswordVerificationToken,
+          code: resetPasswordToken,
           username: username,
           url: this.config.get("FRONTEND_URL"),
         },
