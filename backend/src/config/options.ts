@@ -1,7 +1,8 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { CookieOptions } from "express";
 
-const PRODUCTION = process.env.NEST_ENV === "prod";
+const PRODUCTION =
+  process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes("localhost");
 
 const CSRF_OPTIONS = {
   cookie: true,
