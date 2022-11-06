@@ -76,7 +76,7 @@ export class DocumentGateway implements OnGatewayInit {
     this.ySocketIO.on(
       "all-document-connections-closed",
       async (doc: Document) => {
-        console.log(`All clients of document ${doc.name} are disconected`);
+        console.log(`All clients of document ${doc.name} are disconnected`);
         await this.documentService.saveRoomDocument(doc.name, doc);
       }
     );
