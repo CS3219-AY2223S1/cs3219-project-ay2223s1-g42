@@ -4,6 +4,7 @@ import { CompleteUser, UserModel } from "./index";
 
 export const _UserHistoryModel = z.object({
   id: z.number().int(),
+  title: z.string(),
   titleSlug: z.string(),
   content: z.string(),
   createdAt: z.date(),
