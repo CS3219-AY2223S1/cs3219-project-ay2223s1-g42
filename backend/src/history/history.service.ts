@@ -24,12 +24,16 @@ export class HistoryService {
    */
   async getHistory(
     username: string,
-    titleSlug?: string
+    titleSlug?: string,
+    id?: string
   ): Promise<UserHistoryFromDb[] | UserHistoryFromDb> {
-    if (titleSlug) {
+    if (titleSlug && id) {
+      return this.getQuestionAttempt(username, titleSlug, id);
+    } else if (titleSlug) {
       return this.getQuestionHistory(username, titleSlug);
+    } else {
+      return this.getUserFullHistory(username);
     }
-    return this.getUserFullHistory(username);
   }
 
   /**
@@ -67,6 +71,17 @@ export class HistoryService {
     return filteredHistory;
   }
 
+  private async getQuestionAttempt(
+    username: string,
+    titleSlug: string,
+    id: string
+  ) {
+    const userTitleHistory = await this.getQuestionHistory(username, titleSlug);
+    const [attempt] = userTitleHistory.filter((v) => v.id.toString() == id);
+
+    return attempt;
+  }
+
   /**
    * Adds an attempt to the user's history
    *
@@ -74,9 +89,14 @@ export class HistoryService {
    * @param   {string}  titleSlug  Title slug of the attempted question
    * @param   {string}  content    Content of the editor
    */
-  async addHistory(username: string, titleSlug: string, content: string) {
+  async addHistory(
+    username: string,
+    title: string,
+    titleSlug: string,
+    content: string
+  ) {
     this.prisma.userHistory
-      .create({ data: { content, titleSlug, username } })
+      .create({ data: { content, title, titleSlug, username } })
       .then(async () => {
         // revalidate cache after each creation
         await this.invalidateSpecificHistoryCache(username);

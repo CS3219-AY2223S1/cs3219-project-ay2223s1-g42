@@ -6,6 +6,7 @@ import { _UserModel } from "../../models";
 const UserHistoryQuerySchema = z.object({
   content: z.string(),
   titleSlug: z.string(),
+  title: z.string(),
 });
 
 const UserInfoSchema = _UserModel.pick({
