@@ -2,6 +2,8 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
+
+// ! Uncomment this when adding new models, zod adds them to "shared" dir in proj root
 // generator zod {
 //   provider              = "zod-prisma"
 //   output                = "../../shared/src/models" // (default) the directory where generated zod schemas will be saved
@@ -20,24 +22,28 @@ generator client {
 //   prismaJsonNullability = "true" // (default) uses prisma's scheme for JSON field nullability
 //   // prismaJsonNullability = false // allows null assignment to optional JSON fields
 // }
+
 datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
+
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int           @id @default(autoincrement())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   /// @z.string().min(4).max(20)
-  username  String   @unique
+  username  String        @unique
   /// @z.string().email({ message: "Invalid email address" })
-  email     String   @unique
+  email     String        @unique
   // hash for password, set as @db.Text to remove length limit set by varchar
-  hash      String?  @db.Text
+  hash      String?       @db.Text
   // hash for refresh token, set as @db.Text to remove length limit set by varchar
-  hashRt    String?  @db.Text
-  provider  String   @default("CUSTOM") @db.Text
+  hashRt    String?       @db.Text
+  provider  String        @default("CUSTOM") @db.Text
+  history   UserHistory[]
+
   @@map("users")
 }
 
@@ -53,14 +59,18 @@ model QuestionSummary {
   updatedAt       DateTime         @updatedAt
   topicTags       TopicTag[]
   QuestionContent QuestionContent?
+
   @@index([titleSlug])
 }
+
 model TopicTag {
   id                Int               @id @default(autoincrement())
   topicSlug         String            @unique
   questionSummaries QuestionSummary[]
+
   @@index([topicSlug])
 }
+
 model QuestionContent {
   id        Int             @id @default(autoincrement())
   content   String          @db.LongText
@@ -69,11 +79,24 @@ model QuestionContent {
   titleSlug String          @unique
   summary   QuestionSummary @relation(fields: [titleSlug], references: [titleSlug])
   hints     QuestionHint[]
+
   @@index([titleSlug])
 }
+
 model QuestionHint {
   hintId            Int             @id @unique @default(autoincrement())
   hint              String?         @db.LongText
   QuestionContent   QuestionContent @relation(fields: [questionContentId], references: [id])
   questionContentId Int
+}
+
+model UserHistory {
+  id        Int      @id @unique @default(autoincrement())
+  titleSlug String
+  title     String
+  content   String   @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [username], references: [username])
+  username  String?
 }

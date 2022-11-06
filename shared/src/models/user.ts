@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+import { CompleteUserHistory, UserHistoryModel } from "./index";
+
 export const _UserModel = z.object({
   id: z.number().int(),
   createdAt: z.date(),
@@ -16,3 +18,18 @@ export const _UserModel = z.object({
   hashRt: z.string().nullish(),
   provider: z.string(),
 });
+
+export interface CompleteUser extends z.infer<typeof _UserModel> {
+  history?: CompleteUserHistory[];
+}
+
+/**
+ * UserModel contains all relations on your model in addition to the scalars
+ *
+ * NOTE: Lazy required in case of potential circular dependencies within schema
+ */
+export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
+  _UserModel.extend({
+    history: UserHistoryModel.array(),
+  })
+);
