@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { NAMESPACES } from "shared/api";
-
-import { USER_HISTORY_SELECT, UserHistoryFromDb } from "./history.types";
+import { NAMESPACES, UserHistory } from "shared/api";
+import { USER_HISTORY_SELECT } from "./history.types";
 import { RedisCacheService } from "../cache/redisCache.service";
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -20,12 +19,12 @@ export class HistoryService {
    * @param   {string}  username    The user's username
    * @param   {string}  titleSlug   The title slug of a question
    *
-   * @return  {UserHistoryFromDb[]} History of attempts from user. Empty if no history.
+   * @return  {UserHistory[]} History of attempts from user. Empty if no history.
    */
   async getHistory(
     username: string,
     titleSlug?: string
-  ): Promise<UserHistoryFromDb[] | UserHistoryFromDb> {
+  ): Promise<UserHistory[] | UserHistory> {
     if (titleSlug) {
       return this.getQuestionHistory(username, titleSlug);
     }
@@ -38,11 +37,9 @@ export class HistoryService {
    *
    * @param   {string}   username   The user's username
    *
-   * @return  {UserHistoryFromDb[]} History of attempts from user. Empty if no history.
+   * @return  {UserHistory[]} History of attempts from user. Empty if no history.
    */
-  private async getUserFullHistory(
-    username: string
-  ): Promise<UserHistoryFromDb[]> {
+  private async getUserFullHistory(username: string): Promise<UserHistory[]> {
     const userHistory = await this.getUserFullHistoryFromCache(username);
     return userHistory;
   }
@@ -53,12 +50,12 @@ export class HistoryService {
    * @param   {string}  username    The user's username
    * @param   {string}  titleSlug   The title slug of a question
    *
-   * @return  {UserHistoryFromDb[]} History of attempts from a specific question by a user.
+   * @return  {UserHistory[]} History of attempts from a specific question by a user.
    */
   private async getQuestionHistory(
     username: string,
     titleSlug: string
-  ): Promise<UserHistoryFromDb[]> {
+  ): Promise<UserHistory[]> {
     const userHistory = await this.getUserFullHistory(username);
     const filteredHistory = userHistory.filter(
       (v) => v.titleSlug === titleSlug
@@ -92,10 +89,11 @@ export class HistoryService {
   // ***** Caching helpers *****
   private async getUserFullHistoryFromCache(
     username: string
-  ): Promise<UserHistoryFromDb[]> {
-    const cachedUserHistory = await this.redis.getKeyInNamespace<
-      UserHistoryFromDb[]
-    >([NAMESPACES.HISTORY], username);
+  ): Promise<UserHistory[]> {
+    const cachedUserHistory = await this.redis.getKeyInNamespace<UserHistory[]>(
+      [NAMESPACES.HISTORY],
+      username
+    );
 
     if (!cachedUserHistory) {
       const prismaUserHistory = await this.prisma.user.findUniqueOrThrow({
