@@ -24,16 +24,12 @@ export class HistoryService {
    */
   async getHistory(
     username: string,
-    titleSlug?: string,
-    id?: string
+    titleSlug?: string
   ): Promise<UserHistoryFromDb[] | UserHistoryFromDb> {
-    if (titleSlug && id) {
-      return this.getQuestionAttempt(username, titleSlug, id);
-    } else if (titleSlug) {
+    if (titleSlug) {
       return this.getQuestionHistory(username, titleSlug);
-    } else {
-      return this.getUserFullHistory(username);
     }
+    return this.getUserFullHistory(username);
   }
 
   /**
@@ -69,17 +65,6 @@ export class HistoryService {
     );
 
     return filteredHistory;
-  }
-
-  private async getQuestionAttempt(
-    username: string,
-    titleSlug: string,
-    id: string
-  ) {
-    const userTitleHistory = await this.getQuestionHistory(username, titleSlug);
-    const [attempt] = userTitleHistory.filter((v) => v.id.toString() == id);
-
-    return attempt;
   }
 
   /**
