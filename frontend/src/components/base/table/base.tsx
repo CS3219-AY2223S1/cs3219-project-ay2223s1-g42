@@ -75,7 +75,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
           <span className="font-bold text-neutral-900">{getPageStart()}</span>{" "}
           to <span className="font-bold text-neutral-900">{getPageEnd()}</span>{" "}
           of <span className="font-bold text-neutral-900">{data.length}</span>{" "}
-          questions
+          entries
         </span>
         <div className="flex flex-row gap-3">
           <TablePageButton
