@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { BigHeading } from "src/components";
 import { useGlobalStore } from "src/store";
-import { SignupForm } from "src/features/login";
+import { SignupForm } from "src/features";
 
 const SignupPage = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { QuestionsTable } from "src/features/questions/QuestionsTable";
+import { QuestionsTable } from "src/features";
 
 const QuestionsPage = () => {
   return (
