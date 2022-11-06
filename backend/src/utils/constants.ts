@@ -11,8 +11,13 @@ export enum AUTH_ERROR {
 }
 
 export const VERIFY_EMAIL_OPTIONS = {
-  subject: "Email Verification",
+  subject: "PeerPrep Email Verification",
   template: "emailVerification",
+};
+
+export const RESET_PASSWORD_EMAIL_OPTIONS = {
+  subject: "PeerPrep Password Reset",
+  template: "resetPassword",
 };
 
 export enum API_OPERATIONS {
