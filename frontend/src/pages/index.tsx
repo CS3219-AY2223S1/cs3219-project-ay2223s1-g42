@@ -10,8 +10,9 @@ import {
   QuestionCheckGroup,
   MatchTypeRadioGroup,
   TopicListBox,
+  DailyQuestionPreview,
 } from "src/features";
-import { useGlobalStore } from "src/store";
+import { matchToastOptions, useGlobalStore } from "src/store";
 
 enum PageStep {
   FIRST = 1,
@@ -25,6 +26,7 @@ const Dashboard = () => {
     user,
     queueStatus,
     matchDifficulties,
+    matchTopics,
     matchSocket,
     matchType,
     roomSocket,
@@ -36,6 +38,7 @@ const Dashboard = () => {
       user: state.user,
       queueStatus: state.queueStatus,
       matchDifficulties: state.matchDifficulties,
+      matchTopics: state.matchTopics,
       matchSocket: state.matchSocket,
       matchType: state.matchType,
       roomSocket: state.roomSocket,
@@ -70,13 +73,23 @@ const Dashboard = () => {
       });
       return;
     }
+    if (matchType === MatchType.DIFFICULTY && matchDifficulties.length === 0) {
+      toast.error("Please select at least one difficulty.", matchToastOptions);
+      return;
+    }
+    if (matchType === MatchType.TOPICS && matchTopics?.length === 0) {
+      toast.error("Please select at least one topic.", matchToastOptions);
+      return;
+    }
     setIsMatchingDialogOpen(true);
-    joinQueue(matchDifficulties);
+    joinQueue();
   }, [
     roomSocket?.connected,
     matchSocket?.connected,
+    matchType,
+    matchDifficulties.length,
+    matchTopics?.length,
     joinQueue,
-    matchDifficulties,
   ]);
 
   const handleMatchDialogClose = () => {
@@ -111,8 +124,16 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="m-auto space-y-12">
-      <BigHeading>Welcome to PeerPrep</BigHeading>
+    <div className="m-auto w-full space-y-12">
+      <BigHeading>
+        {currentStep === PageStep.FIRST
+          ? "Welcome to PeerPrep"
+          : matchType === MatchType.DIFFICULTY
+          ? "Select difficulty(s)"
+          : matchType === MatchType.TOPICS
+          ? "Select topic(s)"
+          : "Question of the day"}
+      </BigHeading>
       {/* Second step */}
       {currentStep === PageStep.SECOND ? (
         <div className="m-auto space-y-12">
@@ -124,7 +145,7 @@ const Dashboard = () => {
           ) : matchType === MatchType.TOPICS ? (
             <TopicListBox />
           ) : (
-            <></>
+            <DailyQuestionPreview />
           )}
           <div className="flex flex-col gap-2">
             <PrimaryButton onClick={handleJoinQueue}>Find match</PrimaryButton>
@@ -146,10 +167,6 @@ const Dashboard = () => {
             <PrimaryButton
               onClick={() => {
                 if (!matchType) {
-                  return;
-                }
-                if (matchType === MatchType.QOTD) {
-                  handleJoinQueue();
                   return;
                 }
                 setCurrentStep(PageStep.SECOND);

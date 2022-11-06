@@ -4,23 +4,23 @@ import cx from "classnames";
 
 import { CheckIcon, ChevronDownIcon } from "src/components";
 
-type Props<T> = {
+type Props<T, U> = {
   value: T | undefined;
   setValue: (value: T) => void;
-  values: T | T[];
+  values: U[];
   className?: string;
   hasBorder?: boolean;
   bigPadding?: boolean;
 };
 
-const BaseListbox = <T extends string | string[]>({
+const BaseListbox = <T extends string | string[], U extends string>({
   value,
   setValue,
   values,
   className,
   hasBorder,
   bigPadding,
-}: Props<T>) => {
+}: Props<T, U>) => {
   const isValueArray = Array.isArray(value);
   return (
     <div className={className}>
@@ -62,7 +62,7 @@ const BaseListbox = <T extends string | string[]>({
             >
               <Listbox.Options
                 className={cx(
-                  "py-1text-base absolute max-h-60 w-full overflow-auto bg-white shadow-lg",
+                  "absolute max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg",
                   "ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
                   {
                     "border-t-[1px] border-t-neutral-900": !hasBorder,

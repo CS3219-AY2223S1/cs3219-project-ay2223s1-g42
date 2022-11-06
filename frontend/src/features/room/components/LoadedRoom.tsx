@@ -1,15 +1,12 @@
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
-import { useQuery } from "@tanstack/react-query";
 
 import { GetSummariesResponse, Room } from "shared/api";
-import { Badge, LoadingLayout, PrimaryButton, RedButton } from "src/components";
+import { Badge, PrimaryButton, RedButton } from "src/components";
 import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
 import { RoomTabs } from "./RoomTabs";
-import { Axios } from "src/services";
-import { useState } from "react";
 import { UserStatus } from "./UserStatus";
 
 const LeaveRoomButton = () => {
@@ -52,13 +49,13 @@ const LoadedRoom = ({
   }, shallow);
   const handleSelectNextQuestion = () => {
     const nextQuestionIxd = questionIdx + 1;
-    if (nextQuestionIxd > questionSummaries.length) {
+    if (nextQuestionIxd > questionSummaries.length - 1) {
       return;
     }
     setQuestionIdx(nextQuestionIxd);
   };
   const handleSelectPreviousQuestion = () => {
-    if (!questionSummaries) {
+    if (!questionSummaries || questionSummaries.length === 0) {
       return;
     }
     const previousQuestionIdx = questionIdx - 1;
@@ -70,15 +67,12 @@ const LoadedRoom = ({
   return (
     <div className="flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
       <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
-        <RoomTabs
-          questionIdx={questionIdx}
-          questionSummaries={questionSummaries}
-        />
+        <RoomTabs questionSummaries={questionSummaries} />
         <div className="flex flex-col gap-3 border-t-[1px] border-neutral-800 p-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col gap-2">
             <h1 className="max-w-full truncate text-lg font-bold">{room.id}</h1>
             <div className="flex flex-row gap-1">
-              {room.difficulties.map((diff) => (
+              {room?.difficulties?.map((diff) => (
                 <Badge key={`${room.id} ${diff}`}>{diff}</Badge>
               ))}
             </div>

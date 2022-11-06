@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { QuestionDifficulty, TopicMatchType } from "./types";
+
 const SummaryQuerySchema = z.object({
   titleSlugs: z.string().or(z.array(z.string())).optional(),
   topicTags: z.string().or(z.array(z.string())).optional(),
@@ -14,7 +16,7 @@ export const QuestionQuerySchema = z.object({
     .transform((v) =>
       Array.from(new Set(v.split(",").map((v) => v.toLowerCase())))
     )
-    .or(z.array(z.enum(["easy", "medium", "hard"])))
+    .or(z.array(z.nativeEnum(QuestionDifficulty)))
     .optional(),
   titleSlugs: z
     .string()
@@ -47,7 +49,7 @@ export const QuestionQuerySchema = z.object({
   topicMatch: z
     .string()
     .transform((v) => v.toUpperCase())
-    .or(z.enum(["AND", "OR"]))
-    .default("AND")
+    .or(z.nativeEnum(TopicMatchType))
+    .default(TopicMatchType.OR)
     .optional(),
 });
