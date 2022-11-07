@@ -53,6 +53,9 @@ const Table = <T,>({ columns, data }: Props<T>) => {
   });
 
   const getPageStart = () => {
+    if (!data.length) {
+      return 0;
+    }
     return (
       table.getState().pagination.pageIndex *
         table.getState().pagination.pageSize +
@@ -87,6 +90,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
             <span className="hidden md:block">Prev</span>
           </TablePageButton>
           <TablePageButton
+            className={cx({ hidden: !table.getCanNextPage() })}
             disabled={!table.getCanNextPage()}
             onClick={() => table.nextPage()}
           >
