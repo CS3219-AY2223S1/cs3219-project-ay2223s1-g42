@@ -1,16 +1,16 @@
 import { ErrorPage } from "src/components";
-import { UserHistoryTable } from "src/features";
+import { UserAttemptsTable } from "src/features";
 import { useGlobalStore } from "src/store";
 
-const UserHistoryPage = () => {
+const UserAttemptsPage = () => {
   const user = useGlobalStore((state) => state.user);
   return user ? (
     <div className="w-full pb-8 pt-10 lg:min-w-fit">
-      <UserHistoryTable />
+      <UserAttemptsTable />
     </div>
   ) : (
     <ErrorPage />
   );
 };
 
-export default UserHistoryPage;
+export default UserAttemptsPage;

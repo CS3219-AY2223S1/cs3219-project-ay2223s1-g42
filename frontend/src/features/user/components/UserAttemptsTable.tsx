@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
-import { UserHistory } from "shared/api";
+import { Attempt } from "shared/api";
 import { Table, BigHeading, LoadingLayout } from "src/components";
 import { Axios } from "src/services";
 
@@ -11,7 +11,7 @@ function formatDate(date: Date) {
 }
 
 const createColumns = () => {
-  const columnHelper = createColumnHelper<UserHistory>();
+  const columnHelper = createColumnHelper<Attempt>();
 
   const columns = [
     columnHelper.accessor("title", {
@@ -35,9 +35,9 @@ const createColumns = () => {
   return columns;
 };
 
-const UserHistoryTable = () => {
+const UserAttemptsTable = () => {
   const data = useQuery(["history"], async () => {
-    const res = await Axios.get<UserHistory[] | undefined>("/history").then(
+    const res = await Axios.get<Attempt[] | undefined>("/history").then(
       (res) => res.data
     );
     return res;
@@ -57,4 +57,4 @@ const UserHistoryTable = () => {
   );
 };
 
-export { UserHistoryTable };
+export { UserAttemptsTable };
