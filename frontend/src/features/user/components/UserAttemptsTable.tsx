@@ -36,8 +36,8 @@ const createColumns = () => {
 };
 
 const UserAttemptsTable = () => {
-  const data = useQuery(["history"], async () => {
-    const res = await Axios.get<Attempt[] | undefined>("/history").then(
+  const data = useQuery(["attempts"], async () => {
+    const res = await Axios.get<Attempt[] | undefined>("/attempts").then(
       (res) => res.data
     );
     return res;
@@ -49,7 +49,7 @@ const UserAttemptsTable = () => {
         <LoadingLayout />
       ) : (
         <>
-          <BigHeading className="mb-12">History</BigHeading>
+          <BigHeading className="mb-12">Attempts</BigHeading>
           <Table data={data.data} columns={createColumns()} />
         </>
       )}
