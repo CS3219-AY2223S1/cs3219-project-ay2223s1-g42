@@ -1,6 +1,6 @@
 import { GetSummariesResponse } from "shared/api";
 import { BaseTabs } from "src/components";
-import { QuestionPanel } from "./QuestionPanel";
+import { AttemptPanel, DiscussionPanel, QuestionPanel } from "./panels";
 
 const RoomTabs = ({
   questionSummaries,
@@ -14,8 +14,8 @@ const RoomTabs = ({
         questionSummaries={questionSummaries}
       />
     ),
-    Solution: <>{"Question solution here!!!"}</>,
-    Submissions: <>{"Question submissions here!!!"}</>,
+    Attempts: <AttemptPanel questionSummaries={questionSummaries} />,
+    Solution: <DiscussionPanel questionSummaries={questionSummaries} />,
   };
   return <BaseTabs values={tabValues} />;
 };
