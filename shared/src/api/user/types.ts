@@ -2,21 +2,21 @@ import { z } from "zod";
 
 import { MessageResponse } from "../types";
 import { UserInfo } from "./schema";
-import { UserHistoryModel } from "../../models";
+import { AttemptModel } from "../../models";
 
 type GetMeResponse = UserInfo;
 type GetUserResponse = UserInfo;
 type EditUserResponse = MessageResponse;
 type DeleteUserResponse = UserInfo;
 
-type UserHistory = Pick<
-  z.infer<typeof UserHistoryModel>,
-  | "id"
+type Attempt = Pick<
+  z.infer<typeof AttemptModel>,
   | "titleSlug"
   | "content"
   | "createdAt"
   | "updatedAt"
-  | "username"
+  | "userId"
+  | "roomId"
   | "title"
 >;
 
@@ -25,5 +25,5 @@ export type {
   GetUserResponse,
   EditUserResponse,
   DeleteUserResponse,
-  UserHistory,
+  Attempt,
 };

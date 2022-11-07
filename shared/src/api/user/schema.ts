@@ -37,17 +37,20 @@ type UserHashInfo = z.infer<typeof UserHashInfoSchema>;
 type OauthUserInfo = z.infer<typeof OauthInfoSchema>;
 
 // history
-const UserHistoryQuerySchema = z.object({
+const AttemptInfoSchema = z.object({
   content: z.string(),
   titleSlug: z.string(),
   title: z.string(),
+  roomId: z.string(),
 });
+
+type AttemptInfo = z.infer<typeof AttemptInfoSchema>;
 
 export {
   EditableSchema,
   UserInfoSchema,
   UserHashInfoSchema,
   OauthInfoSchema,
-  UserHistoryQuerySchema,
+  AttemptInfoSchema,
 };
-export type { UserInfo, UserHashInfo, OauthUserInfo };
+export type { UserInfo, UserHashInfo, OauthUserInfo, AttemptInfo };
