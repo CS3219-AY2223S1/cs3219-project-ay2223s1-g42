@@ -22,6 +22,7 @@ const createColumns = () => {
     }),
     columnHelper.accessor("updatedAt", {
       cell: (info) => formatDate(info.getValue()),
+      id: "updatedAt",
       header: "Last updated",
     }),
     columnHelper.accessor("content", {
@@ -37,7 +38,7 @@ const createColumns = () => {
 
 const UserAttemptsTable = () => {
   const data = useQuery(["attempts"], async () => {
-    const res = await Axios.get<Attempt[] | undefined>("/attempts").then(
+    const res = await Axios.get<Attempt[] | undefined>("/attempt").then(
       (res) => res.data
     );
     return res;
