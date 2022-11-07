@@ -36,7 +36,7 @@ type UserInfo = z.infer<typeof UserInfoSchema>;
 type UserHashInfo = z.infer<typeof UserHashInfoSchema>;
 type OauthUserInfo = z.infer<typeof OauthInfoSchema>;
 
-// history
+// attempt
 const AttemptInfoSchema = z.object({
   content: z.string(),
   titleSlug: z.string(),

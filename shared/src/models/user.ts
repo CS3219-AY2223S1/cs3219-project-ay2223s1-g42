@@ -20,7 +20,7 @@ export const _UserModel = z.object({
 });
 
 export interface CompleteUser extends z.infer<typeof _UserModel> {
-  history?: CompleteAttempt[];
+  attempts?: CompleteAttempt[];
 }
 
 /**
@@ -30,6 +30,6 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
  */
 export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
   _UserModel.extend({
-    history: AttemptModel.array(),
+    attempts: AttemptModel.array(),
   })
 );
