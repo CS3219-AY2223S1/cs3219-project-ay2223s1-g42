@@ -43,6 +43,7 @@ export enum API_OPERATIONS {
   QUERY_SUMMARY = "Retrieves Query in URL",
   OAUTH_SUMMARY = "Login using Oauth",
   QUESTION_INVALIDATE_CACHE = "Invalidates the question cache",
+  HISTORY_SUMMARY = "Retrieves the user's match histories",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
@@ -73,4 +74,6 @@ export enum API_RESPONSES_DESCRIPTION {
   FORBIDDEN_SIGNIN_DESCRIPTION = "User entered invalid credentials or is unverified",
   SUCCESSFUL_QUESTION_QUERY = "Successful question query made",
   SUCCESSFUL_QUESTION_INVALIDATION = "Successfully invalidates the question cache",
+  SUCCESSFUL_HISTORY_ADDED = "Successfully added match to user's history",
+  SUCCESSFUL_HISTORY_INVALIDATION = "Successfully invalidates the user's history cache",
 }

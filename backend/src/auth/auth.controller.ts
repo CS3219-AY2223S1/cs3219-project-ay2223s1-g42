@@ -65,10 +65,6 @@ export class AuthController {
     description:
       API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
   })
-  @ApiCreatedResponse({
-    description:
-      API_RESPONSES_DESCRIPTION.SUCCESSFUL_SIGNUP_EMAIL_SENT_DESCRIPTION,
-  })
   @ApiBadRequestResponse({
     description: API_RESPONSES_DESCRIPTION.BAD_REQUEST_DESCRIPTION,
   })
