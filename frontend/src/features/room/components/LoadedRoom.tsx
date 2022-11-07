@@ -8,6 +8,7 @@ import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
 import { RoomTabs } from "./RoomTabs";
 import { UserStatus } from "./UserStatus";
+import { SaveAttemptButton } from "./SaveAttemptButton";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
@@ -104,6 +105,7 @@ const LoadedRoom = ({
       <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
         <div className="flex w-full flex-row items-center justify-between">
           <RoomListBox />
+          <SaveAttemptButton />
           <LeaveRoomButton />
         </div>
         <RoomEditor />
