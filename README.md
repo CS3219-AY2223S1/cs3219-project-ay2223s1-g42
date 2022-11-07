@@ -8,7 +8,7 @@ PeerPrep is a platform that allows its users to match with each other and give t
 
 1. Install [Docker and docker-compose](https://firebase.google.com/docs/cli#install-cli-mac-linux) for your OS.
 2. Install [Node.js 16](https://nodejs.org/download/release/v16.18.1/)
-3. Create `.env` file for the [backend](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/backend/.env.example) and [frontend](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/frontend/.env-example) respectively
+3. Create `.env` file for the [backend](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/backend/.env.example), [frontend](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/frontend/.env-example), and [serverless](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/serverless/question-service/functions/.env.example) respectively
 4. Create and set up an account with [PlanetScale](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/tree/main/serverless/question-service/functions#preperation), which is the main database of PeerPrep, and take note of the connection string
 5. Install [firebase-tools](https://firebase.google.com/docs/cli#install-cli-mac-linux) via NPM, login and ensure that the correct project is being used or create a new one
 
@@ -21,7 +21,7 @@ PeerPrep is a platform that allows its users to match with each other and give t
 # Enter question-service dir
 cd serverless/question-service/functions
 
-# Create .env following .env-example
+# Create .env following .env.example
 
 # Install dependencies
 yarn
