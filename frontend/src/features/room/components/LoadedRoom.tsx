@@ -101,11 +101,11 @@ const LoadedRoom = ({
     };
   }, shallow);
   const handleSelectNextQuestion = () => {
-    const nextQuestionIxd = questionIdx + 1;
-    if (nextQuestionIxd > questionSummaries.length - 1) {
+    const nextQuestionIdx = questionIdx + 1;
+    if (nextQuestionIdx > questionSummaries.length - 1) {
       return;
     }
-    setQuestionIdx(nextQuestionIxd);
+    setQuestionIdx(nextQuestionIdx);
   };
   const handleSelectPreviousQuestion = () => {
     if (!questionSummaries || questionSummaries.length === 0) {
@@ -195,7 +195,7 @@ const LoadedRoom = ({
       <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
         <div className="flex w-full flex-row items-center justify-between">
           <RoomListBox />
-          <SaveAttemptButton />
+          <SaveAttemptButton questionSummaries={questionSummaries} />
           <LeaveRoomButton />
         </div>
         <RoomEditor />

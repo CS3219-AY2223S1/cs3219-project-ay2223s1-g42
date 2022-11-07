@@ -26,7 +26,9 @@ const createColumns = () => {
       header: "Last updated",
     }),
     columnHelper.accessor("content", {
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <code className="block whitespace-pre">{info.getValue()}</code>
+      ),
       id: "content",
       header: "Details",
       maxSize: 500,
