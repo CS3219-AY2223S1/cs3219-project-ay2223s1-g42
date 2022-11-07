@@ -2,17 +2,17 @@ import * as z from "zod";
 
 import { CompleteUser, UserModel } from "./index";
 
-export const _UserHistoryModel = z.object({
-  id: z.number().int(),
+export const _AttemptModel = z.object({
   title: z.string(),
   titleSlug: z.string(),
   content: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  username: z.string().nullish(),
+  userId: z.number(),
+  roomId: z.string(),
 });
 
-export interface CompleteUserHistory extends z.infer<typeof _UserHistoryModel> {
+export interface CompleteAttempt extends z.infer<typeof _AttemptModel> {
   User?: CompleteUser | null;
 }
 
@@ -21,8 +21,8 @@ export interface CompleteUserHistory extends z.infer<typeof _UserHistoryModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const UserHistoryModel: z.ZodSchema<CompleteUserHistory> = z.lazy(() =>
-  _UserHistoryModel.extend({
+export const AttemptModel: z.ZodSchema<CompleteAttempt> = z.lazy(() =>
+  _AttemptModel.extend({
     User: UserModel.nullish(),
   })
 );
