@@ -17,7 +17,7 @@ export interface CompleteAttempt extends z.infer<typeof _AttemptModel> {
 }
 
 /**
- * UserHistoryModel contains all relations on your model in addition to the scalars
+ * AttemptModel contains all relations on your model in addition to the scalars
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
