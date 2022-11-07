@@ -41,6 +41,8 @@ const UserAttemptsTable = () => {
     const res = await Axios.get<Attempt[] | undefined>("/attempt").then(
       (res) => res.data
     );
+    console.log(res);
+
     return res;
   });
 
