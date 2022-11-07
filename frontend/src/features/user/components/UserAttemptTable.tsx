@@ -38,13 +38,11 @@ const createColumns = () => {
   return columns;
 };
 
-const UserAttemptsTable = () => {
+const UserAttemptTable = () => {
   const data = useQuery(["attempts"], async () => {
     const res = await Axios.get<Attempt[] | undefined>("/attempt").then(
       (res) => res.data
     );
-    console.log(res);
-
     return res;
   });
 
@@ -62,4 +60,4 @@ const UserAttemptsTable = () => {
   );
 };
 
-export { UserAttemptsTable };
+export { UserAttemptTable };
