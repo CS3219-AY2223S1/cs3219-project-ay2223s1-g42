@@ -44,6 +44,7 @@ export enum API_OPERATIONS {
   OAUTH_SUMMARY = "Login using Oauth",
   QUESTION_INVALIDATE_CACHE = "Invalidates the question cache",
   HISTORY_SUMMARY = "Retrieves the user's match histories",
+  QUESTION_SUMMARY = "Retrieves questions summaries and contents",
 }
 
 export enum API_RESPONSES_DESCRIPTION {

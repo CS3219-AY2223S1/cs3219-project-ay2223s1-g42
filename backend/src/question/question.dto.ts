@@ -1,4 +1,5 @@
 import { createZodDto } from "@anatine/zod-nestjs";
+import { extendApi } from "@anatine/zod-openapi";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString } from "class-validator";
 
@@ -7,8 +8,20 @@ import {
   QuestionQuerySchema,
   TopicMatchType,
 } from "shared/api";
+import { API_OPERATIONS } from "src/utils";
+import { z } from "zod";
 
-export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
+type QuestionQuerySchemaType = z.infer<typeof QuestionQuerySchema>;
+type difficultyType = QuestionQuerySchemaType["difficulty"];
+type titleSlugType = QuestionQuerySchemaType["titleSlugs"];
+type topicTagType = QuestionQuerySchemaType["topicTags"];
+
+const QuestionsApi = extendApi(QuestionQuerySchema, {
+  title: "Questions API",
+  description: API_OPERATIONS.QUESTION_SUMMARY,
+});
+
+export class QuestionQuerySchemaDto extends createZodDto(QuestionsApi) {
   @IsOptional()
   @IsString({ each: true })
   @ApiPropertyOptional({
@@ -16,7 +29,7 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
     description: "Difficulty level of the questions",
     enum: ["easy", "medium", "hard"],
   })
-  public difficulty: QuestionDifficulty[];
+  public difficulty: difficultyType;
 
   @IsOptional()
   @IsString({ each: true })
@@ -24,7 +37,7 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
     type: [String],
     description: "Title slug associated to question",
   })
-  public titleSlugs: string[];
+  public titleSlugs: titleSlugType;
 
   @IsOptional()
   @IsString({ each: true })
@@ -56,7 +69,7 @@ export class QuestionQuerySchemaDto extends createZodDto(QuestionQuerySchema) {
       "union-find",
     ],
   })
-  public topicTags: string[];
+  public topicTags: topicTagType;
 
   @IsOptional()
   @IsString()
