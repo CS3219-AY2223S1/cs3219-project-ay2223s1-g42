@@ -1,15 +1,22 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import shallow from "zustand/shallow";
 
+import { AttemptInfo, GetSummariesResponse } from "shared/api";
 import { PrimaryDialog, PrimaryButton, BlueButton } from "src/components";
 import { Axios } from "src/services";
+import { useGlobalStore } from "src/store";
 
-type Props = {
+type DialogProps = {
   isOpen: boolean;
   onClose: (isConfirm: boolean) => void;
 };
 
-export const SaveAttemptDialog = ({ isOpen, onClose }: Props) => {
+type ButtonProps = {
+  questionSummaries: GetSummariesResponse;
+};
+
+export const SaveAttemptDialog = ({ isOpen, onClose }: DialogProps) => {
   const dialogTitle = "Save attempt";
   const dialogDescription =
     "Are you sure? This will overwrite your previously " +
@@ -42,18 +49,34 @@ export const SaveAttemptDialog = ({ isOpen, onClose }: Props) => {
   );
 };
 
-const SaveAttemptButton = () => {
+const SaveAttemptButton = ({ questionSummaries }: ButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { room, input, questionIdx } = useGlobalStore((state) => {
+    return {
+      room: state.room,
+      input: state.editorInput,
+      questionIdx: state.questionIdx,
+    };
+  }, shallow);
 
-  const saveAttemptMutation = useMutation(
-    () => Axios.post("/attempt").then((res) => res.data),
-    {}
+  const saveAttemptMutation = useMutation((body: AttemptInfo) =>
+    Axios.post("/attempt", body).then((res) => res.data)
   );
 
   const handleDialogClose = (isConfirm: boolean) => {
     setIsDialogOpen(false);
-    if (isConfirm) {
-      saveAttemptMutation.mutate();
+    if (isConfirm && room?.id && input) {
+      const questionSummary = questionSummaries[questionIdx];
+      const titleSlug = questionSummary.titleSlug;
+      const title = questionSummary.title;
+      const roomId = room.id;
+
+      saveAttemptMutation.mutate({
+        titleSlug,
+        title,
+        roomId,
+        content: input,
+      });
     }
   };
   return (
