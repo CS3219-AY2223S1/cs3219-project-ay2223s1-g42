@@ -3,7 +3,14 @@ import { createColumnHelper, SortingFnOption } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
 import { FlattenedQuestionSummary, QuestionDifficulty } from "shared/api";
-import { Badge, Table, BigHeading, LoadingLayout } from "src/components";
+import {
+  Badge,
+  Table,
+  BigHeading,
+  LoadingLayout,
+  BaseLink,
+  PrimaryLink,
+} from "src/components";
 import { Axios } from "src/services";
 
 function formatDate(date: Date) {
@@ -75,21 +82,14 @@ export const defaultColumns = [
     sortingFn: topicsSortingFn,
   }),
   // TODO: hyperlink badge
-  columnHelper.accessor("discussionLink", {
+  columnHelper.accessor("titleSlug", {
     cell: (info) => {
-      const lcLink = info.getValue();
+      const slug = info.getValue();
       return (
-        <a
-          className="border-b-[1px] border-neutral-900"
-          href={lcLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Link to discussion
-        </a>
+        <PrimaryLink to={`/question?slug=${slug}`}>View question</PrimaryLink>
       );
     },
-    header: "Discussion",
+    header: "Question URL",
     enableSorting: false,
   }),
   columnHelper.accessor("updatedAt", {

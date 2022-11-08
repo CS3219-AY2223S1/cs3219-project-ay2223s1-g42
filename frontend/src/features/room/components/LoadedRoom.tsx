@@ -125,6 +125,14 @@ const LoadedRoom = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const slug = searchParams.get("slug");
 
+  // if valid slug provided, update qn idx
+  if (slug) {
+    const slugQnIdx = questionSummaries.findIndex((q) => q.titleSlug === slug);
+    if (slugQnIdx !== -1) {
+      setQuestionIdx(slugQnIdx);
+    }
+  }
+
   // get current question summary (use slug to filter if solo editor, otherwise use questionIdx)
   const questionSummary =
     questionSummaries.find((q) => q.titleSlug === slug) ??

@@ -84,7 +84,7 @@ const AppContainer = ({ children }: PropsWithChildren) => {
   // room page is any authenticated page that starts with /room
   const isRoomPage =
     (isAuthenticatedPage && pathname.startsWith("/room/")) ||
-    pathname.startsWith("/question");
+    (pathname.startsWith("/question") && !pathname.includes("/questions"));
 
   return (
     <>
