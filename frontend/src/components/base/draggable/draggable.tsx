@@ -64,11 +64,21 @@ interface Props {
   style?: React.CSSProperties;
   buttonStyle?: React.CSSProperties;
   transform?: Transform | null;
+  children?: React.ReactNode;
 }
 
 export const Draggable = forwardRef<HTMLButtonElement, Props>(
   function Draggable(
-    { handle, label, listeners, transform, style, buttonStyle, ...props },
+    {
+      handle,
+      label,
+      listeners,
+      transform,
+      style,
+      buttonStyle,
+      children,
+      ...props
+    },
     ref
   ) {
     return (
@@ -91,7 +101,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
           ref={ref}
           style={buttonStyle}
         >
-          drag
+          {children}
         </button>
         {label ? <label>{label}</label> : null}
       </div>
@@ -106,6 +116,7 @@ interface DraggableItemProps {
   buttonStyle?: React.CSSProperties;
   top?: number;
   left?: number;
+  children?: React.ReactNode;
 }
 
 function DraggableItem({
@@ -115,6 +126,7 @@ function DraggableItem({
   left,
   handle,
   buttonStyle,
+  children,
 }: DraggableItemProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform } =
     useDraggable({
@@ -133,7 +145,9 @@ function DraggableItem({
         buttonStyle={buttonStyle}
         transform={transform}
         {...attributes}
-      />
+      >
+        {children}
+      </Draggable>
     </Wrapper>
   );
 }

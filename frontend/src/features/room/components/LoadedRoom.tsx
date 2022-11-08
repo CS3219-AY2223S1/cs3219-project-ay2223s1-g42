@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import shallow from "zustand/shallow";
 import {
@@ -33,7 +34,6 @@ import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
 import { RoomTabs } from "./RoomTabs";
 import { UserStatus } from "./UserStatus";
-import { useState } from "react";
 
 const defaultCoordinates = {
   x: 0,
@@ -73,10 +73,27 @@ const LoadedRoom = ({
   questionSummaries: GetSummariesResponse;
 }) => {
   const [isDropped, setIsDropped] = useState(false);
-  const { questionIdx, setQuestionIdx } = useGlobalStore((state) => {
+  const {
+    user,
+    questionIdx,
+    setQuestionIdx,
+    setupVideo,
+    otherVideoRef,
+    myVideoRef,
+    stream,
+    isCaller,
+    callUser,
+  } = useGlobalStore((state) => {
     return {
+      user: state.user,
       questionIdx: state.questionIdx,
       setQuestionIdx: state.setQuestionIdx,
+      setupVideo: state.setupVideo,
+      otherVideoRef: state.otherVideo,
+      myVideoRef: state.myVideo,
+      stream: state.stream,
+      isCaller: state.isCaller,
+      callUser: state.callUser,
     };
   }, shallow);
   const handleSelectNextQuestion = () => {
@@ -112,10 +129,30 @@ const LoadedRoom = ({
     });
   };
 
+  useEffect(() => {
+    setupVideo();
+  }, []);
+
+  useEffect(() => {
+    const otherUser = room.users.find((u) => u.id !== user?.id);
+    console.log({ otherUser, isCaller, stream });
+    if (otherUser && isCaller) {
+      callUser(otherUser.socketId);
+    }
+  }, [callUser, isCaller, room.users, user?.id, stream]);
+
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
-        <DraggableItem label="Drag me!" top={y} left={x} />
+        <DraggableItem label="Drag me!" top={y} left={x}>
+          <video
+            className="h-40 w-40"
+            playsInline
+            ref={otherVideoRef}
+            autoPlay
+          />
+          <video className="h-40 w-40" playsInline ref={myVideoRef} autoPlay />
+        </DraggableItem>
         <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
           <RoomTabs questionSummaries={questionSummaries} />
           <div className="flex flex-col gap-3 border-t-[1px] border-neutral-800 p-3 xl:flex-row xl:items-center xl:justify-between">

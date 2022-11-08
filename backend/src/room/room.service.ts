@@ -76,6 +76,7 @@ export class RoomService {
       ...room,
       users: newUsers,
     };
+    console.log("new users: ", { newUsers });
     await this.setRoom(newRoom);
 
     // add user to room users (store room id of each user in a room)

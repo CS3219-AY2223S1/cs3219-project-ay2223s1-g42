@@ -66,7 +66,6 @@ const RoomPage = (): JSX.Element => {
       }
     }
   );
-  console.log(questionSummaries.data);
 
   // join room on mount
   useEffect(() => {

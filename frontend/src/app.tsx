@@ -1,3 +1,5 @@
+import global from "global";
+import * as process from "process";
 import { Suspense, useEffect } from "react";
 import { useRoutes } from "react-router-dom";
 import {
@@ -7,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import shallow from "zustand/shallow";
+global.process = process;
 
 import "./styles/globals.css";
 import routes from "~react-pages";
@@ -28,12 +31,6 @@ const App = () => {
   }, shallow);
 
   const allRoutes = useRoutes(routes);
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate(`/login`);
-  //   }
-  // }, []);
 
   // connects to match and room socket servers
   useEffect(() => {

@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import Pages from "vite-plugin-pages";
 import { ValidateEnv } from "@julr/vite-plugin-validate-env";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";
+import * as process from "process";
 
 export default defineConfig((configEnv) => {
   const isDevelopment = configEnv.mode === "development";
@@ -21,6 +22,9 @@ export default defineConfig((configEnv) => {
         languageWorkers: ["editorWorkerService", "json", "typescript"],
       }),
     ],
+    define: {
+      process: process,
+    },
     optimizeDeps: {
       esbuildOptions: {
         define: {
@@ -35,6 +39,7 @@ export default defineConfig((configEnv) => {
         components: resolve(__dirname, "src", "components"),
         hooks: resolve(__dirname, "src", "hooks"),
         shared: resolve(__dirname, "..", "shared", "src"),
+        "readable-stream": "vite-compatible-readable-stream",
       },
     },
     css: {
