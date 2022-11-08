@@ -23,7 +23,6 @@ export class RoomService {
 
   async createRoom(users: PoolUser[], type: MatchType): Promise<Room> {
     // create room
-    console.log("creating room for: ", { users });
     const roomId = v4();
     const roomUsers: RoomUser[] = Array.from(
       new Set(
@@ -76,7 +75,6 @@ export class RoomService {
       ...room,
       users: newUsers,
     };
-    console.log("new users: ", { newUsers });
     await this.setRoom(newRoom);
 
     // add user to room users (store room id of each user in a room)

@@ -8,12 +8,6 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import shallow from "zustand/shallow";
 
-// import global from "global";
-// import * as process from "process";
-// if (typeof window !== "undefined") {
-//   global.process = process;
-// }
-
 import "./styles/globals.css";
 import routes from "~react-pages";
 import { LoadingLayout, AppLayout, ErrorPage } from "./components";
