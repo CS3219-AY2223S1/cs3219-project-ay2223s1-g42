@@ -8,8 +8,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel frontend:dev backend:dev",
-    "dev:with-studio": "npm-run-all --parallel frontend:dev backend:dev backend:studio",
+    "dev": "yarn && yarn shared:build && npm-run-all --parallel frontend:dev backend:dev",
+    "dev:with-studio": "yarn && yarn shared:build && npm-run-all --parallel frontend:dev backend:dev backend:studio",
     "dev:rm": "yarn --cwd backend db:dev:rm",
     "local": "npm-run-all --parallel frontend:dev backend:local",
     "local:with-studio": "npm-run-all --parallel frontend:dev backend:local backend:studio",
