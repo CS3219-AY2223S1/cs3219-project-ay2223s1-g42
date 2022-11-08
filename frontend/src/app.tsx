@@ -1,5 +1,3 @@
-import global from "global";
-import * as process from "process";
 import { Suspense, useEffect } from "react";
 import { useRoutes } from "react-router-dom";
 import {
@@ -9,7 +7,12 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import shallow from "zustand/shallow";
-global.process = process;
+
+// import global from "global";
+// import * as process from "process";
+// if (typeof window !== "undefined") {
+//   global.process = process;
+// }
 
 import "./styles/globals.css";
 import routes from "~react-pages";
