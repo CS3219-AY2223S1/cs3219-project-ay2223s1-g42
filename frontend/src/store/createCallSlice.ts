@@ -20,7 +20,9 @@ export type CallSlice = {
   isCaller: boolean;
   connected: boolean;
   myVideo: React.MutableRefObject<HTMLVideoElement | null>;
+  myVideoConnected: boolean;
   otherVideo: React.MutableRefObject<HTMLVideoElement | null>;
+  otherVideoConnected: boolean;
   connectionRef: React.MutableRefObject<Peer.Instance | null>;
   answerCall: () => void;
   callUser: (id: string) => void;
@@ -46,7 +48,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       audio: true,
     });
     myVideoRef.current!.srcObject = stream;
-    setState({ stream });
+    setState({ stream, myVideoConnected: true });
   };
 
   const answerCall = () => {
@@ -97,6 +99,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
         return;
       }
       otherVideoRef.current!.srcObject = currentStream;
+      setState({ otherVideoConnected: true });
     });
 
     // send signal to peer
@@ -164,12 +167,12 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
 
     peer.on("stream", (currentStream) => {
       const otherVideoRef = getState().otherVideo;
+
       // break if other video ref not set
       if (!otherVideoRef) {
         console.error("failed to stream, no other video element ref set!");
         return;
       }
-
       // break if other video ref current not set
       if (!otherVideoRef.current) {
         console.error(
@@ -179,6 +182,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       }
 
       otherVideoRef.current.srcObject = currentStream;
+      setState({ otherVideoConnected: true });
     });
 
     // set up call accepted event
@@ -215,7 +219,13 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       console.error("failed to leave call, connection ref current not set!");
     }
     connectionRef.current?.destroy();
-    setState({ callEnded: true });
+    setState({
+      callEnded: true,
+      myVideo: undefined,
+      myVideoConnected: false,
+      otherVideo: undefined,
+      otherVideoConnected: false,
+    });
   };
 
   return {
@@ -226,7 +236,9 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     isCaller: false,
     connected: false,
     myVideo: createRef(),
+    myVideoConnected: false,
     otherVideo: createRef(),
+    otherVideoConnected: false,
     connectionRef: createRef(),
     answerCall,
     callUser,
