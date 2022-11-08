@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import shallow from "zustand/shallow";
 import cx from "classnames";
 
@@ -59,9 +59,17 @@ const SaveAttemptButton = ({ questionSummaries }: ButtonProps) => {
       questionIdx: state.questionIdx,
     };
   }, shallow);
+  const queryClient = useQueryClient();
 
-  const saveAttemptMutation = useMutation((body: AttemptInfo) =>
-    Axios.post("/attempt", body).then((res) => res.data)
+  const saveAttemptMutation = useMutation(
+    (body: AttemptInfo) => Axios.post("/attempt", body).then((res) => res.data),
+    {
+      onSuccess: () => {
+        const questionSummary = questionSummaries[questionIdx];
+        const titleSlug = questionSummary.titleSlug;
+        queryClient.invalidateQueries([`${titleSlug}-attempts`, "attempts"]);
+      },
+    }
   );
 
   const handleDialogClose = (isConfirm: boolean) => {
