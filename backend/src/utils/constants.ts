@@ -43,6 +43,7 @@ export enum API_OPERATIONS {
   QUERY_SUMMARY = "Retrieves Query in URL",
   OAUTH_SUMMARY = "Login using Oauth",
   QUESTION_INVALIDATE_CACHE = "Invalidates the question cache",
+  ATTEMPT_CREATED = "Successfully registered attempt",
 }
 
 export enum API_RESPONSES_DESCRIPTION {
@@ -73,4 +74,8 @@ export enum API_RESPONSES_DESCRIPTION {
   FORBIDDEN_SIGNIN_DESCRIPTION = "User entered invalid credentials or is unverified",
   SUCCESSFUL_QUESTION_QUERY = "Successful question query made",
   SUCCESSFUL_QUESTION_INVALIDATION = "Successfully invalidates the question cache",
+  SUCCESSFUL_ATTEMPT_REGISTED = "Successfully registered attempt",
+  SUCCESSFUL_ATTEMPTS_RETRIEVED = "Successfully retrieved all attempts",
+  SUCCESSFUL_ATTEMPT_TITLESLUG_RETRIEVED = "Successfully retrieved attempt for title slug",
+  SUCCESSFUL_ATTEMPT_INVALIDATE_CACHE = "Successfully invalidated cache for attempts",
 }
