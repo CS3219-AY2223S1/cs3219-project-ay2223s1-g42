@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import shallow from "zustand/shallow";
+import cx from "classnames";
 
 import { AttemptInfo, GetSummariesResponse } from "shared/api";
 import { PrimaryDialog, PrimaryButton, BlueButton } from "src/components";
@@ -82,7 +83,10 @@ const SaveAttemptButton = ({ questionSummaries }: ButtonProps) => {
   return (
     <>
       <PrimaryButton
-        className="border-[1px] border-l-neutral-900 py-2.5 md:py-2"
+        className={cx("border-[1px] border-l-neutral-900 py-2.5 md:py-2", {
+          hidden: !input,
+        })}
+        disabled={!input}
         onClick={() => setIsDialogOpen(true)}
         isLoading={saveAttemptMutation.isLoading}
       >

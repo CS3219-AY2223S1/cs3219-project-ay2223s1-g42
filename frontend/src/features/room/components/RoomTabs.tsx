@@ -15,7 +15,7 @@ const RoomTabs = ({
       />
     ),
     Attempts: <AttemptPanel questionSummaries={questionSummaries} />,
-    Solution: <DiscussionPanel questionSummaries={questionSummaries} />,
+    Discussion: <DiscussionPanel questionSummaries={questionSummaries} />,
   };
   return <BaseTabs values={tabValues} />;
 };

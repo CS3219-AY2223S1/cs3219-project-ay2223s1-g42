@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
 import { Attempt, GetSummariesResponse } from "shared/api";
-import { Table, BigHeading, LoadingLayout } from "src/components";
+import { Table, LoadingLayout } from "src/components";
 import { Axios } from "src/services";
 import { useGlobalStore } from "src/store";
 
@@ -52,7 +52,6 @@ const AttemptPanel = ({ questionSummaries }: Props) => {
     <LoadingLayout />
   ) : (
     <div className="flex h-full w-full flex-col px-4 py-3 md:max-w-[50vw]">
-      <BigHeading className="mb-12">Attempts</BigHeading>
       <Table data={data.data} columns={createColumns()} />
     </div>
   );
