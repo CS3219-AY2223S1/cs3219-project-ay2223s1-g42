@@ -38,7 +38,7 @@ const BaseListbox = <T extends string | string[], U extends string>({
                 }
               )}
             >
-              <span className="block truncate capitalize">
+              <span className="block truncate py-3 capitalize md:py-0">
                 {isValueArray ? `${value.length} topics selected` : value}
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-50">

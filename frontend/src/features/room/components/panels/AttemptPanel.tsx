@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
-import { Attempt, GetSummariesResponse } from "shared/api";
+import { Attempt, GetAttemptsResponse, GetSummariesResponse } from "shared/api";
 import { Table, LoadingLayout, PrimaryLink } from "src/components";
 import { Axios } from "src/services";
 import { useGlobalStore } from "src/store";
@@ -43,19 +43,32 @@ const AttemptPanel = ({ questionSummaries }: Props) => {
   const questionIdx = useGlobalStore((state) => state.questionIdx);
   const questionSummary = questionSummaries[questionIdx];
   const titleSlug = questionSummary.titleSlug;
-
   const data = useQuery([`${titleSlug}-attempts`], async () => {
-    const res = await Axios.get<Attempt[] | undefined>(
+    const res = await Axios.get<GetAttemptsResponse>(
       `/attempt/${titleSlug}`
     ).then((res) => res.data);
+    if (!Array.isArray(res)) {
+      return [res];
+    }
     return res;
   });
-  return data.isLoading || !data.data ? (
-    <LoadingLayout />
-  ) : (
-    <div className="flex h-full w-full flex-col px-4 py-3 md:max-w-[50vw]">
-      <Table data={data.data} columns={createColumns()} />
-    </div>
+  return (
+    <>
+      {data.isLoading || !data.data ? (
+        <LoadingLayout />
+      ) : (
+        <div className="px-4 py-3 text-center">
+          {data.data.length === 0 ? (
+            <div className="font-semibold">
+              No past attempts for{" "}
+              <span className="font-bold">{questionSummary.title}</span>
+            </div>
+          ) : (
+            <Table data={data.data} columns={createColumns()} />
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

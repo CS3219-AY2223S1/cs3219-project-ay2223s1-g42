@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import shallow from "zustand/shallow";
 import cx from "classnames";
 
-import { AttemptInfo, GetSummariesResponse } from "shared/api";
+import { AttemptInfo, FlattenedQuestionSummary } from "shared/api";
 import { PrimaryDialog, PrimaryButton, BlueButton } from "src/components";
 import { Axios } from "src/services";
 import { useGlobalStore } from "src/store";
@@ -11,10 +11,6 @@ import { useGlobalStore } from "src/store";
 type DialogProps = {
   isOpen: boolean;
   onClose: (isConfirm: boolean) => void;
-};
-
-type ButtonProps = {
-  questionSummaries: GetSummariesResponse;
 };
 
 export const SaveAttemptDialog = ({ isOpen, onClose }: DialogProps) => {
@@ -37,6 +33,7 @@ export const SaveAttemptDialog = ({ isOpen, onClose }: DialogProps) => {
       onClose={handleCancel}
       title={dialogTitle}
       description={dialogDescription}
+      autoClose={true}
     >
       <div className="mt-3 flex flex-col gap-2">
         <BlueButton onClick={handleConfirm} className="w-full">
@@ -50,50 +47,52 @@ export const SaveAttemptDialog = ({ isOpen, onClose }: DialogProps) => {
   );
 };
 
-const SaveAttemptButton = ({ questionSummaries }: ButtonProps) => {
+const SaveAttemptButton = ({
+  questionSummary,
+}: {
+  questionSummary: FlattenedQuestionSummary;
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { room, input, questionIdx } = useGlobalStore((state) => {
+  const { room, input } = useGlobalStore((state) => {
     return {
       room: state.room,
       input: state.editorInput,
-      questionIdx: state.questionIdx,
     };
   }, shallow);
   const queryClient = useQueryClient();
-
   const saveAttemptMutation = useMutation(
     (body: AttemptInfo) => Axios.post("/attempt", body).then((res) => res.data),
     {
       onSuccess: () => {
-        const questionSummary = questionSummaries[questionIdx];
         const titleSlug = questionSummary.titleSlug;
-        queryClient.invalidateQueries([`${titleSlug}-attempts`, "attempts"]);
+        queryClient.invalidateQueries([`${titleSlug}-attempts`]);
       },
     }
   );
 
   const handleDialogClose = (isConfirm: boolean) => {
     setIsDialogOpen(false);
-    if (isConfirm && room?.id && input) {
-      const questionSummary = questionSummaries[questionIdx];
-      const titleSlug = questionSummary.titleSlug;
-      const title = questionSummary.title;
-      const roomId = room.id;
-
-      saveAttemptMutation.mutate({
-        titleSlug,
-        title,
-        roomId,
-        content: input,
-      });
+    if (!isConfirm || !room?.id || !input) {
+      return;
     }
+    const titleSlug = questionSummary.titleSlug;
+    const title = questionSummary.title;
+    const roomId = room.id;
+    saveAttemptMutation.mutate({
+      titleSlug,
+      title,
+      roomId,
+      content: input,
+    });
   };
+
   return (
     <>
       <PrimaryButton
-        className={cx("border-[1px] border-l-neutral-900 py-2.5 md:py-2", {
-          hidden: !input,
-        })}
+        className={cx(
+          "w-full border-[1px] py-2.5 md:border-0 md:border-l-[1px] md:py-2",
+          { "cursor-not-allowed bg-neutral-900 text-neutral-100": !input }
+        )}
         disabled={!input}
         onClick={() => setIsDialogOpen(true)}
         isLoading={saveAttemptMutation.isLoading}

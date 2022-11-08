@@ -23,7 +23,7 @@ const LeaveRoomButton = () => {
   }, shallow);
   return (
     <RedButton
-      className="border-[1px] border-l-neutral-900 py-2.5 md:py-2"
+      className="border-[1px] py-2.5 md:border-l-neutral-900 md:py-2"
       onClick={() => {
         if (!user) {
           console.error("user not logged in, cannot leave room");
@@ -100,6 +100,7 @@ const LoadedRoom = ({
       callUser: state.callUser,
     };
   }, shallow);
+  const questionSummary = questionSummaries[questionIdx];
   const handleSelectNextQuestion = () => {
     const nextQuestionIdx = questionIdx + 1;
     if (nextQuestionIdx > questionSummaries.length - 1) {
@@ -193,10 +194,12 @@ const LoadedRoom = ({
         </div>
       </div>
       <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
-        <div className="flex w-full flex-row items-center justify-between">
+        <div className="flex w-full flex-col items-center gap-1 md:flex-row md:justify-between">
           <RoomListBox />
-          <SaveAttemptButton questionSummaries={questionSummaries} />
-          <LeaveRoomButton />
+          <div className="flex w-full flex-row gap-2 p-2 md:w-auto md:flex-row md:gap-0 md:p-0">
+            <SaveAttemptButton questionSummary={questionSummary} />
+            <LeaveRoomButton />
+          </div>
         </div>
         <RoomEditor />
       </div>

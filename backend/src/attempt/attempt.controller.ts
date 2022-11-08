@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -7,7 +8,7 @@ import {
   Post,
 } from "@nestjs/common";
 
-import { UserInfo, AttemptInfo } from "shared/api";
+import { UserInfo, AttemptInfo, GetAttemptsResponse } from "shared/api";
 import { AttemptService } from "./attempt.service";
 import { GetUser } from "../utils";
 
@@ -21,31 +22,48 @@ export class AttemptController {
     @Body() attemptInfo: AttemptInfo
   ) {
     const { content, titleSlug, title, roomId } = attemptInfo;
-
-    const res = { message: "pending" };
-    await this.attemptService
-      .upsertAttempt(id, roomId, title, titleSlug, content)
-      .then(() => (res.message = "success"))
-      .catch(() => (res.message = "failed"));
-    return res;
+    try {
+      await this.attemptService.upsertAttempt(
+        id,
+        roomId,
+        title,
+        titleSlug,
+        content
+      );
+      return { message: "Successfully upserted attempt." };
+    } catch (err) {
+      throw new BadRequestException("Failed to upsert attempt.");
+    }
   }
 
   @Get()
-  async getUserAttempts(@GetUser() { id }: UserInfo) {
-    const attempts = await this.attemptService.getAttempts(id);
-    return attempts;
+  async getUserAttempts(
+    @GetUser() { id }: UserInfo
+  ): Promise<GetAttemptsResponse> {
+    try {
+      const attempts = await this.attemptService.getAttempts(id);
+      return attempts;
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
   }
 
   @Get(":titleSlug")
   async getUserQuestionAttempts(
     @GetUser() { id }: UserInfo,
     @Param("titleSlug") titleSlug: string
-  ) {
-    const userQuestionAttempts = await this.attemptService.getAttempts(
-      id,
-      titleSlug
-    );
-    return userQuestionAttempts;
+  ): Promise<GetAttemptsResponse> {
+    try {
+      const userQuestionAttempts = await this.attemptService.getAttempts(
+        id,
+        titleSlug
+      );
+      return userQuestionAttempts;
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
   }
 
   @Post("invalidateCache")

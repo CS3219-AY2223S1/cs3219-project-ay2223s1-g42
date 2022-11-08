@@ -60,7 +60,6 @@ export class AttemptService {
     const filteredAttempts = userAttempts.filter(
       (v) => v.titleSlug === titleSlug
     );
-
     return filteredAttempts;
   }
 
@@ -101,10 +100,12 @@ export class AttemptService {
     );
 
     if (!cachedAttempts) {
-      const prismaAttempts = await this.prisma.user.findUniqueOrThrow({
+      const prismaAttempts = await this.prisma.user.findUnique({
         where: { id: userId },
         select: { attempts: { select: ATTEMPT_SELECT } },
       });
+
+      console.log({ prismaAttempts });
 
       await this.redis.setKeyInNamespace(
         [NAMESPACES.ATTEMPT],
