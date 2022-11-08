@@ -1,13 +1,10 @@
-import { GetSummariesResponse } from "shared/api";
-import { useGlobalStore } from "src/store";
+import { FlattenedQuestionSummary } from "shared/api";
 
-type Props = {
-  questionSummaries: GetSummariesResponse;
-};
-
-const DiscussionPanel = ({ questionSummaries }: Props) => {
-  const questionIdx = useGlobalStore((state) => state.questionIdx);
-  const questionSummary = questionSummaries[questionIdx];
+const DiscussionPanel = ({
+  questionSummary,
+}: {
+  questionSummary: FlattenedQuestionSummary;
+}) => {
   const discussionLink = questionSummary.discussionLink;
   return (
     <div className="px-4 py-3 text-center">

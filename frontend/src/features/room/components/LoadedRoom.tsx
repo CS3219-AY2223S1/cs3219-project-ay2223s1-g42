@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import shallow from "zustand/shallow";
 import { Portal } from "@headlessui/react";
 import cx from "classnames";
@@ -12,6 +13,7 @@ import { RoomListBox } from "./RoomListBox";
 import { RoomTabs } from "./RoomTabs";
 import { UserStatus } from "./UserStatus";
 import { SaveAttemptButton } from "./SaveAttemptButton";
+import { SoloEditor } from "./SoloEditor";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
@@ -66,11 +68,31 @@ const RoomUserVideo = ({
   );
 };
 
+const RoomInfo = ({ room }: { room: Room }) => {
+  return (
+    <div className="flex flex-col gap-3 border-t-[1px] border-neutral-800 p-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-2">
+        <h1 className="max-w-full truncate text-lg font-bold">{room?.id}</h1>
+        <div className="flex flex-row gap-1">
+          {room?.difficulties?.map((diff) => (
+            <Badge key={`${room.id} ${diff}`}>{diff}</Badge>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-col justify-start gap-1 truncate">
+        {room?.users.map((user) => (
+          <UserStatus key={user.id} user={user} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const LoadedRoom = ({
   room,
   questionSummaries,
 }: {
-  room: Room;
+  room?: Room;
   questionSummaries: GetSummariesResponse;
 }) => {
   const {
@@ -100,14 +122,26 @@ const LoadedRoom = ({
       callUser: state.callUser,
     };
   }, shallow);
-  const questionSummary = questionSummaries[questionIdx];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const slug = searchParams.get("slug");
+
+  // get current question summary (use slug to filter if solo editor, otherwise use questionIdx)
+  const questionSummary =
+    questionSummaries.find((q) => q.titleSlug === slug) ??
+    questionSummaries[questionIdx];
+
   const handleSelectNextQuestion = () => {
     const nextQuestionIdx = questionIdx + 1;
     if (nextQuestionIdx > questionSummaries.length - 1) {
       return;
     }
     setQuestionIdx(nextQuestionIdx);
+    if (slug) {
+      const nextSlug = questionSummaries[nextQuestionIdx].titleSlug;
+      setSearchParams({ slug: nextSlug });
+    }
   };
+
   const handleSelectPreviousQuestion = () => {
     if (!questionSummaries || questionSummaries.length === 0) {
       return;
@@ -117,6 +151,12 @@ const LoadedRoom = ({
       return;
     }
     setQuestionIdx(previousQuestionIdx);
+    if (slug) {
+      const prevSlug = questionSummaries[previousQuestionIdx].titleSlug;
+      setSearchParams({
+        slug: prevSlug,
+      });
+    }
   };
 
   useEffect(() => {
@@ -125,12 +165,18 @@ const LoadedRoom = ({
   }, []);
 
   useEffect(() => {
-    const otherUser = room.users.find((u) => u.id !== user?.id);
+    if (!slug) {
+      setSearchParams({ slug: questionSummary.titleSlug });
+    }
+  }, []);
+
+  useEffect(() => {
+    const otherUser = room?.users.find((u) => u.id !== user?.id);
     console.log({ otherUser, isCaller, stream });
     if (otherUser && isCaller) {
       callUser(otherUser.socketId);
     }
-  }, [callUser, isCaller, room.users, user?.id, stream]);
+  }, [callUser, isCaller, room?.users, user?.id, stream]);
 
   useEffect(() => {
     console.log({ myVideoConnected, otherVideoConnected });
@@ -159,22 +205,8 @@ const LoadedRoom = ({
         </div>
       </Portal>
       <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
-        <RoomTabs questionSummaries={questionSummaries} />
-        <div className="flex flex-col gap-3 border-t-[1px] border-neutral-800 p-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="max-w-full truncate text-lg font-bold">{room.id}</h1>
-            <div className="flex flex-row gap-1">
-              {room?.difficulties?.map((diff) => (
-                <Badge key={`${room.id} ${diff}`}>{diff}</Badge>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col justify-start gap-1 truncate">
-            {room.users.map((user) => (
-              <UserStatus key={user.id} user={user} />
-            ))}
-          </div>
-        </div>
+        <RoomTabs questionSummary={questionSummary} />
+        {room ? <RoomInfo room={room} /> : <></>}
         <div className="flex flex-row items-center justify-between border-t-[1px] border-neutral-800 p-3">
           <PrimaryButton
             className="px-6 py-2.5"
@@ -196,12 +228,16 @@ const LoadedRoom = ({
       <div className="flex h-full w-full flex-col border-[1px] border-neutral-900">
         <div className="flex w-full flex-col items-center gap-1 md:flex-row md:justify-between">
           <RoomListBox />
-          <div className="flex w-full flex-row gap-2 p-2 md:w-auto md:flex-row md:gap-0 md:p-0">
-            <SaveAttemptButton questionSummary={questionSummary} />
-            <LeaveRoomButton />
-          </div>
+          {room ? (
+            <div className="flex w-full flex-row gap-2 p-2 md:w-auto md:flex-row md:gap-0 md:p-0">
+              <SaveAttemptButton questionSummary={questionSummary} />
+              <LeaveRoomButton />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
-        <RoomEditor />
+        {room ? <RoomEditor /> : <SoloEditor />}
       </div>
     </div>
   );

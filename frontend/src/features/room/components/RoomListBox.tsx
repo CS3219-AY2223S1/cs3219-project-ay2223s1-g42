@@ -18,6 +18,7 @@ const RoomListBox = () => {
       value={language}
       setValue={(value) => setLanguage(value as LANGUAGE)}
       values={languages}
+      editorPadding={true}
     />
   );
 };

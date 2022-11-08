@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import shallow from "zustand/shallow";
 import cx from "classnames";
+import toast from "react-hot-toast";
 
 import { AttemptInfo, FlattenedQuestionSummary } from "shared/api";
 import { PrimaryDialog, PrimaryButton, BlueButton } from "src/components";
@@ -66,6 +67,7 @@ const SaveAttemptButton = ({
       onSuccess: () => {
         const titleSlug = questionSummary.titleSlug;
         queryClient.invalidateQueries([`${titleSlug}-attempts`]);
+        toast.success("Attempt saved!");
       },
     }
   );

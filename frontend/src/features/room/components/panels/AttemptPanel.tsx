@@ -2,7 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
-import { Attempt, GetAttemptsResponse, GetSummariesResponse } from "shared/api";
+import {
+  Attempt,
+  FlattenedQuestionSummary,
+  GetAttemptsResponse,
+  GetSummariesResponse,
+} from "shared/api";
 import { Table, LoadingLayout, PrimaryLink } from "src/components";
 import { Axios } from "src/services";
 import { useGlobalStore } from "src/store";
@@ -35,13 +40,11 @@ const createColumns = () => {
   return columns;
 };
 
-type Props = {
-  questionSummaries: GetSummariesResponse;
-};
-
-const AttemptPanel = ({ questionSummaries }: Props) => {
-  const questionIdx = useGlobalStore((state) => state.questionIdx);
-  const questionSummary = questionSummaries[questionIdx];
+const AttemptPanel = ({
+  questionSummary,
+}: {
+  questionSummary: FlattenedQuestionSummary;
+}) => {
   const titleSlug = questionSummary.titleSlug;
   const data = useQuery([`${titleSlug}-attempts`], async () => {
     const res = await Axios.get<GetAttemptsResponse>(

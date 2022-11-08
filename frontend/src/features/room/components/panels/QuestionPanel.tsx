@@ -6,8 +6,7 @@ import parse, {
 } from "html-react-parser";
 import { useQuery } from "@tanstack/react-query";
 
-import { GetSlugContentResponse, GetSummariesResponse } from "shared/api";
-import { useGlobalStore } from "src/store";
+import { FlattenedQuestionSummary, GetSlugContentResponse } from "shared/api";
 import { Axios } from "src/services";
 import { Badge, LoadingLayout } from "src/components";
 
@@ -28,12 +27,10 @@ const options: HTMLReactParserOptions = {
 };
 
 const QuestionPanel = ({
-  questionSummaries,
+  questionSummary,
 }: {
-  questionSummaries: GetSummariesResponse;
+  questionSummary: FlattenedQuestionSummary;
 }) => {
-  const questionIdx = useGlobalStore((state) => state.questionIdx);
-  const questionSummary = questionSummaries[questionIdx];
   const questionSlug = questionSummary.titleSlug;
   const questionDataQuery = useQuery(["question-data", questionSlug], () =>
     Axios.get<GetSlugContentResponse>(`/question/content/${questionSlug}`).then(

@@ -17,6 +17,7 @@ export type EditorSlice = {
   editorClients: string[] | undefined;
   editorBinding: MonacoBinding | undefined;
   questionIdx: number;
+  setEditorInput: (input: string) => void;
   setEditorLanguage: (language: LANGUAGE) => void;
   setQuestionIdx: (idx: number) => void;
   setupDoc: () => void;
@@ -31,6 +32,10 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
   setState,
   getState
 ) => {
+  const setEditorInput = (input: string) => {
+    setState({ editorInput: input });
+  };
+
   const setEditorLanguage = (language: LANGUAGE) => {
     const binding = getState().editorBinding;
     if (binding) {
@@ -201,6 +206,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     editorClients: undefined,
     editorBinding: undefined,
     questionIdx: 0,
+    setEditorInput,
     setupDoc,
     setupProvider,
     setupBinding,
