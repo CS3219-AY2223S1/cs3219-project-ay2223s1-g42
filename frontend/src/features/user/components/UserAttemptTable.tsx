@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
 import { Attempt } from "shared/api";
-import { Table, BigHeading, LoadingLayout } from "src/components";
+import { Table, BigHeading, LoadingLayout, PrimaryLink } from "src/components";
 import { Axios } from "src/services";
 
 function formatDate(date: Date) {
@@ -25,11 +25,13 @@ const createColumns = () => {
       id: "updatedAt",
       header: "Last updated",
     }),
-    columnHelper.accessor("content", {
-      cell: (info) => (
-        <code className="block whitespace-pre">{info.getValue()}</code>
-      ),
-      id: "content",
+    columnHelper.accessor("titleSlug", {
+      cell: (info) => {
+        const slug = info.getValue();
+        const href = `/question?slug=${slug}`;
+        return <PrimaryLink to={href}>View details</PrimaryLink>;
+      },
+      id: "titleSlug",
       header: "Details",
       maxSize: 500,
       enableSorting: false,

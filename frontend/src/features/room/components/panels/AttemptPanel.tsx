@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
 
 import { Attempt, GetSummariesResponse } from "shared/api";
-import { Table, LoadingLayout } from "src/components";
+import { Table, LoadingLayout, PrimaryLink } from "src/components";
 import { Axios } from "src/services";
 import { useGlobalStore } from "src/store";
 
@@ -20,11 +20,13 @@ const createColumns = () => {
       id: "updatedAt",
       header: "Last updated",
     }),
-    columnHelper.accessor("content", {
-      cell: (info) => (
-        <code className="block whitespace-pre">{info.getValue()}</code>
-      ),
-      id: "content",
+    columnHelper.accessor("titleSlug", {
+      cell: (info) => {
+        const slug = info.getValue();
+        const href = `/question?slug=${slug}`;
+        return <PrimaryLink to={href}>View details</PrimaryLink>;
+      },
+      id: "titleSlug",
       header: "Details",
       maxSize: 500,
       enableSorting: false,
