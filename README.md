@@ -2,6 +2,8 @@
 
 PeerPrep is a platform that allows its users to match with each other and give them the opportunity to work together on an algorithmic problem. In doing so, users can also simulate interviews by assuming the role of interviewer-interviewee, or work as a pair to solve a problem together.
 
+The report for this assignment located at "[docs/42-FinalReport.pdf](https://github.com/CS3219-AY2223S1/cs3219-project-ay2223s1-g42/blob/main/docs/42-FinalReport.pdf)" 
+
 ## Run the application locally
 
 ### Requirements
