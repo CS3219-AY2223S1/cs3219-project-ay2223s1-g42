@@ -32,7 +32,6 @@ export class RoomGateway {
   async onJoinRoom(client: Socket, data: any) {
     const { id: pendingUserId, roomId: pendingRoomId }: PendingRoomUser =
       JSON.parse(data);
-    console.log("joining room: ", { pendingUserId, pendingRoomId });
 
     try {
       // find room of user
@@ -192,7 +191,6 @@ export class RoomGateway {
   @SubscribeMessage(ROOM_EVENTS.END_CALL)
   async endCall(client: Socket, data: any) {
     const { roomId }: { roomId: string } = JSON.parse(data);
-    console.log("call ended: ", { roomId });
     this.server.to(roomId).emit(ROOM_EVENTS.CALL_ENDED);
   }
 }

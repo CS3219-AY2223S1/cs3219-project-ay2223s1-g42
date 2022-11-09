@@ -143,7 +143,6 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   });
 
   roomSocket.on(ROOM_EVENTS.CALL_ENDED, () => {
-    console.log("received call ended event");
     getState().killCall();
   });
 

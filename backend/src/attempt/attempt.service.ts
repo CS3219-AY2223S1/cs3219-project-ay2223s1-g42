@@ -98,24 +98,20 @@ export class AttemptService {
       [NAMESPACES.ATTEMPT],
       userId.toString()
     );
-
-    if (!cachedAttempts) {
-      const prismaAttempts = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { attempts: { select: ATTEMPT_SELECT } },
-      });
-
-      console.log({ prismaAttempts });
-
-      await this.redis.setKeyInNamespace(
-        [NAMESPACES.ATTEMPT],
-        userId.toString(),
-        prismaAttempts.attempts
-      );
-
-      return prismaAttempts.attempts;
+    if (cachedAttempts) {
+      return cachedAttempts;
     }
-    return cachedAttempts;
+
+    const prismaAttempts = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { attempts: { select: ATTEMPT_SELECT } },
+    });
+    await this.redis.setKeyInNamespace(
+      [NAMESPACES.ATTEMPT],
+      userId.toString(),
+      prismaAttempts.attempts
+    );
+    return prismaAttempts.attempts;
   }
 
   async invalidateAllAttemptsCache() {

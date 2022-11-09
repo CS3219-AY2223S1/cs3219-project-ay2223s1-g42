@@ -79,8 +79,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       stream,
     });
 
-    console.log("answering call with peer: ", { peer });
-
     peer.on("signal", (data) => {
       const roomSocket = getState().roomSocket;
       const call = getState().call;

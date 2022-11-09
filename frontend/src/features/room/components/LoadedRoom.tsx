@@ -209,7 +209,6 @@ const LoadedRoom = ({
       return;
     }
     const otherUser = room?.users.find((u) => u.id !== user?.id);
-    console.log({ otherUser, isCaller, stream });
     if (otherUser && isCaller) {
       callUser(otherUser.socketId);
     }
@@ -222,10 +221,6 @@ const LoadedRoom = ({
     }
     setInput(undefined);
   }, [questionIdx, room?.id, setInput]);
-
-  useEffect(() => {
-    console.log({ call });
-  }, [call]);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">

@@ -14,11 +14,7 @@ const SoloEditor = () => {
     };
   }, shallow);
 
-  const handleEditorChange = (
-    value: string | undefined,
-    ev: monaco.editor.IModelContentChangedEvent
-  ) => {
-    console.log({ value, ev });
+  const handleEditorChange = (value: string | undefined) => {
     if (!value) {
       return;
     }
