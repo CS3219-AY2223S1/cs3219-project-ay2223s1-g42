@@ -218,7 +218,7 @@ const LoadedRoom = ({
     <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
       {room ? (
         <Portal>
-          <div className="fixed bottom-0 right-0 flex w-fit flex-col border-[1px] border-neutral-900 md:flex-row">
+          <div className="fixed bottom-0 right-0 z-[999] flex w-fit flex-col border-[1px] border-neutral-900 md:flex-row">
             <RoomUserVideo
               isConnected={otherVideoConnected}
               isRightBorder={true}
