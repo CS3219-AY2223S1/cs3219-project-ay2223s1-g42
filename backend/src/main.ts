@@ -30,6 +30,7 @@ async function bootstrap() {
     .addTag("User API routes")
     .addTag("Auth API routes")
     .addTag("Question API routes")
+    .addTag("Attempt API routes")
     .setVersion("1.0")
     .build();
 
