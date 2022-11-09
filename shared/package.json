@@ -1,0 +1,41 @@
+{
+  "name": "g42-peerprep-shared",
+  "version": "1.0.1",
+  "description": "shared types for cs3219-g42",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "clean": "rimraf dist && yarn lint",
+    "prebuild": "yarn clean",
+    "preversion": "yarn build",
+    "postversion": "git push --follow-tags",
+    "lint": "prettier \"src/**/*.ts\" --write && eslint \"src/**/*.ts\" --fix",
+    "build": "yarn lint && tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Myreage/typescript-starter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Myreage/typescript-starter/issues"
+  },
+  "homepage": "https://github.com/Myreage/typescript-starter#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "zod": "^3.19.1"
+  }
+}

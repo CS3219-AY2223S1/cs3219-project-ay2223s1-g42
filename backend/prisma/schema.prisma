@@ -1,0 +1,104 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+// ! Uncomment this when adding new models, zod adds them to "shared" dir in proj root
+// generator zod {
+//   provider              = "zod-prisma"
+//   output                = "../../shared/src/models" // (default) the directory where generated zod schemas will be saved
+//   modelCase             = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+//   // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
+//   dtoCase               = "PascalCase" // (default) Output DTOs using pascal case (ex. UserDto, PostDto)
+//   // dtoCase               = "camelCase" // Output DTOs using camel case (ex. userDto, postDto)
+//   modelSuffix           = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+//   // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
+//   useDecimalJs          = "true" // represent the prisma Decimal type using Decimal.js (as Prisma does)
+//   // imports               = "../zod-schemas" // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
+//   // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+//   // relationModel         = "false" // (default) Create and export both plain and related models.
+//   relationModel         = "default" // Do not export model without relations.
+//   // relationModel         = false // Do not generate related model
+//   prismaJsonNullability = "true" // (default) uses prisma's scheme for JSON field nullability
+//   // prismaJsonNullability = false // allows null assignment to optional JSON fields
+// }
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  /// @z.string().min(4).max(20)
+  username  String    @unique
+  /// @z.string().email({ message: "Invalid email address" })
+  email     String    @unique
+  // hash for password, set as @db.Text to remove length limit set by varchar
+  hash      String?   @db.Text
+  // hash for refresh token, set as @db.Text to remove length limit set by varchar
+  hashRt    String?   @db.Text
+  provider  String    @default("CUSTOM") @db.Text
+  attempts  Attempt[]
+
+  @@map("users")
+}
+
+model QuestionSummary {
+  id              Int              @id @unique @default(autoincrement())
+  acRate          Float
+  difficulty      String
+  paidOnly        Boolean
+  title           String
+  titleSlug       String           @unique
+  isDailyQuestion Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  topicTags       TopicTag[]
+  QuestionContent QuestionContent?
+
+  @@index([titleSlug])
+}
+
+model TopicTag {
+  id                Int               @id @default(autoincrement())
+  topicSlug         String            @unique
+  questionSummaries QuestionSummary[]
+
+  @@index([topicSlug])
+}
+
+model QuestionContent {
+  id        Int             @id @default(autoincrement())
+  content   String          @db.LongText
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  titleSlug String          @unique
+  summary   QuestionSummary @relation(fields: [titleSlug], references: [titleSlug])
+  hints     QuestionHint[]
+
+  @@index([titleSlug])
+}
+
+model QuestionHint {
+  hintId            Int             @id @unique @default(autoincrement())
+  hint              String?         @db.LongText
+  QuestionContent   QuestionContent @relation(fields: [questionContentId], references: [id])
+  questionContentId Int
+}
+
+model Attempt {
+  titleSlug String
+  title     String
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int
+  roomId    String
+  content   String   @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([titleSlug, userId, roomId])
+}

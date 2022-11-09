@@ -1,0 +1,34 @@
+name: Backend CD to DO Droplet
+
+on:
+  pull_request:
+    types: ["closed"]
+    branches: ["main"]
+    paths:
+      - "backend/**"
+
+jobs:
+  on-merged-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "backend"
+    steps:
+      - name: SSH into Droplet and run backend
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd g42
+            git reset --hard
+            git pull
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 16
+            npm install --global yarn
+            cd backend
+            sed -i "s/\/\/\ //g" src/main.ts
+            yarn gh:deploy

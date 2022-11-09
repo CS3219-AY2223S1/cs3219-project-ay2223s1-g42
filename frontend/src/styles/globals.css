@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "AllianceNo1";
+    src: url("/fonts/AllianceNo1-Regular.woff") format("woff"),
+      url("/fonts/AllianceNo1-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo1";
+    src: url("/fonts/AllianceNo1-Medium.woff") format("woff"),
+      url("/fonts/AllianceNo1-Medium.woff2") format("woff2");
+    font-weight: medium;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo1";
+    src: url("/fonts/AllianceNo1-SemiBold.woff") format("woff"),
+      url("/fonts/AllianceNo1-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo1";
+    src: url("/fonts/AllianceNo1-Bold.woff") format("woff"),
+      url("/fonts/AllianceNo1-Bold.woff2") format("woff2");
+    font-weight: bold;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo2";
+    src: url("/fonts/AllianceNo2-Regular.woff") format("woff"),
+      url("/fonts/AllianceNo2-Regular.woff2") format("woff2");
+    font-weight: normal;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo2";
+    src: url("/fonts/AllianceNo2-Medium.woff") format("woff"),
+      url("/fonts/AllianceNo2-Medium.woff2") format("woff2");
+    font-weight: medium;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo2";
+    src: url("/fonts/AllianceNo2-SemiBold.woff") format("woff"),
+      url("/fonts/AllianceNo2-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "AllianceNo2";
+    src: url("/fonts/AllianceNo2-Bold.woff") format("woff"),
+      url("/fonts/AllianceNo2-Bold.woff2") format("woff2");
+    font-weight: bold;
+    font-display: swap;
+    font-style: normal;
+  }
+
+  body {
+    @apply font-sans bg-neutral-100;
+  }
+
+  .yRemoteSelection {
+    @apply bg-green-500;
+  }
+
+  .yRemoteSelectionHead {
+    @apply absolute border-l-2 border-y-2 border-green-500 h-full box-border;
+  }
+
+  .yRemoteSelectionHead::after {
+    @apply absolute content-["_"] border-green-500 border-[3px] rounded-[4px] -left-1 -top-[5px];
+  }
+}

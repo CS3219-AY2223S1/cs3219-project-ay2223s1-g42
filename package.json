@@ -1,0 +1,38 @@
+{
+  "name": "peerprep",
+  "version": "1.0.0",
+  "description": "CS3219 G42 code collab project",
+  "main": "index.js",
+  "repository": "git@github.com:CS3219-AY2223S1/cs3219-project-ay2223s1-g42.git",
+  "author": "aidanaden <aidanaden@hotmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "yarn && yarn shared:build && npm-run-all --parallel frontend:dev backend:dev",
+    "dev:with-studio": "yarn && yarn shared:build && npm-run-all --parallel frontend:dev backend:dev backend:studio",
+    "dev:rm": "yarn --cwd backend db:dev:rm",
+    "local": "npm-run-all --parallel frontend:dev backend:local",
+    "local:with-studio": "npm-run-all --parallel frontend:dev backend:local backend:studio",
+    "local:rm": "yarn --cwd backend db:local:rm",
+    "frontend:dev": "yarn --cwd frontend && yarn --cwd frontend dev",
+    "backend:dev": "yarn --cwd backend && yarn --cwd backend start:dev",
+    "backend:local": "yarn --cwd backend && yarn --cwd backend start:local",
+    "backend:studio": "yarn --cwd backend prisma:dev:studio",
+    "lint": "npm-run-all -s shared:lint frontend:lint backend:lint",
+    "frontend:lint": "yarn --cwd frontend install && yarn --cwd frontend lint",
+    "backend:lint": "yarn --cwd backend install && yarn --cwd backend lint",
+    "shared:lint": "yarn --cwd shared install && yarn --cwd shared lint",
+    "build": "npm-run-all -s shared:build frontend:build backend:build",
+    "frontend:build": "yarn --cwd frontend install && yarn --cwd frontend build",
+    "backend:build": "yarn --cwd backend install && yarn --cwd backend build",
+    "shared:build": "yarn --cwd shared install && yarn --cwd shared build"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "url-search-params": "^1.1.0"
+  },
+  "dependencies": {
+    "global": "^4.4.0",
+    "tsx": "^3.9.0"
+  }
+}

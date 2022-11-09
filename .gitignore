@@ -1,0 +1,14 @@
+dist
+.next
+node_modules
+.vscode
+
+# local env files
+.env
+.env*.local
+
+*.log*
+*.sql*
+
+.DS_Store
+.nvmrc

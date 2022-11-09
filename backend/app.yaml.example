@@ -1,0 +1,29 @@
+instance_class: F1       # Free tier (see docs on why not anything > F1)
+runtime: custom          # Allows deploying Dockerfile
+env: flexible            # Allows websocket connections
+env_variables:           # Backend dotenv, EXCLUDING port -- GAE uses 8080
+  CACHE_TTL: 
+  COOKIE_SECRET: 
+  DATABASE_URL: 
+  FRONTEND_URL:          # Ensure that it does not end with "/"
+  JWT_REFRESH_SECRET: 
+  JWT_SECRET: 
+  REDIS_HOST: 
+  REDIS_PASSWORD: 
+  REDIS_PORT: 
+  SMTP_EMAIL: 
+  SMTP_HOST: 
+  SMTP_NAME: 
+  SMTP_PASSWORD: 
+  SMTP_PORT: 
+automatic_scaling:      # Similar to HPA scaling
+  min_num_instances: 1
+  max_num_instances: 1  # Free tier = 28 instance hours
+  cpu_utilization:
+    target_utilization: 0.8
+network:
+  forwarded_ports:
+    - '5000'
+    - '15316'
+    - '65080'
+  session_affinity: true # Best effort reconnect users back to original instance
