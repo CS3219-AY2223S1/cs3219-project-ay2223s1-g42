@@ -173,8 +173,6 @@ export class RoomGateway {
     }: { userToCall: string; signalData: any; from: RoomUser } =
       JSON.parse(data);
 
-    console.log("calling user: ", { userToCall, signalData, from });
-
     this.server
       .to(userToCall)
       .emit(
@@ -186,9 +184,14 @@ export class RoomGateway {
   @SubscribeMessage(ROOM_EVENTS.ANSWER_CALL)
   async answerCall(client: Socket, data: any) {
     const { to, signal }: { to: RoomUser; signal: any } = JSON.parse(data);
-    console.log("answering call: ", { to, signal });
     this.server
       .to(to.socketId)
       .emit(ROOM_EVENTS.CALL_ACCEPTED, JSON.stringify({ signal }));
+  }
+
+  @SubscribeMessage(ROOM_EVENTS.END_CALL)
+  async endCall(client: Socket, data: any) {
+    const { to }: { to: RoomUser } = JSON.parse(data);
+    this.server.to(to.socketId).emit(ROOM_EVENTS.CALL_ENDED);
   }
 }

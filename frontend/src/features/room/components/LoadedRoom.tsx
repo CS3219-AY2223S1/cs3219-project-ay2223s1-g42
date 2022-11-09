@@ -22,10 +22,11 @@ import { SoloEditor } from "./SoloEditor";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
-  const { user, leaveRoom } = useGlobalStore((state) => {
+  const { user, leaveRoom, leaveCall } = useGlobalStore((state) => {
     return {
       user: state.user,
       leaveRoom: state.leaveRoom,
+      leaveCall: state.leaveCall,
     };
   }, shallow);
   return (
@@ -37,6 +38,7 @@ const LeaveRoomButton = () => {
           return;
         }
         leaveRoom();
+        leaveCall();
         navigate("/");
       }}
     >
@@ -228,6 +230,7 @@ const LoadedRoom = ({
                 playsInline
                 ref={otherVideoRef}
                 autoPlay
+                controls={true}
               />
             </RoomUserVideo>
             <RoomUserVideo isConnected={myVideoConnected}>
@@ -236,6 +239,8 @@ const LoadedRoom = ({
                 playsInline
                 ref={myVideoRef}
                 autoPlay
+                muted={true}
+                controls={true}
               />
             </RoomUserVideo>
           </div>
