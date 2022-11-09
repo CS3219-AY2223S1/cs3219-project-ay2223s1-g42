@@ -141,9 +141,10 @@ const LoadedRoom = ({
   }
 
   // get current question summary (use slug to filter if solo editor, otherwise use questionIdx)
-  const questionSummary =
-    questionSummaries.find((q) => q.titleSlug === slug) ??
-    questionSummaries[questionIdx];
+  const questionSummary = slug
+    ? questionSummaries.find((q) => q.titleSlug === slug) ??
+      questionSummaries[questionIdx]
+    : questionSummaries[questionIdx];
 
   const handleSelectNextQuestion = () => {
     const nextQuestionIdx = questionIdx + 1;

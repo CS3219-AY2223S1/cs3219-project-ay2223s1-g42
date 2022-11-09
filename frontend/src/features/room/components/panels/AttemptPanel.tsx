@@ -7,7 +7,7 @@ import {
   FlattenedQuestionSummary,
   GetAttemptsResponse,
 } from "shared/api";
-import { Table, LoadingLayout, PrimaryLink } from "src/components";
+import { Table, LoadingLayout, BaseLink } from "src/components";
 import { Axios } from "src/services";
 
 function formatDate(date: Date) {
@@ -27,7 +27,11 @@ const createColumns = () => {
       cell: (info) => {
         const slug = info.getValue();
         const href = `/question?slug=${slug}`;
-        return <PrimaryLink to={href}>View details</PrimaryLink>;
+        return (
+          <BaseLink to={href} className="border-b-[1px] border-b-neutral-900">
+            View details
+          </BaseLink>
+        );
       },
       id: "titleSlug",
       header: "Details",
