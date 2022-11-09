@@ -175,7 +175,8 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
     // set initial editor document language to typescript
     const language = monacoBinding.ytext.getAttribute("language");
-    if (!language) {
+    console.log({ language });
+    if (!language && !getState().editorLanguage) {
       monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
     }
 

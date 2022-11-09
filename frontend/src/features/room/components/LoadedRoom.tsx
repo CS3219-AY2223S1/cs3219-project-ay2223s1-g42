@@ -230,7 +230,6 @@ const LoadedRoom = ({
                 playsInline
                 ref={otherVideoRef}
                 autoPlay
-                controls={true}
               />
             </RoomUserVideo>
             <RoomUserVideo isConnected={myVideoConnected}>
@@ -240,7 +239,6 @@ const LoadedRoom = ({
                 ref={myVideoRef}
                 autoPlay
                 muted={true}
-                controls={true}
               />
             </RoomUserVideo>
           </div>
