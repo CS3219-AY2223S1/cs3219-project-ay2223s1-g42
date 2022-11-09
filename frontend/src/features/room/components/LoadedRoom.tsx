@@ -6,7 +6,12 @@ import { Portal } from "@headlessui/react";
 import cx from "classnames";
 
 import { GetSummariesResponse, Room } from "shared/api";
-import { Badge, PrimaryButton, RedButton, SpinnerIcon } from "src/components";
+import {
+  PrimaryBadge,
+  PrimaryButton,
+  RedButton,
+  SpinnerIcon,
+} from "src/components";
 import { useGlobalStore } from "src/store";
 import { RoomEditor } from "./RoomEditor";
 import { RoomListBox } from "./RoomListBox";
@@ -75,7 +80,7 @@ const RoomInfo = ({ room }: { room: Room }) => {
         <h1 className="max-w-full truncate text-lg font-bold">{room?.id}</h1>
         <div className="flex flex-row gap-1">
           {room?.difficulties?.map((diff) => (
-            <Badge key={`${room.id} ${diff}`}>{diff}</Badge>
+            <PrimaryBadge key={`${room.id} ${diff}`}>{diff}</PrimaryBadge>
           ))}
         </div>
       </div>

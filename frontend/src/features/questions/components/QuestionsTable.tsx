@@ -4,7 +4,7 @@ import { formatDistance } from "date-fns";
 
 import { FlattenedQuestionSummary, QuestionDifficulty } from "shared/api";
 import {
-  Badge,
+  PrimaryBadge,
   Table,
   BigHeading,
   LoadingLayout,
@@ -72,7 +72,7 @@ export const defaultColumns = [
     cell: (info) => (
       <div className="flex flex-wrap gap-1">
         {info.getValue().map((v, idx) => (
-          <Badge key={idx}>{v}</Badge>
+          <PrimaryBadge key={idx}>{v}</PrimaryBadge>
         ))}
       </div>
     ),

@@ -42,6 +42,7 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
     : queueRoomId
     ? "Match Found"
     : "Matching you now...";
+
   const dialogDescription = room
     ? "Please leave your room to find another match!"
     : queueRoomId

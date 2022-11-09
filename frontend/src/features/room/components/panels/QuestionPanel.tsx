@@ -6,9 +6,19 @@ import parse, {
 } from "html-react-parser";
 import { useQuery } from "@tanstack/react-query";
 
-import { FlattenedQuestionSummary, GetSlugContentResponse } from "shared/api";
+import {
+  FlattenedQuestionSummary,
+  GetSlugContentResponse,
+  QuestionDifficulty,
+} from "shared/api";
 import { Axios } from "src/services";
-import { Badge, LoadingLayout } from "src/components";
+import {
+  LoadingLayout,
+  YellowBadge,
+  GreenBadge,
+  RedBadge,
+  PrimaryBadge,
+} from "src/components";
 
 const options: HTMLReactParserOptions = {
   replace: (domNode) => {
@@ -48,7 +58,35 @@ const QuestionPanel = ({
             <h1 className="mb-3 font-display text-3xl font-bold">
               {questionSummary.title}
             </h1>
-            <Badge>{questionSummary.difficulty}</Badge>
+            {questionSummary.difficulty.toLowerCase() ===
+            QuestionDifficulty.EASY ? (
+              <GreenBadge className="font-bold">
+                {questionSummary.difficulty}
+              </GreenBadge>
+            ) : questionSummary.difficulty.toLowerCase() ===
+              QuestionDifficulty.MEDIUM ? (
+              <YellowBadge className="font-bold">
+                {questionSummary.difficulty}
+              </YellowBadge>
+            ) : questionSummary.difficulty.toLowerCase() ===
+              QuestionDifficulty.HARD ? (
+              <RedBadge className="font-bold">
+                {questionSummary.difficulty}
+              </RedBadge>
+            ) : (
+              <></>
+            )}
+            <div className="mt-2 flex flex-wrap gap-2 text-sm">
+              {questionSummary.topicTags.map((topic) => (
+                <PrimaryBadge
+                  key={topic}
+                  uppercase={false}
+                  className="capitalize"
+                >
+                  {topic}
+                </PrimaryBadge>
+              ))}
+            </div>
           </div>
           {parse(sanitizeHtml(questionDataQuery.data.content), options)}
         </div>
