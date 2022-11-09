@@ -1,17 +1,20 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { CookieOptions } from "express";
 
+const PRODUCTION =
+  process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes("localhost");
+
 const CSRF_OPTIONS = {
   cookie: true,
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: PRODUCTION,
+  sameSite: PRODUCTION ? "none" : "lax",
 };
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: PRODUCTION,
+  sameSite: PRODUCTION ? "none" : "lax",
 };
 
 const CORS_OPTIONS: CorsOptions = {

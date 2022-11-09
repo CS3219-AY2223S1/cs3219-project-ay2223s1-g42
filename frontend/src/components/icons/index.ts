@@ -5,3 +5,6 @@ export * from "./CheckFilledIcon";
 export * from "./BurgerMenuIcon";
 export * from "./ChevronDownIcon";
 export * from "./CloseIcon";
+export * from "./SortIcon";
+export * from "./RightArrowIcon";
+export * from "./LeftArrowIcon";

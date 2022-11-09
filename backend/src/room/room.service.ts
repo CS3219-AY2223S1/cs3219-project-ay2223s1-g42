@@ -1,7 +1,7 @@
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 
-import { NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
+import { MatchType, NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
 import { RedisCacheService } from "src/cache/redisCache.service";
 
 @Injectable()
@@ -21,7 +21,7 @@ export class RoomService {
     }
   }
 
-  async createRoom(users: PoolUser[]): Promise<Room> {
+  async createRoom(users: PoolUser[], type: MatchType): Promise<Room> {
     // create room
     console.log("creating room for: ", { users });
     const roomId = v4();
@@ -32,16 +32,24 @@ export class RoomService {
         })
       )
     );
-    const allDifficulties = roomUsers.map((user) => user.difficulties);
-    const commonDifficulties = allDifficulties.reduce((p, c) =>
-      p.filter((d) => c.includes(d))
-    );
 
     const room: Room = {
       id: roomId,
       users: roomUsers,
-      difficulties: commonDifficulties,
+      type,
     };
+
+    if (type === MatchType.DIFFICULTY) {
+      const allDifficulties = roomUsers.flatMap((user) => user.difficulties);
+      const commonDifficulties = Array.from(new Set(allDifficulties));
+      room.difficulties = commonDifficulties;
+    }
+
+    if (type === MatchType.TOPICS) {
+      const allTopics = roomUsers.flatMap((user) => user.topics);
+      const commonTopics = Array.from(new Set(allTopics));
+      room.topics = commonTopics;
+    }
 
     try {
       await this.setRoom(room);

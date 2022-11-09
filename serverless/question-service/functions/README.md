@@ -4,31 +4,31 @@
 
 The `question-service` is deployed on Firebase Cloud Functions to do the following:
 
-1. Update the questions' summary which consists of "summary" data such as acceptance rate, difficulty, and topics,
+1. Update the questions' summary, which consists of "summary" data such as acceptance rate, difficulty, and topics,
 2. Update the daily question to follow LeetCode's, and
 3. Update the questions' content -- actual question, context, and hints, if any.
 
 Firebase Cloud Functions was used for the following reasons:
 
-1. Works with GCP Cloud Scheduler and PubSub to simiulate cron jobs to update the database periodically, and
+1. Works with GCP Cloud Scheduler and PubSub to simulate cron jobs to update the database periodically, and
 2. Allows updating of questions regardless of the status of the `backend` (decouples from `backend`)
 
-## Preperation
+## Preparation
 
-PlanetScale is used to store the question summaries and contents as they are relational in nature and it allows for future upgrades to the application as a whole.
+PlanetScale is used to store the question summaries and contents as they are relational in nature, and it allows for future upgrades to the application as a whole.
 
 1. [PlanetScale](https://planetscale.com/)
    * Free hosted SQL database with Git-like features for schema management.
    * Very similar to MySQL [with some caveats](https://planetscale.com/docs/reference/mysql-compatibility).
 2. [Prisma](https://www.prisma.io/)
    * ORM for PlanetScale, makes working with SQL databases easier.
-   * Works well with PlanetScale with regards to schema management.
+   * Works well with PlanetScale regarding schema management.
 
 ## Installing
 
 ### Developer Environment
 
-It is highly recommended to use a "development" branch of PlanetScale for local development as it is less of a hassle to setup than a local environment as all that is needed is to create a new branch from the main one via PlanetScale's web UI and save the connection string in a .env as shown.
+It is highly recommended to use a "development" branch of PlanetScale for local development as it is less of a hassle to set up than a local environment as all that is needed is to create a new branch from the main one via PlanetScale's web UI and save the connection string in a .env as shown.
 
 ```bash
 # Enter the question-service directory
@@ -39,7 +39,7 @@ yarn
 
 ```
 
-Create a `.env` file and fill it up appripriately with MySQL connection string as follows. Note that the `sslaccept=strict` is required.
+Create a `.env` file and fill it up appropriately with MySQL connection string as follows. Note that the `sslaccept=strict` is required.
 
 ```bash
 DATABASE_URL="mysql://USERNAME_FROM_PSCALE:PASSWORD_FROM_PSCALE@HOST_FROM_PSCALE/BRANCH_DB_NAME?sslaccept=strict"
@@ -64,11 +64,11 @@ yarn serve
 # functions similarly to cron jobs.
 ```
 
-### Local Environemnt
+### Local Environment
 
 There are 2 ways to go about this, 
 
-1. Use a local instance of MySQL, implement the necessary configuraitons as seen in the [Prisma documentation here](https://www.prisma.io/docs/guides/database/using-prisma-with-planetscale#how-to-enable-emulation-of-referential-integrity) -- the quick and dirty way.
+1. Use a local instance of MySQL, implement the necessary configurations as seen in the [Prisma documentation here](https://www.prisma.io/docs/guides/database/using-prisma-with-planetscale#how-to-enable-emulation-of-referential-integrity) -- the quick and dirty way.
 2. Follow [this tutorial](https://planetscale.com/docs/tutorials/prisma-quickstart) which goes over how to develop with a local instance of PlanetScale.
 
 ## Seeding the Database
@@ -137,7 +137,7 @@ firebase deploy --only functions:SPECIFIC_FUNCTION
       2. The secrets can be read.
       3. Functions are redeployed when Secrets Manager is updated.
 
-## Furhter Details
+## Further Details
 
 For more details, refer to the following:
 
@@ -145,3 +145,4 @@ For more details, refer to the following:
 2. `prisma/schema.prisma` for the schema being used and the relations,
 3. [Getting started with Prisma](https://www.prisma.io/docs/getting-started), and
 4. Things to note when [using Prisma with PlanetScale](https://www.prisma.io/docs/guides/database/using-prisma-with-planetscale).
+

@@ -1,11 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import shallow from "zustand/shallow";
+import { useQuery } from "@tanstack/react-query";
 
-import { MATCH_EVENTS, ROOM_EVENTS } from "shared/api";
+import {
+  GetDailyQuestionSummaryResponse,
+  GetSummariesResponse,
+  MatchType,
+  MATCH_EVENTS,
+  ROOM_EVENTS,
+} from "shared/api";
 import { LoadingLayout, UnauthorizedPage } from "src/components";
 import { LoadedRoom } from "src/features";
 import { useGlobalStore } from "src/store";
+import { Axios } from "src/services";
 
 const RoomPage = (): JSX.Element => {
   const { id } = useParams();
@@ -35,6 +43,30 @@ const RoomPage = (): JSX.Element => {
   const isInvalidRoom =
     roomStatus?.event === ROOM_EVENTS.INVALID_ROOM ||
     (queueRoomId && !isQueuedRoom);
+
+  const questionSummaries = useQuery(
+    ["room-question-summaries", pageRoomId],
+    () => {
+      if (room?.type === MatchType.DIFFICULTY && room?.difficulties) {
+        return Axios.get<GetSummariesResponse>(
+          `/question/summary?difficulty=${room?.difficulties.join(",")}`
+        ).then((res) => res.data);
+      }
+
+      if (room?.type === MatchType.TOPICS && room?.topics) {
+        return Axios.get<GetSummariesResponse>(
+          `/question/summary?topicTags=${room?.topics.join(",")}`
+        ).then((res) => res.data);
+      }
+
+      if (room?.type === MatchType.QOTD) {
+        return Axios.get<GetDailyQuestionSummaryResponse>(
+          "/question/summary/daily"
+        ).then((res) => [res.data]);
+      }
+    }
+  );
+  console.log(questionSummaries.data);
 
   // join room on mount
   useEffect(() => {
@@ -66,8 +98,10 @@ const RoomPage = (): JSX.Element => {
     return <UnauthorizedPage />;
   }
 
-  if (room) {
-    return <LoadedRoom />;
+  if (room && questionSummaries.data) {
+    return (
+      <LoadedRoom room={room} questionSummaries={questionSummaries.data} />
+    );
   }
 
   return <LoadingLayout />;

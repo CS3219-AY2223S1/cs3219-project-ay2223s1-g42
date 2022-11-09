@@ -1,23 +1,10 @@
 import { useNavigate } from "react-router";
 import cx from "classnames";
 
-import { Room, RoomUser } from "shared/api";
+import { Room } from "shared/api";
 import { useGlobalStore } from "src/store";
 import { PrimaryButton, RedButton } from "../base";
-import { CheckIcon, SpinnerIcon } from "../icons";
-
-const UserStatus = ({ user }: { user: RoomUser }) => {
-  return (
-    <div className="flex flex-row items-center justify-center gap-1 text-base md:text-sm">
-      {user.connected ? (
-        <CheckIcon className="h- w-4 stroke-[3px] text-green-500" />
-      ) : (
-        <SpinnerIcon className="h-4 w-4" />
-      )}
-      <span>{user.username}</span>
-    </div>
-  );
-};
+import { UserStatus } from "src/features";
 
 const TheRoomStatusbar = ({ room }: { room: Room }) => {
   const leaveRoom = useGlobalStore((state) => state.leaveRoom);
@@ -37,18 +24,40 @@ const TheRoomStatusbar = ({ room }: { room: Room }) => {
           <div className="truncate text-lg font-bold md:ml-0">{room.id}</div>
           <div className="flex flex-row items-center justify-center gap-3">
             <div className="flex flex-none flex-row gap-1 truncate">
-              {room.difficulties.map((difficulty, i) => (
+              {room.difficulties ? (
+                room.difficulties.map((difficulty, i) => (
+                  <p
+                    key={`${difficulty.toString()} ${i}`}
+                    className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
+                  >
+                    {difficulty.toString()}
+                  </p>
+                ))
+              ) : room.topics ? (
+                room.topics.map((topic, i) => (
+                  <p
+                    key={`${topic.toString()} ${i}`}
+                    className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
+                  >
+                    {topic.toString()}
+                  </p>
+                ))
+              ) : (
                 <p
-                  key={`${difficulty.toString()} ${i}`}
+                  key={`qotd`}
                   className="text-sm font-bold capitalize text-neutral-900 md:text-xs md:font-bold md:uppercase"
                 >
-                  {difficulty.toString()}
+                  Question of the day
                 </p>
-              ))}
+              )}
             </div>
             <div className="flex w-full flex-row gap-2 truncate md:flex-row">
               {room.users.map((user) => (
-                <UserStatus key={user.id} user={user} />
+                <UserStatus
+                  key={user.id}
+                  className="items-center justify-center"
+                  user={user}
+                />
               ))}
             </div>
           </div>

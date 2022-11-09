@@ -1,3 +1,5 @@
+import { TopicMatchType } from "shared/api";
+
 export function sanitizeFilters(query: string | string[], separator = ",") {
   const splitQuery: string[] = [];
   if (!Array.isArray(query)) {
@@ -30,13 +32,12 @@ export function sanitizeDifficulty(query: string | string[], separator = ",") {
 }
 
 // Defaults to "OR"
-export function sanitizeTopicMatch(query = "OR") {
+export function sanitizeTopicMatch(query = TopicMatchType.OR) {
   const res = query.trim().toUpperCase();
-  if (res == "AND" || res == "OR") {
+  if (res === TopicMatchType.AND || res === TopicMatchType.OR) {
     return res;
-  } else {
-    return "OR";
   }
+  return TopicMatchType.OR;
 }
 
 function capitalizeFirstLetter(word: string) {

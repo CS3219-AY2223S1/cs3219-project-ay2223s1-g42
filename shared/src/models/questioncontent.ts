@@ -1,4 +1,5 @@
-import { z } from "zod";
+import * as z from "zod";
+
 import {
   CompleteQuestionSummary,
   QuestionSummaryModel,
@@ -25,10 +26,10 @@ export interface CompleteQuestionContent
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const QuestionContentModel: z.ZodType<CompleteQuestionContent> = z.lazy(
-  () =>
+export const QuestionContentModel: z.ZodSchema<CompleteQuestionContent> =
+  z.lazy(() =>
     _QuestionContentModel.extend({
       summary: QuestionSummaryModel,
       hints: QuestionHintModel.array(),
     })
-);
+  );

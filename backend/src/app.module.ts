@@ -17,6 +17,7 @@ import { MatchModule } from "./match/match.module";
 import { RoomModule } from "./room/room.module";
 import { DocumentModule } from "./document/document.module";
 import { QuestionModule } from "./question/question.module";
+import { HistoryModule } from "./history/history.module";
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { QuestionModule } from "./question/question.module";
     RoomModule,
     DocumentModule,
     MatchModule,
+    HistoryModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ZodValidationPipe },

@@ -21,8 +21,6 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiTags,
-  ApiParam,
-  ApiBody,
 } from "@nestjs/swagger";
 import { Response } from "express";
 
