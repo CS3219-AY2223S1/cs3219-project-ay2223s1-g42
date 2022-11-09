@@ -112,6 +112,7 @@ const LoadedRoom = ({
     stream,
     isCaller,
     callUser,
+    setInput,
   } = useGlobalStore((state) => {
     return {
       user: state.user,
@@ -125,6 +126,7 @@ const LoadedRoom = ({
       stream: state.stream,
       isCaller: state.isCaller,
       callUser: state.callUser,
+      setInput: state.setEditorInput,
     };
   }, shallow);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -194,6 +196,10 @@ const LoadedRoom = ({
   useEffect(() => {
     console.log({ myVideoConnected, otherVideoConnected });
   });
+
+  useEffect(() => {
+    setInput(undefined);
+  }, [questionIdx, setInput]);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
