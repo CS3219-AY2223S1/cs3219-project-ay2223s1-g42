@@ -1,11 +1,13 @@
 import { StateCreator } from "zustand";
 import { io, Socket } from "socket.io-client";
 import toast, { ToastOptions } from "react-hot-toast";
+import Peer from "simple-peer";
 
+import { Room, RoomUser, ROOM_EVENTS, UserInfo } from "shared/api";
 import type { Status, GlobalStore } from "./useGlobalStore";
 import { StatusType } from "./enums";
-import { Room, ROOM_EVENTS, UserInfo } from "shared/api";
 import { Axios } from "src/services";
+import { Call } from "./createCallSlice";
 
 const roomToastOptions: ToastOptions = {
   id: "room-toast",
@@ -43,14 +45,15 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
   });
 
   roomSocket.on(ROOM_EVENTS.JOIN_ROOM_SUCCESS, (data) => {
-    const { room }: { room: Room } = JSON.parse(data);
+    const { room, isCaller }: { room: Room; isCaller: boolean } =
+      JSON.parse(data);
     const roomStatusMsg = `Successfully joined room ${room.id}.`;
     const roomStatus: Status = {
       status: StatusType.SUCCESS,
       event: ROOM_EVENTS.JOIN_ROOM_SUCCESS,
       message: roomStatusMsg,
     };
-    setState({ room, roomStatus, queueRoomId: undefined });
+    setState({ room, roomStatus, queueRoomId: undefined, isCaller });
   });
 
   roomSocket.on(ROOM_EVENTS.JOIN_ROOM_ERROR, (data) => {
@@ -129,6 +132,14 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     };
     toast(roomStatusMsg, roomToastOptions);
     setState({ room, oldRoomUser: oldUser, roomStatus });
+  });
+
+  roomSocket.on(ROOM_EVENTS.CALL_USER, (data: any) => {
+    const { signal, from }: { signal: Peer.SignalData; from: RoomUser } =
+      JSON.parse(data);
+    const call: Call = { from, signal, isCaller: false };
+    setState({ call });
+    getState().answerCall();
   });
 
   const joinRoom = (roomId: string) => {

@@ -37,8 +37,6 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
   }, shallow);
   const [joinLoading, setJoinLoading] = useState<boolean>(false);
 
-  console.log("match dialog queue room id: ", { queueRoomId });
-
   const dialogTitle = room
     ? "Already in a room!"
     : queueRoomId

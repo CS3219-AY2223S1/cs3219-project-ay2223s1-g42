@@ -97,7 +97,7 @@ const RoomEditor = () => {
       language={language}
       value={input}
       theme="vs-dark"
-      className="h-full w-full"
+      className="z-0 h-full w-full"
       options={{
         "semanticHighlighting.enabled": true,
         autoIndent: "full",

@@ -23,7 +23,6 @@ export class RoomService {
 
   async createRoom(users: PoolUser[], type: MatchType): Promise<Room> {
     // create room
-    console.log("creating room for: ", { users });
     const roomId = v4();
     const roomUsers: RoomUser[] = Array.from(
       new Set(

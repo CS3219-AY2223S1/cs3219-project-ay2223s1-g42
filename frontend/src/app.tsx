@@ -29,12 +29,6 @@ const App = () => {
 
   const allRoutes = useRoutes(routes);
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate(`/login`);
-  //   }
-  // }, []);
-
   // connects to match and room socket servers
   useEffect(() => {
     if (!matchSocket || !roomSocket || !user) {
