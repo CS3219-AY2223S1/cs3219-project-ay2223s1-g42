@@ -42,6 +42,9 @@ export class AttemptController {
   ): Promise<GetAttemptsResponse> {
     try {
       const attempts = await this.attemptService.getAttempts(id);
+      if (!Array.isArray(attempts)) {
+        return [attempts];
+      }
       return attempts;
     } catch (err) {
       console.error(err);
@@ -59,6 +62,9 @@ export class AttemptController {
         id,
         titleSlug
       );
+      if (!Array.isArray(userQuestionAttempts)) {
+        return [userQuestionAttempts];
+      }
       return userQuestionAttempts;
     } catch (err) {
       console.error(err);

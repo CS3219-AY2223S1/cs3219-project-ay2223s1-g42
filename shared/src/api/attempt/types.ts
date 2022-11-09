@@ -13,6 +13,6 @@ type Attempt = Pick<
   | "title"
 >;
 
-type GetAttemptsResponse = Attempt[] | Attempt;
+type GetAttemptsResponse = Attempt[];
 
 export type { Attempt, GetAttemptsResponse };
