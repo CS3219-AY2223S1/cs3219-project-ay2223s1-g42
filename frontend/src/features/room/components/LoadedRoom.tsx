@@ -140,11 +140,12 @@ const LoadedRoom = ({
     }
   }
 
-  // get current question summary (use slug to filter if solo editor, otherwise use questionIdx)
+  // get current question summary (use slug to filter if solo editor, otherwise use questionIdx, fallback on first qn)
   const questionSummary = slug
     ? questionSummaries.find((q) => q.titleSlug === slug) ??
-      questionSummaries[questionIdx]
-    : questionSummaries[questionIdx];
+      questionSummaries[questionIdx] ??
+      questionSummaries[0]
+    : questionSummaries[questionIdx] ?? questionSummaries[0];
 
   const handleSelectNextQuestion = () => {
     const nextQuestionIdx = questionIdx + 1;
@@ -152,6 +153,7 @@ const LoadedRoom = ({
       return;
     }
     setQuestionIdx(nextQuestionIdx);
+    // only update slug if already exists
     if (slug) {
       const nextSlug = questionSummaries[nextQuestionIdx].titleSlug;
       setSearchParams({ slug: nextSlug });
@@ -167,6 +169,7 @@ const LoadedRoom = ({
       return;
     }
     setQuestionIdx(previousQuestionIdx);
+    // only update slug if already exists
     if (slug) {
       const prevSlug = questionSummaries[previousQuestionIdx].titleSlug;
       setSearchParams({
@@ -175,55 +178,71 @@ const LoadedRoom = ({
     }
   };
 
+  // set up video if room editor
   useEffect(() => {
+    if (!room) {
+      return;
+    }
     setupVideo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // update initial slug if solo editor and no slug provided
   useEffect(() => {
-    if (!slug) {
+    if (!slug && !room) {
       setSearchParams({ slug: questionSummary.titleSlug });
     }
   }, []);
 
+  // set up video if room editor
   useEffect(() => {
+    if (!room?.id) {
+      return;
+    }
     const otherUser = room?.users.find((u) => u.id !== user?.id);
     console.log({ otherUser, isCaller, stream });
     if (otherUser && isCaller) {
       callUser(otherUser.socketId);
     }
-  }, [callUser, isCaller, room?.users, user?.id, stream]);
+  }, [callUser, isCaller, room?.users, user?.id, stream, room?.id]);
 
+  // reset editor input on qn change if solo editor
   useEffect(() => {
-    console.log({ myVideoConnected, otherVideoConnected });
-  });
-
-  useEffect(() => {
+    if (room?.id) {
+      return;
+    }
     setInput(undefined);
-  }, [questionIdx, setInput]);
+  }, [questionIdx, room?.id, setInput]);
 
   return (
     <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
-      <Portal>
-        <div className="fixed bottom-0 right-0 flex w-fit flex-col border-[1px] border-neutral-900 md:flex-row">
-          <RoomUserVideo isConnected={otherVideoConnected} isRightBorder={true}>
-            <video
-              className="h-full w-full"
-              playsInline
-              ref={otherVideoRef}
-              autoPlay
-            />
-          </RoomUserVideo>
-          <RoomUserVideo isConnected={myVideoConnected}>
-            <video
-              className="h-full w-full"
-              playsInline
-              ref={myVideoRef}
-              autoPlay
-            />
-          </RoomUserVideo>
-        </div>
-      </Portal>
+      {room ? (
+        <Portal>
+          <div className="fixed bottom-0 right-0 flex w-fit flex-col border-[1px] border-neutral-900 md:flex-row">
+            <RoomUserVideo
+              isConnected={otherVideoConnected}
+              isRightBorder={true}
+            >
+              <video
+                className="h-full w-full"
+                playsInline
+                ref={otherVideoRef}
+                autoPlay
+              />
+            </RoomUserVideo>
+            <RoomUserVideo isConnected={myVideoConnected}>
+              <video
+                className="h-full w-full"
+                playsInline
+                ref={myVideoRef}
+                autoPlay
+              />
+            </RoomUserVideo>
+          </div>
+        </Portal>
+      ) : (
+        <></>
+      )}
       <div className="flex h-full max-h-full w-full flex-col border-[1px] border-neutral-800">
         <RoomTabs questionSummary={questionSummary} />
         {room ? <RoomInfo room={room} /> : <></>}
