@@ -32,7 +32,7 @@ const LeaveRoomButton = () => {
   return (
     <RedButton
       className="border-[1px] py-2.5 md:border-l-neutral-900 md:py-2"
-      onClick={() => {
+      onClick={async () => {
         if (!user) {
           console.error("user not logged in, cannot leave room");
           return;
@@ -108,7 +108,6 @@ const LoadedRoom = ({
   questionSummaries: GetSummariesResponse;
 }) => {
   const {
-    call,
     user,
     questionIdx,
     setQuestionIdx,
@@ -123,7 +122,6 @@ const LoadedRoom = ({
     setInput,
   } = useGlobalStore((state) => {
     return {
-      call: state.call,
       user: state.user,
       questionIdx: state.questionIdx,
       setQuestionIdx: state.setQuestionIdx,
