@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e" pages="2" scale="1" border="20">
     <diagram id="C5RBs43oDa-KdzZeNtuy" name="userflow">
-        <mxGraphModel dx="1858" dy="1246" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="819" dy="954" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-0"/>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0"/>
@@ -210,8 +210,8 @@
                 <mxCell id="KLDkMfSQlpF-0azxsrFl-19" value="Locked room page&lt;br&gt;with previous session's data" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
                     <mxGeometry x="1267" y="695" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="KLDkMfSQlpF-0azxsrFl-23" value="History&lt;br&gt;Service" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontFamily=Helvetica;fontColor=default;fontStyle=5" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-                    <mxGeometry x="1252" y="535" width="60" height="40" as="geometry"/>
+                <mxCell id="KLDkMfSQlpF-0azxsrFl-23" value="Attempt&lt;br&gt;Service" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontFamily=Helvetica;fontColor=default;fontStyle=5" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+                    <mxGeometry x="1252" y="540" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="KLDkMfSQlpF-0azxsrFl-30" value="Legend" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontFamily=Helvetica;fontColor=default;fontStyle=5" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
                     <mxGeometry x="247" y="805" width="60" height="30" as="geometry"/>
