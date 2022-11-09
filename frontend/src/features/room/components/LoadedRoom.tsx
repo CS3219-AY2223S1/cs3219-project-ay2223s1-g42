@@ -37,8 +37,8 @@ const LeaveRoomButton = () => {
           console.error("user not logged in, cannot leave room");
           return;
         }
-        leaveRoom();
         leaveCall();
+        leaveRoom();
         navigate("/");
       }}
     >
@@ -51,12 +51,14 @@ type RoomUserVideoProps = {
   isConnected: boolean;
   children: React.ReactNode;
   isRightBorder?: boolean;
+  isHidden?: boolean;
 };
 
 const RoomUserVideo = ({
   isConnected,
   children,
   isRightBorder,
+  isHidden,
 }: RoomUserVideoProps) => {
   return (
     <div
@@ -64,12 +66,15 @@ const RoomUserVideo = ({
         "relative h-20 w-[106px] bg-neutral-800 md:h-40 md:w-[213px]",
         {
           "md:border-r-neutral-900, md:border-r-[1px]": isRightBorder,
+          hidden: isHidden,
         }
       )}
     >
       {!isConnected ? (
         <SpinnerIcon className="absolute top-0 left-0 right-0 bottom-0 m-auto h-6 w-6" />
-      ) : null}
+      ) : (
+        <></>
+      )}
       {children}
     </div>
   );
@@ -103,6 +108,7 @@ const LoadedRoom = ({
   questionSummaries: GetSummariesResponse;
 }) => {
   const {
+    call,
     user,
     questionIdx,
     setQuestionIdx,
@@ -117,6 +123,7 @@ const LoadedRoom = ({
     setInput,
   } = useGlobalStore((state) => {
     return {
+      call: state.call,
       user: state.user,
       questionIdx: state.questionIdx,
       setQuestionIdx: state.setQuestionIdx,
@@ -216,6 +223,10 @@ const LoadedRoom = ({
     setInput(undefined);
   }, [questionIdx, room?.id, setInput]);
 
+  useEffect(() => {
+    console.log({ call });
+  }, [call]);
+
   return (
     <div className="relative flex h-full w-full flex-col gap-3 py-3 lg:flex-row">
       {room ? (
@@ -224,6 +235,7 @@ const LoadedRoom = ({
             <RoomUserVideo
               isConnected={otherVideoConnected}
               isRightBorder={true}
+              isHidden={!otherVideoConnected}
             >
               <video
                 className="h-full w-full"

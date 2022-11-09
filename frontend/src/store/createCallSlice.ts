@@ -26,6 +26,7 @@ export type CallSlice = {
   connectionRef: React.MutableRefObject<Peer.Instance | null>;
   answerCall: () => void;
   callUser: (id: string) => void;
+  killCall: () => void;
   leaveCall: () => void;
   setupVideo: () => void;
 };
@@ -58,9 +59,8 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     }
     connectionRef.current?.destroy();
     setState({
+      callAccepted: false,
       callEnded: true,
-      myVideo: undefined,
-      myVideoConnected: false,
       otherVideo: undefined,
       otherVideoConnected: false,
     });
@@ -188,10 +188,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       setState({ callAccepted: true });
     });
 
-    roomSocket.on(ROOM_EVENTS.CALL_ENDED, () => {
-      killCall();
-    });
-
     const connectionRef = getState().connectionRef;
     if (!connectionRef) {
       return;
@@ -200,20 +196,16 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
   };
 
   const leaveCall = () => {
+    const room = getState().room;
     const roomSocket = getState().roomSocket;
-    const call = getState().call;
-    const from = call?.from;
-    if (!roomSocket || !call || !from) {
-      console.error(
-        "failed to leave call, no room socket or no call or no 'from' user set!"
-      );
+    if (!roomSocket || !room) {
+      console.error("failed to leave call, no room socket or no room set!");
       return;
     }
-    const payload = JSON.stringify({
-      to: from,
-    });
+    const payload = JSON.stringify({ roomId: room.id });
     roomSocket.emit(ROOM_EVENTS.END_CALL, payload);
     killCall();
+    setState({ myVideo: undefined, myVideoConnected: false });
   };
 
   return {
@@ -230,6 +222,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     connectionRef: createRef(),
     answerCall,
     callUser,
+    killCall,
     leaveCall,
     setupVideo,
   };

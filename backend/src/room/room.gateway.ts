@@ -191,7 +191,8 @@ export class RoomGateway {
 
   @SubscribeMessage(ROOM_EVENTS.END_CALL)
   async endCall(client: Socket, data: any) {
-    const { to }: { to: RoomUser } = JSON.parse(data);
-    this.server.to(to.socketId).emit(ROOM_EVENTS.CALL_ENDED);
+    const { roomId }: { roomId: string } = JSON.parse(data);
+    console.log("call ended: ", { roomId });
+    this.server.to(roomId).emit(ROOM_EVENTS.CALL_ENDED);
   }
 }
