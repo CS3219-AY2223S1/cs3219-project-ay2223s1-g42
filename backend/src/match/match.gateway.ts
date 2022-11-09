@@ -39,8 +39,6 @@ export class MatchGateway {
       timeJoined: Date.now(),
     };
 
-    console.log("joined queue: ", { poolUser });
-
     try {
       const existingRoomId = await this.matchService.handleUserAlreadyMatched(
         poolUser
@@ -81,8 +79,6 @@ export class MatchGateway {
         matchingUserIds
       );
 
-      console.log("found matched room: ", { matchedRoom });
-
       // if no error and matched room, emit room data to both users
       const notifyAllUsers = matchedRoom.users.map(
         async (user) =>
@@ -117,8 +113,6 @@ export class MatchGateway {
       const user = await this.matchService.getQueueUserFromId(id.toString());
       // disconnect user from queue
       await this.matchService.disconnectFromMatchQueue(user);
-
-      console.log("left queue: ", { user });
     } catch (err) {
       // emit error message if user not found in queue
       client.emit(

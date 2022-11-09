@@ -26,6 +26,7 @@ export type CallSlice = {
   connectionRef: React.MutableRefObject<Peer.Instance | null>;
   answerCall: () => void;
   callUser: (id: string) => void;
+  killCall: () => void;
   leaveCall: () => void;
   setupVideo: () => void;
 };
@@ -37,7 +38,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
   const setupVideo = async () => {
     const myVideoRef = getState().myVideo;
     if (!myVideoRef) {
-      // break if my video ref not set
       console.error("fail to set up video, no video ref set!");
       return;
     }
@@ -49,6 +49,20 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     });
     myVideoRef.current!.srcObject = stream;
     setState({ stream, myVideoConnected: true });
+  };
+
+  const killCall = () => {
+    const connectionRef = getState().connectionRef;
+    if (!connectionRef || !connectionRef.current) {
+      console.error("failed to leave call, connection ref not set!");
+      return;
+    }
+    connectionRef.current?.destroy();
+    setState({
+      callAccepted: false,
+      callEnded: true,
+      otherVideoConnected: false,
+    });
   };
 
   const answerCall = () => {
@@ -65,23 +79,14 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       stream,
     });
 
-    console.log("answering call with peer: ", { peer });
-
     peer.on("signal", (data) => {
       const roomSocket = getState().roomSocket;
-      if (!roomSocket) {
-        console.error("failed to answer call, no room socket set!");
-        return;
-      }
-
       const call = getState().call;
-      if (!call) {
-        console.error("failed to answer call, no call set!");
-        return;
-      }
-      const from = call.from;
-      if (!from) {
-        console.error("failed to answer call, no 'from user' set in call!");
+      const from = call?.from;
+      if (!roomSocket || !call || !from) {
+        console.error(
+          "failed to answer call, no call or no 'from' user or no room socket set!"
+        );
         return;
       }
       const payload = JSON.stringify({
@@ -104,21 +109,15 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
 
     // send signal to peer
     const call = getState().call;
-    if (!call) {
-      console.error("failed to send signal to peer, no call set!");
-      return;
-    }
-    const signal = call.signal;
-    // break if signal not set
-    if (!signal) {
-      console.error("failed to send signal to peer, no signal set!");
+    const signal = call?.signal;
+    if (!call || !signal) {
+      console.error("failed to send signal to peer, no call or signal set!");
       return;
     }
     peer.signal(signal);
 
     // store peer in connection ref
     const connectionRef = getState().connectionRef;
-    // break if connection ref not set
     if (!connectionRef) {
       console.error('failed to store peer data, no "connection ref" set!');
       return;
@@ -143,7 +142,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       console.error("failed to find logged in user's room user data");
       return;
     }
-    // set up peer
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -152,7 +150,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
 
     peer.on("signal", (data) => {
       const roomSocket = getState().roomSocket;
-      // break if socket not set
       if (!roomSocket) {
         console.error("failed to respond to signal event, no room socket set!");
         return;
@@ -167,27 +164,16 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
 
     peer.on("stream", (currentStream) => {
       const otherVideoRef = getState().otherVideo;
-
-      // break if other video ref not set
-      if (!otherVideoRef) {
+      if (!otherVideoRef || !otherVideoRef.current) {
         console.error("failed to stream, no other video element ref set!");
         return;
       }
-      // break if other video ref current not set
-      if (!otherVideoRef.current) {
-        console.error(
-          "failed to set other video source, no other video element ref set!"
-        );
-        return;
-      }
-
       otherVideoRef.current.srcObject = currentStream;
       setState({ otherVideoConnected: true });
     });
 
     // set up call accepted event
     const roomSocket = getState().roomSocket;
-    // break if socket not set
     if (!roomSocket) {
       console.error("failed to stream, no room socket set!");
       return;
@@ -199,9 +185,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       setState({ callAccepted: true });
     });
 
-    // store peer in connection ref
     const connectionRef = getState().connectionRef;
-    // break if connection ref not set
     if (!connectionRef) {
       return;
     }
@@ -209,23 +193,16 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
   };
 
   const leaveCall = () => {
-    const connectionRef = getState().connectionRef;
-    // break if connection ref not set
-    if (!connectionRef) {
-      console.error("failed to leave call, connection ref not set!");
+    const room = getState().room;
+    const roomSocket = getState().roomSocket;
+    if (!roomSocket || !room) {
+      console.error("failed to leave call, no room socket or no room set!");
       return;
     }
-    if (!connectionRef.current) {
-      console.error("failed to leave call, connection ref current not set!");
-    }
-    connectionRef.current?.destroy();
-    setState({
-      callEnded: true,
-      myVideo: undefined,
-      myVideoConnected: false,
-      otherVideo: undefined,
-      otherVideoConnected: false,
-    });
+    const payload = JSON.stringify({ roomId: room.id });
+    roomSocket.emit(ROOM_EVENTS.END_CALL, payload);
+    killCall();
+    setState({ myVideoConnected: false });
   };
 
   return {
@@ -242,6 +219,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     connectionRef: createRef(),
     answerCall,
     callUser,
+    killCall,
     leaveCall,
     setupVideo,
   };

@@ -142,6 +142,10 @@ const createRoomSlice: StateCreator<GlobalStore, [], [], RoomSlice> = (
     getState().answerCall();
   });
 
+  roomSocket.on(ROOM_EVENTS.CALL_ENDED, () => {
+    getState().killCall();
+  });
+
   const joinRoom = (roomId: string) => {
     const user = getState().user;
     if (!user) {

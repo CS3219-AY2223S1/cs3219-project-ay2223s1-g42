@@ -22,10 +22,11 @@ import { SoloEditor } from "./SoloEditor";
 
 const LeaveRoomButton = () => {
   const navigate = useNavigate();
-  const { user, leaveRoom } = useGlobalStore((state) => {
+  const { user, leaveRoom, leaveCall } = useGlobalStore((state) => {
     return {
       user: state.user,
       leaveRoom: state.leaveRoom,
+      leaveCall: state.leaveCall,
     };
   }, shallow);
   return (
@@ -36,6 +37,7 @@ const LeaveRoomButton = () => {
           console.error("user not logged in, cannot leave room");
           return;
         }
+        leaveCall();
         leaveRoom();
         navigate("/");
       }}
@@ -49,12 +51,14 @@ type RoomUserVideoProps = {
   isConnected: boolean;
   children: React.ReactNode;
   isRightBorder?: boolean;
+  isHidden?: boolean;
 };
 
 const RoomUserVideo = ({
   isConnected,
   children,
   isRightBorder,
+  isHidden,
 }: RoomUserVideoProps) => {
   return (
     <div
@@ -62,12 +66,15 @@ const RoomUserVideo = ({
         "relative h-20 w-[106px] bg-neutral-800 md:h-40 md:w-[213px]",
         {
           "md:border-r-neutral-900, md:border-r-[1px]": isRightBorder,
+          hidden: isHidden,
         }
       )}
     >
       {!isConnected ? (
         <SpinnerIcon className="absolute top-0 left-0 right-0 bottom-0 m-auto h-6 w-6" />
-      ) : null}
+      ) : (
+        <></>
+      )}
       {children}
     </div>
   );
@@ -200,7 +207,6 @@ const LoadedRoom = ({
       return;
     }
     const otherUser = room?.users.find((u) => u.id !== user?.id);
-    console.log({ otherUser, isCaller, stream });
     if (otherUser && isCaller) {
       callUser(otherUser.socketId);
     }
@@ -222,6 +228,7 @@ const LoadedRoom = ({
             <RoomUserVideo
               isConnected={otherVideoConnected}
               isRightBorder={true}
+              isHidden={!otherVideoConnected}
             >
               <video
                 className="h-full w-full"
@@ -236,6 +243,7 @@ const LoadedRoom = ({
                 playsInline
                 ref={myVideoRef}
                 autoPlay
+                muted={true}
               />
             </RoomUserVideo>
           </div>

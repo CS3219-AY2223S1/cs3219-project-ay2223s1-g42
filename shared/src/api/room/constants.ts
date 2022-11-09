@@ -10,6 +10,7 @@ export enum ROOM_EVENTS {
   OLD_USER_LEFT = "old-user-left",
   CALL_USER = "call-user",
   ANSWER_CALL = "answer-call",
+  END_CALL = "end-call",
   CALL_ACCEPTED = "call-accepted",
   CALL_ENDED = "call-ended",
 }
