@@ -6,11 +6,9 @@ import {
   Attempt,
   FlattenedQuestionSummary,
   GetAttemptsResponse,
-  GetSummariesResponse,
 } from "shared/api";
 import { Table, LoadingLayout, PrimaryLink } from "src/components";
 import { Axios } from "src/services";
-import { useGlobalStore } from "src/store";
 
 function formatDate(date: Date) {
   return formatDistance(new Date(date), new Date(), { addSuffix: true });

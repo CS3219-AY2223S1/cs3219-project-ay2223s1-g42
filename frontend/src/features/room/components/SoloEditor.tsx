@@ -1,6 +1,5 @@
-import { useCallback, useRef, useState } from "react";
 import shallow from "zustand/shallow";
-import Editor, { useMonaco, OnChange } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
 import { SpinnerIcon } from "src/components";
