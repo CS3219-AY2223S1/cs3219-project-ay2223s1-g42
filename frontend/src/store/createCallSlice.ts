@@ -192,7 +192,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     connectionRef.current = peer;
   };
 
-  const leaveCall = async () => {
+  const leaveCall = () => {
     const room = getState().room;
     const roomSocket = getState().roomSocket;
     if (!roomSocket || !room) {
