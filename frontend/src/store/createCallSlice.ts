@@ -61,7 +61,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     setState({
       callAccepted: false,
       callEnded: true,
-      otherVideo: undefined,
       otherVideoConnected: false,
     });
   };
@@ -205,7 +204,7 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     const payload = JSON.stringify({ roomId: room.id });
     roomSocket.emit(ROOM_EVENTS.END_CALL, payload);
     killCall();
-    setState({ myVideo: undefined, myVideoConnected: false });
+    setState({ myVideoConnected: false });
   };
 
   return {
