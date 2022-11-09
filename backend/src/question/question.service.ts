@@ -200,7 +200,7 @@ export class QuestionService {
    * Returns the intersection (AND) or unique set of all questions (OR) if
    * multiple valid topicTags are provided.
    *
-   * @return  {FlattendQuestionSummary[]}  Formatted question summaries.
+   * @return  {FlattenedQuestionSummary[]}  Formatted question summaries.
    */
   private filterSummaryByMatchType(
     flatValidSummaries: QuestionSummaryFromDb[][],

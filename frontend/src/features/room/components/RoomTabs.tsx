@@ -1,21 +1,18 @@
-import { GetSummariesResponse } from "shared/api";
+import { FlattenedQuestionSummary } from "shared/api";
 import { BaseTabs } from "src/components";
-import { QuestionPanel } from "./QuestionPanel";
+import { AttemptPanel, DiscussionPanel, QuestionPanel } from "./panels";
 
 const RoomTabs = ({
-  questionSummaries,
+  questionSummary,
 }: {
-  questionSummaries: GetSummariesResponse;
+  questionSummary: FlattenedQuestionSummary;
 }) => {
   const tabValues: Record<string, JSX.Element> = {
     Description: (
-      <QuestionPanel
-        key="question-panel"
-        questionSummaries={questionSummaries}
-      />
+      <QuestionPanel key="question-panel" questionSummary={questionSummary} />
     ),
-    Solution: <>{"Question solution here!!!"}</>,
-    Submissions: <>{"Question submissions here!!!"}</>,
+    Attempts: <AttemptPanel questionSummary={questionSummary} />,
+    Discussion: <DiscussionPanel questionSummary={questionSummary} />,
   };
   return <BaseTabs values={tabValues} />;
 };

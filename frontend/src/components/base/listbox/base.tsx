@@ -11,6 +11,7 @@ type Props<T, U> = {
   className?: string;
   hasBorder?: boolean;
   bigPadding?: boolean;
+  editorPadding?: boolean;
 };
 
 const BaseListbox = <T extends string | string[], U extends string>({
@@ -20,6 +21,7 @@ const BaseListbox = <T extends string | string[], U extends string>({
   className,
   hasBorder,
   bigPadding,
+  editorPadding,
 }: Props<T, U>) => {
   const isValueArray = Array.isArray(value);
   return (
@@ -29,16 +31,17 @@ const BaseListbox = <T extends string | string[], U extends string>({
           <div className="relative h-full">
             <Listbox.Button
               className={cx(
-                "relative h-full w-full cursor-pointer bg-white px-4 pr-10 text-left",
+                "relative h-full w-full cursor-pointer bg-white px-4 pr-10 text-left md:py-2",
                 "focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white",
                 "focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300",
                 {
                   "border-[1px] border-neutral-900": hasBorder,
                   "py-3": bigPadding,
+                  "py-2.5 md:py-2": editorPadding,
                 }
               )}
             >
-              <span className="block truncate capitalize">
+              <span className={cx("block truncate capitalize")}>
                 {isValueArray ? `${value.length} topics selected` : value}
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-50">

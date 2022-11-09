@@ -20,20 +20,19 @@ type NavItem = {
   isLast?: boolean;
 };
 
-const LINKS_LOGGED_IN = [
+const LINKS_LOGGED_IN: NavItem[] = [
   { label: "dashboard", href: "/" },
   { label: "questions", href: "/questions" },
   {
     label: "settings",
     href: "/user/settings",
   },
-  { label: "history", href: "/user/history" },
+  { label: "attempts", href: "/user/attempts" },
 ];
 
-const LINKS_LOGGED_OUT = [
+const LINKS_LOGGED_OUT: NavItem[] = [
   { label: "questions", href: "/questions" },
   { label: "login", href: "/login" },
-  { label: "signup", href: "/signup" },
 ];
 
 const MobileNavItem = ({ label, href, isLast }: NavItem) => {
@@ -95,11 +94,11 @@ const DesktopNavItem = ({ label, href }: NavItem) => {
   );
 };
 
-const DesktopNavItems = () => {
+const DesktopNavItems = ({ navItems }: { navItems: NavItem[] }) => {
   return (
     <div className="hidden w-full items-center justify-between md:flex md:w-auto">
       <ul className="flex flex-row gap-8 border-neutral-800 px-4 text-center text-sm font-semibold uppercase">
-        {LINKS_LOGGED_IN.map((item) => (
+        {navItems.map((item) => (
           <DesktopNavItem key={item.label} {...item} />
         ))}
       </ul>
@@ -152,56 +151,29 @@ const TheNavbar = () => {
           </span>
         </BaseLink>
         <div className="flex flex-row gap-2 md:gap-6">
-          {isSignedIn ? (
-            <>
-              <DesktopNavItems />
-              <PrimaryButton
-                className="bg-neutral-100 px-4 text-base md:px-6"
-                onClick={handleSignout}
-                isLoading={signoutMutation.isLoading}
-              >
-                Log out
-              </PrimaryButton>
-              <PrimaryButton
-                type="button"
-                className="inline-flex items-center bg-white p-3 text-sm text-neutral-800
+          <DesktopNavItems
+            navItems={isSignedIn ? LINKS_LOGGED_IN : LINKS_LOGGED_OUT}
+          />
+          <PrimaryButton
+            className="bg-neutral-100 px-4 text-base md:px-6"
+            onClick={isSignedIn ? handleSignout : () => navigate("/signup")}
+            isLoading={isSignedIn ? signoutMutation.isLoading : undefined}
+          >
+            {isSignedIn ? "Log out" : "Sign up"}
+          </PrimaryButton>
+          <PrimaryButton
+            type="button"
+            className="inline-flex items-center bg-white p-3 text-sm text-neutral-800
                 focus:outline-none hover:text-neutral-800 md:hidden"
-                onClick={() => setIsDropdownOpen((open) => !open)}
-              >
-                <span className="sr-only">Toggle main menu</span>
-                {isDropdownOpen ? (
-                  <CloseIcon className="h-7 w-7" />
-                ) : (
-                  <BurgerMenuIcon className="h-7 w-7" />
-                )}
-              </PrimaryButton>
-            </>
-          ) : (
-            <>
-              {isMobile ? (
-                <PrimaryButton
-                  type="button"
-                  className="inline-flex items-center bg-white p-3 text-sm text-neutral-800
-                  focus:outline-none hover:text-neutral-800 md:hidden"
-                  onClick={() => setIsDropdownOpen((open) => !open)}
-                >
-                  <span className="sr-only">Toggle main menu</span>
-                  {isDropdownOpen ? (
-                    <CloseIcon className="h-7 w-7" />
-                  ) : (
-                    <BurgerMenuIcon className="h-7 w-7" />
-                  )}
-                </PrimaryButton>
-              ) : (
-                <PrimaryButton
-                  className="bg-neutral-100 px-4 text-base md:px-6"
-                  onClick={() => navigate("/signup")}
-                >
-                  Get started
-                </PrimaryButton>
-              )}
-            </>
-          )}
+            onClick={() => setIsDropdownOpen((open) => !open)}
+          >
+            <span className="sr-only">Toggle main menu</span>
+            {isDropdownOpen ? (
+              <CloseIcon className="h-7 w-7" />
+            ) : (
+              <BurgerMenuIcon className="h-7 w-7" />
+            )}
+          </PrimaryButton>
         </div>
       </div>
       {/* mobile nav dropdown */}

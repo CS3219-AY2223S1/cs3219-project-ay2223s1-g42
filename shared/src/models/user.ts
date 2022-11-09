@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { CompleteUserHistory, UserHistoryModel } from "./index";
+import { CompleteAttempt, AttemptModel } from "./index";
 
 export const _UserModel = z.object({
   id: z.number().int(),
@@ -20,7 +20,7 @@ export const _UserModel = z.object({
 });
 
 export interface CompleteUser extends z.infer<typeof _UserModel> {
-  history?: CompleteUserHistory[];
+  attempts?: CompleteAttempt[];
 }
 
 /**
@@ -30,6 +30,6 @@ export interface CompleteUser extends z.infer<typeof _UserModel> {
  */
 export const UserModel: z.ZodSchema<CompleteUser> = z.lazy(() =>
   _UserModel.extend({
-    history: UserHistoryModel.array(),
+    attempts: AttemptModel.array(),
   })
 );
