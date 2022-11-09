@@ -127,7 +127,7 @@ const Dashboard = () => {
     <div className="m-auto w-full space-y-12">
       <BigHeading>
         {currentStep === PageStep.FIRST
-          ? "Welcome to PeerPrep"
+          ? "Select match mode"
           : matchType === MatchType.DIFFICULTY
           ? "Select difficulty(s)"
           : matchType === MatchType.TOPICS
