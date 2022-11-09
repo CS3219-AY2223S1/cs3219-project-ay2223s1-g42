@@ -17,6 +17,7 @@ export type EditorSlice = {
   editorClients: string[] | undefined;
   editorBinding: MonacoBinding | undefined;
   questionIdx: number;
+  setEditorInput: (input: string | undefined) => void;
   setEditorLanguage: (language: LANGUAGE) => void;
   setQuestionIdx: (idx: number) => void;
   setupDoc: () => void;
@@ -31,6 +32,10 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
   setState,
   getState
 ) => {
+  const setEditorInput = (input: string | undefined) => {
+    setState({ editorInput: input });
+  };
+
   const setEditorLanguage = (language: LANGUAGE) => {
     const binding = getState().editorBinding;
     if (binding) {
@@ -110,7 +115,6 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     );
     socketIOProvider.on("status", ({ status }: { status: string }) => {
       const connected = status === "connected";
-      console.log("socket io provider status: ", { status });
       setState({ isEditorProviderConnected: connected });
     });
 
@@ -141,15 +145,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
       return;
     }
 
-    console.log("setting up binding with: ", {
-      docText,
-      model,
-      editor,
-      awareness: provider.awareness,
-    });
-
     if (!provider.socket.connected) {
-      console.log("connecting to provider...");
       provider.connect();
     }
 
@@ -179,7 +175,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
 
     // set initial editor document language to typescript
     const language = monacoBinding.ytext.getAttribute("language");
-    if (!language) {
+    if (!language && !getState().editorLanguage) {
       monacoBinding.ytext.setAttribute("language", LANGUAGE.TS);
     }
 
@@ -210,6 +206,7 @@ const createEditorSlice: StateCreator<GlobalStore, [], [], EditorSlice> = (
     editorClients: undefined,
     editorBinding: undefined,
     questionIdx: 0,
+    setEditorInput,
     setupDoc,
     setupProvider,
     setupBinding,

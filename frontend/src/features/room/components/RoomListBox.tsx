@@ -14,10 +14,11 @@ const RoomListBox = () => {
   }, shallow);
   return (
     <BaseListbox
-      className="z-10 h-full w-48 border-r-[1px] border-b-[1px] border-neutral-900"
+      className="z-10 h-full w-full border-b-[1px] border-neutral-900 md:w-48 md:border-r-[1px]"
       value={language}
       setValue={(value) => setLanguage(value as LANGUAGE)}
       values={languages}
+      editorPadding={true}
     />
   );
 };

@@ -93,17 +93,15 @@ const RoomEditor = () => {
   return (
     <Editor
       key={room?.id}
-      // defaultLanguage={LANGUAGE.TS}
       language={language}
       value={input}
       theme="vs-dark"
-      className="h-full w-full"
+      className="z-0 h-full w-full"
       options={{
         "semanticHighlighting.enabled": true,
         autoIndent: "full",
         tabCompletion: "on",
       }}
-      // onChange={handleEditorChange}
       onMount={handleEditorDidMount}
       loading={<SpinnerIcon />}
     />

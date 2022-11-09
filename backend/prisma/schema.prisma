@@ -30,19 +30,19 @@ datasource db {
 }
 
 model User {
-  id        Int           @id @default(autoincrement())
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   /// @z.string().min(4).max(20)
-  username  String        @unique
+  username  String    @unique
   /// @z.string().email({ message: "Invalid email address" })
-  email     String        @unique
+  email     String    @unique
   // hash for password, set as @db.Text to remove length limit set by varchar
-  hash      String?       @db.Text
+  hash      String?   @db.Text
   // hash for refresh token, set as @db.Text to remove length limit set by varchar
-  hashRt    String?       @db.Text
-  provider  String        @default("CUSTOM") @db.Text
-  history   UserHistory[]
+  hashRt    String?   @db.Text
+  provider  String    @default("CUSTOM") @db.Text
+  attempts  Attempt[]
 
   @@map("users")
 }
@@ -90,13 +90,15 @@ model QuestionHint {
   questionContentId Int
 }
 
-model UserHistory {
-  id        Int      @id @unique @default(autoincrement())
+model Attempt {
   titleSlug String
   title     String
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int
+  roomId    String
   content   String   @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User?    @relation(fields: [username], references: [username])
-  username  String?
+
+  @@id([titleSlug, userId, roomId])
 }

@@ -37,7 +37,6 @@ export class DocumentGateway implements OnGatewayInit {
       const roomId = doc.name;
       try {
         const delta = await this.documentService.getDocumentDeltaFromId(roomId);
-        console.log("updating document with saved delta", { delta });
         doc.getText(DOCUMENT_TEXT_NAME).applyDelta(delta);
       } catch (err) {
         console.error(

@@ -1,7 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { GetDailyQuestionSummaryResponse } from "shared/api";
-import { Badge, SpinnerIcon } from "src/components";
+import {
+  GetDailyQuestionSummaryResponse,
+  QuestionDifficulty,
+} from "shared/api";
+import {
+  PrimaryBadge,
+  GreenBadge,
+  RedBadge,
+  SpinnerIcon,
+  YellowBadge,
+} from "src/components";
 import { Axios } from "src/services";
 
 const DailyQuestionPreview = () => {
@@ -21,13 +30,24 @@ const DailyQuestionPreview = () => {
           </h2>
           <div className="flex flex-col items-center gap-1">
             <h3 className="font-semibold">Difficulty: </h3>
-            <Badge>{dailyQuestionSummary.data.difficulty}</Badge>
+            {dailyQuestionSummary.data.difficulty.toLowerCase() ===
+            QuestionDifficulty.EASY ? (
+              <GreenBadge>{dailyQuestionSummary.data.difficulty}</GreenBadge>
+            ) : dailyQuestionSummary.data.difficulty.toLowerCase() ===
+              QuestionDifficulty.MEDIUM ? (
+              <YellowBadge>{dailyQuestionSummary.data.difficulty}</YellowBadge>
+            ) : dailyQuestionSummary.data.difficulty.toLowerCase() ===
+              QuestionDifficulty.HARD ? (
+              <RedBadge>{dailyQuestionSummary.data.difficulty}</RedBadge>
+            ) : (
+              <></>
+            )}
           </div>
           <div className="flex flex-col items-center gap-1">
             <h3 className="font-semibold">Topics: </h3>
             <div className="flex flex-row gap-1">
               {dailyQuestionSummary.data.topicTags.map((topic) => (
-                <Badge key={topic}>{topic}</Badge>
+                <PrimaryBadge key={topic}>{topic}</PrimaryBadge>
               ))}
             </div>
           </div>

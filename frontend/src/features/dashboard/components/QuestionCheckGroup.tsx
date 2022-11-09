@@ -1,5 +1,5 @@
-import { BaseCheckGroup, CheckGroupValue } from "src/components";
 import { QuestionDifficulty } from "shared/api";
+import { BaseCheckGroup, CheckGroupValue } from "src/components";
 
 const difficultyMap: Record<
   QuestionDifficulty,

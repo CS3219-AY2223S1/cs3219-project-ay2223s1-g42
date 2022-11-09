@@ -53,6 +53,9 @@ const Table = <T,>({ columns, data }: Props<T>) => {
   });
 
   const getPageStart = () => {
+    if (!data.length) {
+      return 0;
+    }
     return (
       table.getState().pagination.pageIndex *
         table.getState().pagination.pageSize +
@@ -75,7 +78,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
           <span className="font-bold text-neutral-900">{getPageStart()}</span>{" "}
           to <span className="font-bold text-neutral-900">{getPageEnd()}</span>{" "}
           of <span className="font-bold text-neutral-900">{data.length}</span>{" "}
-          questions
+          entries
         </span>
         <div className="flex flex-row gap-3">
           <TablePageButton
@@ -87,6 +90,7 @@ const Table = <T,>({ columns, data }: Props<T>) => {
             <span className="hidden md:block">Prev</span>
           </TablePageButton>
           <TablePageButton
+            className={cx({ hidden: !table.getCanNextPage() })}
             disabled={!table.getCanNextPage()}
             onClick={() => table.nextPage()}
           >

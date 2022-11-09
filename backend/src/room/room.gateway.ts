@@ -32,7 +32,6 @@ export class RoomGateway {
   async onJoinRoom(client: Socket, data: any) {
     const { id: pendingUserId, roomId: pendingRoomId }: PendingRoomUser =
       JSON.parse(data);
-    console.log("joining room: ", { pendingUserId, pendingRoomId });
 
     try {
       // find room of user
@@ -58,6 +57,11 @@ export class RoomGateway {
         return;
       }
 
+      const otherRoomUser = room.users.find(
+        (user) => user.id !== pendingUserId
+      );
+      const userIsCaller = otherRoomUser.connected;
+
       const updatedRoomUser: RoomUser = {
         ...roomUser,
         connected: true,
@@ -72,7 +76,7 @@ export class RoomGateway {
       // broadcast user has joined to room
       client.emit(
         ROOM_EVENTS.JOIN_ROOM_SUCCESS,
-        JSON.stringify({ room: updatedRoom })
+        JSON.stringify({ room: updatedRoom, isCaller: userIsCaller })
       );
       this.server
         .to(room.id)
@@ -81,7 +85,7 @@ export class RoomGateway {
           JSON.stringify({ room: updatedRoom, newUser: roomUser })
         );
       // add user to room socket channel AFTER broadcast
-      await client.join(room.id);
+      await client.join([room.id, updatedRoomUser.socketId]);
     } catch (err) {
       console.error(err);
       client.emit(
@@ -157,5 +161,36 @@ export class RoomGateway {
       );
       return;
     }
+  }
+
+  @SubscribeMessage(ROOM_EVENTS.CALL_USER)
+  async callUser(client: Socket, data: any) {
+    const {
+      userToCall,
+      signalData,
+      from,
+    }: { userToCall: string; signalData: any; from: RoomUser } =
+      JSON.parse(data);
+
+    this.server
+      .to(userToCall)
+      .emit(
+        ROOM_EVENTS.CALL_USER,
+        JSON.stringify({ signal: signalData, from })
+      );
+  }
+
+  @SubscribeMessage(ROOM_EVENTS.ANSWER_CALL)
+  async answerCall(client: Socket, data: any) {
+    const { to, signal }: { to: RoomUser; signal: any } = JSON.parse(data);
+    this.server
+      .to(to.socketId)
+      .emit(ROOM_EVENTS.CALL_ACCEPTED, JSON.stringify({ signal }));
+  }
+
+  @SubscribeMessage(ROOM_EVENTS.END_CALL)
+  async endCall(client: Socket, data: any) {
+    const { roomId }: { roomId: string } = JSON.parse(data);
+    this.server.to(roomId).emit(ROOM_EVENTS.CALL_ENDED);
   }
 }

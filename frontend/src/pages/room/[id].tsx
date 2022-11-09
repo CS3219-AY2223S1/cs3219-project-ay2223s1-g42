@@ -38,7 +38,7 @@ const RoomPage = (): JSX.Element => {
     };
   }, shallow);
 
-  const pageRoomId = id ?? "default";
+  const pageRoomId = id ?? "";
   const isQueuedRoom = pageRoomId === queueRoomId;
   const isInvalidRoom =
     roomStatus?.event === ROOM_EVENTS.INVALID_ROOM ||
@@ -66,7 +66,6 @@ const RoomPage = (): JSX.Element => {
       }
     }
   );
-  console.log(questionSummaries.data);
 
   // join room on mount
   useEffect(() => {

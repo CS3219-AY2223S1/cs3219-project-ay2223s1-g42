@@ -74,14 +74,17 @@ const AppContainer = ({ children }: PropsWithChildren) => {
     !pathname.includes("login") &&
     !pathname.includes("signup") &&
     !pathname.includes("user") &&
-    !pathname.includes("questions");
+    !pathname.includes("questions") &&
+    !pathname.includes("question");
 
   // authenticated page is any page with user
   // logged in and is not an error page
   const isAuthenticatedPage = user && !isErrorPage;
 
   // room page is any authenticated page that starts with /room
-  const isRoomPage = isAuthenticatedPage && pathname.startsWith("/room/");
+  const isRoomPage =
+    (isAuthenticatedPage && pathname.startsWith("/room/")) ||
+    (pathname.startsWith("/question") && !pathname.includes("/questions"));
 
   return (
     <>

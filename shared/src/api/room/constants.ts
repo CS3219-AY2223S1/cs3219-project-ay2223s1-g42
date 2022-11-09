@@ -8,6 +8,11 @@ export enum ROOM_EVENTS {
   INVALID_ROOM = "invalid-room",
   NEW_USER_JOINED = "new-user-joined",
   OLD_USER_LEFT = "old-user-left",
+  CALL_USER = "call-user",
+  ANSWER_CALL = "answer-call",
+  END_CALL = "end-call",
+  CALL_ACCEPTED = "call-accepted",
+  CALL_ENDED = "call-ended",
 }
 
 export enum ROOM_MESSAGES {

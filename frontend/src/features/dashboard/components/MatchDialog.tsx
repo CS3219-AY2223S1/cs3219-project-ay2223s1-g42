@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import shallow from "zustand/shallow";
 
 import { RedButton, PrimaryDialog, PrimaryButton } from "src/components";
 import { useGlobalStore } from "src/store";
-import shallow from "zustand/shallow";
 import { MatchCountdownTimer } from "./MatchCountdownTimer";
 
 const MATCH_QUEUE_DURATION = 30;
@@ -37,13 +37,12 @@ const MatchDialog = ({ isOpen, onClose }: Props) => {
   }, shallow);
   const [joinLoading, setJoinLoading] = useState<boolean>(false);
 
-  console.log("match dialog queue room id: ", { queueRoomId });
-
   const dialogTitle = room
     ? "Already in a room!"
     : queueRoomId
     ? "Match Found"
     : "Matching you now...";
+
   const dialogDescription = room
     ? "Please leave your room to find another match!"
     : queueRoomId

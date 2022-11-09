@@ -1,12 +1,14 @@
+import { createRef } from "react";
 import { StateCreator } from "zustand";
 import Peer from "simple-peer";
-import { UserInfo } from "shared/api";
 
+import { RoomUser, ROOM_EVENTS } from "shared/api";
 import type { GlobalStore } from "./useGlobalStore";
 
 export type Call = {
-  from?: UserInfo;
+  from?: RoomUser;
   signal?: Peer.SignalData;
+  isCaller?: boolean;
 };
 
 export type CallSlice = {
@@ -14,14 +16,17 @@ export type CallSlice = {
   callAccepted: boolean;
   callEnded: boolean;
   stream: MediaStream | undefined;
-  name: string;
   call: Call | undefined;
+  isCaller: boolean;
   connected: boolean;
-  myVideo: React.MutableRefObject<HTMLMediaElement | undefined> | undefined;
-  otherVideo: React.MutableRefObject<HTMLMediaElement | undefined> | undefined;
-  connectionRef: React.MutableRefObject<Peer.Instance | undefined> | undefined;
+  myVideo: React.MutableRefObject<HTMLVideoElement | null>;
+  myVideoConnected: boolean;
+  otherVideo: React.MutableRefObject<HTMLVideoElement | null>;
+  otherVideoConnected: boolean;
+  connectionRef: React.MutableRefObject<Peer.Instance | null>;
   answerCall: () => void;
-  callUser: (from: UserInfo, id: number) => void;
+  callUser: (id: string) => void;
+  killCall: () => void;
   leaveCall: () => void;
   setupVideo: () => void;
 };
@@ -33,12 +38,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
   const setupVideo = async () => {
     const myVideoRef = getState().myVideo;
     if (!myVideoRef) {
-      // break if my video ref not set
-      console.error("fail to set up video, no video ref set!");
-      return;
-    }
-    if (!myVideoRef.current) {
-      // break if my video ref current not set
       console.error("fail to set up video, no video ref set!");
       return;
     }
@@ -48,8 +47,22 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
       video: true,
       audio: true,
     });
-    myVideoRef.current.srcObject = stream;
-    setState({ stream });
+    myVideoRef.current!.srcObject = stream;
+    setState({ stream, myVideoConnected: true });
+  };
+
+  const killCall = () => {
+    const connectionRef = getState().connectionRef;
+    if (!connectionRef || !connectionRef.current) {
+      console.error("failed to leave call, connection ref not set!");
+      return;
+    }
+    connectionRef.current?.destroy();
+    setState({
+      callAccepted: false,
+      callEnded: true,
+      otherVideoConnected: false,
+    });
   };
 
   const answerCall = () => {
@@ -63,59 +76,42 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     const peer = new Peer({
       initiator: false,
       trickle: false,
-      stream: stream,
+      stream,
     });
 
     peer.on("signal", (data) => {
       const roomSocket = getState().roomSocket;
-      if (!roomSocket) {
-        console.error("failed to answer call, no room socket set!");
-        return;
-      }
-
       const call = getState().call;
-      if (!call) {
-        console.error("failed to answer call, no call set!");
+      const from = call?.from;
+      if (!roomSocket || !call || !from) {
+        console.error(
+          "failed to answer call, no call or no 'from' user or no room socket set!"
+        );
         return;
       }
-      const from = call.from;
-      if (!from) {
-        console.error("failed to answer call, no 'from user' set in call!");
-        return;
-      }
-      roomSocket.emit("answerCall", {
+      const payload = JSON.stringify({
         signal: data,
         to: from,
       });
+      roomSocket.emit(ROOM_EVENTS.ANSWER_CALL, payload);
     });
 
     peer.on("stream", (currentStream) => {
       const otherVideoRef = getState().otherVideo;
+      // break if other video ref not set
       if (!otherVideoRef) {
-        // break if other video ref not set
         console.error("failed to stream call, no other video element ref set!");
         return;
       }
-      if (!otherVideoRef.current) {
-        // break if other video ref current not set
-        console.error(
-          "failed to stream call, no other video element ref current set!"
-        );
-        return;
-      }
-      otherVideoRef.current.srcObject = currentStream;
+      otherVideoRef.current!.srcObject = currentStream;
+      setState({ otherVideoConnected: true });
     });
 
     // send signal to peer
     const call = getState().call;
-    if (!call) {
-      console.error("failed to send signal to peer, no call set!");
-      return;
-    }
-    const signal = call.signal;
-    if (!signal) {
-      // break if signal not set
-      console.error("failed to send signal to peer, no signal set!");
+    const signal = call?.signal;
+    if (!call || !signal) {
+      console.error("failed to send signal to peer, no call or signal set!");
       return;
     }
     peer.signal(signal);
@@ -123,7 +119,6 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     // store peer in connection ref
     const connectionRef = getState().connectionRef;
     if (!connectionRef) {
-      // break if connection ref not set
       console.error('failed to store peer data, no "connection ref" set!');
       return;
     }
@@ -132,95 +127,99 @@ const createCallSlice: StateCreator<GlobalStore, [], [], CallSlice> = (
     setState({ callAccepted: true });
   };
 
-  const callUser = (from: UserInfo, id: number) => {
-    // set up peer
+  const callUser = (socketId: string) => {
+    const user = getState().user;
+    const stream = getState().stream;
+    const room = getState().room;
+    if (!user || !stream || !room) {
+      console.error(
+        "failed to call user, no user or no stream or no room set!"
+      );
+      return;
+    }
+    const from = room.users.find((u) => u.id === user.id);
+    if (!from) {
+      console.error("failed to find logged in user's room user data");
+      return;
+    }
     const peer = new Peer({
       initiator: true,
       trickle: false,
-      stream: getState().stream,
+      stream,
     });
 
     peer.on("signal", (data) => {
       const roomSocket = getState().roomSocket;
       if (!roomSocket) {
-        // break if socket not set
         console.error("failed to respond to signal event, no room socket set!");
         return;
       }
-      roomSocket.emit("callUser", {
-        userToCall: id,
+      const payload = JSON.stringify({
+        userToCall: socketId,
         signalData: data,
-        from: from,
+        from,
       });
+      roomSocket.emit(ROOM_EVENTS.CALL_USER, payload);
     });
 
     peer.on("stream", (currentStream) => {
       const otherVideoRef = getState().otherVideo;
-      if (!otherVideoRef) {
-        // break if other video ref not set
+      if (!otherVideoRef || !otherVideoRef.current) {
         console.error("failed to stream, no other video element ref set!");
         return;
       }
-
-      if (!otherVideoRef.current) {
-        // break if other video ref current not set
-        console.error(
-          "failed to set other video source, no other video element ref set!"
-        );
-        return;
-      }
-
       otherVideoRef.current.srcObject = currentStream;
+      setState({ otherVideoConnected: true });
     });
 
     // set up call accepted event
     const roomSocket = getState().roomSocket;
     if (!roomSocket) {
-      // break if socket not set
       console.error("failed to stream, no room socket set!");
       return;
     }
 
-    roomSocket.on("callAccepted", (signal) => {
+    roomSocket.on(ROOM_EVENTS.CALL_ACCEPTED, (data) => {
+      const { signal }: { signal: Peer.SignalData } = JSON.parse(data);
       peer.signal(signal);
       setState({ callAccepted: true });
     });
 
-    // store peer in connection ref
     const connectionRef = getState().connectionRef;
     if (!connectionRef) {
-      // break if connection ref not set
       return;
     }
     connectionRef.current = peer;
   };
 
   const leaveCall = () => {
-    const connectionRef = getState().connectionRef;
-    if (!connectionRef) {
-      // break if connection ref not set
-      console.error("failed to leave call, connection ref not set!");
+    const room = getState().room;
+    const roomSocket = getState().roomSocket;
+    if (!roomSocket || !room) {
+      console.error("failed to leave call, no room socket or no room set!");
       return;
     }
-    if (!connectionRef.current) {
-      console.error("failed to leave call, connection ref current not set!");
-    }
-    connectionRef.current?.destroy();
-    setState({ callEnded: true });
+    const payload = JSON.stringify({ roomId: room.id });
+    roomSocket.emit(ROOM_EVENTS.END_CALL, payload);
+    killCall();
+    setState({ myVideoConnected: false });
   };
 
   return {
     callAccepted: false,
     callEnded: false,
     stream: undefined,
-    name: "",
     call: undefined,
+    isCaller: false,
     connected: false,
-    myVideo: undefined,
-    otherVideo: undefined,
-    connectionRef: undefined,
+    myVideo: createRef(),
+    myVideoConnected: false,
+    otherVideo: createRef(),
+    otherVideoConnected: false,
+    connectionRef: createRef(),
     answerCall,
     callUser,
+    killCall,
     leaveCall,
     setupVideo,
   };
