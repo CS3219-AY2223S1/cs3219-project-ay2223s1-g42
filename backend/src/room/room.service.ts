@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
+import * as lodash from "lodash";
 
 import { MatchType, NAMESPACES, PoolUser, Room, RoomUser } from "shared/api";
 import { RedisCacheService } from "src/cache/redisCache.service";
@@ -39,14 +40,14 @@ export class RoomService {
     };
 
     if (type === MatchType.DIFFICULTY) {
-      const allDifficulties = roomUsers.flatMap((user) => user.difficulties);
-      const commonDifficulties = Array.from(new Set(allDifficulties));
+      const allDifficulties = roomUsers.map((user) => user.difficulties);
+      const commonDifficulties = lodash.intersection(...allDifficulties);
       room.difficulties = commonDifficulties;
     }
 
     if (type === MatchType.TOPICS) {
-      const allTopics = roomUsers.flatMap((user) => user.topics);
-      const commonTopics = Array.from(new Set(allTopics));
+      const allTopics = roomUsers.map((user) => user.topics);
+      const commonTopics = lodash.intersection(...allTopics);
       room.topics = commonTopics;
     }
 
